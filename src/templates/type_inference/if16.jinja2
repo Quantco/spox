@@ -1,0 +1,16 @@
+else_body = self.attrs.else_branch.value
+then_body = self.attrs.then_branch.value
+assert not else_body.arguments
+assert not then_body.arguments
+else_map = else_body.results
+then_map = then_body.results
+assert len(else_map) == len(then_map)
+result = {}
+for name, first, second in zip(self.outputs.as_dict(), else_map.values(), then_map.values()):
+    if not (first.type <= second.type or second.type <= first.type):
+        raise TypeError(
+            f"Else/then branches must have compatible result types, "
+            f"got {first.type} <> {second.type}."
+        )
+    result[name] = first.type & second.type
+return result

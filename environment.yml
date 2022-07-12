@@ -1,0 +1,22 @@
+name: steelix
+channels:
+  - qc-internal
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python>=3.8
+  - jinja2
+  - make
+  - matplotlib
+  - numpy
+  - numpydoc
+  - onnx
+  - onnxruntime>=1.12.0
+  - pip
+  - pre-commit
+  - pytest>=6
+  - pytest-cov
+  - setuptools_scm
+  - sphinx
+  - sphinxcontrib-apidoc
+  - sphinx_rtd_theme

@@ -1,0 +1,31 @@
+def const(
+    value: Union[ndarray, numpy.generic, bool, float, int, str, Iterable[float], Iterable[int], Iterable[str]]
+) -> Arrow:
+    """
+    Convenience Steelix function for creating Arrows for constants.
+    Calls the right overload of Constant (setting the right attribute) depending on the type.
+    """
+
+    if isinstance(value, ndarray):
+        return constant(value=value)
+    elif isinstance(value, numpy.generic):
+        return constant(value=numpy.array(value))
+    elif isinstance(value, bool):
+        return constant(value=numpy.array(value, dtype=numpy.bool_))
+    elif isinstance(value, int):
+        return constant(value_int=value)
+    elif isinstance(value, float):
+        return constant(value_float=value)
+    elif isinstance(value, str):
+        return constant(value_string=value)
+    elif isinstance(value, Iterable):
+        elems = list(value)
+        if all(isinstance(elem, int) for elem in elems):
+            return constant(value_ints=elems)
+        elif all(isinstance(elem, float) for elem in elems):
+            return constant(value_floats=elems)
+        elif all(isinstance(elem, str) for elem in elems):
+            return constant(value_strings=elems)
+        else:
+            raise TypeError(f"Bad container values for requested Constant: {elems}")
+    raise TypeError(f"Bad value for requested Constant: {value}")

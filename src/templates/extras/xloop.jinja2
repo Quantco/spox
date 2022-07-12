@@ -1,0 +1,33 @@
+def xloop(
+    max_iter: Optional[Arrow] = None,
+    start_loop: Optional[Arrow] = None,
+    initial: Sequence[Arrow] = (),
+    *,
+    fun: Callable[..., Iterable[Arrow]],
+) -> Sequence[Arrow]:
+    """
+    Simplified constructor for the Loop operator.
+
+    Instead of a Graph this constructor takes ``fun``, which should
+    take 2+N Arrow arguments and 1+N+K Arrow results.
+
+    - The first two arguments are 1-vectors for (int64) iteration and (boolean) stop condition.
+    - The first result is a 1-vector (boolean) for the next stop condition.
+    - N: *carried* values. Carried from previous iteration (or initial). The last carried outputs are stored in the first element of the returned tuple.
+    - K: *scanned* values. All such outputs must be Tensors, and they are concatenated. They are stored in the second element of the returned tuple.
+
+    Note that ``fun`` may use values from the outer scope,
+    but to make sure they defined in the outer scope (instead of inlined in the inner scope) they
+    should be marked with ``intro(*outer, loop(...))``.
+
+    For the details of Loop behaviour, see the docstring for loop.
+    """
+    if max_iter is not None:
+        max_iter = reshape(max_iter, const([1]))
+    if start_loop is not None:
+        start_loop = reshape(start_loop, const([1]))
+    return loop(max_iter, start_loop, initial, body=subgraph(
+        typing_cast(List[Type], [Tensor(numpy.int64, (1,)), Tensor(numpy.bool_, (1,))])
+        + [arrow.unwrap_type() for arrow in initial],
+        fun
+    ))

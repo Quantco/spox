@@ -1,0 +1,53 @@
+{{ schema.doc.strip() | format_github_markdown }}
+{% set type_vars = {} %}
+
+Parameters
+==========
+{% if schema.inputs %}
+{% for param in schema.inputs %}
+    {% if param.typeStr[0] is upper %}
+        {% do type_vars.update({param.typeStr: param.types}) %}
+    {% endif %}
+{{ param.name }}
+{% filter indent(width=4) %}
+    Type {{ param.typeStr }}.
+{{ param.description | format_github_markdown }}
+{% endfilter %}
+{% endfor %}
+{% if schema.attributes %}
+{% for attr in schema.attributes.values() %}
+{{ attr.name }}
+{% filter indent(width=4) %}
+    Attribute.
+{{ attr.description | format_github_markdown }}
+{% endfilter %}
+{% endfor %}
+{% endif %}
+
+Returns
+=======
+{% endif %}
+{% if schema.outputs %}
+{% for param in schema.outputs %}
+    {% if param.typeStr[0] is upper %}
+        {% do type_vars.update({param.typeStr: param.types}) %}
+    {% endif %}
+{{ param.name }}
+{% filter indent(width=4) %}
+    Type {{ param.typeStr }}.
+{{ param.description | format_github_markdown }}
+{% endfilter %}
+{% endfor %}
+{% endif %}
+
+Notes
+=====
+Signature: ``{{ schema.domain or 'ai.onnx' }}@{{ schema.since_version }}::{{ schema.name }}``.
+
+{% if type_vars %}
+Type constraints:
+{% for var, members in type_vars.items() %}
+ - {{ var }}: {% for type in members|sort %}`{{ type }}`{% if not loop.last %}, {% endif %}{% endfor %}
+
+{% endfor %}
+{% endif %}

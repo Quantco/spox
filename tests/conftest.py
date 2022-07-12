@@ -1,0 +1,69 @@
+import sys
+from typing import Dict, Optional
+
+import numpy
+import onnxruntime
+import pytest
+
+import steelix.opset.ai.onnx.v17
+from steelix.debug import show_construction_tracebacks
+from steelix.graph import Graph
+
+
+class ONNXRuntimeHelper:
+    _build_cache: Dict[Graph, bytes]
+    _last_graph: Optional[Graph]
+    _last_session: Optional[onnxruntime.InferenceSession]
+
+    def __init__(self):
+        self._build_cache = {}
+        self._last_graph = None
+        self._last_session = None
+
+    def run(self, graph: Graph, unwrap: Optional[str] = None, **kwargs):
+        debug_index = {**graph._get_build_result().scope.arrow.of_name, **graph._get_build_result().scope.node.of_name}  # type: ignore
+        if self._last_graph is graph:
+            print("[ONNXRuntimeHelper] Reusing previous session.", file=sys.stderr)
+            session = self._last_session
+        else:
+            if graph not in self._build_cache:
+                model_proto = graph.to_onnx_model()
+                model_bytes = model_proto.SerializeToString()
+                self._build_cache[graph] = model_bytes
+            else:
+                model_bytes = self._build_cache[graph]
+            with show_construction_tracebacks(debug_index):
+                session = onnxruntime.InferenceSession(model_bytes)
+        self._last_graph = graph
+        self._last_session = session
+        assert isinstance(session, onnxruntime.InferenceSession)
+        with show_construction_tracebacks(debug_index):
+            result = {
+                output.name: result
+                for output, result in zip(
+                    session.get_outputs(), session.run(None, kwargs)
+                )
+            }
+        if unwrap is not None:
+            return result[unwrap]
+        return result
+
+    @staticmethod
+    def assert_close(given, expected):
+        if given is None:
+            assert expected is None
+        else:
+            numpy.testing.assert_allclose(
+                given, numpy.array(expected, dtype=given.dtype)
+            )
+
+
+@pytest.fixture(scope="session")
+def onnx_helper():
+    return ONNXRuntimeHelper()
+
+
+# Selects operator sets for testing
+@pytest.fixture(params=[steelix.opset.ai.onnx.v17])
+def op(request):
+    return request.param

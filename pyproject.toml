@@ -1,0 +1,37 @@
+[build-system]
+requires = ['setuptools', 'setuptools-scm', 'wheel']
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+
+[tool.black]
+target-version = ['py38']
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+ensure_newline_before_comments = true
+line_length = 88
+known_first_party = "steelix"
+skip_glob = '\.eggs/*,\.git/*,\.venv/*,build/*,dist/*'
+default_section = 'THIRDPARTY'
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+# This will be pytest's future default.
+addopts = "--import-mode=importlib"

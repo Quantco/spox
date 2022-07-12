@@ -1,0 +1,11 @@
+_OPERATORS = {
+{% for name in built_names %}
+    "{{ name }}": _{{ name }},
+{% endfor %}
+}
+
+CONSTRUCTORS = {
+{% for name in built_names %}
+    "{{ name }}": {{ name | get_constructor_name }},
+{% endfor %}
+}

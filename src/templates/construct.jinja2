@@ -1,0 +1,16 @@
+return _{{ schema.name }}(
+    _{{ schema.name }}.Attributes(
+{% for attr in schema.attributes.values()
+        %}{{attr.name}}={{ attr.name }}, {%
+endfor %}
+    ), _{{ schema.name }}.Inputs(
+{% for param in schema.inputs
+        %}{{param.name}}={{param.name}}, {%
+endfor %}
+    ), {%
+if schema.outputs and is_variadic(schema.outputs[-1])
+    %}out_variadic={{ out_variadic_solution if out_variadic_solution else "{}_count".format(schema.outputs[-1].name) }}, {%
+endif %}).outputs{%
+if schema.outputs | length <= 1
+    %}.{{ schema.outputs[0].name }}{%
+endif %}

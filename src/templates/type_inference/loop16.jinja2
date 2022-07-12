@@ -1,0 +1,49 @@
+if self.inputs.M.type is not None:
+    assert self.inputs.M.unwrap_type() <= Tensor(numpy.int64, (1,)), f"Maximum trip-count must be an int64 1-vector, got {self.inputs.M.type}"
+if self.inputs.cond.type is not None:
+    assert self.inputs.cond.unwrap_type() <= Tensor(numpy.bool_, (1,)), f"Terminal condition must be a boolean 1-vector, got {self.inputs.cond.type}"
+
+carried_init = self.inputs.v_initial
+
+body = self.attrs.body.value
+n = len(body.arguments) - 2
+assert n >= 0, f"Too few Loop body arguments: {len(body.arguments)}"
+assert n == len(carried_init), f"Mismatched initial carry/input carry: {n} != {len(carried_init)}"
+k = len(body.results) - n - 1
+assert k >= 0, f"Too few Loop body results ({len(body.arguments)} arguments): {len(body.results)}"
+
+iter_num, cond, *carried_in = list(body.arguments.values())
+results = list(body.results.values())
+next_cond, carried_out, scan_outputs = results[0], results[1:n+1], results[n+1:]
+
+body_signature = (
+    f"init(max: {self.inputs.M.type}, cond: {self.inputs.cond.type}, "
+    f"carried: {[a.type for a in carried_init]}) ~> "
+    f"in(iter: {iter_num.type}, cond: {cond.type}, "
+    f"carried: {[a.type for a in carried_in]}) => "
+    f"out(cond: {next_cond.type}, carried: {[a.type for a in carried_out]}, "
+    f"scan: {[a.type for a in scan_outputs]})"
+)
+
+assert iter_num.unwrap_type() <= Tensor(numpy.int64, (1,))
+assert cond.unwrap_type() <= Tensor(numpy.bool_, (1,))
+assert len(carried_init) == len(carried_in) == len(carried_out), f"Carried lengths (n) must match, body: {body_signature}"
+assert all(type_match(x.type, y.type) and type_match(y.type, z.type) and type_match(x.type, z.type) for x, y, z in zip(carried_init, carried_in, carried_out)), \
+    f"Types for carried Loop values must all match, body: {body_signature}"
+carried_types = [x.type & y.type & z.type for x, y, z in zip(carried_init, carried_in, carried_out)]
+assert all(isinstance(s.type, Tensor) for s in scan_outputs), \
+    f"Loop scanned outputs must be Tensors, as they get concatenated, body: {body_signature}"
+
+output_types: Dict[str, Type] = {}
+output_names = list(self.outputs.as_dict().keys())
+carried_names, scan_names = output_names[:n], output_names[n:]
+
+for name, typ in zip(carried_names, carried_types):
+    output_types[name] = typ
+for name, arrow in zip(scan_names, scan_outputs):
+    tensor = arrow.unwrap_tensor()
+    assert tensor.shape.dims is not None
+    scan_shape = (None,) + tensor.shape.to_simple()  # type: ignore
+    output_types[name] = Tensor(tensor.elem_type, scan_shape)
+
+return output_types
