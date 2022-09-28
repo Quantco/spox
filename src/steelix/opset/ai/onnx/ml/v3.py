@@ -253,6 +253,14 @@ class _OneHotEncoder(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        try:
+            n_encodings = len(self.attrs.cats_int64s._value)
+        except TypeError:
+            n_encodings = len(self.attrs.cats_strings._value)
+        shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
+        return {"Y": Tensor(elem_type=numpy.float32, shape=shape)}
+
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)
 
     attrs: Attributes

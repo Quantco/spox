@@ -72,7 +72,7 @@ import numpy
 import onnxruntime
 
 from steelix import arguments, results, Tensor
-import steelix.opset.auto.ai.onnx.v17 as op
+import steelix.opset.ai.onnx.v17 as op
 
 # Construct a Tensor type representing a (1D) vector of float32, of size N.
 Vectorf32 = Tensor(numpy.float32, ('N',))
@@ -91,9 +91,9 @@ graph = results(r=q)
 # We leave Steelix land and use ONNX Runtime to execute
 session = onnxruntime.InferenceSession(graph.to_onnx_model().SerializeToString())
 (result,) = session.run(None, {
-    'a': numpy.array([1, 2, 3], dtype=numpy.float32),
-    'b': numpy.array([2, 4, 1], dtype=numpy.float32),
-    'c': numpy.array([1, 0, 1], dtype=numpy.float32)
+	'a': numpy.array([1, 2, 3], dtype=numpy.float32),
+	'b': numpy.array([2, 4, 1], dtype=numpy.float32),
+	'c': numpy.array([1, 0, 1], dtype=numpy.float32)
 })
 # As expected, 3 = 1*2 + 1, etc.
 assert (result == numpy.array([3, 8, 4])).all()

@@ -281,17 +281,28 @@ class Graph:
         return consistent_nodes
 
     def to_onnx(self, *, concrete: bool = False) -> onnx.GraphProto:
-        """
-        This function performs the Steelix build process, gathering arguments, results, nodes and other information.
+        """Perform the Steelix build process, gathering arguments,
+        results, nodes and other information.
 
         - Saves type information for arguments & results.
-        - Sets the name of the graph, with defaults if it is not set or if it is a subgraphs
+        - Sets the name of the graph, with defaults if it is not set
+          or if it is a subgraphs
         - Saves initializers.
         - Sets the docstring if one is set.
+
+        Note
+        ----
+
+        This function returns a `onnx.GraphProto` object! If
+        you want to serialize this model in a way that is readable by
+        the `onnxruntime`, you should use the `to_onnx_model` method
+        instead!
+
         Returns
         -------
         onnx.GraphProto
             Translation of this Graph into an ONNX GraphProto object.
+
         """
         if not self.get_results():
             raise ValueError("Attempt to build graph without results.")

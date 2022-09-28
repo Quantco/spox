@@ -42,6 +42,10 @@ class Type:
         -------
         Type
             Respective subtype of Type representing the ONNX type in the protobuf object.
+        Raises
+        ------
+        ValueError
+            If the passed protobuf does not contain any of the expected fields (tensor, sequence, optional).
         """
         if proto.HasField("tensor_type"):
             return Tensor(
@@ -54,7 +58,9 @@ class Type:
             return Sequence(Type.from_onnx(proto.sequence_type.elem_type))
         elif proto.HasField("optional_type"):
             return Optional(Type.from_onnx(proto.optional_type.elem_type))
-        raise TypeError(f"Cannot get Type from protobuf {proto}")
+        raise ValueError(
+            f"Cannot get Type from invalid protobuf (not tensor, sequence or optional): {proto}"
+        )
 
     def assert_concrete(self, *, _traceback_name: str = "?"):
         """

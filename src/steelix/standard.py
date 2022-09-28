@@ -142,11 +142,14 @@ class StandardNode(Node):
                 f"{str(e)} -- for {self.schema.name}: {self.signature}"
             ) from e
 
-        # Strip some unuseful type data (unknown dimensions become global-scoped dimension parameters)
-        return {
-            info.name: _strip_unk_param(Type.from_onnx(info.type))
+        # Recover the types from protobuf, ignoring empty protobuf objects for failing/unimplemented type inference.
+        results = {
+            info.name: Type.from_onnx(info.type)
             for info in typed_model.graph.output
+            if info.type != onnx.TypeProto()
         }
+        # Strips some unuseful type data (unknown dimensions become global-scoped dimension parameters).
+        return {key: _strip_unk_param(type_) for key, type_ in results.items()}
 
     def propagate_values_onnx(self) -> Dict[str, Any]:
         """
