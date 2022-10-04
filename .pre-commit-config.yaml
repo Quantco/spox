@@ -21,7 +21,7 @@ repos:
       - id: mypy-conda
         additional_dependencies: [-c, conda-forge, types-setuptools]
   - repo: https://github.com/Quantco/pre-commit-mirrors-pyupgrade
-    rev: 2.37.3
+    rev: 2.38.2
     hooks:
       - id: pyupgrade-conda
         args:
