@@ -1,9 +1,9 @@
 {{ schema.doc.strip() | format_github_markdown }}
 {% set type_vars = {} %}
+{% if schema.inputs or schema.attributes %}
 
 Parameters
 ==========
-{% if schema.inputs %}
 {% for param in schema.inputs %}
     {% if param.typeStr[0] is upper %}
         {% do type_vars.update({param.typeStr: param.types}) %}
@@ -14,7 +14,6 @@ Parameters
 {{ param.description | format_github_markdown }}
 {% endfilter %}
 {% endfor %}
-{% if schema.attributes %}
 {% for attr in schema.attributes.values() %}
 {{ attr.name }}
 {% filter indent(width=4) %}
@@ -23,11 +22,10 @@ Parameters
 {% endfilter %}
 {% endfor %}
 {% endif %}
+{% if schema.outputs %}
 
 Returns
 =======
-{% endif %}
-{% if schema.outputs %}
 {% for param in schema.outputs %}
     {% if param.typeStr[0] is upper %}
         {% do type_vars.update({param.typeStr: param.types}) %}

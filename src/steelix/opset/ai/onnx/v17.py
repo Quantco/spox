@@ -4476,6 +4476,33 @@ def constant(
 
     Parameters
     ==========
+    sparse_value
+        Attribute.
+        The value for the elements of the output tensor in sparse format.
+    value
+        Attribute.
+        The value for the elements of the output tensor.
+    value_float
+        Attribute.
+        The value for the sole element for the scalar, float32, output tensor.
+    value_floats
+        Attribute.
+        The values for the elements for the 1D, float32, output tensor.
+    value_int
+        Attribute.
+        The value for the sole element for the scalar, int64, output tensor.
+    value_ints
+        Attribute.
+        The values for the elements for the 1D, int64, output tensor.
+    value_string
+        Attribute.
+        The value for the sole element for the scalar, UTF-8 string, output tensor.
+    value_strings
+        Attribute.
+        The values for the elements for the 1D, UTF-8 string, output tensor.
+
+    Returns
+    =======
     output
         Type T.
         Output tensor containing the same value of the provided tensor.
@@ -9434,6 +9461,24 @@ def random_normal(
 
     Parameters
     ==========
+    dtype
+        Attribute.
+        The data type for the elements of the output tensor. Default is TensorProto::FLOAT.
+    mean
+        Attribute.
+        The mean of the normal distribution.
+    scale
+        Attribute.
+        The standard deviation of the normal distribution.
+    seed
+        Attribute.
+        (Optional) Seed to the random generator, if not specified we will auto generate one.
+    shape
+        Attribute.
+        The shape of the output tensor.
+
+    Returns
+    =======
     output
         Type T.
         Output tensor of random values drawn from normal distribution
@@ -9535,6 +9580,24 @@ def random_uniform(
 
     Parameters
     ==========
+    dtype
+        Attribute.
+        The data type for the elements of the output tensor. If not specified, default is TensorProto::FLOAT.
+    high
+        Attribute.
+        Upper boundary of the output values.
+    low
+        Attribute.
+        Lower boundary of the output values.
+    seed
+        Attribute.
+        (Optional) Seed to the random generator, if not specified we will auto generate one.
+    shape
+        Attribute.
+        The shape of the output tensor.
+
+    Returns
+    =======
     output
         Type T.
         Output tensor of random values drawn from uniform distribution
@@ -11276,6 +11339,12 @@ def sequence_empty(
 
     Parameters
     ==========
+    dtype
+        Attribute.
+        (Optional) The data type of the tensors in the output sequence. The default type is 'float'.
+
+    Returns
+    =======
     output
         Type S.
         Empty sequence.
