@@ -4371,7 +4371,7 @@ def compress(
 
 
 def concat(
-    inputs: Sequence[Arrow] = (),
+    inputs: Sequence[Arrow],
     *,
     axis: int,
 ) -> Arrow:
@@ -5330,7 +5330,7 @@ def dynamic_quantize_linear(
 
 
 def einsum(
-    Inputs: Sequence[Arrow] = (),
+    Inputs: Sequence[Arrow],
     *,
     equation: str,
 ) -> Arrow:
@@ -7787,7 +7787,7 @@ def mat_mul_integer(
 
 
 def maximum(
-    data_0: Sequence[Arrow] = (),
+    data_0: Sequence[Arrow],
 ) -> Arrow:
     r"""
     Element-wise max of each of the input tensors (with Numpy-style broadcasting support).
@@ -8048,7 +8048,7 @@ def max_unpool(
 
 
 def mean(
-    data_0: Sequence[Arrow] = (),
+    data_0: Sequence[Arrow],
 ) -> Arrow:
     r"""
     Element-wise mean of each of the input tensors (with Numpy-style broadcasting support).
@@ -8190,7 +8190,7 @@ def mel_weight_matrix(
 
 
 def minimum(
-    data_0: Sequence[Arrow] = (),
+    data_0: Sequence[Arrow],
 ) -> Arrow:
     r"""
     Element-wise min of each of the input tensors (with Numpy-style broadcasting support).
@@ -10715,7 +10715,7 @@ def stft(
 
 
 def scan(
-    initial_state_and_scan_inputs: Sequence[Arrow] = (),
+    initial_state_and_scan_inputs: Sequence[Arrow],
     *,
     final_state_and_scan_outputs_count: int,
     body: Graph,
@@ -11296,7 +11296,7 @@ def sequence_at(
 
 
 def sequence_construct(
-    inputs: Sequence[Arrow] = (),
+    inputs: Sequence[Arrow],
 ) -> Arrow:
     r"""
     Construct a tensor sequence containing 'inputs' tensors.
@@ -12460,7 +12460,7 @@ def sub(
 
 
 def sum(
-    data_0: Sequence[Arrow] = (),
+    data_0: Sequence[Arrow],
 ) -> Arrow:
     r"""
     Element-wise sum of each of the input tensors (with Numpy-style broadcasting support).

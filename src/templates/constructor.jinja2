@@ -3,7 +3,7 @@ for param in schema.inputs %}{%
     if is_optional(param)
         %}{{ param.name }}: Optional[Arrow] = None, {%
     elif is_variadic(param)
-        %}{{ param.name }}: Sequence[Arrow] = (), {%
+        %}{{ param.name }}: Sequence[Arrow]{{" = ()" if loop.index0 >= schema.min_input else ""}}, {%
     else
         %}{{ param.name }}: Arrow, {%
 endif %}{% endfor %}
