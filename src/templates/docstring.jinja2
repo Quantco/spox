@@ -30,7 +30,7 @@ Returns
     {% if param.typeStr[0] is upper %}
         {% do type_vars.update({param.typeStr: param.types}) %}
     {% endif %}
-{{ param.name }}
+{{ param.name }} : Arrow
 {% filter indent(width=4) %}
     Type {{ param.typeStr }}.
 {{ param.description | format_github_markdown }}

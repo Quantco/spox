@@ -452,7 +452,7 @@ def array_feature_extractor(
 
     Returns
     =======
-    Z
+    Z : Arrow
         Type T.
         Selected output data as an array
 
@@ -491,7 +491,7 @@ def binarizer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Binarized output data
 
@@ -547,7 +547,7 @@ def cast_map(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         A tensor representing the same data as the input map, ordered by their keys
 
@@ -619,7 +619,7 @@ def category_mapper(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         Output data. If strings are input, the output values are integers, and vice versa.
 
@@ -687,7 +687,7 @@ def dict_vectorizer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         A 1-D tensor holding values from the input dictionary.
 
@@ -736,7 +736,7 @@ def feature_vectorizer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(float).
         The output array, elements ordered as the inputs.
 
@@ -803,7 +803,7 @@ def imputer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Imputed output data
 
@@ -904,7 +904,7 @@ def label_encoder(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         Output data.
 
@@ -975,10 +975,10 @@ def linear_classifier(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         Classification outputs (one class per example).
-    Z
+    Z : Arrow
         Type tensor(float).
         Classification scores ([N,E] - one score for each class and example
 
@@ -1049,7 +1049,7 @@ def linear_regressor(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(float).
         Regression outputs (one per target, per example).
 
@@ -1113,7 +1113,7 @@ def normalizer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(float).
         Encoded output data
 
@@ -1178,7 +1178,7 @@ def one_hot_encoder(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(float).
         Encoded output data, having one more dimension than X.
 
@@ -1268,10 +1268,10 @@ def svmclassifier(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         Classification outputs (one class per example).
-    Z
+    Z : Arrow
         Type tensor(float).
         Class scores (one per class per example), if prob_a and prob_b are provided they are probabilities for each class, otherwise they are raw scores.
 
@@ -1352,7 +1352,7 @@ def svmregressor(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(float).
         Regression outputs (one score per target per example).
 
@@ -1409,7 +1409,7 @@ def scaler(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(float).
         Scaled output data.
 
@@ -1556,10 +1556,10 @@ def tree_ensemble_classifier(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         N, Top class for each point
-    Z
+    Z : Arrow
         Type tensor(float).
         The class score for each class, for each point, a tensor of shape [N,E].
 
@@ -1729,7 +1729,7 @@ def tree_ensemble_regressor(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(float).
         N classes
 
@@ -1806,7 +1806,7 @@ def zip_map(
 
     Returns
     =======
-    Z
+    Z : Arrow
         Type T.
         The output map
 

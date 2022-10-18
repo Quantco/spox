@@ -3340,7 +3340,7 @@ def abs(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -3373,7 +3373,7 @@ def acos(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The arccosine of the input tensor computed element-wise
 
@@ -3406,7 +3406,7 @@ def acosh(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The hyperbolic arccosine values of the input tensor computed element-wise
 
@@ -3445,7 +3445,7 @@ def add(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T.
         Result, has same element type as two inputs
 
@@ -3485,7 +3485,7 @@ def and_(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
@@ -3539,7 +3539,7 @@ def arg_max(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type tensor(int64).
         Reduced output tensor with integer data type.
 
@@ -3595,7 +3595,7 @@ def arg_min(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type tensor(int64).
         Reduced output tensor with integer data type.
 
@@ -3632,7 +3632,7 @@ def asin(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The arcsine of the input tensor computed element-wise
 
@@ -3665,7 +3665,7 @@ def asinh(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The hyperbolic arcsine values of the input tensor computed element-wise
 
@@ -3698,7 +3698,7 @@ def atan(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The arctangent of the input tensor computed element-wise
 
@@ -3731,7 +3731,7 @@ def atanh(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The hyperbolic arctangent values of the input tensor computed element-wise
 
@@ -3814,7 +3814,7 @@ def average_pool(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor from average or max pooling across the input tensor. Dimensions will vary based on various kernel, stride, and pad sizes. Floor value of the dimension is used
 
@@ -3913,13 +3913,13 @@ def batch_normalization(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         The output tensor of the same shape as X
-    running_mean
+    running_mean : Arrow
         Type T2.
         The running mean after the BatchNormalization operator.
-    running_var
+    running_var : Arrow
         Type T2.
         The running variance after the BatchNormalization operator. This op uses the population size (N) for calculating variance, and not the sample size N-1.
 
@@ -3975,7 +3975,7 @@ def bernoulli(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         The returned output tensor only has values 0 or 1, same shape as input tensor.
 
@@ -4031,7 +4031,7 @@ def bit_shift(
 
     Returns
     =======
-    Z
+    Z : Arrow
         Type T.
         Output tensor
 
@@ -4076,7 +4076,7 @@ def blackman_window(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         A Blackman window with length: size. The output has the shape: [size].
 
@@ -4134,7 +4134,7 @@ def cast(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         Output tensor with the same shape as input with type specified by the 'to' argument
 
@@ -4176,7 +4176,7 @@ def cast_like(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         Output tensor produced by casting the first input tensor to have the same type as the second input tensor.
 
@@ -4213,7 +4213,7 @@ def ceil(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -4256,7 +4256,7 @@ def celu(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -4301,7 +4301,7 @@ def clip(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor with clipped input elements
 
@@ -4347,7 +4347,7 @@ def compress(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of rank r if axis is specified. Otherwise output is a Tensor of rank 1.
 
@@ -4389,7 +4389,7 @@ def concat(
 
     Returns
     =======
-    concat_result
+    concat_result : Arrow
         Type T.
         Concatenated tensor
 
@@ -4436,7 +4436,7 @@ def concat_from_sequence(
 
     Returns
     =======
-    concat_result
+    concat_result : Arrow
         Type T.
         Concatenated tensor
 
@@ -4503,7 +4503,7 @@ def constant(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor containing the same value of the provided tensor.
 
@@ -4548,7 +4548,7 @@ def constant_of_shape(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         Output tensor of shape specified by 'input'.If attribute 'value' is specified, the value and datatype of the output tensor is taken from 'value'.If attribute 'value' is not specified, the value in the output defaults to 0, and the datatype defaults to float32.
 
@@ -4618,7 +4618,7 @@ def conv(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, and pad lengths.
 
@@ -4698,7 +4698,7 @@ def conv_integer(
 
     Returns
     =======
-    y
+    y : Arrow
         Type T3.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, and pad lengths.
 
@@ -4791,7 +4791,7 @@ def conv_transpose(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, pad lengths and group count. The number of channels in the output should be equal to W.shape[1] * group (assuming zero based indices of the shape array)
 
@@ -4835,7 +4835,7 @@ def cos(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The cosine of the input tensor computed element-wise
 
@@ -4868,7 +4868,7 @@ def cosh(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The hyperbolic cosine values of the input tensor computed element-wise
 
@@ -4931,7 +4931,7 @@ def cum_sum(
 
     Returns
     =======
-    y
+    y : Arrow
         Type T.
         Output tensor of the same type as 'x' with cumulative sums of the x's elements
 
@@ -4986,7 +4986,7 @@ def dft(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T1.
         The Fourier Transform of the input vector.If onesided is 0, the following shape is expected: [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][2]. If axis=0 and onesided is 1, the following shape is expected: [batch_idx][floor(signal_dim1/2)+1][signal_dim2]...[signal_dimN][2]. If axis=1 and onesided is 1, the following shape is expected: [batch_idx][signal_dim1][floor(signal_dim2/2)+1]...[signal_dimN][2]. If axis=N-1 and onesided is 1, the following shape is expected: [batch_idx][signal_dim1][signal_dim2]...[floor(signal_dimN/2)+1][2]. The signal_dim at the specified axis is equal to the dft_length.
 
@@ -5049,7 +5049,7 @@ def depth_to_space(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor of [N, C/(blocksize * blocksize), H * blocksize, W * blocksize].
 
@@ -5102,7 +5102,7 @@ def dequantize_linear(
 
     Returns
     =======
-    y
+    y : Arrow
         Type tensor(float).
         N-D full precision output tensor. It has same shape as input 'x'.
 
@@ -5143,7 +5143,7 @@ def det(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -5182,7 +5182,7 @@ def div(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T.
         Result, has same element type as two inputs
 
@@ -5240,10 +5240,10 @@ def dropout(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The output.
-    mask
+    mask : Arrow
         Type T2.
         The output mask.
 
@@ -5303,13 +5303,13 @@ def dynamic_quantize_linear(
 
     Returns
     =======
-    y
+    y : Arrow
         Type T2.
         Quantized output tensor
-    y_scale
+    y_scale : Arrow
         Type tensor(float).
         Output scale. It's a scalar, which means a per-tensor/layer quantization.
-    y_zero_point
+    y_zero_point : Arrow
         Type T2.
         Output zero point. It's a scalar, which means a per-tensor/layer quantization.
 
@@ -5364,7 +5364,7 @@ def einsum(
 
     Returns
     =======
-    Output
+    Output : Arrow
         Type T.
         Output tensor
 
@@ -5406,7 +5406,7 @@ def elu(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         1D output tensor
 
@@ -5447,7 +5447,7 @@ def equal(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
@@ -5482,7 +5482,7 @@ def erf(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The error function of the input tensor computed element-wise. It has the same shape and type of the input.
 
@@ -5515,7 +5515,7 @@ def exp(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The exponential of the input tensor computed element-wise
 
@@ -5559,7 +5559,7 @@ def expand(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor
 
@@ -5608,7 +5608,7 @@ def eye_like(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         Output tensor, same shape as input tensor T1.
 
@@ -5652,7 +5652,7 @@ def flatten(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         A 2D tensor with the contents of the input tensor, with input dimensions up to axis flattened to the outer dimension of the output and remaining input dimensions flattened into the inner dimension of the output.
 
@@ -5689,7 +5689,7 @@ def floor(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -5812,10 +5812,10 @@ def gru(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         A tensor that concats all the intermediate output values of the hidden. It has shape `[seq_length, num_directions, batch_size, hidden_size]`.
-    Y_h
+    Y_h : Arrow
         Type T.
         The last output value of the hidden. It has shape `[num_directions, batch_size, hidden_size]`.
 
@@ -5921,7 +5921,7 @@ def gather(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of rank q + (r - 1).
 
@@ -6014,7 +6014,7 @@ def gather_elements(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of the same shape as indices.
 
@@ -6109,7 +6109,7 @@ def gather_nd(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of rank q + r - indices_shape[-1] - 1.
 
@@ -6179,7 +6179,7 @@ def gemm(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor of shape (M, N).
 
@@ -6221,7 +6221,7 @@ def global_average_pool(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor from pooling across the input tensor. The output tensor has the same rank as the input. The first two dimensions of output shape are the same as the input (N x C), while the other dimensions are all 1.
 
@@ -6261,7 +6261,7 @@ def global_lp_pool(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor from pooling across the input tensor. The output tensor has the same rank as the input. The first two dimensions of output shape are the same as the input (N x C), while the other dimensions are all 1.
 
@@ -6298,7 +6298,7 @@ def global_max_pool(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor from pooling across the input tensor. The output tensor has the same rank as the input. The first two dimensions of output shape are the same as the input (N x C), while the other dimensions are all 1.
 
@@ -6337,7 +6337,7 @@ def greater(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
@@ -6378,7 +6378,7 @@ def greater_or_equal(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
@@ -6436,7 +6436,7 @@ def grid_sample(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         4-D tensor of shape (N, C, H_out, W_out).
 
@@ -6484,7 +6484,7 @@ def hamming_window(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         A Hamming window with length: size. The output has the shape: [size].
 
@@ -6530,7 +6530,7 @@ def hann_window(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         A Hann window with length: size. The output has the shape: [size].
 
@@ -6578,7 +6578,7 @@ def hard_sigmoid(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -6616,7 +6616,7 @@ def hard_swish(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -6660,7 +6660,7 @@ def hardmax(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The output values with the same shape as the input tensor.
 
@@ -6695,7 +6695,7 @@ def identity(
 
     Returns
     =======
-    output
+    output : Arrow
         Type V.
         Tensor to copy input into.
 
@@ -6737,7 +6737,7 @@ def if_(
 
     Returns
     =======
-    outputs
+    outputs : Arrow
         Type V.
         Values that are live-out to the enclosing scope. The return values in the `then_branch` and `else_branch` must be of the same data type. The `then_branch` and `else_branch` may produce tensors with the same element type and different shapes. If corresponding outputs from the then-branch and the else-branch have static shapes S1 and S2, then the shape of the corresponding output variable of the if-node (if present) must be compatible with both S1 and S2 as it represents the union of both possible shapes.For example, if in a model file, the the first output of `then_branch` is typed float tensor with shape [2] and the first output of `else_branch` is another float tensor with shape [3], If's first output should have (a) no shape set, or (b) a shape of rank 1 with neither `dim_value` nor `dim_param` set, or (c) a shape of rank 1 with a unique `dim_param`. In contrast, the first output cannot have the shape [2] since [2] and [3] are not compatible.
 
@@ -6791,7 +6791,7 @@ def instance_normalization(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The output tensor of the same shape as input.
 
@@ -6837,7 +6837,7 @@ def is_inf(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         output
 
@@ -6874,7 +6874,7 @@ def isnan(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T2.
         output
 
@@ -6932,7 +6932,7 @@ def lrn(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor, which has the shape and type as input tensor
 
@@ -7072,13 +7072,13 @@ def lstm(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         A tensor that concats all the intermediate output values of the hidden. It has shape `[seq_length, num_directions, batch_size, hidden_size]`.
-    Y_h
+    Y_h : Arrow
         Type T.
         The last output value of the hidden. It has shape `[num_directions, batch_size, hidden_size]`.
-    Y_c
+    Y_c : Arrow
         Type T.
         The last output value of the cell. It has shape `[num_directions, batch_size, hidden_size]`.
 
@@ -7187,13 +7187,13 @@ def layer_normalization(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Normalized tensor.
-    Mean
+    Mean : Arrow
         Type U.
         Saved mean used during training to speed up gradient computation
-    InvStdDev
+    InvStdDev : Arrow
         Type U.
         Saved inverse standard deviation used during training to speed up gradient computation.
 
@@ -7242,7 +7242,7 @@ def leaky_relu(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -7283,7 +7283,7 @@ def less(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
@@ -7324,7 +7324,7 @@ def less_or_equal(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
@@ -7359,7 +7359,7 @@ def log(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The natural log of the input tensor computed element-wise
 
@@ -7403,7 +7403,7 @@ def log_softmax(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The output values with the same shape as the input tensor.
 
@@ -7562,7 +7562,7 @@ def loop(
 
     Returns
     =======
-    v_final_and_scan_outputs
+    v_final_and_scan_outputs : Arrow
         Type V.
         Final N loop carried dependency values then K scan_outputs. Scan outputs must be Tensors.
 
@@ -7611,7 +7611,7 @@ def lp_normalization(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Matrix after normalization
 
@@ -7672,7 +7672,7 @@ def lp_pool(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor from Lp pooling across the input tensor. Dimensions will vary based on various kernel, stride, and pad sizes.
 
@@ -7715,7 +7715,7 @@ def mat_mul(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Matrix multiply results from A * B
 
@@ -7762,7 +7762,7 @@ def mat_mul_integer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T3.
         Matrix multiply results from A * B
 
@@ -7802,7 +7802,7 @@ def maximum(
 
     Returns
     =======
-    max
+    max : Arrow
         Type T.
         Output tensor.
 
@@ -7889,10 +7889,10 @@ def max_pool(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output data tensor from average or max pooling across the input tensor. Dimensions will vary based on various kernel, stride, and pad sizes. Floor value of the dimension is used
-    Indices
+    Indices : Arrow
         Type I.
         Indices tensor from max pooling across the input tensor. The dimensions of indices are the same as output tensor. The values in indices of are the indices of the selected values during pooling. The indices are computed as flatten 1-D tensor, and the indices do not consider padding. So the values in indices are in [0, N x C x D1 x ... x Dn).
 
@@ -7949,7 +7949,7 @@ def max_roi_pool(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         RoI pooled output 4-D tensor of shape (num_rois, channels, pooled_shape[0], pooled_shape[1]).
 
@@ -8021,7 +8021,7 @@ def max_unpool(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T1.
         Output data tensor that contains the result of the unpooling.
 
@@ -8063,7 +8063,7 @@ def mean(
 
     Returns
     =======
-    mean
+    mean : Arrow
         Type T.
         Output tensor.
 
@@ -8102,7 +8102,7 @@ def mean_variance_normalization(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -8162,7 +8162,7 @@ def mel_weight_matrix(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T3.
         The Mel Weight Matrix. The output has the shape: [floor(dft_length/2) + 1][num_mel_bins].
 
@@ -8205,7 +8205,7 @@ def minimum(
 
     Returns
     =======
-    min
+    min : Arrow
         Type T.
         Output tensor.
 
@@ -8255,7 +8255,7 @@ def mod(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T.
         Remainder tensor
 
@@ -8297,7 +8297,7 @@ def mul(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T.
         Result, has same element type as two inputs
 
@@ -8345,7 +8345,7 @@ def multinomial(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         Output tensor with shape [batch_size, sample_size], where sample_size is the number of times to sample. Each value along the axis zero represents the outcome of the corresponding sample in a batch.
 
@@ -8385,7 +8385,7 @@ def neg(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -8499,7 +8499,7 @@ def negative_log_likelihood_loss(
 
     Returns
     =======
-    loss
+    loss : Arrow
         Type T.
         The negative log likelihood loss
 
@@ -8565,7 +8565,7 @@ def non_max_suppression(
 
     Returns
     =======
-    selected_indices
+    selected_indices : Arrow
         Type tensor(int64).
         selected indices from the boxes tensor. [num_selected_indices, 3], the selected index format is [batch_index, class_index, box_index].
 
@@ -8606,7 +8606,7 @@ def non_zero(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(int64).
         output
 
@@ -8639,7 +8639,7 @@ def not_(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -8700,7 +8700,7 @@ def one_hot(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T3.
         Tensor of rank one greater than input tensor 'indices', i.e. rank(output) = rank(indices) + 1. The data type for the elements of the output tensor is the same as the type of input 'values' is used.
 
@@ -8745,7 +8745,7 @@ def optional(
 
     Returns
     =======
-    output
+    output : Arrow
         Type O.
         The optional output enclosing the input element.
 
@@ -8782,7 +8782,7 @@ def optional_get_element(
 
     Returns
     =======
-    output
+    output : Arrow
         Type V.
         Output element in the optional input.
 
@@ -8816,7 +8816,7 @@ def optional_has_element(
 
     Returns
     =======
-    output
+    output : Arrow
         Type B.
         A scalar boolean tensor. If true, it indicates that optional-type input contains an element. Otherwise, it is empty.
 
@@ -8856,7 +8856,7 @@ def or_(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
@@ -8900,7 +8900,7 @@ def prelu(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor (same size as X)
 
@@ -8999,7 +8999,7 @@ def pad(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor after padding.
 
@@ -9043,7 +9043,7 @@ def pow(
 
     Returns
     =======
-    Z
+    Z : Arrow
         Type T.
         Output tensor
 
@@ -9141,7 +9141,7 @@ def qlinear_conv(
 
     Returns
     =======
-    y
+    y : Arrow
         Type T3.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, and pad lengths.
 
@@ -9230,7 +9230,7 @@ def qlinear_mat_mul(
 
     Returns
     =======
-    y
+    y : Arrow
         Type T3.
         Quantized matrix multiply results from a * b
 
@@ -9289,7 +9289,7 @@ def quantize_linear(
 
     Returns
     =======
-    y
+    y : Arrow
         Type T2.
         N-D quantized output tensor. It has same shape as input 'x'.
 
@@ -9407,10 +9407,10 @@ def rnn(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         A tensor that concats all the intermediate output values of the hidden. It has shape `[seq_length, num_directions, batch_size, hidden_size]`.
-    Y_h
+    Y_h : Arrow
         Type T.
         The last output value of the hidden. It has shape `[num_directions, batch_size, hidden_size]`.
 
@@ -9479,7 +9479,7 @@ def random_normal(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor of random values drawn from normal distribution
 
@@ -9538,7 +9538,7 @@ def random_normal_like(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         Output tensor of random values drawn from normal distribution
 
@@ -9598,7 +9598,7 @@ def random_uniform(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor of random values drawn from uniform distribution
 
@@ -9657,7 +9657,7 @@ def random_uniform_like(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T2.
         Output tensor of random values drawn from uniform distribution
 
@@ -9718,7 +9718,7 @@ def range(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         A 1-D tensor with same type as the inputs containing generated range of values.
 
@@ -9755,7 +9755,7 @@ def reciprocal(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -9801,7 +9801,7 @@ def reduce_l1(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -9850,7 +9850,7 @@ def reduce_l2(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -9899,7 +9899,7 @@ def reduce_log_sum(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -9948,7 +9948,7 @@ def reduce_log_sum_exp(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -9997,7 +9997,7 @@ def reduce_max(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -10046,7 +10046,7 @@ def reduce_mean(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -10095,7 +10095,7 @@ def reduce_min(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -10144,7 +10144,7 @@ def reduce_prod(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -10197,7 +10197,7 @@ def reduce_sum(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -10247,7 +10247,7 @@ def reduce_sum_square(
 
     Returns
     =======
-    reduced
+    reduced : Arrow
         Type T.
         Reduced output tensor.
 
@@ -10285,7 +10285,7 @@ def relu(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -10335,7 +10335,7 @@ def reshape(
 
     Returns
     =======
-    reshaped
+    reshaped : Arrow
         Type T.
         Reshaped data.
 
@@ -10422,7 +10422,7 @@ def resize(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T1.
         N-D tensor after resizing
 
@@ -10506,7 +10506,7 @@ def reverse_sequence(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Tensor with same shape of input.
 
@@ -10585,7 +10585,7 @@ def roi_align(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T1.
         RoI pooled output, 4-D tensor of shape (num_rois, C, output_height, output_width). The r-th batch element Y[r-1] is a pooled feature map corresponding to the r-th RoI X[r-1].
 
@@ -10639,7 +10639,7 @@ def round(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -10689,7 +10689,7 @@ def stft(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T1.
         The Short-time Fourier Transform of the signals.If onesided is 1, the output has the shape: [batch_size][frames][dft_unique_bins][2], where dft_unique_bins is frame_length // 2 + 1 (the unique components of the DFT) If onesided is 0, the output has the shape: [batch_size][frames][frame_length][2], where frame_length is the length of the DFT.
 
@@ -10854,7 +10854,7 @@ def scan(
 
     Returns
     =======
-    final_state_and_scan_outputs
+    final_state_and_scan_outputs : Arrow
         Type V.
         Final values of the loop's N state variables followed by K scan_outputs
 
@@ -10955,7 +10955,7 @@ def scatter(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of rank r >= 1 (same rank as input).
 
@@ -11069,7 +11069,7 @@ def scatter_elements(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of rank r >= 1 (same rank as input).
 
@@ -11182,7 +11182,7 @@ def scatter_nd(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of rank r >= 1.
 
@@ -11231,7 +11231,7 @@ def selu(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -11273,7 +11273,7 @@ def sequence_at(
 
     Returns
     =======
-    tensor
+    tensor : Arrow
         Type T.
         Output tensor at the specified position in the input sequence.
 
@@ -11310,7 +11310,7 @@ def sequence_construct(
 
     Returns
     =======
-    output_sequence
+    output_sequence : Arrow
         Type S.
         Sequence enclosing the input tensors.
 
@@ -11345,7 +11345,7 @@ def sequence_empty(
 
     Returns
     =======
-    output
+    output : Arrow
         Type S.
         Empty sequence.
 
@@ -11385,7 +11385,7 @@ def sequence_erase(
 
     Returns
     =======
-    output_sequence
+    output_sequence : Arrow
         Type S.
         Output sequence that has the tensor at the specified position removed.
 
@@ -11432,7 +11432,7 @@ def sequence_insert(
 
     Returns
     =======
-    output_sequence
+    output_sequence : Arrow
         Type S.
         Output sequence that contains the inserted tensor at given position.
 
@@ -11469,7 +11469,7 @@ def sequence_length(
 
     Returns
     =======
-    length
+    length : Arrow
         Type I.
         Length of input sequence. It must be a scalar(tensor of empty shape).
 
@@ -11523,7 +11523,7 @@ def sequence_map(
 
     Returns
     =======
-    out_sequence
+    out_sequence : Arrow
         Type S.
         Output sequence(s)
 
@@ -11594,7 +11594,7 @@ def shape(
 
     Returns
     =======
-    shape
+    shape : Arrow
         Type T1.
         Shape of the input tensor
 
@@ -11643,7 +11643,7 @@ def shrink(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The output.
 
@@ -11681,7 +11681,7 @@ def sigmoid(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -11715,7 +11715,7 @@ def sign(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The sign of the input tensor computed element-wise. It has the same shape and type of the input.
 
@@ -11748,7 +11748,7 @@ def sin(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The sine of the input tensor computed element-wise
 
@@ -11781,7 +11781,7 @@ def sinh(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The hyperbolic sine values of the input tensor computed element-wise
 
@@ -11814,7 +11814,7 @@ def size(
 
     Returns
     =======
-    size
+    size : Arrow
         Type T1.
         Total number of elements of the input tensor
 
@@ -11908,7 +11908,7 @@ def slice(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Sliced data tensor.
 
@@ -11957,7 +11957,7 @@ def softmax(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The output values with the same shape as the input tensor.
 
@@ -12034,10 +12034,10 @@ def softmax_cross_entropy_loss(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Weighted loss float Tensor. If reduction is 'none', this has the shape of [batch_size], or [batch_size, D1, D2, ..., Dk] in case of K-dimensional loss. Otherwise, it is a scalar.
-    log_prob
+    log_prob : Arrow
         Type T.
         Log probability tensor. If the output of softmax is prob, its value is log(prob).
 
@@ -12078,7 +12078,7 @@ def softplus(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         1D input tensor
 
@@ -12111,7 +12111,7 @@ def softsign(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The softsign (x/(1+|x|)) values of the input tensor computed element-wise
 
@@ -12151,7 +12151,7 @@ def space_to_depth(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor of [N, C * blocksize * blocksize, H/blocksize, W/blocksize].
 
@@ -12198,7 +12198,7 @@ def split(
 
     Returns
     =======
-    outputs
+    outputs : Arrow
         Type T.
         One or more outputs forming list of tensors after splitting
 
@@ -12257,7 +12257,7 @@ def split_to_sequence(
 
     Returns
     =======
-    output_sequence
+    output_sequence : Arrow
         Type S.
         One or more outputs forming a sequence of tensors after splitting
 
@@ -12298,7 +12298,7 @@ def sqrt(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -12338,7 +12338,7 @@ def squeeze(
 
     Returns
     =======
-    squeezed
+    squeezed : Arrow
         Type T.
         Reshaped tensor with same data as input.
 
@@ -12397,7 +12397,7 @@ def string_normalizer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type tensor(string).
         UTF-8 Normalized strings
 
@@ -12439,7 +12439,7 @@ def sub(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T.
         Result, has same element type as two inputs
 
@@ -12475,7 +12475,7 @@ def sum(
 
     Returns
     =======
-    sum
+    sum : Arrow
         Type T.
         Output tensor.
 
@@ -12508,7 +12508,7 @@ def tan(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The tangent of the input tensor computed element-wise
 
@@ -12541,7 +12541,7 @@ def tanh(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         The hyperbolic tangent values of the input tensor computed element-wise
 
@@ -12633,7 +12633,7 @@ def tf_idf_vectorizer(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T1.
         Ngram results
 
@@ -12684,7 +12684,7 @@ def thresholded_relu(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         Output tensor
 
@@ -12725,7 +12725,7 @@ def tile(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor of the same dimensions and type as tensor input. output_dim[i] = input_dim[i] * repeats[i]
 
@@ -12788,10 +12788,10 @@ def top_k(
 
     Returns
     =======
-    Values
+    Values : Arrow
         Type T.
         Tensor of shape [a_1, a_2, ..., a_{axis-1}, k, a_{axis+1}, ... a_n] containing top K values from the input tensor
-    Indices
+    Indices : Arrow
         Type I.
         Tensor of shape [a_1, a_2, ..., a_{axis-1}, k, a_{axis+1}, ... a_n] containing the corresponding input tensor indices for the top K values.
 
@@ -12837,7 +12837,7 @@ def transpose(
 
     Returns
     =======
-    transposed
+    transposed : Arrow
         Type T.
         Transposed output.
 
@@ -12892,7 +12892,7 @@ def trilu(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Output tensor of the same type and shape as the input tensor.
 
@@ -12996,16 +12996,16 @@ def unique(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         A tensor of the same type as 'X' containing all the unique values or subtensors sliced along a provided 'axis' in 'X', either sorted or maintained in the same order they occur in input 'X'
-    indices
+    indices : Arrow
         Type tensor(int64).
         A 1-D INT64 tensor containing indices of 'Y' elements' first occurance in 'X'. When 'axis' is provided, it contains indices to subtensors in input 'X' on the 'axis'. When 'axis' is not provided, it contains indices to values in the flattened input tensor.
-    inverse_indices
+    inverse_indices : Arrow
         Type tensor(int64).
         A 1-D INT64 tensor containing, for elements of 'X', its corresponding indices in 'Y'. When 'axis' is provided, it contains indices to subtensors in output 'Y' on the 'axis'. When 'axis' is not provided, it contains indices to values in output 'Y'.
-    counts
+    counts : Arrow
         Type tensor(int64).
         A 1-D INT64 tensor containing the count of each element of 'Y' in input 'X'
 
@@ -13053,7 +13053,7 @@ def unsqueeze(
 
     Returns
     =======
-    expanded
+    expanded : Arrow
         Type T.
         Reshaped tensor with same data as input.
 
@@ -13098,7 +13098,7 @@ def upsample(
 
     Returns
     =======
-    Y
+    Y : Arrow
         Type T.
         N-D tensor after resizing
 
@@ -13148,7 +13148,7 @@ def where(
 
     Returns
     =======
-    output
+    output : Arrow
         Type T.
         Tensor of shape equal to the broadcasted shape of condition, X, and Y.
 
@@ -13190,7 +13190,7 @@ def xor(
 
     Returns
     =======
-    C
+    C : Arrow
         Type T1.
         Result tensor.
 
