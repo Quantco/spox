@@ -711,7 +711,7 @@ def dict_vectorizer(
 
 
 def feature_vectorizer(
-    X: Sequence[Arrow] = (),
+    X: Sequence[Arrow],
     *,
     inputdimensions: Optional[Iterable[int]] = None,
 ) -> Arrow:
