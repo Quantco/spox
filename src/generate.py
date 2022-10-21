@@ -393,6 +393,7 @@ if __name__ == "__main__":
             "Binarizer": "binarizer1",
             "CategoryMapper": "categorymapper1",
             "Imputer": "imputer1",
+            "Normalizer": "normalizer1",
             "OneHotEncoder": "onehotencoder1",
         },
     )

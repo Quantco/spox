@@ -285,6 +285,10 @@ class _Normalizer(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        assert self.attrs.norm.value in ("MAX", "L1", "L2")
+        return {"Y": self.inputs.X.type}
+
     op_type = OpType("Normalizer", "ai.onnx.ml", 1)
 
     attrs: Attributes
