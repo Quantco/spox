@@ -96,7 +96,11 @@ class StandardNode(Node):
 
         # Output types with placeholder empty TypeProto (or actual type if not using dummies)
         def out_value_info(curr_key, curr_arrow):
-            if dummy_outputs or curr_arrow.type is None or not curr_arrow.type.is_concrete:
+            if (
+                dummy_outputs
+                or curr_arrow.type is None
+                or not curr_arrow.type.is_concrete
+            ):
                 return onnx.helper.make_value_info(curr_key, onnx.TypeProto())
             return curr_arrow.unwrap_type().to_onnx_value_info(curr_key)
 
