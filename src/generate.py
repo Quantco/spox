@@ -389,7 +389,8 @@ if __name__ == "__main__":
         3,
         attr_type_overrides=[(None, "dtype", numpy.generic)],
         type_inference={
+            "ArrayFeatureExtractor": "arrayfeatureextractor1",
+            "Binarizer": "binarizer1",
             "OneHotEncoder": "onehotencoder1",
-            "ArrayFeatureExtractor": "arrayfeatureextractor1"
         },
     )

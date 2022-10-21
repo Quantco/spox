@@ -63,6 +63,9 @@ class _Binarizer(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        return {"Y": self.inputs.X.type}
+
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
 
     attrs: Attributes
