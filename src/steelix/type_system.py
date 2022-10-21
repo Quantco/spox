@@ -69,6 +69,14 @@ class Type:
         """
         return self
 
+    def is_concrete(self) -> bool:
+        try:
+            self.assert_concrete()
+        except ValueError:
+            return False
+        else:
+            return True
+
     def unwrap_tensor(self) -> "Tensor":
         """
         Returns
@@ -214,7 +222,7 @@ class Tensor(Type):
         )
 
     def assert_concrete(self, *, _traceback_name: str = "?"):
-        if self.shape.dims is None:
+        if self.shape is None:
             raise ValueError(
                 f"Tensor {self} does not specify the shape -- in {_traceback_name}."
             )

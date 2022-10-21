@@ -132,6 +132,10 @@ class ArrowFields(Fields[Arrow]):
             key: (arrow if arrow is not None else _nil) for key, arrow in dt.items()
         }
 
+    @property
+    def fully_typed(self) -> bool:
+        return all(arrow.type is not None and arrow.type.is_concrete() for arrow in self.as_dict().values() if arrow)
+
 
 @typing.final
 class NoArrows(ArrowFields):
