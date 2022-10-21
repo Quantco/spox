@@ -105,6 +105,15 @@ class _CategoryMapper(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        cats1, cats2 = self.attrs.cats_int64s.value, self.attrs.cats_strings.value
+        assert cats1 and cats2 and len(cats1) == len(cats2)
+        t = self.inputs.X.unwrap_tensor()
+        (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}
+        return {"Y": Tensor(elem_type, t.shape)}
+
     op_type = OpType("CategoryMapper", "ai.onnx.ml", 1)
 
     attrs: Attributes

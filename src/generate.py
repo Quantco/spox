@@ -391,6 +391,7 @@ if __name__ == "__main__":
         type_inference={
             "ArrayFeatureExtractor": "arrayfeatureextractor1",
             "Binarizer": "binarizer1",
+            "CategoryMapper": "categorymapper1",
             "OneHotEncoder": "onehotencoder1",
         },
     )
