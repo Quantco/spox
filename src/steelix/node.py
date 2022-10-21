@@ -122,10 +122,10 @@ class Node(ABC):
             # As inference functions may access which output arrows we initialized (e.g. variadics)
             # we inject uninitialized arrows first
             self.outputs = self._init_output_arrows({}, {})
-            self.outputs = self._init_output_arrows(
-                self.infer_output_types() if infer_types else {},
-                self.propagate_values() if propagate_values else {},
-            )
+            output_types = self.infer_output_types() if infer_types else {}
+            self.outputs = self._init_output_arrows(output_types, {})
+            output_values = self.propagate_values() if propagate_values else {}
+            self.outputs = self._init_output_arrows(output_types, output_values)
         else:
             self.outputs = outputs
         self._traceback = traceback.format_stack()

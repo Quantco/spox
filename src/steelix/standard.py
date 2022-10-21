@@ -55,7 +55,7 @@ class StandardNode(Node):
         return self.schema.min_output
 
     def to_singleton_onnx_model(
-        self, with_subgraphs: bool = True
+        self, *, dummy_outputs: bool = True, with_subgraphs: bool = True
     ) -> Tuple[onnx.ModelProto, Scope]:
         """Build a singleton model consisting of just this StandardNode. Used for type inference."""
         # Prepare names for the values in scope of the node
@@ -93,10 +93,17 @@ class StandardNode(Node):
             for key, arrow in self.inputs.as_dict().items()
             if arrow
         ]
-        # Output types with placeholder empty TypeProto
-        output_dummy_info = [
-            onnx.helper.make_value_info(key, onnx.TypeProto())
-            for key in self.outputs.as_dict().keys()
+
+        # Output types with placeholder empty TypeProto (or actual type if not using dummies)
+        def out_value_info(curr_key, curr_arrow):
+            if dummy_outputs or curr_arrow.type is None or not curr_arrow.type.is_concrete:
+                return onnx.helper.make_value_info(curr_key, onnx.TypeProto())
+            return curr_arrow.unwrap_type().to_onnx_value_info(curr_key)
+
+        output_info = [
+            out_value_info(key, arrow)
+            for key, arrow in self.outputs.as_dict().items()
+            if arrow
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
@@ -110,7 +117,7 @@ class StandardNode(Node):
             [node_proto],
             "StandardOpNode_infer_output_types_onnx",
             input_info,
-            output_dummy_info,
+            output_info,
             initializers,
         )
         # Subgraph internals are hidden by make_dummy_subgraph - so we don't care about subgraphs' opset requirements
