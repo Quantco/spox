@@ -69,6 +69,15 @@ class Type:
         """
         return self
 
+    @property
+    def is_concrete(self) -> bool:
+        try:
+            self.assert_concrete()
+        except Exception:
+            return False
+        else:
+            return True
+
     def unwrap_tensor(self) -> "Tensor":
         """
         Returns
