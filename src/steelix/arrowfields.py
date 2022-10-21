@@ -134,7 +134,11 @@ class ArrowFields(Fields[Arrow]):
 
     @property
     def fully_typed(self) -> bool:
-        return all(arrow.type is not None and arrow.type.is_concrete() for arrow in self.as_dict().values() if arrow)
+        return all(
+            arrow.type is not None and arrow.type.is_concrete()
+            for arrow in self.as_dict().values()
+            if arrow
+        )
 
 
 @typing.final

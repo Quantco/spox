@@ -1,12 +1,14 @@
 import numpy as np
 
-from steelix import arguments, results, Tensor
 import steelix.opset.ai.onnx.ml.v3 as op_ml
+from steelix import Tensor, arguments, results
 
 
 def test_one_hot_encoder_inference():
     """Test type and shape inference for ``OneHotEncoder``."""
-    (str_cats, int_cats) = arguments(str_cats=Tensor(np.str_, ("N", 5)), int_cats=Tensor(np.int64, ("N", 5)))
+    (str_cats, int_cats) = arguments(
+        str_cats=Tensor(np.str_, ("N", 5)), int_cats=Tensor(np.int64, ("N", 5))
+    )
     str_encoded = op_ml.one_hot_encoder(str_cats, cats_strings=["a", "b", "c"])
     int_encoded = op_ml.one_hot_encoder(int_cats, cats_int64s=[0, 1, 2, 3])
     assert str_encoded.type == Tensor(np.float32, ("N", 5, 3))

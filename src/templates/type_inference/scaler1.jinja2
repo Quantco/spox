@@ -3,7 +3,8 @@ if self.inputs.X.type is None:
 sc, off = self.attrs.scale.value, self.attrs.offset.value
 t = self.inputs.X.unwrap_tensor()
 # If the number of features is known (last row, we can check this here)
-last = t.shape.to_simple()[-1] if t.shape.rank else 1
+sim = t.shape.to_simple()
+last = sim[-1] if sim else 1
 if isinstance(last, int) and len(sc) not in {1, last}:
     raise InferenceError(f"Mismatched expected ({len(sc)}) and actual ({last}) feature count for scale.")
 if isinstance(last, int) and len(off) not in {1, last}:

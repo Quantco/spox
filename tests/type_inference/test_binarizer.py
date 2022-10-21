@@ -1,7 +1,7 @@
 import numpy as np
 
-from steelix import arguments, Tensor
 import steelix.opset.ai.onnx.ml.v3 as op_ml
+from steelix import Tensor, arguments
 
 
 def test_binarizer_inference():

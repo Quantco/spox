@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
-from steelix import arguments, Tensor
-from steelix.standard import InferenceError
 import steelix.opset.ai.onnx.ml.v3 as op_ml
+from steelix import Tensor, arguments
+from steelix.standard import InferenceError
 
 
 def test_scaler_inference():

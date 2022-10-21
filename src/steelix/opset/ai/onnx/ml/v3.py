@@ -64,7 +64,7 @@ class _Binarizer(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
-        return {"Y": self.inputs.X.type}
+        return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
 
@@ -193,7 +193,8 @@ class _Imputer(StandardNode):
         else:
             assert False, "no matching element type"
         # If the number of features is known (last row, we can check this here)
-        last = t.shape.to_simple()[-1] if t.shape.rank else 1
+        sim = t.shape.to_simple()
+        last = sim[-1] if sim else 1
         if isinstance(last, int) and len(imp) not in {1, last}:
             raise InferenceError(
                 f"Mismatched expected ({len(imp)}) and actual ({last}) feature count."
@@ -287,7 +288,7 @@ class _Normalizer(StandardNode):
 
     def infer_output_types(self) -> Dict[str, Type]:
         assert self.attrs.norm.value in ("MAX", "L1", "L2")
-        return {"Y": self.inputs.X.type}
+        return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Normalizer", "ai.onnx.ml", 1)
 
@@ -397,7 +398,8 @@ class _Scaler(StandardNode):
         sc, off = self.attrs.scale.value, self.attrs.offset.value
         t = self.inputs.X.unwrap_tensor()
         # If the number of features is known (last row, we can check this here)
-        last = t.shape.to_simple()[-1] if t.shape.rank else 1
+        sim = t.shape.to_simple()
+        last = sim[-1] if sim else 1
         if isinstance(last, int) and len(sc) not in {1, last}:
             raise InferenceError(
                 f"Mismatched expected ({len(sc)}) and actual ({last}) feature count for scale."
