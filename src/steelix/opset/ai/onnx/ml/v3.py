@@ -24,7 +24,7 @@ from steelix.fields import of  # noqa: F401
 from steelix.graph import Graph, subgraph  # noqa: F401
 from steelix.internal_op import intro  # noqa: F401
 from steelix.node import OpType  # noqa: F401
-from steelix.standard import StandardNode  # noqa: F401
+from steelix.standard import InferenceError, StandardNode  # noqa: F401
 from steelix.type_system import Tensor, Type, type_match  # noqa: F401
 
 
@@ -111,7 +111,7 @@ class _CategoryMapper(StandardNode):
         cats1, cats2 = self.attrs.cats_int64s.value, self.attrs.cats_strings.value
         assert cats1 and cats2 and len(cats1) == len(cats2)
         t = self.inputs.X.unwrap_tensor()
-        (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}
+        (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}  # type: ignore
         return {"Y": Tensor(elem_type, t.shape)}
 
     op_type = OpType("CategoryMapper", "ai.onnx.ml", 1)
@@ -168,6 +168,37 @@ class _Imputer(StandardNode):
 
     class Outputs(ArrowFields):
         Y: Arrow
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        t = self.inputs.X.unwrap_tensor()
+        # We verify if the attributes are set correctly and matching the input elem type
+        cases = {
+            numpy.int64: (
+                self.attrs.imputed_value_int64s.value,
+                self.attrs.replaced_value_int64.value,
+            ),
+            numpy.float32: (
+                self.attrs.imputed_value_floats.value,
+                self.attrs.replaced_value_float.value,
+            ),
+        }
+        for key, (imp, rep) in cases.items():
+            if t.elem_type is key:
+                assert all(
+                    imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1
+                )
+                break
+        else:
+            assert False, "no matching element type"
+        # If the number of features is known (last row, we can check this here)
+        last = t.shape.to_simple()[-1] if t.shape.rank else 1
+        if isinstance(last, int) and len(imp) not in {1, last}:
+            raise InferenceError(
+                f"Mismatched expected ({len(imp)}) and actual ({last}) feature count."
+            )
+        return {"Y": t}
 
     op_type = OpType("Imputer", "ai.onnx.ml", 1)
 

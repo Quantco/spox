@@ -392,6 +392,7 @@ if __name__ == "__main__":
             "ArrayFeatureExtractor": "arrayfeatureextractor1",
             "Binarizer": "binarizer1",
             "CategoryMapper": "categorymapper1",
+            "Imputer": "imputer1",
             "OneHotEncoder": "onehotencoder1",
         },
     )

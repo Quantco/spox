@@ -1,0 +1,19 @@
+if not self.inputs.fully_typed:
+    return {}
+t = self.inputs.X.unwrap_tensor()
+# We verify if the attributes are set correctly and matching the input elem type
+cases = {
+    numpy.int64: (self.attrs.imputed_value_int64s.value, self.attrs.replaced_value_int64.value),
+    numpy.float32: (self.attrs.imputed_value_floats.value, self.attrs.replaced_value_float.value)
+}
+for key, (imp, rep) in cases.items():
+    if t.elem_type is key:
+        assert all(imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1)
+        break
+else:
+    assert False, "no matching element type"
+# If the number of features is known (last row, we can check this here)
+last = t.shape.to_simple()[-1] if t.shape.rank else 1
+if isinstance(last, int) and len(imp) not in {1, last}:
+    raise InferenceError(f"Mismatched expected ({len(imp)}) and actual ({last}) feature count.")
+return {"Y": t}
