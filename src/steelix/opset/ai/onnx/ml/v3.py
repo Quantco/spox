@@ -38,6 +38,14 @@ class _ArrayFeatureExtractor(StandardNode):
     class Outputs(ArrowFields):
         Z: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
+        assert xt.shape.rank >= 1
+        assert xt.shape[:-1] == yt.shape
+        return {"Z": Tensor(xt.elem_type, yt.shape)}
+
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
 
     attrs: NoAttrs
