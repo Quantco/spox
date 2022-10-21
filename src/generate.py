@@ -395,5 +395,6 @@ if __name__ == "__main__":
             "Imputer": "imputer1",
             "Normalizer": "normalizer1",
             "OneHotEncoder": "onehotencoder1",
+            "Scaler": "scaler1"
         },
     )

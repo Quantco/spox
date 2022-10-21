@@ -391,6 +391,23 @@ class _Scaler(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        if self.inputs.X.type is None:
+            return {}
+        sc, off = self.attrs.scale.value, self.attrs.offset.value
+        t = self.inputs.X.unwrap_tensor()
+        # If the number of features is known (last row, we can check this here)
+        last = t.shape.to_simple()[-1] if t.shape.rank else 1
+        if isinstance(last, int) and len(sc) not in {1, last}:
+            raise InferenceError(
+                f"Mismatched expected ({len(sc)}) and actual ({last}) feature count for scale."
+            )
+        if isinstance(last, int) and len(off) not in {1, last}:
+            raise InferenceError(
+                f"Mismatched expected ({len(off)}) and actual ({last}) feature count for offset."
+            )
+        return {"Y": Tensor(numpy.float32, t.shape)}
+
     op_type = OpType("Scaler", "ai.onnx.ml", 1)
 
     attrs: Attributes
