@@ -27,8 +27,6 @@ class Arrow(Generic[T]):
     (as ``_op`` and ``_which`` are primarily stored for building a Graph).
 
     Should not be constructed directly - the main source of Arrows is operator constructors & ``arguments``-like.
-
-    Arrows can be generic in a type variable, which is only used internally in the type system (see DefNode).
     """
 
     type: Optional[Type]
