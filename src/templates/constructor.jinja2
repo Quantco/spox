@@ -11,16 +11,11 @@ endif %}{% endfor %}
         %}*, {%
     endif %}{%
 if is_variadic(schema.outputs[-1]) and not out_variadic_solution
-    %}{{ schema.outputs[-1].name }}_count: int, {% endif %}{%
-for attr in schema.attributes.values()
-    %}{{ attr.name }}: {{ get_attr_hint_func(attr, attr_type_overrides) }}{%
-    if not attr.required %}{%
-        if attr.default_value.type
-            %} = {{ get_attr_default_func(attr, attr_type_overrides) }}{%
-        else %} = None{%
-        endif %}{%
-    endif %}, {%
-endfor %}) -> {{ get_constructor_return(schema) }}:
+    %}{{ schema.outputs[-1].name }}_count: int, {% endif %}
+    {% for attr in get_attributes(schema, attr_type_overrides) %}
+    {{ attr.name }}: {{ attr.constructor_type_hint }}{% if attr.constructor_default %} = {{ attr.constructor_default }}{% endif %},
+{% endfor %}
+) -> {{ get_constructor_return(schema) }}:
 {% filter indent(width=4) %}
 {% if gen_docstrings %}
     r"""
