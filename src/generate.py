@@ -1,11 +1,11 @@
+import importlib.resources
 import re
 import subprocess
-import typing
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import jinja2
-import numpy
 import onnx
 
 import steelix
@@ -22,6 +22,115 @@ CONSTRUCTOR_RENAMES = {
     "min": "minimum",
     "is_na_n": "isnan",
 }
+
+# Mapping from attribute proto type integers to Python types.
+ATTRIBUTE_PROTO_TO_PY_TYPE = {
+    onnx.AttributeProto.FLOAT: "float",
+    onnx.AttributeProto.INT: "int",
+    onnx.AttributeProto.STRING: "str",
+    onnx.AttributeProto.TENSOR: "ndarray",
+    onnx.AttributeProto.GRAPH: "Graph",
+    onnx.AttributeProto.TYPE_PROTO: "Type",
+    onnx.AttributeProto.FLOATS: "Sequence[float]",
+    onnx.AttributeProto.INTS: "Sequence[int]",
+    onnx.AttributeProto.STRINGS: "Sequence[str]",
+    onnx.AttributeProto.TENSORS: "Sequence[ndarray]",
+    onnx.AttributeProto.TYPE_PROTOS: "Sequence[steelix.Type]",
+}
+
+_TEMPLATE_DIR = Path(str(importlib.resources.path("steelix", "."))).parent / "templates"
+
+
+@dataclass
+class Attribute:
+    name: str
+    constructor_type_hint: str
+    member_type: str
+    constructor_default: str
+
+
+def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attribute]:
+    out = []
+    for name, attr in schema.attributes.items():
+        default = _get_default_value(attr, attr_type_overrides)
+        # Special case; not supported
+        if attr.type == onnx.AttributeProto.SPARSE_TENSOR:
+            out.append(
+                Attribute(
+                    name=name,
+                    member_type="Attr[Any]",
+                    constructor_type_hint="None",
+                    constructor_default="None",
+                )
+            )
+            continue
+
+        if py_and_attr_type := attr_type_overrides.get(name):
+            py_ty, member_type = (str(el) for el in py_and_attr_type)
+        else:
+            py_ty = ATTRIBUTE_PROTO_TO_PY_TYPE[attr.type]  # type: ignore
+            member_type = f"Attr[{py_ty}]"
+            py_ty = str(py_ty).replace("Sequence", "Iterable")
+
+        if default == "None":
+            # We should wrap the member in an optional, too, but
+            # that is currently not supported.
+            py_ty = f"Optional[{py_ty}]"
+
+        constructor_default = ""
+        if not attr.required:
+            # Wrap in `Optional` if we don't have a default
+            if default is not None:
+                constructor_default = default
+            else:
+                py_ty = f"Optional[{py_ty}]"
+                constructor_default = "None"
+
+        out.append(
+            Attribute(
+                name=name,
+                member_type=member_type,
+                constructor_type_hint=py_ty,
+                constructor_default=constructor_default,
+            )
+        )
+    return out
+
+
+def _get_default_value(attr, attr_type_overrides) -> Optional[str]:
+    """Get default value if any as a string ready to be used in a template.
+
+    This function has a special handling with respect to ``attr_type_overrides``.
+    """
+    if attr.required:
+        return None
+
+    default = (
+        onnx.helper.get_attribute_value(attr.default_value)
+        if attr.default_value.type
+        else None
+    )
+
+    if default is None:
+        return "None"
+
+    # We want to use e.g. np.int32 instead of an integer for dtypes
+    if (
+        attr.name in attr_type_overrides
+        and "numpy.generic" in attr_type_overrides[attr.name][0]
+    ):
+        return f"numpy.{onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[default].name}"
+
+    # Strings are bytes at this point and they
+    # need to be wrapped in quotes.
+    if attr.type == onnx.AttributeProto.STRING:
+        default = f'"{default.decode()}"'
+    elif attr.type == onnx.AttributeProto.STRINGS:
+        default = tuple([val.decode() for val in default])
+    elif isinstance(default, list):
+        default = tuple(default)
+
+    return str(default)
 
 
 def get_constructor_name(string: str) -> str:
@@ -66,71 +175,6 @@ def format_github_markdown(doc: str) -> str:
     return doc
 
 
-def get_attr_hint(
-    attr: onnx.defs.OpSchema.Attribute,
-    attr_type_overrides: Dict[str, type],
-    func: bool = False,
-) -> str:
-    """
-    Parameters
-    ----------
-    attr
-        Attribute to get type hint for.
-    func
-        If true, this is for a constructor, which may get a different hint.
-    attr_type_overrides
-        Used when an attribute type is overriden, like for Cast where the constructor
-        expects a ``type[numpy.generic]`` instead of an enum int as in the definition.
-
-    Returns
-    -------
-    str
-        A representation of the type hint for the attribute.
-    """
-    unknown_default = not attr.required and not attr.default_value.type
-    typ = (
-        attr_type_overrides.get(attr.name) if attr_type_overrides is not None else None
-    )
-    if typ is None:
-        try:
-            typ = steelix.attr.Attr.attr_type_to_py_type()[attr.type.value]
-        except KeyError:
-            print(f"Cannot get Python attribute for: {attr.type}, skipping.")
-            return "Any" if not func else "None"
-    if steelix.attr._is_list_attribute(typ):
-        hint = (
-            f"{'Iterable' if func else 'Sequence'}[{typing.get_args(typ)[0].__name__}]"
-        )
-    elif typ is numpy.generic:
-        hint = "typing.Type[numpy.generic]" if func else "numpy.generic"
-    else:
-        hint = typ.__name__
-    if func and unknown_default:
-        hint = f"Optional[{hint}]"
-    return hint
-
-
-def get_attr_hint_func(
-    attr: onnx.defs.OpSchema.Attribute, attr_type_overrides: Dict[str, type]
-) -> str:
-    """Shorthand for get_attr_hint with func=True, passing in the right constructor attribute type override."""
-    return get_attr_hint(attr, attr_type_overrides, True)
-
-
-def get_attr_default_func(
-    attr: onnx.defs.OpSchema.Attribute, attr_type_overrides: Dict[str, type]
-) -> str:
-    """Get the default value for an attribute in the constructor signature."""
-    s_attr = steelix.attr.Attr.from_onnx(attr.default_value)
-    value = s_attr.value
-    if steelix.attr._is_list_attribute(typing.get_origin(s_attr.value_type)):
-        value = tuple(value)
-    if attr_type_overrides.get(attr.name) is numpy.generic:
-        value = steelix.type_system.Tensor.elem_type_from_onnx(value)
-        return f"numpy.{value.__name__}"
-    return repr(value)
-
-
 def is_variadic(param: onnx.defs.OpSchema.FormalParameter) -> bool:
     """Check if a given parameter is variadic (accepts 'any' number of inputs, like a list)"""
     return param.option == onnx.defs.OpSchema.FormalParameterOption.Variadic
@@ -147,19 +191,17 @@ def get_env():
     Exposes some functions from the global scope of this script to the templating engine.
     """
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader("templates"),
+        loader=jinja2.FileSystemLoader(str(_TEMPLATE_DIR)),
         extensions=["jinja2.ext.do"],
         trim_blocks=True,
         lstrip_blocks=True,
     )
     env.filters["format_github_markdown"] = format_github_markdown
     env.filters["get_constructor_name"] = get_constructor_name
-    env.globals["get_attr_hint"] = get_attr_hint
-    env.globals["get_attr_hint_func"] = get_attr_hint_func
-    env.globals["get_attr_default_func"] = get_attr_default_func
     env.globals["is_variadic"] = is_variadic
     env.globals["is_optional"] = is_optional
     env.globals["get_constructor_return"] = get_constructor_return
+    env.globals["get_attributes"] = get_attributes
     env.globals["Attr"] = steelix.attr.Attr
     return env
 
@@ -170,7 +212,7 @@ def write_schemas_code(
     type_inference: Dict[str, str],
     value_propagation: Dict[str, str],
     out_variadic_solutions: Dict[str, str],
-    attr_type_overrides: List[Tuple[Optional[str], str, type]],
+    attr_type_overrides: List[Tuple[Optional[str], str, Tuple[str, str]]],
     extras: Sequence[str],
     gen_docstrings: bool,
 ) -> None:
@@ -280,9 +322,11 @@ def main(
     type_inference: Optional[Dict[str, str]] = None,
     value_propagation: Optional[Dict[str, str]] = None,
     out_variadic_solutions: Optional[Dict[str, str]] = None,
-    attr_type_overrides: Optional[List[Tuple[Optional[str], str, type]]] = None,
+    attr_type_overrides: Optional[
+        List[Tuple[Optional[str], str, Tuple[str, str]]]
+    ] = None,
     extras: Sequence[str] = (),
-    target: str = "steelix/opset/",
+    target: str = "src/steelix/opset/",
     pre_commit_hooks: bool = True,
     gen_docstrings: bool = True,
 ):
@@ -311,7 +355,9 @@ def main(
         For example, in Cast the ``to`` attribute accepts ``numpy.generic`` instead of ``int``.
         First element is the name of an operator or None, if an override applies to all operators with an attribute.
         Second element is the attribute name to override the type for.
-        Last element is the type to override with.
+        Last element is a tuple where the first element is the user
+        facing type hint used in the constructor function and the
+        second element is the Attr type used internally.
     extras
         List of template names under ``jinja_templates/extras/`` to add at the end of the code.
         This includes convenience functions that may use the rest of the operator set.
@@ -380,13 +426,13 @@ if __name__ == "__main__":
             "Loop": "len(body.requested_results) - 1",
         },
         attr_type_overrides=[
-            (None, "dtype", numpy.generic),
-            ("Cast", "to", numpy.generic),
+            (None, "dtype", ("typing.Type[numpy.generic]", "Attr[numpy.generic]")),
+            ("Cast", "to", ("typing.Type[numpy.generic]", "Attr[numpy.generic]")),
         ],
     )
     main(
         "ai.onnx.ml",
         3,
-        attr_type_overrides=[(None, "dtype", numpy.generic)],
+        attr_type_overrides=[(None, "dtype", ("numpy.generic", "Attr[numpy.generic]"))],
         type_inference={"OneHotEncoder": "onehotencoder1"},
     )
