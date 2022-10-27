@@ -1,6 +1,6 @@
 return _{{ schema.name }}(
     _{{ schema.name }}.Attributes(
-{% for attr in schema.attributes.values()
+{% for attr in get_attributes(schema, attr_type_overrides)
         %}{{attr.name}}={{ attr.name }}, {%
 endfor %}
     ), _{{ schema.name }}.Inputs(

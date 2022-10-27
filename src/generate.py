@@ -77,21 +77,12 @@ def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attr
             # that is currently not supported.
             py_ty = f"Optional[{py_ty}]"
 
-        constructor_default = ""
-        if not attr.required:
-            # Wrap in `Optional` if we don't have a default
-            if default is not None:
-                constructor_default = default
-            else:
-                py_ty = f"Optional[{py_ty}]"
-                constructor_default = "None"
-
         out.append(
             Attribute(
                 name=name,
                 member_type=member_type,
                 constructor_type_hint=py_ty,
-                constructor_default=constructor_default,
+                constructor_default=default,  # type: ignore
             )
         )
     return out
