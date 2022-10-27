@@ -1,16 +1,15 @@
 import inspect
 import itertools
+from dataclasses import dataclass
 from typing import Callable, Dict, Iterable, Optional, TypeVar
 
 import onnx
 from typing_extensions import TypeAlias
 
 from . import graph
-from ._type_inference import get_hint
+from ._attributes import _Ref
 from .arrow import Arrow
 from .arrowfields import ArrowFields
-from .attr import Attr, Ref
-from .attrfields import AttrFields, NoAttrs
 from .internal_op import _InternalNode
 from .node import Node, OpType
 from .type_system import Type
@@ -40,7 +39,7 @@ class Function(_InternalNode):
     """
 
     func_args: Dict[str, Arrow]
-    func_attrs: AttrFields
+    func_attrs: Dict[str, _Ref]
     func_inputs: ArrowFields
     func_outputs: ArrowFields
     func_graph: graph.Graph
@@ -63,11 +62,10 @@ class Function(_InternalNode):
             **{name: arrow.type for name, arrow in self.inputs.as_dict().items()}
         )
 
-        attr_dict: Dict[str, Attr] = {}
-        for name, attr_type in self.attrs.get_kwargs_types().items():
-            value_type = get_hint(attr_type)
-            attr_dict[name] = Attr(value_type, Ref(value_type, name, self))
-        self.func_attrs = self.Attributes(**attr_dict)
+        func_attrs = {}
+        for name, attr in self.attrs.__dict__.items():
+            func_attrs[name] = _Ref(concrete=attr, outer_name=name)
+        self.func_attrs = func_attrs
 
         self.func_inputs = self.Inputs(**self.func_args)
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
@@ -111,7 +109,7 @@ class Function(_InternalNode):
                 onnx.helper.make_operatorsetid(domain, version)
                 for domain, version in self.func_graph.get_opsets().items()
             ],
-            self.Attributes.get_kwargs(),
+            self.Attributes.__dataclass_fields__.keys(),
         )
 
 
@@ -126,7 +124,10 @@ def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
     _FuncOutputs.__annotations__ = {f"out{i}": "Arrow" for i in range(num_outputs)}
 
     class _Func(Function):
-        Attributes = NoAttrs
+        @dataclass
+        class Attributes:
+            pass
+
         Inputs = _FuncInputs
         Outputs = _FuncOutputs
         op_type = OpType(name, domain, version)

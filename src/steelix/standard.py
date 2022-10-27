@@ -9,11 +9,10 @@ import onnx
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
-from . import attr
 from ._scope import Scope
 from ._type_inference import InferenceError
+from ._utils import from_array
 from .arrow import Nothing, _nil
-from .attr import Attr
 from .node import Node
 from .schemas import SCHEMAS
 from .shape import Shape
@@ -71,12 +70,10 @@ class StandardNode(Node):
         # We inject the evaluated attribute values here and then substitute back
         self_attrs = self.attrs
         try:
-            # Get exact attribute values to run inference (as otherwise refs aren't handled properly).
+            # Get exact attribute values to run inference (as
+            # otherwise refs aren't handled properly).
             self.attrs = self.Attributes(
-                **{
-                    k: Attr(v.value_type, v.value)
-                    for k, v in self.attrs.as_dict().items()
-                }
+                **{k: v._deref() if v else v for k, v in self.attrs.__dict__.items()}
             )
             node_proto: onnx.NodeProto
             # Subgraphs are not fully built for possibly significant performance gains.
@@ -112,7 +109,7 @@ class StandardNode(Node):
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
         initializers = [
-            attr.from_array(arrow.value, key)
+            from_array(arrow.value, key)
             for key, arrow in self.inputs.as_dict().items()
             if isinstance(arrow.value, numpy.ndarray)
         ]

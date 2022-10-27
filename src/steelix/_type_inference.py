@@ -39,7 +39,7 @@ def get_hint(annotation, expect_origin: Optional[Iterable[Any]] = None):
     Handles:
 
     - Annotated[Arrow, ConstantType] => ConstantType  # Broken on Python 3.8!
-    - Arrow[T], Attr[T] => T.
+    - Arrow[T] => T.
 
     If ``expect_origin`` is not None, also checks if the ``typing.get_origin``
     of the annotation belongs to ``expect_origin``.

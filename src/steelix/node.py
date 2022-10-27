@@ -10,6 +10,7 @@ from typing import (
     Iterable,
     List,
     Optional,
+    Protocol,
     Sequence,
     Set,
     Tuple,
@@ -19,10 +20,10 @@ from typing import (
 
 import onnx
 
+from ._attributes import AttrGraph
 from ._type_inference import _warn_unknown_types, get_hint
 from .arrow import Arrow
 from .arrowfields import ArrowFields
-from .attrfields import AttrFields
 from .fields import Fields
 from .type_system import Type
 
@@ -45,13 +46,19 @@ class OpType:
     version: int
 
 
+class Dataclass(Protocol):
+    __dataclass_fields__: Dict
+
+
 class Node(ABC):
     """
     Abstract base class for representing operators in the Steelix graph, both standard ONNX and some internal.
     Should not be created directly - proper instances are created by various operator constructors internally.
 
-    When subclassing, ``AttrFields`` and ``ArrowFields`` subtypes must be hinted in ``attrs``, ``inputs``, ``outputs``.
-    These hints by default specify results of ``attr_type``, ``in_type``, ``out_type``.
+    When subclassing, ``ArrowFields`` subtypes must be hinted in
+    ``inputs``, ``outputs``. These hints by default specify results of
+    ``in_type``, ``out_type``. ``Attributes`` must be a ``dataclass``
+    where its members are subclasses of :class:`steelix._attributes.Attr`.
 
     Names of fields in ``attrs`` and order of fields in ``inputs``, ``outputs`` are interpreted during building (ONNX).
 
@@ -67,7 +74,7 @@ class Node(ABC):
     Inputs: ClassVar[typing.Type]
     Outputs: ClassVar[typing.Type]
 
-    attrs: AttrFields
+    attrs: Dataclass
     inputs: ArrowFields
     outputs: ArrowFields
 
@@ -76,7 +83,7 @@ class Node(ABC):
 
     def __init__(
         self,
-        attrs: Optional[AttrFields] = None,
+        attrs: Optional[Dataclass] = None,
         inputs: Optional[ArrowFields] = None,
         outputs: Optional[ArrowFields] = None,
         *,
@@ -185,7 +192,7 @@ class Node(ABC):
         )
         sign = f"inputs [{sign}]"
         shown_attrs = {
-            k: v.value for k, v in self.attrs.as_dict().items() if v.value is not None
+            k: v.value for k, v in self.attrs.__dict__.items() if v is not None
         }
         if shown_attrs:
             sign_attrs = ", ".join(f"{k} = {v}" for k, v in shown_attrs.items())
@@ -296,10 +303,8 @@ class Node(ABC):
 
     @property
     def subgraphs(self) -> Iterable["Graph"]:
-        from .graph import Graph
-
-        for attr in self.attrs.as_dict().values():
-            if isinstance(attr.value, Graph):
+        for attr in self.attrs.__dict__.values():
+            if isinstance(attr, AttrGraph):
                 yield attr.value
 
     def update_metadata(self, opset_req, initializers, functions):
@@ -312,8 +317,6 @@ class Node(ABC):
         build_subgraph: Optional[typing.Callable] = None,
     ) -> List[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""
-        from .graph import Graph
-
         assert self.op_type.identifier
         input_names = [scope.arrow[arrow] for arrow in self.inputs.as_dict().values()]
         output_names = [scope.arrow[arrow] for arrow in self.outputs.as_dict().values()]
@@ -332,14 +335,14 @@ class Node(ABC):
 
         # We add all attributes manually since not everything (e.g. refs) is supported by make_node
         # Subgraphs are also special-cased here
-        for key, attr in self.attrs.as_dict().items():
-            if attr.value is not None:
-                if isinstance(attr.value, Graph):
+        for key, attr in self.attrs.__dict__.items():
+            if attr is not None:
+                if isinstance(attr, AttrGraph):
                     assert build_subgraph is not None
                     subgraph = build_subgraph(self, key, attr.value)
                     attr_proto = onnx.helper.make_attribute(key, subgraph)
                 else:
-                    attr_proto = attr.to_onnx(key)
+                    attr_proto = attr._to_onnx(key)
                 node_proto.attribute.append(attr_proto)
 
         return [node_proto]

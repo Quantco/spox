@@ -7,8 +7,10 @@ import numpy
 import onnx
 import onnx.shape_inference
 
-from . import _build, attr
+from . import _build
 from ._adapt import adapt_best_effort
+from ._attributes import AttrString, AttrTensor, AttrType
+from ._utils import from_array
 from .arrow import Arrow
 from .arrowfields import NoArrows
 from .internal_op import Argument, _Initializer
@@ -33,14 +35,17 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
     """
     result = {}
     for name, info in kwargs.items():
-        if info is None or isinstance(info, Type):
+        attr_name = AttrString(name)
+        if isinstance(info, Type):
             result[name] = Argument(
-                Argument.Attributes(name=name, type=info, default=None), NoArrows()
+                Argument.Attributes(name=attr_name, type=AttrType(info), default=None),
+                NoArrows(),
             ).outputs.arg
         elif isinstance(info, numpy.ndarray):
+            ty = Tensor.like_array(info)
             result[name] = Argument(
                 Argument.Attributes(
-                    name=name, type=Tensor.like_array(info), default=info
+                    name=attr_name, type=AttrType(ty), default=AttrTensor(info)
                 ),
                 NoArrows(),
             ).outputs.arg
@@ -55,7 +60,7 @@ def arguments(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Tuple[Arrow, ..
 
 
 def enum_arguments(
-    *infos: Union[Type, numpy.array], prefix: str = "in"
+    *infos: Union[Type, numpy.ndarray], prefix: str = "in"
 ) -> Tuple[Arrow, ...]:
     """
     Convenience function for creating an enumeration of arguments, prefixed with ``prefix``.
@@ -93,8 +98,9 @@ def initializer(arr: numpy.ndarray) -> Arrow:
     -------
         Arrow which is always equal to the respective value provided by `arr`.
     """
+    ty = Tensor.like_array(arr)
     return _Initializer(
-        _Initializer.Attributes(type=Tensor.like_array(arr), default=arr),
+        _Initializer.Attributes(type=AttrType(ty), default=AttrTensor(arr)),
         NoArrows(),
     ).outputs.arg
 
@@ -326,7 +332,7 @@ class Graph:
             name = "steelix_graph"
 
         initializer_tensors = [
-            attr.from_array(arr, name)
+            from_array(arr, name)
             for name, arr in self._get_initializers_by_name().items()
         ]
 

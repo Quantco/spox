@@ -22,7 +22,7 @@ def get_type_hints_cached(obj) -> dict:
 
 class Fields(Generic[T_co]):
     """
-    Base class for AttrFields and ArrowFields.
+    Base class for ArrowFields.
     Fields classes are based on the notion of conveniently defining a signature (like a dataclass),
     but in a way that is closer to ONNX.
     The type hints of only the target class is used (inheritance is not considered).
@@ -97,11 +97,3 @@ class Fields(Generic[T_co]):
     def unpack(self) -> Tuple:
         """Convenience function for unpacking fields into a tuple of all the base fields."""
         return tuple(getattr(self, name) for name in self.get_kwargs())
-
-
-def of(x) -> Any:
-    """
-    Magic type-any function that allows setting default field values
-    to a type different from hinted, whenever the constructor handles it.
-    """
-    return x

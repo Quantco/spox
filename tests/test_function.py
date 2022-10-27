@@ -1,5 +1,6 @@
 import functools
-from typing import List
+from dataclasses import dataclass
+from typing import Dict, List
 
 import numpy
 import onnx
@@ -8,10 +9,9 @@ import onnx.shape_inference
 import onnxruntime
 import pytest
 
+from steelix._attributes import AttrFloat32, _Ref
 from steelix.arrow import Arrow
 from steelix.arrowfields import ArrowFields
-from steelix.attr import Attr
-from steelix.attrfields import AttrFields
 from steelix.function import Function, to_function
 from steelix.graph import arguments, results
 from steelix.node import OpType
@@ -21,9 +21,10 @@ from steelix.type_system import Tensor
 @pytest.fixture
 def linear(op):
     class LinearFunction(Function):
-        class Attributes(AttrFields):
-            slope: Attr[float]
-            shift: Attr[float]
+        @dataclass
+        class Attributes:
+            slope: AttrFloat32
+            shift: AttrFloat32
 
         class Inputs(ArrowFields):
             X: Arrow
@@ -37,15 +38,16 @@ def linear(op):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Attributes, inputs: Inputs) -> Outputs:
-            a = op.constant(value_float=attrs.slope._value)
-            b = op.constant(value_float=attrs.shift._value)
+        def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
+            a = op.constant(value_float=attrs["slope"])
+            b = op.constant(value_float=attrs["shift"])
             x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b))
 
     def linear_inner(x: Arrow, a: float, b: float) -> Arrow:
         return LinearFunction(
-            LinearFunction.Attributes(a, b), LinearFunction.Inputs(x)
+            LinearFunction.Attributes(AttrFloat32(a), AttrFloat32(b)),
+            LinearFunction.Inputs(x),
         ).outputs.Y
 
     return linear_inner
@@ -54,9 +56,10 @@ def linear(op):
 @pytest.fixture
 def linear2(op, linear):
     class LinearFunction2(Function):
-        class Attributes(AttrFields):
-            slope1: Attr[float]
-            shift1: Attr[float]
+        @dataclass
+        class Attributes:
+            slope1: AttrFloat32
+            shift1: AttrFloat32
 
         class Inputs(ArrowFields):
             X: Arrow
@@ -70,14 +73,13 @@ def linear2(op, linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Attributes, inputs: Inputs) -> Outputs:
-            return self.Outputs(
-                linear(inputs.X, attrs.slope1._value, attrs.shift1._value)
-            )
+        def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
+            return self.Outputs(linear(inputs.X, attrs["slope1"], attrs["shift1"]))
 
     def linear_inner(x: Arrow, a: float, b: float) -> Arrow:
         return LinearFunction2(
-            LinearFunction2.Attributes(a, b), LinearFunction2.Inputs(x)
+            LinearFunction2.Attributes(AttrFloat32(a), AttrFloat32(b)),
+            LinearFunction2.Inputs(x),
         ).outputs.Y
 
     return linear_inner
@@ -86,11 +88,12 @@ def linear2(op, linear):
 @pytest.fixture
 def cubic(op, linear):
     class CubicFunction(Function):
-        class Attributes(AttrFields):
-            a3: Attr[float]
-            a2: Attr[float]
-            a1: Attr[float]
-            a0: Attr[float]
+        @dataclass
+        class Attributes:
+            a3: AttrFloat32
+            a2: AttrFloat32
+            a1: AttrFloat32
+            a0: AttrFloat32
 
         class Inputs(ArrowFields):
             X: Arrow
@@ -104,19 +107,24 @@ def cubic(op, linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Attributes, inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
             x = inputs.X
-            a = op.mul(linear(x, attrs.a3._value, attrs.a2._value), op.mul(x, x))
+            a = op.mul(linear(x, attrs["a3"], attrs["a2"]), op.mul(x, x))
             b = op.add(
-                op.mul(x, op.constant(value_float=attrs.a1)),
-                op.constant(value_float=attrs.a0),
+                op.mul(x, op.constant(value_float=attrs["a1"])),
+                op.constant(value_float=attrs["a0"]),
             )
             y = op.add(a, b)
             return self.Outputs(y)
 
     def cubic_inner(x: Arrow, a3: float, a2: float, a1: float, a0: float) -> Arrow:
         return CubicFunction(
-            CubicFunction.Attributes(a3=a3, a2=a2, a1=a1, a0=a0),
+            CubicFunction.Attributes(
+                a3=AttrFloat32(a3),
+                a2=AttrFloat32(a2),
+                a1=AttrFloat32(a1),
+                a0=AttrFloat32(a0),
+            ),
             CubicFunction.Inputs(X=x),
         ).outputs.Y
 
@@ -126,7 +134,7 @@ def cubic(op, linear):
 @pytest.fixture
 def min_fun_graph(op, linear):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
-    return results(final=linear(start, 3, 2))
+    return results(final=linear(start, 3.0, 2.0))
 
 
 @pytest.fixture
@@ -134,19 +142,19 @@ def big_fun_graph(op, linear):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
-    return results(final=op.div(linear(op.add(first, second), 3, 2), second))
+    return results(final=op.div(linear(op.add(first, second), 3.0, 2.0), second))
 
 
 @pytest.fixture
 def double_fun_graph(op, linear):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
-    return results(final=linear(linear(start, 3, 2), 5, 3))
+    return results(final=linear(linear(start, 3.0, 2.0), 5.0, 3.0))
 
 
 @pytest.fixture
 def wrapped_linear_graph(op, linear2):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
-    return results(final=linear2(start, 3, 2))
+    return results(final=linear2(start, 3.0, 2.0))
 
 
 @pytest.fixture
