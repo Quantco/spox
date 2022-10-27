@@ -44,9 +44,9 @@ _TEMPLATE_DIR = Path(str(importlib.resources.path("steelix", "."))).parent / "te
 @dataclass
 class Attribute:
     name: str
-    constructor_type_hint: str
     member_type: str
-    constructor_default: str
+    constructor_type_hint: str
+    constructor_default: Optional[str]
 
 
 def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attribute]:
@@ -82,7 +82,7 @@ def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attr
                 name=name,
                 member_type=member_type,
                 constructor_type_hint=py_ty,
-                constructor_default=default,  # type: ignore
+                constructor_default=default,
             )
         )
     return out
