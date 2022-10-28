@@ -278,9 +278,9 @@ class _OneHotEncoder(StandardNode):
 
     def infer_output_types(self) -> Dict[str, Type]:
         if self.attrs.cats_int64s:
-            n_encodings = len(self.attrs.cats_int64s.value)
+            n_encodings = len(self.attrs.cats_int64s._deref().value)
         elif self.attrs.cats_strings:
-            n_encodings = len(self.attrs.cats_strings.value)
+            n_encodings = len(self.attrs.cats_strings._deref().value)
         else:
             raise TypeError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
