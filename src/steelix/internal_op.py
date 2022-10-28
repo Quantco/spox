@@ -51,11 +51,11 @@ class Argument(_InternalNode):
 
     def post_init(self, **kwargs):
         if self.attrs.name is not None:
-            self.outputs.arg._rename(self.attrs.name._deref().value)
+            self.outputs.arg._rename(self.attrs.name.value)
 
     def infer_output_types(self) -> Dict[str, Type]:
         # Output type is based on the value of the type attribute
-        return {"arg": self.attrs.type._deref().value}
+        return {"arg": self.attrs.type.value}
 
     def update_metadata(self, opset_req, initializers, functions):
         super().update_metadata(opset_req, initializers, functions)
@@ -88,7 +88,7 @@ class _Initializer(_InternalNode):
 
     def infer_output_types(self) -> Dict[str, Type]:
         # Output type is based on the value of the type attribute
-        return {"arg": self.attrs.type._deref().value}
+        return {"arg": self.attrs.type.value}
 
     def update_metadata(self, opset_req, initializers, functions):
         super().update_metadata(opset_req, initializers, functions)

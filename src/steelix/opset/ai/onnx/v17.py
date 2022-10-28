@@ -517,9 +517,7 @@ class _Constant(StandardNode):
         from dataclasses import asdict
 
         ((key, raw),) = (
-            (k, v._deref().value)
-            for k, v in self.attrs.__dict__.items()
-            if v is not None
+            (k, v.value) for k, v in self.attrs.__dict__.items() if v is not None
         )
         if key == "value":
             value = raw

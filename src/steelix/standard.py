@@ -9,6 +9,7 @@ import onnx
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
+from ._attributes import _Ref
 from ._scope import Scope
 from ._type_inference import InferenceError
 from ._utils import from_array
@@ -73,7 +74,10 @@ class StandardNode(Node):
             # Get exact attribute values to run inference (as
             # otherwise refs aren't handled properly).
             self.attrs = self.Attributes(
-                **{k: v._deref() if v else v for k, v in self.attrs.__dict__.items()}
+                **{
+                    k: v._value._concrete if v and isinstance(v._value, _Ref) else v
+                    for k, v in self.attrs.__dict__.items()
+                }
             )
             node_proto: onnx.NodeProto
             # Subgraphs are not fully built for possibly significant performance gains.

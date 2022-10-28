@@ -12,31 +12,34 @@ from steelix._utils import from_array
 
 
 class Attr(ABC):
-    value: Any
+    _value: Any
+
+    @property
+    def value(self) -> Any:
+        # implicitly "dereference" `_Ref`
+        if isinstance(self._value, _Ref):
+            return self._value._concrete._value
+        return self._value
 
     def _to_onnx(self, key: str) -> AttributeProto:
         raise NotImplementedError
-
-    def _deref(self) -> "Attr":
-        """Dereference ``self`` if its ``value`` is an ``AttrRef``.
-
-        This operation is idempotent if ``value`` is not an ``AttrRef``.
-        """
-        if isinstance(self.value, _Ref):
-            return self.value._concrete
-        return self
 
 
 class _Ref:
     """Special attribute value used in function bodies.
 
     An ``AttrRef`` is a reference to an attribute defined
-    elsewhere. May be used as ``value`` in ``Attr*`` classes.
+    elsewhere. May be used as ``_value`` in ``Attr*`` classes.
     """
 
     def __init__(self, concrete: Attr, outer_name: str):
         self._concrete = concrete
         self._outer_name = outer_name
+
+    @property
+    def value(self):
+        # Deref to the concrete value
+        return self._concrete._value
 
     def _to_onnx(self, key: str) -> AttributeProto:
         parent_type = self._concrete._to_onnx(key).type
@@ -47,110 +50,110 @@ class _Ref:
 
 @dataclass
 class AttrFloat32(Attr):
-    value: Union[float, _Ref]
+    _value: Union[float, _Ref]
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self.value)
+        return _make_attribute_maybe_ref(key, self._value)
 
 
 @dataclass
 class AttrInt64(Attr):
-    value: Union[int, _Ref]
+    _value: Union[int, _Ref]
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self.value)
+        return _make_attribute_maybe_ref(key, self._value)
 
 
 @dataclass
 class AttrString(Attr):
-    value: Union[str, _Ref]
+    _value: Union[str, _Ref]
 
     def _to_onnx(self, key: str) -> AttributeProto:
         # Strings are bytes on the onnx side
-        if isinstance(self.value, _Ref):
-            return self.value._to_onnx(key)
+        if isinstance(self._value, _Ref):
+            return self._value._to_onnx(key)
         return make_attribute(key, self.value.encode())
 
 
 @dataclass
 class AttrFloat32s(Attr):
-    value: Union[Tuple[float, ...], _Ref]
+    _value: Union[Tuple[float, ...], _Ref]
 
     def __init__(self, value: Union[Iterable[float], _Ref]):
         if isinstance(value, Iterable):
-            self.value = tuple(value)
+            self._value = tuple(value)
         else:
-            self.value = value
+            self._value = value
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self.value)
+        return _make_attribute_maybe_ref(key, self._value)
 
 
 @dataclass
 class AttrInt64s(Attr):
-    value: Union[Tuple[int, ...], _Ref]
+    _value: Union[Tuple[int, ...], _Ref]
 
     def __init__(self, value: Union[Iterable[int], _Ref]):
         if isinstance(value, Iterable):
-            self.value = tuple(value)
+            self._value = tuple(value)
         else:
-            self.value = value
+            self._value = value
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self.value)
+        return _make_attribute_maybe_ref(key, self._value)
 
 
 @dataclass
 class AttrStrings(Attr):
-    value: Union[Tuple[str, ...], _Ref]
+    _value: Union[Tuple[str, ...], _Ref]
 
     def __init__(self, value: Union[Iterable[str], _Ref]):
         if isinstance(value, Iterable):
-            self.value = tuple(value)
+            self._value = tuple(value)
         else:
-            self.value = value
+            self._value = value
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self.value, _Ref):
-            return self.value._to_onnx(key)
+        if isinstance(self._value, _Ref):
+            return self._value._to_onnx(key)
         return make_attribute(key, [v.encode() for v in self.value])
 
 
 @dataclass
 class AttrTensors(Attr):
-    value: Union[Tuple[np.ndarray, ...], _Ref]
+    _value: Union[Tuple[np.ndarray, ...], _Ref]
 
     def __init__(self, value: Union[Iterable[np.ndarray], _Ref]):
         if isinstance(value, Iterable):
-            self.value = tuple(value)
+            self._value = tuple(value)
         else:
-            self.value = value
+            self._value = value
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self.value, _Ref):
-            return self.value._to_onnx(key)
+        if isinstance(self._value, _Ref):
+            return self._value._to_onnx(key)
         tensors = [from_array(t) for t in self.value]
         return make_attribute(key, tensors)
 
 
 @dataclass
 class AttrTensor(Attr):
-    value: Union[np.ndarray, _Ref]
+    _value: Union[np.ndarray, _Ref]
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self.value, _Ref):
-            return self.value._to_onnx(key)
+        if isinstance(self._value, _Ref):
+            return self._value._to_onnx(key)
 
         return make_attribute(key, from_array(self.value))
 
 
 @dataclass
 class AttrType(Attr):
-    value: Union[type_system.Type, _Ref]
+    _value: Union[type_system.Type, _Ref]
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self.value, _Ref):
-            return self.value._to_onnx(key)
+        if isinstance(self._value, _Ref):
+            return self._value._to_onnx(key)
 
         if isinstance(self.value, type_system.Tensor):
             type_proto = make_tensor_type_proto(
@@ -168,11 +171,11 @@ class AttrType(Attr):
 class AttrDtype(Attr):
     """Special attribute for sepecifying data types as `numpy.dtype`s."""
 
-    value: Union[np.dtype, np.generic]
+    _value: Union[np.dtype, np.generic]
 
     def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self.value, _Ref):
-            return self.value._to_onnx(key)
+        if isinstance(self._value, _Ref):
+            return self._value._to_onnx(key)
 
         dtype = np.dtype(self.value)
         # There are various different dtypes denoting strings
@@ -183,7 +186,7 @@ class AttrDtype(Attr):
 
 @dataclass
 class AttrGraph(Attr):
-    value: Any
+    _value: Any
 
     def _to_onnx(self, key: str) -> AttributeProto:
         # Build with build_subgraph in Node, currently
