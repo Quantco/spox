@@ -1,5 +1,6 @@
 # flake8: noqa
 import typing  # noqa: F401
+from dataclasses import dataclass
 from typing import (  # noqa: F401
     Any,
     Callable,
@@ -16,11 +17,20 @@ from typing import cast as typing_cast  # noqa: F401
 import numpy  # noqa: F401
 from numpy import ndarray  # noqa: F401
 
+from steelix._attributes import (
+    AttrDtype,
+    AttrFloat32,
+    AttrFloat32s,
+    AttrGraph,
+    AttrInt64,
+    AttrInt64s,
+    AttrString,
+    AttrStrings,
+    AttrTensor,
+    AttrType,
+)
 from steelix.arrow import Arrow, _nil, result_type  # noqa: F401
 from steelix.arrowfields import ArrowFields, NoArrows  # noqa: F401
-from steelix.attr import Attr  # noqa: F401
-from steelix.attrfields import AttrFields, NoAttrs  # noqa: F401
-from steelix.fields import of  # noqa: F401
 from steelix.graph import Graph, subgraph  # noqa: F401
 from steelix.internal_op import intro  # noqa: F401
 from steelix.node import OpType  # noqa: F401
@@ -29,7 +39,9 @@ from steelix.type_system import Tensor, Type, type_match  # noqa: F401
 
 
 class _ArrayFeatureExtractor(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -40,14 +52,15 @@ class _ArrayFeatureExtractor(StandardNode):
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Binarizer(StandardNode):
-    class Attributes(AttrFields):
-        threshold: Attr[float]
+    @dataclass
+    class Attributes:
+        threshold: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -63,10 +76,11 @@ class _Binarizer(StandardNode):
 
 
 class _CastMap(StandardNode):
-    class Attributes(AttrFields):
-        cast_to: Attr[str]
-        map_form: Attr[str]
-        max_map: Attr[int]
+    @dataclass
+    class Attributes:
+        cast_to: AttrString
+        map_form: AttrString
+        max_map: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -82,11 +96,12 @@ class _CastMap(StandardNode):
 
 
 class _CategoryMapper(StandardNode):
-    class Attributes(AttrFields):
-        cats_int64s: Attr[Sequence[int]]
-        cats_strings: Attr[Sequence[str]]
-        default_int64: Attr[int]
-        default_string: Attr[str]
+    @dataclass
+    class Attributes:
+        cats_int64s: Optional[AttrInt64s]
+        cats_strings: Optional[AttrStrings]
+        default_int64: AttrInt64
+        default_string: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -102,9 +117,10 @@ class _CategoryMapper(StandardNode):
 
 
 class _DictVectorizer(StandardNode):
-    class Attributes(AttrFields):
-        int64_vocabulary: Attr[Sequence[int]]
-        string_vocabulary: Attr[Sequence[str]]
+    @dataclass
+    class Attributes:
+        int64_vocabulary: Optional[AttrInt64s]
+        string_vocabulary: Optional[AttrStrings]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -120,8 +136,9 @@ class _DictVectorizer(StandardNode):
 
 
 class _FeatureVectorizer(StandardNode):
-    class Attributes(AttrFields):
-        inputdimensions: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        inputdimensions: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Sequence[Arrow]
@@ -137,11 +154,12 @@ class _FeatureVectorizer(StandardNode):
 
 
 class _Imputer(StandardNode):
-    class Attributes(AttrFields):
-        imputed_value_floats: Attr[Sequence[float]]
-        imputed_value_int64s: Attr[Sequence[int]]
-        replaced_value_float: Attr[float]
-        replaced_value_int64: Attr[int]
+    @dataclass
+    class Attributes:
+        imputed_value_floats: Optional[AttrFloat32s]
+        imputed_value_int64s: Optional[AttrInt64s]
+        replaced_value_float: AttrFloat32
+        replaced_value_int64: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -157,16 +175,17 @@ class _Imputer(StandardNode):
 
 
 class _LabelEncoder(StandardNode):
-    class Attributes(AttrFields):
-        default_float: Attr[float]
-        default_int64: Attr[int]
-        default_string: Attr[str]
-        keys_floats: Attr[Sequence[float]]
-        keys_int64s: Attr[Sequence[int]]
-        keys_strings: Attr[Sequence[str]]
-        values_floats: Attr[Sequence[float]]
-        values_int64s: Attr[Sequence[int]]
-        values_strings: Attr[Sequence[str]]
+    @dataclass
+    class Attributes:
+        default_float: AttrFloat32
+        default_int64: AttrInt64
+        default_string: AttrString
+        keys_floats: Optional[AttrFloat32s]
+        keys_int64s: Optional[AttrInt64s]
+        keys_strings: Optional[AttrStrings]
+        values_floats: Optional[AttrFloat32s]
+        values_int64s: Optional[AttrInt64s]
+        values_strings: Optional[AttrStrings]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -182,13 +201,14 @@ class _LabelEncoder(StandardNode):
 
 
 class _LinearClassifier(StandardNode):
-    class Attributes(AttrFields):
-        classlabels_ints: Attr[Sequence[int]]
-        classlabels_strings: Attr[Sequence[str]]
-        coefficients: Attr[Sequence[float]]
-        intercepts: Attr[Sequence[float]]
-        multi_class: Attr[int]
-        post_transform: Attr[str]
+    @dataclass
+    class Attributes:
+        classlabels_ints: Optional[AttrInt64s]
+        classlabels_strings: Optional[AttrStrings]
+        coefficients: AttrFloat32s
+        intercepts: Optional[AttrFloat32s]
+        multi_class: AttrInt64
+        post_transform: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -205,11 +225,12 @@ class _LinearClassifier(StandardNode):
 
 
 class _LinearRegressor(StandardNode):
-    class Attributes(AttrFields):
-        coefficients: Attr[Sequence[float]]
-        intercepts: Attr[Sequence[float]]
-        post_transform: Attr[str]
-        targets: Attr[int]
+    @dataclass
+    class Attributes:
+        coefficients: Optional[AttrFloat32s]
+        intercepts: Optional[AttrFloat32s]
+        post_transform: AttrString
+        targets: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -225,8 +246,9 @@ class _LinearRegressor(StandardNode):
 
 
 class _Normalizer(StandardNode):
-    class Attributes(AttrFields):
-        norm: Attr[str]
+    @dataclass
+    class Attributes:
+        norm: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -242,10 +264,11 @@ class _Normalizer(StandardNode):
 
 
 class _OneHotEncoder(StandardNode):
-    class Attributes(AttrFields):
-        cats_int64s: Attr[Sequence[int]]
-        cats_strings: Attr[Sequence[str]]
-        zeros: Attr[int]
+    @dataclass
+    class Attributes:
+        cats_int64s: Optional[AttrInt64s]
+        cats_strings: Optional[AttrStrings]
+        zeros: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -254,10 +277,14 @@ class _OneHotEncoder(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
-        try:
-            n_encodings = len(self.attrs.cats_int64s._value)
-        except TypeError:
-            n_encodings = len(self.attrs.cats_strings._value)
+        if self.attrs.cats_int64s:
+            n_encodings = len(self.attrs.cats_int64s.value)
+        elif self.attrs.cats_strings:
+            n_encodings = len(self.attrs.cats_strings.value)
+        else:
+            raise TypeError(
+                "Either `cats_int64s` or `cats_strings` attributes must be set."
+            )
         shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
         return {"Y": Tensor(elem_type=numpy.float32, shape=shape)}
 
@@ -269,18 +296,19 @@ class _OneHotEncoder(StandardNode):
 
 
 class _SVMClassifier(StandardNode):
-    class Attributes(AttrFields):
-        classlabels_ints: Attr[Sequence[int]]
-        classlabels_strings: Attr[Sequence[str]]
-        coefficients: Attr[Sequence[float]]
-        kernel_params: Attr[Sequence[float]]
-        kernel_type: Attr[str]
-        post_transform: Attr[str]
-        prob_a: Attr[Sequence[float]]
-        prob_b: Attr[Sequence[float]]
-        rho: Attr[Sequence[float]]
-        support_vectors: Attr[Sequence[float]]
-        vectors_per_class: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        classlabels_ints: Optional[AttrInt64s]
+        classlabels_strings: Optional[AttrStrings]
+        coefficients: Optional[AttrFloat32s]
+        kernel_params: Optional[AttrFloat32s]
+        kernel_type: AttrString
+        post_transform: AttrString
+        prob_a: Optional[AttrFloat32s]
+        prob_b: Optional[AttrFloat32s]
+        rho: Optional[AttrFloat32s]
+        support_vectors: Optional[AttrFloat32s]
+        vectors_per_class: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -297,15 +325,16 @@ class _SVMClassifier(StandardNode):
 
 
 class _SVMRegressor(StandardNode):
-    class Attributes(AttrFields):
-        coefficients: Attr[Sequence[float]]
-        kernel_params: Attr[Sequence[float]]
-        kernel_type: Attr[str]
-        n_supports: Attr[int]
-        one_class: Attr[int]
-        post_transform: Attr[str]
-        rho: Attr[Sequence[float]]
-        support_vectors: Attr[Sequence[float]]
+    @dataclass
+    class Attributes:
+        coefficients: Optional[AttrFloat32s]
+        kernel_params: Optional[AttrFloat32s]
+        kernel_type: AttrString
+        n_supports: AttrInt64
+        one_class: AttrInt64
+        post_transform: AttrString
+        rho: Optional[AttrFloat32s]
+        support_vectors: Optional[AttrFloat32s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -321,9 +350,10 @@ class _SVMRegressor(StandardNode):
 
 
 class _Scaler(StandardNode):
-    class Attributes(AttrFields):
-        offset: Attr[Sequence[float]]
-        scale: Attr[Sequence[float]]
+    @dataclass
+    class Attributes:
+        offset: Optional[AttrFloat32s]
+        scale: Optional[AttrFloat32s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -339,28 +369,29 @@ class _Scaler(StandardNode):
 
 
 class _TreeEnsembleClassifier(StandardNode):
-    class Attributes(AttrFields):
-        base_values: Attr[Sequence[float]]
-        base_values_as_tensor: Attr[ndarray]
-        class_ids: Attr[Sequence[int]]
-        class_nodeids: Attr[Sequence[int]]
-        class_treeids: Attr[Sequence[int]]
-        class_weights: Attr[Sequence[float]]
-        class_weights_as_tensor: Attr[ndarray]
-        classlabels_int64s: Attr[Sequence[int]]
-        classlabels_strings: Attr[Sequence[str]]
-        nodes_falsenodeids: Attr[Sequence[int]]
-        nodes_featureids: Attr[Sequence[int]]
-        nodes_hitrates: Attr[Sequence[float]]
-        nodes_hitrates_as_tensor: Attr[ndarray]
-        nodes_missing_value_tracks_true: Attr[Sequence[int]]
-        nodes_modes: Attr[Sequence[str]]
-        nodes_nodeids: Attr[Sequence[int]]
-        nodes_treeids: Attr[Sequence[int]]
-        nodes_truenodeids: Attr[Sequence[int]]
-        nodes_values: Attr[Sequence[float]]
-        nodes_values_as_tensor: Attr[ndarray]
-        post_transform: Attr[str]
+    @dataclass
+    class Attributes:
+        base_values: Optional[AttrFloat32s]
+        base_values_as_tensor: Optional[AttrTensor]
+        class_ids: Optional[AttrInt64s]
+        class_nodeids: Optional[AttrInt64s]
+        class_treeids: Optional[AttrInt64s]
+        class_weights: Optional[AttrFloat32s]
+        class_weights_as_tensor: Optional[AttrTensor]
+        classlabels_int64s: Optional[AttrInt64s]
+        classlabels_strings: Optional[AttrStrings]
+        nodes_falsenodeids: Optional[AttrInt64s]
+        nodes_featureids: Optional[AttrInt64s]
+        nodes_hitrates: Optional[AttrFloat32s]
+        nodes_hitrates_as_tensor: Optional[AttrTensor]
+        nodes_missing_value_tracks_true: Optional[AttrInt64s]
+        nodes_modes: Optional[AttrStrings]
+        nodes_nodeids: Optional[AttrInt64s]
+        nodes_treeids: Optional[AttrInt64s]
+        nodes_truenodeids: Optional[AttrInt64s]
+        nodes_values: Optional[AttrFloat32s]
+        nodes_values_as_tensor: Optional[AttrTensor]
+        post_transform: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -377,28 +408,29 @@ class _TreeEnsembleClassifier(StandardNode):
 
 
 class _TreeEnsembleRegressor(StandardNode):
-    class Attributes(AttrFields):
-        aggregate_function: Attr[str]
-        base_values: Attr[Sequence[float]]
-        base_values_as_tensor: Attr[ndarray]
-        n_targets: Attr[int]
-        nodes_falsenodeids: Attr[Sequence[int]]
-        nodes_featureids: Attr[Sequence[int]]
-        nodes_hitrates: Attr[Sequence[float]]
-        nodes_hitrates_as_tensor: Attr[ndarray]
-        nodes_missing_value_tracks_true: Attr[Sequence[int]]
-        nodes_modes: Attr[Sequence[str]]
-        nodes_nodeids: Attr[Sequence[int]]
-        nodes_treeids: Attr[Sequence[int]]
-        nodes_truenodeids: Attr[Sequence[int]]
-        nodes_values: Attr[Sequence[float]]
-        nodes_values_as_tensor: Attr[ndarray]
-        post_transform: Attr[str]
-        target_ids: Attr[Sequence[int]]
-        target_nodeids: Attr[Sequence[int]]
-        target_treeids: Attr[Sequence[int]]
-        target_weights: Attr[Sequence[float]]
-        target_weights_as_tensor: Attr[ndarray]
+    @dataclass
+    class Attributes:
+        aggregate_function: AttrString
+        base_values: Optional[AttrFloat32s]
+        base_values_as_tensor: Optional[AttrTensor]
+        n_targets: Optional[AttrInt64]
+        nodes_falsenodeids: Optional[AttrInt64s]
+        nodes_featureids: Optional[AttrInt64s]
+        nodes_hitrates: Optional[AttrFloat32s]
+        nodes_hitrates_as_tensor: Optional[AttrTensor]
+        nodes_missing_value_tracks_true: Optional[AttrInt64s]
+        nodes_modes: Optional[AttrStrings]
+        nodes_nodeids: Optional[AttrInt64s]
+        nodes_treeids: Optional[AttrInt64s]
+        nodes_truenodeids: Optional[AttrInt64s]
+        nodes_values: Optional[AttrFloat32s]
+        nodes_values_as_tensor: Optional[AttrTensor]
+        post_transform: AttrString
+        target_ids: Optional[AttrInt64s]
+        target_nodeids: Optional[AttrInt64s]
+        target_treeids: Optional[AttrInt64s]
+        target_weights: Optional[AttrFloat32s]
+        target_weights_as_tensor: Optional[AttrTensor]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -414,9 +446,10 @@ class _TreeEnsembleRegressor(StandardNode):
 
 
 class _ZipMap(StandardNode):
-    class Attributes(AttrFields):
-        classlabels_int64s: Attr[Sequence[int]]
-        classlabels_strings: Attr[Sequence[str]]
+    @dataclass
+    class Attributes:
+        classlabels_int64s: Optional[AttrInt64s]
+        classlabels_strings: Optional[AttrStrings]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -504,7 +537,7 @@ def binarizer(
     """
     return _Binarizer(
         _Binarizer.Attributes(
-            threshold=threshold,
+            threshold=None if threshold is None else AttrFloat32(threshold),
         ),
         _Binarizer.Inputs(
             X=X,
@@ -561,9 +594,9 @@ def cast_map(
     """
     return _CastMap(
         _CastMap.Attributes(
-            cast_to=cast_to,
-            map_form=map_form,
-            max_map=max_map,
+            cast_to=None if cast_to is None else AttrString(cast_to),
+            map_form=None if map_form is None else AttrString(map_form),
+            max_map=None if max_map is None else AttrInt64(max_map),
         ),
         _CastMap.Inputs(
             X=X,
@@ -633,10 +666,12 @@ def category_mapper(
     """
     return _CategoryMapper(
         _CategoryMapper.Attributes(
-            cats_int64s=cats_int64s,
-            cats_strings=cats_strings,
-            default_int64=default_int64,
-            default_string=default_string,
+            cats_int64s=None if cats_int64s is None else AttrInt64s(cats_int64s),
+            cats_strings=None if cats_strings is None else AttrStrings(cats_strings),
+            default_int64=None if default_int64 is None else AttrInt64(default_int64),
+            default_string=None
+            if default_string is None
+            else AttrString(default_string),
         ),
         _CategoryMapper.Inputs(
             X=X,
@@ -701,8 +736,12 @@ def dict_vectorizer(
     """
     return _DictVectorizer(
         _DictVectorizer.Attributes(
-            int64_vocabulary=int64_vocabulary,
-            string_vocabulary=string_vocabulary,
+            int64_vocabulary=None
+            if int64_vocabulary is None
+            else AttrInt64s(int64_vocabulary),
+            string_vocabulary=None
+            if string_vocabulary is None
+            else AttrStrings(string_vocabulary),
         ),
         _DictVectorizer.Inputs(
             X=X,
@@ -749,7 +788,9 @@ def feature_vectorizer(
     """
     return _FeatureVectorizer(
         _FeatureVectorizer.Attributes(
-            inputdimensions=inputdimensions,
+            inputdimensions=None
+            if inputdimensions is None
+            else AttrInt64s(inputdimensions),
         ),
         _FeatureVectorizer.Inputs(
             X=X,
@@ -816,10 +857,18 @@ def imputer(
     """
     return _Imputer(
         _Imputer.Attributes(
-            imputed_value_floats=imputed_value_floats,
-            imputed_value_int64s=imputed_value_int64s,
-            replaced_value_float=replaced_value_float,
-            replaced_value_int64=replaced_value_int64,
+            imputed_value_floats=None
+            if imputed_value_floats is None
+            else AttrFloat32s(imputed_value_floats),
+            imputed_value_int64s=None
+            if imputed_value_int64s is None
+            else AttrInt64s(imputed_value_int64s),
+            replaced_value_float=None
+            if replaced_value_float is None
+            else AttrFloat32(replaced_value_float),
+            replaced_value_int64=None
+            if replaced_value_int64 is None
+            else AttrInt64(replaced_value_int64),
         ),
         _Imputer.Inputs(
             X=X,
@@ -918,15 +967,21 @@ def label_encoder(
     """
     return _LabelEncoder(
         _LabelEncoder.Attributes(
-            default_float=default_float,
-            default_int64=default_int64,
-            default_string=default_string,
-            keys_floats=keys_floats,
-            keys_int64s=keys_int64s,
-            keys_strings=keys_strings,
-            values_floats=values_floats,
-            values_int64s=values_int64s,
-            values_strings=values_strings,
+            default_float=None if default_float is None else AttrFloat32(default_float),
+            default_int64=None if default_int64 is None else AttrInt64(default_int64),
+            default_string=None
+            if default_string is None
+            else AttrString(default_string),
+            keys_floats=None if keys_floats is None else AttrFloat32s(keys_floats),
+            keys_int64s=None if keys_int64s is None else AttrInt64s(keys_int64s),
+            keys_strings=None if keys_strings is None else AttrStrings(keys_strings),
+            values_floats=None
+            if values_floats is None
+            else AttrFloat32s(values_floats),
+            values_int64s=None if values_int64s is None else AttrInt64s(values_int64s),
+            values_strings=None
+            if values_strings is None
+            else AttrStrings(values_strings),
         ),
         _LabelEncoder.Inputs(
             X=X,
@@ -992,12 +1047,18 @@ def linear_classifier(
     """
     return _LinearClassifier(
         _LinearClassifier.Attributes(
-            classlabels_ints=classlabels_ints,
-            classlabels_strings=classlabels_strings,
-            coefficients=coefficients,
-            intercepts=intercepts,
-            multi_class=multi_class,
-            post_transform=post_transform,
+            classlabels_ints=None
+            if classlabels_ints is None
+            else AttrInt64s(classlabels_ints),
+            classlabels_strings=None
+            if classlabels_strings is None
+            else AttrStrings(classlabels_strings),
+            coefficients=None if coefficients is None else AttrFloat32s(coefficients),
+            intercepts=None if intercepts is None else AttrFloat32s(intercepts),
+            multi_class=None if multi_class is None else AttrInt64(multi_class),
+            post_transform=None
+            if post_transform is None
+            else AttrString(post_transform),
         ),
         _LinearClassifier.Inputs(
             X=X,
@@ -1062,10 +1123,12 @@ def linear_regressor(
     """
     return _LinearRegressor(
         _LinearRegressor.Attributes(
-            coefficients=coefficients,
-            intercepts=intercepts,
-            post_transform=post_transform,
-            targets=targets,
+            coefficients=None if coefficients is None else AttrFloat32s(coefficients),
+            intercepts=None if intercepts is None else AttrFloat32s(intercepts),
+            post_transform=None
+            if post_transform is None
+            else AttrString(post_transform),
+            targets=None if targets is None else AttrInt64(targets),
         ),
         _LinearRegressor.Inputs(
             X=X,
@@ -1126,7 +1189,7 @@ def normalizer(
     """
     return _Normalizer(
         _Normalizer.Attributes(
-            norm=norm,
+            norm=None if norm is None else AttrString(norm),
         ),
         _Normalizer.Inputs(
             X=X,
@@ -1191,9 +1254,9 @@ def one_hot_encoder(
     """
     return _OneHotEncoder(
         _OneHotEncoder.Attributes(
-            cats_int64s=cats_int64s,
-            cats_strings=cats_strings,
-            zeros=zeros,
+            cats_int64s=None if cats_int64s is None else AttrInt64s(cats_int64s),
+            cats_strings=None if cats_strings is None else AttrStrings(cats_strings),
+            zeros=None if zeros is None else AttrInt64(zeros),
         ),
         _OneHotEncoder.Inputs(
             X=X,
@@ -1285,17 +1348,29 @@ def svmclassifier(
     """
     return _SVMClassifier(
         _SVMClassifier.Attributes(
-            classlabels_ints=classlabels_ints,
-            classlabels_strings=classlabels_strings,
-            coefficients=coefficients,
-            kernel_params=kernel_params,
-            kernel_type=kernel_type,
-            post_transform=post_transform,
-            prob_a=prob_a,
-            prob_b=prob_b,
-            rho=rho,
-            support_vectors=support_vectors,
-            vectors_per_class=vectors_per_class,
+            classlabels_ints=None
+            if classlabels_ints is None
+            else AttrInt64s(classlabels_ints),
+            classlabels_strings=None
+            if classlabels_strings is None
+            else AttrStrings(classlabels_strings),
+            coefficients=None if coefficients is None else AttrFloat32s(coefficients),
+            kernel_params=None
+            if kernel_params is None
+            else AttrFloat32s(kernel_params),
+            kernel_type=None if kernel_type is None else AttrString(kernel_type),
+            post_transform=None
+            if post_transform is None
+            else AttrString(post_transform),
+            prob_a=None if prob_a is None else AttrFloat32s(prob_a),
+            prob_b=None if prob_b is None else AttrFloat32s(prob_b),
+            rho=None if rho is None else AttrFloat32s(rho),
+            support_vectors=None
+            if support_vectors is None
+            else AttrFloat32s(support_vectors),
+            vectors_per_class=None
+            if vectors_per_class is None
+            else AttrInt64s(vectors_per_class),
         ),
         _SVMClassifier.Inputs(
             X=X,
@@ -1365,14 +1440,20 @@ def svmregressor(
     """
     return _SVMRegressor(
         _SVMRegressor.Attributes(
-            coefficients=coefficients,
-            kernel_params=kernel_params,
-            kernel_type=kernel_type,
-            n_supports=n_supports,
-            one_class=one_class,
-            post_transform=post_transform,
-            rho=rho,
-            support_vectors=support_vectors,
+            coefficients=None if coefficients is None else AttrFloat32s(coefficients),
+            kernel_params=None
+            if kernel_params is None
+            else AttrFloat32s(kernel_params),
+            kernel_type=None if kernel_type is None else AttrString(kernel_type),
+            n_supports=None if n_supports is None else AttrInt64(n_supports),
+            one_class=None if one_class is None else AttrInt64(one_class),
+            post_transform=None
+            if post_transform is None
+            else AttrString(post_transform),
+            rho=None if rho is None else AttrFloat32s(rho),
+            support_vectors=None
+            if support_vectors is None
+            else AttrFloat32s(support_vectors),
         ),
         _SVMRegressor.Inputs(
             X=X,
@@ -1422,8 +1503,8 @@ def scaler(
     """
     return _Scaler(
         _Scaler.Attributes(
-            offset=offset,
-            scale=scale,
+            offset=None if offset is None else AttrFloat32s(offset),
+            scale=None if scale is None else AttrFloat32s(scale),
         ),
         _Scaler.Inputs(
             X=X,
@@ -1573,27 +1654,53 @@ def tree_ensemble_classifier(
     """
     return _TreeEnsembleClassifier(
         _TreeEnsembleClassifier.Attributes(
-            base_values=base_values,
-            base_values_as_tensor=base_values_as_tensor,
-            class_ids=class_ids,
-            class_nodeids=class_nodeids,
-            class_treeids=class_treeids,
-            class_weights=class_weights,
-            class_weights_as_tensor=class_weights_as_tensor,
-            classlabels_int64s=classlabels_int64s,
-            classlabels_strings=classlabels_strings,
-            nodes_falsenodeids=nodes_falsenodeids,
-            nodes_featureids=nodes_featureids,
-            nodes_hitrates=nodes_hitrates,
-            nodes_hitrates_as_tensor=nodes_hitrates_as_tensor,
-            nodes_missing_value_tracks_true=nodes_missing_value_tracks_true,
-            nodes_modes=nodes_modes,
-            nodes_nodeids=nodes_nodeids,
-            nodes_treeids=nodes_treeids,
-            nodes_truenodeids=nodes_truenodeids,
-            nodes_values=nodes_values,
-            nodes_values_as_tensor=nodes_values_as_tensor,
-            post_transform=post_transform,
+            base_values=None if base_values is None else AttrFloat32s(base_values),
+            base_values_as_tensor=None
+            if base_values_as_tensor is None
+            else AttrTensor(base_values_as_tensor),
+            class_ids=None if class_ids is None else AttrInt64s(class_ids),
+            class_nodeids=None if class_nodeids is None else AttrInt64s(class_nodeids),
+            class_treeids=None if class_treeids is None else AttrInt64s(class_treeids),
+            class_weights=None
+            if class_weights is None
+            else AttrFloat32s(class_weights),
+            class_weights_as_tensor=None
+            if class_weights_as_tensor is None
+            else AttrTensor(class_weights_as_tensor),
+            classlabels_int64s=None
+            if classlabels_int64s is None
+            else AttrInt64s(classlabels_int64s),
+            classlabels_strings=None
+            if classlabels_strings is None
+            else AttrStrings(classlabels_strings),
+            nodes_falsenodeids=None
+            if nodes_falsenodeids is None
+            else AttrInt64s(nodes_falsenodeids),
+            nodes_featureids=None
+            if nodes_featureids is None
+            else AttrInt64s(nodes_featureids),
+            nodes_hitrates=None
+            if nodes_hitrates is None
+            else AttrFloat32s(nodes_hitrates),
+            nodes_hitrates_as_tensor=None
+            if nodes_hitrates_as_tensor is None
+            else AttrTensor(nodes_hitrates_as_tensor),
+            nodes_missing_value_tracks_true=None
+            if nodes_missing_value_tracks_true is None
+            else AttrInt64s(nodes_missing_value_tracks_true),
+            nodes_modes=None if nodes_modes is None else AttrStrings(nodes_modes),
+            nodes_nodeids=None if nodes_nodeids is None else AttrInt64s(nodes_nodeids),
+            nodes_treeids=None if nodes_treeids is None else AttrInt64s(nodes_treeids),
+            nodes_truenodeids=None
+            if nodes_truenodeids is None
+            else AttrInt64s(nodes_truenodeids),
+            nodes_values=None if nodes_values is None else AttrFloat32s(nodes_values),
+            nodes_values_as_tensor=None
+            if nodes_values_as_tensor is None
+            else AttrTensor(nodes_values_as_tensor),
+            post_transform=None
+            if post_transform is None
+            else AttrString(post_transform),
         ),
         _TreeEnsembleClassifier.Inputs(
             X=X,
@@ -1742,27 +1849,55 @@ def tree_ensemble_regressor(
     """
     return _TreeEnsembleRegressor(
         _TreeEnsembleRegressor.Attributes(
-            aggregate_function=aggregate_function,
-            base_values=base_values,
-            base_values_as_tensor=base_values_as_tensor,
-            n_targets=n_targets,
-            nodes_falsenodeids=nodes_falsenodeids,
-            nodes_featureids=nodes_featureids,
-            nodes_hitrates=nodes_hitrates,
-            nodes_hitrates_as_tensor=nodes_hitrates_as_tensor,
-            nodes_missing_value_tracks_true=nodes_missing_value_tracks_true,
-            nodes_modes=nodes_modes,
-            nodes_nodeids=nodes_nodeids,
-            nodes_treeids=nodes_treeids,
-            nodes_truenodeids=nodes_truenodeids,
-            nodes_values=nodes_values,
-            nodes_values_as_tensor=nodes_values_as_tensor,
-            post_transform=post_transform,
-            target_ids=target_ids,
-            target_nodeids=target_nodeids,
-            target_treeids=target_treeids,
-            target_weights=target_weights,
-            target_weights_as_tensor=target_weights_as_tensor,
+            aggregate_function=None
+            if aggregate_function is None
+            else AttrString(aggregate_function),
+            base_values=None if base_values is None else AttrFloat32s(base_values),
+            base_values_as_tensor=None
+            if base_values_as_tensor is None
+            else AttrTensor(base_values_as_tensor),
+            n_targets=None if n_targets is None else AttrInt64(n_targets),
+            nodes_falsenodeids=None
+            if nodes_falsenodeids is None
+            else AttrInt64s(nodes_falsenodeids),
+            nodes_featureids=None
+            if nodes_featureids is None
+            else AttrInt64s(nodes_featureids),
+            nodes_hitrates=None
+            if nodes_hitrates is None
+            else AttrFloat32s(nodes_hitrates),
+            nodes_hitrates_as_tensor=None
+            if nodes_hitrates_as_tensor is None
+            else AttrTensor(nodes_hitrates_as_tensor),
+            nodes_missing_value_tracks_true=None
+            if nodes_missing_value_tracks_true is None
+            else AttrInt64s(nodes_missing_value_tracks_true),
+            nodes_modes=None if nodes_modes is None else AttrStrings(nodes_modes),
+            nodes_nodeids=None if nodes_nodeids is None else AttrInt64s(nodes_nodeids),
+            nodes_treeids=None if nodes_treeids is None else AttrInt64s(nodes_treeids),
+            nodes_truenodeids=None
+            if nodes_truenodeids is None
+            else AttrInt64s(nodes_truenodeids),
+            nodes_values=None if nodes_values is None else AttrFloat32s(nodes_values),
+            nodes_values_as_tensor=None
+            if nodes_values_as_tensor is None
+            else AttrTensor(nodes_values_as_tensor),
+            post_transform=None
+            if post_transform is None
+            else AttrString(post_transform),
+            target_ids=None if target_ids is None else AttrInt64s(target_ids),
+            target_nodeids=None
+            if target_nodeids is None
+            else AttrInt64s(target_nodeids),
+            target_treeids=None
+            if target_treeids is None
+            else AttrInt64s(target_treeids),
+            target_weights=None
+            if target_weights is None
+            else AttrFloat32s(target_weights),
+            target_weights_as_tensor=None
+            if target_weights_as_tensor is None
+            else AttrTensor(target_weights_as_tensor),
         ),
         _TreeEnsembleRegressor.Inputs(
             X=X,
@@ -1819,8 +1954,12 @@ def zip_map(
     """
     return _ZipMap(
         _ZipMap.Attributes(
-            classlabels_int64s=classlabels_int64s,
-            classlabels_strings=classlabels_strings,
+            classlabels_int64s=None
+            if classlabels_int64s is None
+            else AttrInt64s(classlabels_int64s),
+            classlabels_strings=None
+            if classlabels_strings is None
+            else AttrStrings(classlabels_strings),
         ),
         _ZipMap.Inputs(
             X=X,

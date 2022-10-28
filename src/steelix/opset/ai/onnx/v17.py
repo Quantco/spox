@@ -1,5 +1,6 @@
 # flake8: noqa
 import typing  # noqa: F401
+from dataclasses import dataclass
 from typing import (  # noqa: F401
     Any,
     Callable,
@@ -16,11 +17,20 @@ from typing import cast as typing_cast  # noqa: F401
 import numpy  # noqa: F401
 from numpy import ndarray  # noqa: F401
 
+from steelix._attributes import (
+    AttrDtype,
+    AttrFloat32,
+    AttrFloat32s,
+    AttrGraph,
+    AttrInt64,
+    AttrInt64s,
+    AttrString,
+    AttrStrings,
+    AttrTensor,
+    AttrType,
+)
 from steelix.arrow import Arrow, _nil, result_type  # noqa: F401
 from steelix.arrowfields import ArrowFields, NoArrows  # noqa: F401
-from steelix.attr import Attr  # noqa: F401
-from steelix.attrfields import AttrFields, NoAttrs  # noqa: F401
-from steelix.fields import of  # noqa: F401
 from steelix.graph import Graph, subgraph  # noqa: F401
 from steelix.internal_op import intro  # noqa: F401
 from steelix.node import OpType  # noqa: F401
@@ -29,7 +39,9 @@ from steelix.type_system import Tensor, Type, type_match  # noqa: F401
 
 
 class _Abs(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -39,13 +51,15 @@ class _Abs(StandardNode):
 
     op_type = OpType("Abs", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Acos(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -55,13 +69,15 @@ class _Acos(StandardNode):
 
     op_type = OpType("Acos", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Acosh(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -71,13 +87,15 @@ class _Acosh(StandardNode):
 
     op_type = OpType("Acosh", "", 9)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Add(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -88,13 +106,15 @@ class _Add(StandardNode):
 
     op_type = OpType("Add", "", 14)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _And(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -105,16 +125,17 @@ class _And(StandardNode):
 
     op_type = OpType("And", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _ArgMax(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        keepdims: Attr[int]
-        select_last_index: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        keepdims: AttrInt64
+        select_last_index: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -130,10 +151,11 @@ class _ArgMax(StandardNode):
 
 
 class _ArgMin(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        keepdims: Attr[int]
-        select_last_index: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        keepdims: AttrInt64
+        select_last_index: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -149,7 +171,9 @@ class _ArgMin(StandardNode):
 
 
 class _Asin(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -159,13 +183,15 @@ class _Asin(StandardNode):
 
     op_type = OpType("Asin", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Asinh(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -175,13 +201,15 @@ class _Asinh(StandardNode):
 
     op_type = OpType("Asinh", "", 9)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Atan(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -191,13 +219,15 @@ class _Atan(StandardNode):
 
     op_type = OpType("Atan", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Atanh(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -207,19 +237,20 @@ class _Atanh(StandardNode):
 
     op_type = OpType("Atanh", "", 9)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _AveragePool(StandardNode):
-    class Attributes(AttrFields):
-        auto_pad: Attr[str]
-        ceil_mode: Attr[int]
-        count_include_pad: Attr[int]
-        kernel_shape: Attr[Sequence[int]]
-        pads: Attr[Sequence[int]]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        auto_pad: AttrString
+        ceil_mode: AttrInt64
+        count_include_pad: AttrInt64
+        kernel_shape: AttrInt64s
+        pads: Optional[AttrInt64s]
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -235,10 +266,11 @@ class _AveragePool(StandardNode):
 
 
 class _BatchNormalization(StandardNode):
-    class Attributes(AttrFields):
-        epsilon: Attr[float]
-        momentum: Attr[float]
-        training_mode: Attr[int]
+    @dataclass
+    class Attributes:
+        epsilon: AttrFloat32
+        momentum: AttrFloat32
+        training_mode: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -260,9 +292,10 @@ class _BatchNormalization(StandardNode):
 
 
 class _Bernoulli(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
-        seed: Attr[float]
+    @dataclass
+    class Attributes:
+        dtype: Optional[AttrDtype]
+        seed: Optional[AttrFloat32]
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -278,8 +311,9 @@ class _Bernoulli(StandardNode):
 
 
 class _BitShift(StandardNode):
-    class Attributes(AttrFields):
-        direction: Attr[str]
+    @dataclass
+    class Attributes:
+        direction: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -296,9 +330,10 @@ class _BitShift(StandardNode):
 
 
 class _BlackmanWindow(StandardNode):
-    class Attributes(AttrFields):
-        output_datatype: Attr[int]
-        periodic: Attr[int]
+    @dataclass
+    class Attributes:
+        output_datatype: AttrInt64
+        periodic: AttrInt64
 
     class Inputs(ArrowFields):
         size: Arrow
@@ -314,8 +349,9 @@ class _BlackmanWindow(StandardNode):
 
 
 class _Cast(StandardNode):
-    class Attributes(AttrFields):
-        to: Attr[numpy.generic]
+    @dataclass
+    class Attributes:
+        to: AttrDtype
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -331,7 +367,9 @@ class _Cast(StandardNode):
 
 
 class _CastLike(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -342,13 +380,15 @@ class _CastLike(StandardNode):
 
     op_type = OpType("CastLike", "", 15)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Ceil(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -358,14 +398,15 @@ class _Ceil(StandardNode):
 
     op_type = OpType("Ceil", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Celu(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -381,7 +422,9 @@ class _Celu(StandardNode):
 
 
 class _Clip(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -393,14 +436,15 @@ class _Clip(StandardNode):
 
     op_type = OpType("Clip", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Compress(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: Optional[AttrInt64]
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -417,8 +461,9 @@ class _Compress(StandardNode):
 
 
 class _Concat(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         inputs: Sequence[Arrow]
@@ -434,9 +479,10 @@ class _Concat(StandardNode):
 
 
 class _ConcatFromSequence(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        new_axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        new_axis: AttrInt64
 
     class Inputs(ArrowFields):
         input_sequence: Arrow
@@ -452,15 +498,15 @@ class _ConcatFromSequence(StandardNode):
 
 
 class _Constant(StandardNode):
-    class Attributes(AttrFields):
-        sparse_value: Attr[Any]
-        value: Attr[ndarray]
-        value_float: Attr[float]
-        value_floats: Attr[Sequence[float]]
-        value_int: Attr[int]
-        value_ints: Attr[Sequence[int]]
-        value_string: Attr[str]
-        value_strings: Attr[Sequence[str]]
+    @dataclass
+    class Attributes:
+        value: Optional[AttrTensor]
+        value_float: Optional[AttrFloat32]
+        value_floats: Optional[AttrFloat32s]
+        value_int: Optional[AttrInt64]
+        value_ints: Optional[AttrInt64s]
+        value_string: Optional[AttrString]
+        value_strings: Optional[AttrStrings]
 
     Inputs = NoArrows
 
@@ -468,8 +514,12 @@ class _Constant(StandardNode):
         output: Arrow
 
     def propagate_values(self) -> Dict[str, Any]:
+        from dataclasses import asdict
+
         ((key, raw),) = (
-            (k, v.value) for k, v in self.attrs.as_dict().items() if v.value is not None
+            (k, v._deref().value)
+            for k, v in self.attrs.__dict__.items()
+            if v is not None
         )
         if key == "value":
             value = raw
@@ -501,8 +551,9 @@ class _Constant(StandardNode):
 
 
 class _ConstantOfShape(StandardNode):
-    class Attributes(AttrFields):
-        value: Attr[ndarray]
+    @dataclass
+    class Attributes:
+        value: Optional[AttrTensor]
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -518,13 +569,14 @@ class _ConstantOfShape(StandardNode):
 
 
 class _Conv(StandardNode):
-    class Attributes(AttrFields):
-        auto_pad: Attr[str]
-        dilations: Attr[Sequence[int]]
-        group: Attr[int]
-        kernel_shape: Attr[Sequence[int]]
-        pads: Attr[Sequence[int]]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        auto_pad: AttrString
+        dilations: Optional[AttrInt64s]
+        group: AttrInt64
+        kernel_shape: Optional[AttrInt64s]
+        pads: Optional[AttrInt64s]
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -542,13 +594,14 @@ class _Conv(StandardNode):
 
 
 class _ConvInteger(StandardNode):
-    class Attributes(AttrFields):
-        auto_pad: Attr[str]
-        dilations: Attr[Sequence[int]]
-        group: Attr[int]
-        kernel_shape: Attr[Sequence[int]]
-        pads: Attr[Sequence[int]]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        auto_pad: AttrString
+        dilations: Optional[AttrInt64s]
+        group: AttrInt64
+        kernel_shape: Optional[AttrInt64s]
+        pads: Optional[AttrInt64s]
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         x: Arrow
@@ -567,15 +620,16 @@ class _ConvInteger(StandardNode):
 
 
 class _ConvTranspose(StandardNode):
-    class Attributes(AttrFields):
-        auto_pad: Attr[str]
-        dilations: Attr[Sequence[int]]
-        group: Attr[int]
-        kernel_shape: Attr[Sequence[int]]
-        output_padding: Attr[Sequence[int]]
-        output_shape: Attr[Sequence[int]]
-        pads: Attr[Sequence[int]]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        auto_pad: AttrString
+        dilations: Optional[AttrInt64s]
+        group: AttrInt64
+        kernel_shape: Optional[AttrInt64s]
+        output_padding: Optional[AttrInt64s]
+        output_shape: Optional[AttrInt64s]
+        pads: Optional[AttrInt64s]
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -593,7 +647,9 @@ class _ConvTranspose(StandardNode):
 
 
 class _Cos(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -603,13 +659,15 @@ class _Cos(StandardNode):
 
     op_type = OpType("Cos", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Cosh(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -619,15 +677,16 @@ class _Cosh(StandardNode):
 
     op_type = OpType("Cosh", "", 9)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _CumSum(StandardNode):
-    class Attributes(AttrFields):
-        exclusive: Attr[int]
-        reverse: Attr[int]
+    @dataclass
+    class Attributes:
+        exclusive: AttrInt64
+        reverse: AttrInt64
 
     class Inputs(ArrowFields):
         x: Arrow
@@ -644,10 +703,11 @@ class _CumSum(StandardNode):
 
 
 class _DFT(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        inverse: Attr[int]
-        onesided: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        inverse: AttrInt64
+        onesided: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -664,9 +724,10 @@ class _DFT(StandardNode):
 
 
 class _DepthToSpace(StandardNode):
-    class Attributes(AttrFields):
-        blocksize: Attr[int]
-        mode: Attr[str]
+    @dataclass
+    class Attributes:
+        blocksize: AttrInt64
+        mode: AttrString
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -682,8 +743,9 @@ class _DepthToSpace(StandardNode):
 
 
 class _DequantizeLinear(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         x: Arrow
@@ -701,7 +763,9 @@ class _DequantizeLinear(StandardNode):
 
 
 class _Det(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -711,13 +775,15 @@ class _Det(StandardNode):
 
     op_type = OpType("Det", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Div(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -728,14 +794,15 @@ class _Div(StandardNode):
 
     op_type = OpType("Div", "", 14)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Dropout(StandardNode):
-    class Attributes(AttrFields):
-        seed: Attr[int]
+    @dataclass
+    class Attributes:
+        seed: Optional[AttrInt64]
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -754,7 +821,9 @@ class _Dropout(StandardNode):
 
 
 class _DynamicQuantizeLinear(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         x: Arrow
@@ -766,14 +835,15 @@ class _DynamicQuantizeLinear(StandardNode):
 
     op_type = OpType("DynamicQuantizeLinear", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Einsum(StandardNode):
-    class Attributes(AttrFields):
-        equation: Attr[str]
+    @dataclass
+    class Attributes:
+        equation: AttrString
 
     class Inputs(ArrowFields):
         Inputs: Sequence[Arrow]
@@ -789,8 +859,9 @@ class _Einsum(StandardNode):
 
 
 class _Elu(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -806,7 +877,9 @@ class _Elu(StandardNode):
 
 
 class _Equal(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -817,13 +890,15 @@ class _Equal(StandardNode):
 
     op_type = OpType("Equal", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Erf(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -833,13 +908,15 @@ class _Erf(StandardNode):
 
     op_type = OpType("Erf", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Exp(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -849,13 +926,15 @@ class _Exp(StandardNode):
 
     op_type = OpType("Exp", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Expand(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -866,15 +945,16 @@ class _Expand(StandardNode):
 
     op_type = OpType("Expand", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _EyeLike(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
-        k: Attr[int]
+    @dataclass
+    class Attributes:
+        dtype: Optional[AttrDtype]
+        k: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -890,8 +970,9 @@ class _EyeLike(StandardNode):
 
 
 class _Flatten(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -907,7 +988,9 @@ class _Flatten(StandardNode):
 
 
 class _Floor(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -917,21 +1000,22 @@ class _Floor(StandardNode):
 
     op_type = OpType("Floor", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _GRU(StandardNode):
-    class Attributes(AttrFields):
-        activation_alpha: Attr[Sequence[float]]
-        activation_beta: Attr[Sequence[float]]
-        activations: Attr[Sequence[str]]
-        clip: Attr[float]
-        direction: Attr[str]
-        hidden_size: Attr[int]
-        layout: Attr[int]
-        linear_before_reset: Attr[int]
+    @dataclass
+    class Attributes:
+        activation_alpha: Optional[AttrFloat32s]
+        activation_beta: Optional[AttrFloat32s]
+        activations: Optional[AttrStrings]
+        clip: Optional[AttrFloat32]
+        direction: AttrString
+        hidden_size: Optional[AttrInt64]
+        layout: AttrInt64
+        linear_before_reset: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -953,8 +1037,9 @@ class _GRU(StandardNode):
 
 
 class _Gather(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -971,8 +1056,9 @@ class _Gather(StandardNode):
 
 
 class _GatherElements(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -989,8 +1075,9 @@ class _GatherElements(StandardNode):
 
 
 class _GatherND(StandardNode):
-    class Attributes(AttrFields):
-        batch_dims: Attr[int]
+    @dataclass
+    class Attributes:
+        batch_dims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -1007,11 +1094,12 @@ class _GatherND(StandardNode):
 
 
 class _Gemm(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
-        beta: Attr[float]
-        transA: Attr[int]
-        transB: Attr[int]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
+        beta: AttrFloat32
+        transA: AttrInt64
+        transB: AttrInt64
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1029,7 +1117,9 @@ class _Gemm(StandardNode):
 
 
 class _GlobalAveragePool(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1039,14 +1129,15 @@ class _GlobalAveragePool(StandardNode):
 
     op_type = OpType("GlobalAveragePool", "", 1)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _GlobalLpPool(StandardNode):
-    class Attributes(AttrFields):
-        p: Attr[int]
+    @dataclass
+    class Attributes:
+        p: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1062,7 +1153,9 @@ class _GlobalLpPool(StandardNode):
 
 
 class _GlobalMaxPool(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1072,13 +1165,15 @@ class _GlobalMaxPool(StandardNode):
 
     op_type = OpType("GlobalMaxPool", "", 1)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Greater(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1089,13 +1184,15 @@ class _Greater(StandardNode):
 
     op_type = OpType("Greater", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _GreaterOrEqual(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1106,16 +1203,17 @@ class _GreaterOrEqual(StandardNode):
 
     op_type = OpType("GreaterOrEqual", "", 16)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _GridSample(StandardNode):
-    class Attributes(AttrFields):
-        align_corners: Attr[int]
-        mode: Attr[str]
-        padding_mode: Attr[str]
+    @dataclass
+    class Attributes:
+        align_corners: AttrInt64
+        mode: AttrString
+        padding_mode: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1132,9 +1230,10 @@ class _GridSample(StandardNode):
 
 
 class _HammingWindow(StandardNode):
-    class Attributes(AttrFields):
-        output_datatype: Attr[int]
-        periodic: Attr[int]
+    @dataclass
+    class Attributes:
+        output_datatype: AttrInt64
+        periodic: AttrInt64
 
     class Inputs(ArrowFields):
         size: Arrow
@@ -1150,9 +1249,10 @@ class _HammingWindow(StandardNode):
 
 
 class _HannWindow(StandardNode):
-    class Attributes(AttrFields):
-        output_datatype: Attr[int]
-        periodic: Attr[int]
+    @dataclass
+    class Attributes:
+        output_datatype: AttrInt64
+        periodic: AttrInt64
 
     class Inputs(ArrowFields):
         size: Arrow
@@ -1168,9 +1268,10 @@ class _HannWindow(StandardNode):
 
 
 class _HardSigmoid(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
-        beta: Attr[float]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
+        beta: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1186,7 +1287,9 @@ class _HardSigmoid(StandardNode):
 
 
 class _HardSwish(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1196,14 +1299,15 @@ class _HardSwish(StandardNode):
 
     op_type = OpType("HardSwish", "", 14)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Hardmax(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1219,7 +1323,9 @@ class _Hardmax(StandardNode):
 
 
 class _Identity(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1229,15 +1335,16 @@ class _Identity(StandardNode):
 
     op_type = OpType("Identity", "", 16)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _If(StandardNode):
-    class Attributes(AttrFields):
-        else_branch: Attr[Graph]
-        then_branch: Attr[Graph]
+    @dataclass
+    class Attributes:
+        else_branch: AttrGraph
+        then_branch: AttrGraph
 
     class Inputs(ArrowFields):
         cond: Arrow
@@ -1253,8 +1360,9 @@ class _If(StandardNode):
 
 
 class _InstanceNormalization(StandardNode):
-    class Attributes(AttrFields):
-        epsilon: Attr[float]
+    @dataclass
+    class Attributes:
+        epsilon: AttrFloat32
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1272,9 +1380,10 @@ class _InstanceNormalization(StandardNode):
 
 
 class _IsInf(StandardNode):
-    class Attributes(AttrFields):
-        detect_negative: Attr[int]
-        detect_positive: Attr[int]
+    @dataclass
+    class Attributes:
+        detect_negative: AttrInt64
+        detect_positive: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1290,7 +1399,9 @@ class _IsInf(StandardNode):
 
 
 class _IsNaN(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1300,17 +1411,18 @@ class _IsNaN(StandardNode):
 
     op_type = OpType("IsNaN", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _LRN(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
-        beta: Attr[float]
-        bias: Attr[float]
-        size: Attr[int]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
+        beta: AttrFloat32
+        bias: AttrFloat32
+        size: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1326,15 +1438,16 @@ class _LRN(StandardNode):
 
 
 class _LSTM(StandardNode):
-    class Attributes(AttrFields):
-        activation_alpha: Attr[Sequence[float]]
-        activation_beta: Attr[Sequence[float]]
-        activations: Attr[Sequence[str]]
-        clip: Attr[float]
-        direction: Attr[str]
-        hidden_size: Attr[int]
-        input_forget: Attr[int]
-        layout: Attr[int]
+    @dataclass
+    class Attributes:
+        activation_alpha: Optional[AttrFloat32s]
+        activation_beta: Optional[AttrFloat32s]
+        activations: Optional[AttrStrings]
+        clip: Optional[AttrFloat32]
+        direction: AttrString
+        hidden_size: Optional[AttrInt64]
+        input_forget: AttrInt64
+        layout: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1359,10 +1472,11 @@ class _LSTM(StandardNode):
 
 
 class _LayerNormalization(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        epsilon: Attr[float]
-        stash_type: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        epsilon: AttrFloat32
+        stash_type: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1382,8 +1496,9 @@ class _LayerNormalization(StandardNode):
 
 
 class _LeakyRelu(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1399,7 +1514,9 @@ class _LeakyRelu(StandardNode):
 
 
 class _Less(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1410,13 +1527,15 @@ class _Less(StandardNode):
 
     op_type = OpType("Less", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _LessOrEqual(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1427,13 +1546,15 @@ class _LessOrEqual(StandardNode):
 
     op_type = OpType("LessOrEqual", "", 16)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Log(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1443,14 +1564,15 @@ class _Log(StandardNode):
 
     op_type = OpType("Log", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _LogSoftmax(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1466,8 +1588,9 @@ class _LogSoftmax(StandardNode):
 
 
 class _Loop(StandardNode):
-    class Attributes(AttrFields):
-        body: Attr[Graph]
+    @dataclass
+    class Attributes:
+        body: AttrGraph
 
     class Inputs(ArrowFields):
         M: Optional[Arrow]
@@ -1485,9 +1608,10 @@ class _Loop(StandardNode):
 
 
 class _LpNormalization(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        p: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        p: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1503,12 +1627,13 @@ class _LpNormalization(StandardNode):
 
 
 class _LpPool(StandardNode):
-    class Attributes(AttrFields):
-        auto_pad: Attr[str]
-        kernel_shape: Attr[Sequence[int]]
-        p: Attr[int]
-        pads: Attr[Sequence[int]]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        auto_pad: AttrString
+        kernel_shape: AttrInt64s
+        p: AttrInt64
+        pads: Optional[AttrInt64s]
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1524,7 +1649,9 @@ class _LpPool(StandardNode):
 
 
 class _MatMul(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1535,13 +1662,15 @@ class _MatMul(StandardNode):
 
     op_type = OpType("MatMul", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _MatMulInteger(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1554,13 +1683,15 @@ class _MatMulInteger(StandardNode):
 
     op_type = OpType("MatMulInteger", "", 10)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Max(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data_0: Sequence[Arrow]
@@ -1570,20 +1701,21 @@ class _Max(StandardNode):
 
     op_type = OpType("Max", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _MaxPool(StandardNode):
-    class Attributes(AttrFields):
-        auto_pad: Attr[str]
-        ceil_mode: Attr[int]
-        dilations: Attr[Sequence[int]]
-        kernel_shape: Attr[Sequence[int]]
-        pads: Attr[Sequence[int]]
-        storage_order: Attr[int]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        auto_pad: AttrString
+        ceil_mode: AttrInt64
+        dilations: Optional[AttrInt64s]
+        kernel_shape: AttrInt64s
+        pads: Optional[AttrInt64s]
+        storage_order: AttrInt64
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1600,9 +1732,10 @@ class _MaxPool(StandardNode):
 
 
 class _MaxRoiPool(StandardNode):
-    class Attributes(AttrFields):
-        pooled_shape: Attr[Sequence[int]]
-        spatial_scale: Attr[float]
+    @dataclass
+    class Attributes:
+        pooled_shape: AttrInt64s
+        spatial_scale: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1619,10 +1752,11 @@ class _MaxRoiPool(StandardNode):
 
 
 class _MaxUnpool(StandardNode):
-    class Attributes(AttrFields):
-        kernel_shape: Attr[Sequence[int]]
-        pads: Attr[Sequence[int]]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        kernel_shape: AttrInt64s
+        pads: Optional[AttrInt64s]
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1640,7 +1774,9 @@ class _MaxUnpool(StandardNode):
 
 
 class _Mean(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data_0: Sequence[Arrow]
@@ -1650,14 +1786,15 @@ class _Mean(StandardNode):
 
     op_type = OpType("Mean", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _MeanVarianceNormalization(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        axes: AttrInt64s
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1673,8 +1810,9 @@ class _MeanVarianceNormalization(StandardNode):
 
 
 class _MelWeightMatrix(StandardNode):
-    class Attributes(AttrFields):
-        output_datatype: Attr[int]
+    @dataclass
+    class Attributes:
+        output_datatype: AttrInt64
 
     class Inputs(ArrowFields):
         num_mel_bins: Arrow
@@ -1694,7 +1832,9 @@ class _MelWeightMatrix(StandardNode):
 
 
 class _Min(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data_0: Sequence[Arrow]
@@ -1704,14 +1844,15 @@ class _Min(StandardNode):
 
     op_type = OpType("Min", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Mod(StandardNode):
-    class Attributes(AttrFields):
-        fmod: Attr[int]
+    @dataclass
+    class Attributes:
+        fmod: AttrInt64
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1728,7 +1869,9 @@ class _Mod(StandardNode):
 
 
 class _Mul(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1739,16 +1882,17 @@ class _Mul(StandardNode):
 
     op_type = OpType("Mul", "", 14)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Multinomial(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
-        sample_size: Attr[int]
-        seed: Attr[float]
+    @dataclass
+    class Attributes:
+        dtype: AttrDtype
+        sample_size: AttrInt64
+        seed: Optional[AttrFloat32]
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1764,7 +1908,9 @@ class _Multinomial(StandardNode):
 
 
 class _Neg(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1774,15 +1920,16 @@ class _Neg(StandardNode):
 
     op_type = OpType("Neg", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _NegativeLogLikelihoodLoss(StandardNode):
-    class Attributes(AttrFields):
-        ignore_index: Attr[int]
-        reduction: Attr[str]
+    @dataclass
+    class Attributes:
+        ignore_index: Optional[AttrInt64]
+        reduction: AttrString
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1800,8 +1947,9 @@ class _NegativeLogLikelihoodLoss(StandardNode):
 
 
 class _NonMaxSuppression(StandardNode):
-    class Attributes(AttrFields):
-        center_point_box: Attr[int]
+    @dataclass
+    class Attributes:
+        center_point_box: AttrInt64
 
     class Inputs(ArrowFields):
         boxes: Arrow
@@ -1821,7 +1969,9 @@ class _NonMaxSuppression(StandardNode):
 
 
 class _NonZero(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1831,13 +1981,15 @@ class _NonZero(StandardNode):
 
     op_type = OpType("NonZero", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Not(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1847,14 +1999,15 @@ class _Not(StandardNode):
 
     op_type = OpType("Not", "", 1)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _OneHot(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         indices: Arrow
@@ -1872,8 +2025,9 @@ class _OneHot(StandardNode):
 
 
 class _Optional(StandardNode):
-    class Attributes(AttrFields):
-        type: Attr[Type]
+    @dataclass
+    class Attributes:
+        type: Optional[AttrType]
 
     class Inputs(ArrowFields):
         input: Optional[Arrow]
@@ -1889,7 +2043,9 @@ class _Optional(StandardNode):
 
 
 class _OptionalGetElement(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1899,13 +2055,15 @@ class _OptionalGetElement(StandardNode):
 
     op_type = OpType("OptionalGetElement", "", 15)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _OptionalHasElement(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -1915,13 +2073,15 @@ class _OptionalHasElement(StandardNode):
 
     op_type = OpType("OptionalHasElement", "", 15)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Or(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -1932,13 +2092,15 @@ class _Or(StandardNode):
 
     op_type = OpType("Or", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _PRelu(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1949,14 +2111,15 @@ class _PRelu(StandardNode):
 
     op_type = OpType("PRelu", "", 16)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Pad(StandardNode):
-    class Attributes(AttrFields):
-        mode: Attr[str]
+    @dataclass
+    class Attributes:
+        mode: AttrString
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -1974,7 +2137,9 @@ class _Pad(StandardNode):
 
 
 class _Pow(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -1985,19 +2150,20 @@ class _Pow(StandardNode):
 
     op_type = OpType("Pow", "", 15)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _QLinearConv(StandardNode):
-    class Attributes(AttrFields):
-        auto_pad: Attr[str]
-        dilations: Attr[Sequence[int]]
-        group: Attr[int]
-        kernel_shape: Attr[Sequence[int]]
-        pads: Attr[Sequence[int]]
-        strides: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        auto_pad: AttrString
+        dilations: Optional[AttrInt64s]
+        group: AttrInt64
+        kernel_shape: Optional[AttrInt64s]
+        pads: Optional[AttrInt64s]
+        strides: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         x: Arrow
@@ -2021,7 +2187,9 @@ class _QLinearConv(StandardNode):
 
 
 class _QLinearMatMul(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         a: Arrow
@@ -2038,14 +2206,15 @@ class _QLinearMatMul(StandardNode):
 
     op_type = OpType("QLinearMatMul", "", 10)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _QuantizeLinear(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         x: Arrow
@@ -2063,14 +2232,15 @@ class _QuantizeLinear(StandardNode):
 
 
 class _RNN(StandardNode):
-    class Attributes(AttrFields):
-        activation_alpha: Attr[Sequence[float]]
-        activation_beta: Attr[Sequence[float]]
-        activations: Attr[Sequence[str]]
-        clip: Attr[float]
-        direction: Attr[str]
-        hidden_size: Attr[int]
-        layout: Attr[int]
+    @dataclass
+    class Attributes:
+        activation_alpha: Optional[AttrFloat32s]
+        activation_beta: Optional[AttrFloat32s]
+        activations: AttrStrings
+        clip: Optional[AttrFloat32]
+        direction: AttrString
+        hidden_size: Optional[AttrInt64]
+        layout: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2092,12 +2262,13 @@ class _RNN(StandardNode):
 
 
 class _RandomNormal(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
-        mean: Attr[float]
-        scale: Attr[float]
-        seed: Attr[float]
-        shape: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        dtype: AttrDtype
+        mean: AttrFloat32
+        scale: AttrFloat32
+        seed: Optional[AttrFloat32]
+        shape: AttrInt64s
 
     Inputs = NoArrows
 
@@ -2112,11 +2283,12 @@ class _RandomNormal(StandardNode):
 
 
 class _RandomNormalLike(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
-        mean: Attr[float]
-        scale: Attr[float]
-        seed: Attr[float]
+    @dataclass
+    class Attributes:
+        dtype: Optional[AttrDtype]
+        mean: AttrFloat32
+        scale: AttrFloat32
+        seed: Optional[AttrFloat32]
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2132,12 +2304,13 @@ class _RandomNormalLike(StandardNode):
 
 
 class _RandomUniform(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
-        high: Attr[float]
-        low: Attr[float]
-        seed: Attr[float]
-        shape: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        dtype: AttrDtype
+        high: AttrFloat32
+        low: AttrFloat32
+        seed: Optional[AttrFloat32]
+        shape: AttrInt64s
 
     Inputs = NoArrows
 
@@ -2152,11 +2325,12 @@ class _RandomUniform(StandardNode):
 
 
 class _RandomUniformLike(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
-        high: Attr[float]
-        low: Attr[float]
-        seed: Attr[float]
+    @dataclass
+    class Attributes:
+        dtype: Optional[AttrDtype]
+        high: AttrFloat32
+        low: AttrFloat32
+        seed: Optional[AttrFloat32]
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2172,7 +2346,9 @@ class _RandomUniformLike(StandardNode):
 
 
 class _Range(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         start: Arrow
@@ -2184,13 +2360,15 @@ class _Range(StandardNode):
 
     op_type = OpType("Range", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Reciprocal(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2200,15 +2378,16 @@ class _Reciprocal(StandardNode):
 
     op_type = OpType("Reciprocal", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _ReduceL1(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2224,9 +2403,10 @@ class _ReduceL1(StandardNode):
 
 
 class _ReduceL2(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2242,9 +2422,10 @@ class _ReduceL2(StandardNode):
 
 
 class _ReduceLogSum(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2260,9 +2441,10 @@ class _ReduceLogSum(StandardNode):
 
 
 class _ReduceLogSumExp(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2278,9 +2460,10 @@ class _ReduceLogSumExp(StandardNode):
 
 
 class _ReduceMax(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2296,9 +2479,10 @@ class _ReduceMax(StandardNode):
 
 
 class _ReduceMean(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2314,9 +2498,10 @@ class _ReduceMean(StandardNode):
 
 
 class _ReduceMin(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2332,9 +2517,10 @@ class _ReduceMin(StandardNode):
 
 
 class _ReduceProd(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2350,9 +2536,10 @@ class _ReduceProd(StandardNode):
 
 
 class _ReduceSum(StandardNode):
-    class Attributes(AttrFields):
-        keepdims: Attr[int]
-        noop_with_empty_axes: Attr[int]
+    @dataclass
+    class Attributes:
+        keepdims: AttrInt64
+        noop_with_empty_axes: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2369,9 +2556,10 @@ class _ReduceSum(StandardNode):
 
 
 class _ReduceSumSquare(StandardNode):
-    class Attributes(AttrFields):
-        axes: Attr[Sequence[int]]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axes: Optional[AttrInt64s]
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2387,7 +2575,9 @@ class _ReduceSumSquare(StandardNode):
 
 
 class _Relu(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2397,14 +2587,15 @@ class _Relu(StandardNode):
 
     op_type = OpType("Relu", "", 14)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Reshape(StandardNode):
-    class Attributes(AttrFields):
-        allowzero: Attr[int]
+    @dataclass
+    class Attributes:
+        allowzero: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2421,13 +2612,14 @@ class _Reshape(StandardNode):
 
 
 class _Resize(StandardNode):
-    class Attributes(AttrFields):
-        coordinate_transformation_mode: Attr[str]
-        cubic_coeff_a: Attr[float]
-        exclude_outside: Attr[int]
-        extrapolation_value: Attr[float]
-        mode: Attr[str]
-        nearest_mode: Attr[str]
+    @dataclass
+    class Attributes:
+        coordinate_transformation_mode: AttrString
+        cubic_coeff_a: AttrFloat32
+        exclude_outside: AttrInt64
+        extrapolation_value: AttrFloat32
+        mode: AttrString
+        nearest_mode: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2446,9 +2638,10 @@ class _Resize(StandardNode):
 
 
 class _ReverseSequence(StandardNode):
-    class Attributes(AttrFields):
-        batch_axis: Attr[int]
-        time_axis: Attr[int]
+    @dataclass
+    class Attributes:
+        batch_axis: AttrInt64
+        time_axis: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2465,13 +2658,14 @@ class _ReverseSequence(StandardNode):
 
 
 class _RoiAlign(StandardNode):
-    class Attributes(AttrFields):
-        coordinate_transformation_mode: Attr[str]
-        mode: Attr[str]
-        output_height: Attr[int]
-        output_width: Attr[int]
-        sampling_ratio: Attr[int]
-        spatial_scale: Attr[float]
+    @dataclass
+    class Attributes:
+        coordinate_transformation_mode: AttrString
+        mode: AttrString
+        output_height: AttrInt64
+        output_width: AttrInt64
+        sampling_ratio: AttrInt64
+        spatial_scale: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2489,7 +2683,9 @@ class _RoiAlign(StandardNode):
 
 
 class _Round(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2499,14 +2695,15 @@ class _Round(StandardNode):
 
     op_type = OpType("Round", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _STFT(StandardNode):
-    class Attributes(AttrFields):
-        onesided: Attr[int]
+    @dataclass
+    class Attributes:
+        onesided: AttrInt64
 
     class Inputs(ArrowFields):
         signal: Arrow
@@ -2525,13 +2722,14 @@ class _STFT(StandardNode):
 
 
 class _Scan(StandardNode):
-    class Attributes(AttrFields):
-        body: Attr[Graph]
-        num_scan_inputs: Attr[int]
-        scan_input_axes: Attr[Sequence[int]]
-        scan_input_directions: Attr[Sequence[int]]
-        scan_output_axes: Attr[Sequence[int]]
-        scan_output_directions: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        body: AttrGraph
+        num_scan_inputs: AttrInt64
+        scan_input_axes: Optional[AttrInt64s]
+        scan_input_directions: Optional[AttrInt64s]
+        scan_output_axes: Optional[AttrInt64s]
+        scan_output_directions: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         initial_state_and_scan_inputs: Sequence[Arrow]
@@ -2547,8 +2745,9 @@ class _Scan(StandardNode):
 
 
 class _Scatter(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2566,9 +2765,10 @@ class _Scatter(StandardNode):
 
 
 class _ScatterElements(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        reduction: Attr[str]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        reduction: AttrString
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2586,8 +2786,9 @@ class _ScatterElements(StandardNode):
 
 
 class _ScatterND(StandardNode):
-    class Attributes(AttrFields):
-        reduction: Attr[str]
+    @dataclass
+    class Attributes:
+        reduction: AttrString
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2605,9 +2806,10 @@ class _ScatterND(StandardNode):
 
 
 class _Selu(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
-        gamma: Attr[float]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
+        gamma: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2623,7 +2825,9 @@ class _Selu(StandardNode):
 
 
 class _SequenceAt(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input_sequence: Arrow
@@ -2634,13 +2838,15 @@ class _SequenceAt(StandardNode):
 
     op_type = OpType("SequenceAt", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _SequenceConstruct(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         inputs: Sequence[Arrow]
@@ -2650,14 +2856,15 @@ class _SequenceConstruct(StandardNode):
 
     op_type = OpType("SequenceConstruct", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _SequenceEmpty(StandardNode):
-    class Attributes(AttrFields):
-        dtype: Attr[numpy.generic]
+    @dataclass
+    class Attributes:
+        dtype: Optional[AttrDtype]
 
     Inputs = NoArrows
 
@@ -2672,7 +2879,9 @@ class _SequenceEmpty(StandardNode):
 
 
 class _SequenceErase(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input_sequence: Arrow
@@ -2683,13 +2892,15 @@ class _SequenceErase(StandardNode):
 
     op_type = OpType("SequenceErase", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _SequenceInsert(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input_sequence: Arrow
@@ -2701,13 +2912,15 @@ class _SequenceInsert(StandardNode):
 
     op_type = OpType("SequenceInsert", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _SequenceLength(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input_sequence: Arrow
@@ -2717,14 +2930,15 @@ class _SequenceLength(StandardNode):
 
     op_type = OpType("SequenceLength", "", 11)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _SequenceMap(StandardNode):
-    class Attributes(AttrFields):
-        body: Attr[Graph]
+    @dataclass
+    class Attributes:
+        body: AttrGraph
 
     class Inputs(ArrowFields):
         input_sequence: Arrow
@@ -2741,9 +2955,10 @@ class _SequenceMap(StandardNode):
 
 
 class _Shape(StandardNode):
-    class Attributes(AttrFields):
-        end: Attr[int]
-        start: Attr[int]
+    @dataclass
+    class Attributes:
+        end: Optional[AttrInt64]
+        start: AttrInt64
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2759,9 +2974,10 @@ class _Shape(StandardNode):
 
 
 class _Shrink(StandardNode):
-    class Attributes(AttrFields):
-        bias: Attr[float]
-        lambd: Attr[float]
+    @dataclass
+    class Attributes:
+        bias: AttrFloat32
+        lambd: AttrFloat32
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2777,7 +2993,9 @@ class _Shrink(StandardNode):
 
 
 class _Sigmoid(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2787,13 +3005,15 @@ class _Sigmoid(StandardNode):
 
     op_type = OpType("Sigmoid", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Sign(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2803,13 +3023,15 @@ class _Sign(StandardNode):
 
     op_type = OpType("Sign", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Sin(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2819,13 +3041,15 @@ class _Sin(StandardNode):
 
     op_type = OpType("Sin", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Sinh(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2835,13 +3059,15 @@ class _Sinh(StandardNode):
 
     op_type = OpType("Sinh", "", 9)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Size(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2851,13 +3077,15 @@ class _Size(StandardNode):
 
     op_type = OpType("Size", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Slice(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -2871,14 +3099,15 @@ class _Slice(StandardNode):
 
     op_type = OpType("Slice", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Softmax(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2894,9 +3123,10 @@ class _Softmax(StandardNode):
 
 
 class _SoftmaxCrossEntropyLoss(StandardNode):
-    class Attributes(AttrFields):
-        ignore_index: Attr[int]
-        reduction: Attr[str]
+    @dataclass
+    class Attributes:
+        ignore_index: Optional[AttrInt64]
+        reduction: AttrString
 
     class Inputs(ArrowFields):
         scores: Arrow
@@ -2915,7 +3145,9 @@ class _SoftmaxCrossEntropyLoss(StandardNode):
 
 
 class _Softplus(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -2925,13 +3157,15 @@ class _Softplus(StandardNode):
 
     op_type = OpType("Softplus", "", 1)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Softsign(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2941,14 +3175,15 @@ class _Softsign(StandardNode):
 
     op_type = OpType("Softsign", "", 1)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _SpaceToDepth(StandardNode):
-    class Attributes(AttrFields):
-        blocksize: Attr[int]
+    @dataclass
+    class Attributes:
+        blocksize: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2964,8 +3199,9 @@ class _SpaceToDepth(StandardNode):
 
 
 class _Split(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -2982,9 +3218,10 @@ class _Split(StandardNode):
 
 
 class _SplitToSequence(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        keepdims: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        keepdims: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -3001,7 +3238,9 @@ class _SplitToSequence(StandardNode):
 
 
 class _Sqrt(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -3011,13 +3250,15 @@ class _Sqrt(StandardNode):
 
     op_type = OpType("Sqrt", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Squeeze(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -3028,17 +3269,18 @@ class _Squeeze(StandardNode):
 
     op_type = OpType("Squeeze", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _StringNormalizer(StandardNode):
-    class Attributes(AttrFields):
-        case_change_action: Attr[str]
-        is_case_sensitive: Attr[int]
-        locale: Attr[str]
-        stopwords: Attr[Sequence[str]]
+    @dataclass
+    class Attributes:
+        case_change_action: AttrString
+        is_case_sensitive: AttrInt64
+        locale: Optional[AttrString]
+        stopwords: Optional[AttrStrings]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -3054,7 +3296,9 @@ class _StringNormalizer(StandardNode):
 
 
 class _Sub(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -3065,13 +3309,15 @@ class _Sub(StandardNode):
 
     op_type = OpType("Sub", "", 14)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Sum(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data_0: Sequence[Arrow]
@@ -3081,13 +3327,15 @@ class _Sum(StandardNode):
 
     op_type = OpType("Sum", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Tan(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -3097,13 +3345,15 @@ class _Tan(StandardNode):
 
     op_type = OpType("Tan", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Tanh(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -3113,22 +3363,23 @@ class _Tanh(StandardNode):
 
     op_type = OpType("Tanh", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _TfIdfVectorizer(StandardNode):
-    class Attributes(AttrFields):
-        max_gram_length: Attr[int]
-        max_skip_count: Attr[int]
-        min_gram_length: Attr[int]
-        mode: Attr[str]
-        ngram_counts: Attr[Sequence[int]]
-        ngram_indexes: Attr[Sequence[int]]
-        pool_int64s: Attr[Sequence[int]]
-        pool_strings: Attr[Sequence[str]]
-        weights: Attr[Sequence[float]]
+    @dataclass
+    class Attributes:
+        max_gram_length: AttrInt64
+        max_skip_count: AttrInt64
+        min_gram_length: AttrInt64
+        mode: AttrString
+        ngram_counts: AttrInt64s
+        ngram_indexes: AttrInt64s
+        pool_int64s: Optional[AttrInt64s]
+        pool_strings: Optional[AttrStrings]
+        weights: Optional[AttrFloat32s]
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -3144,8 +3395,9 @@ class _TfIdfVectorizer(StandardNode):
 
 
 class _ThresholdedRelu(StandardNode):
-    class Attributes(AttrFields):
-        alpha: Attr[float]
+    @dataclass
+    class Attributes:
+        alpha: AttrFloat32
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -3161,7 +3413,9 @@ class _ThresholdedRelu(StandardNode):
 
 
 class _Tile(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -3172,16 +3426,17 @@ class _Tile(StandardNode):
 
     op_type = OpType("Tile", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _TopK(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        largest: Attr[int]
-        sorted: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: AttrInt64
+        largest: AttrInt64
+        sorted: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -3199,8 +3454,9 @@ class _TopK(StandardNode):
 
 
 class _Transpose(StandardNode):
-    class Attributes(AttrFields):
-        perm: Attr[Sequence[int]]
+    @dataclass
+    class Attributes:
+        perm: Optional[AttrInt64s]
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -3216,8 +3472,9 @@ class _Transpose(StandardNode):
 
 
 class _Trilu(StandardNode):
-    class Attributes(AttrFields):
-        upper: Attr[int]
+    @dataclass
+    class Attributes:
+        upper: AttrInt64
 
     class Inputs(ArrowFields):
         input: Arrow
@@ -3234,9 +3491,10 @@ class _Trilu(StandardNode):
 
 
 class _Unique(StandardNode):
-    class Attributes(AttrFields):
-        axis: Attr[int]
-        sorted: Attr[int]
+    @dataclass
+    class Attributes:
+        axis: Optional[AttrInt64]
+        sorted: AttrInt64
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -3255,7 +3513,9 @@ class _Unique(StandardNode):
 
 
 class _Unsqueeze(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         data: Arrow
@@ -3266,14 +3526,15 @@ class _Unsqueeze(StandardNode):
 
     op_type = OpType("Unsqueeze", "", 13)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Upsample(StandardNode):
-    class Attributes(AttrFields):
-        mode: Attr[str]
+    @dataclass
+    class Attributes:
+        mode: AttrString
 
     class Inputs(ArrowFields):
         X: Arrow
@@ -3290,7 +3551,9 @@ class _Upsample(StandardNode):
 
 
 class _Where(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         condition: Arrow
@@ -3302,13 +3565,15 @@ class _Where(StandardNode):
 
     op_type = OpType("Where", "", 16)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
 
 class _Xor(StandardNode):
-    Attributes = NoAttrs
+    @dataclass
+    class Attributes:
+        pass
 
     class Inputs(ArrowFields):
         A: Arrow
@@ -3319,7 +3584,7 @@ class _Xor(StandardNode):
 
     op_type = OpType("Xor", "", 7)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
@@ -3552,9 +3817,11 @@ def arg_max(
     """
     return _ArgMax(
         _ArgMax.Attributes(
-            axis=axis,
-            keepdims=keepdims,
-            select_last_index=select_last_index,
+            axis=None if axis is None else AttrInt64(axis),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            select_last_index=None
+            if select_last_index is None
+            else AttrInt64(select_last_index),
         ),
         _ArgMax.Inputs(
             data=data,
@@ -3608,9 +3875,11 @@ def arg_min(
     """
     return _ArgMin(
         _ArgMin.Attributes(
-            axis=axis,
-            keepdims=keepdims,
-            select_last_index=select_last_index,
+            axis=None if axis is None else AttrInt64(axis),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            select_last_index=None
+            if select_last_index is None
+            else AttrInt64(select_last_index),
         ),
         _ArgMin.Inputs(
             data=data,
@@ -3827,12 +4096,14 @@ def average_pool(
     """
     return _AveragePool(
         _AveragePool.Attributes(
-            auto_pad=auto_pad,
-            ceil_mode=ceil_mode,
-            count_include_pad=count_include_pad,
-            kernel_shape=kernel_shape,
-            pads=pads,
-            strides=strides,
+            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            ceil_mode=None if ceil_mode is None else AttrInt64(ceil_mode),
+            count_include_pad=None
+            if count_include_pad is None
+            else AttrInt64(count_include_pad),
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            pads=None if pads is None else AttrInt64s(pads),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _AveragePool.Inputs(
             X=X,
@@ -3934,9 +4205,9 @@ def batch_normalization(
     """
     return _BatchNormalization(
         _BatchNormalization.Attributes(
-            epsilon=epsilon,
-            momentum=momentum,
-            training_mode=training_mode,
+            epsilon=None if epsilon is None else AttrFloat32(epsilon),
+            momentum=None if momentum is None else AttrFloat32(momentum),
+            training_mode=None if training_mode is None else AttrInt64(training_mode),
         ),
         _BatchNormalization.Inputs(
             X=X,
@@ -3989,8 +4260,8 @@ def bernoulli(
     """
     return _Bernoulli(
         _Bernoulli.Attributes(
-            dtype=dtype,
-            seed=seed,
+            dtype=None if dtype is None else AttrDtype(dtype),
+            seed=None if seed is None else AttrFloat32(seed),
         ),
         _Bernoulli.Inputs(
             input=input,
@@ -4044,7 +4315,7 @@ def bit_shift(
     """
     return _BitShift(
         _BitShift.Attributes(
-            direction=direction,
+            direction=None if direction is None else AttrString(direction),
         ),
         _BitShift.Inputs(
             X=X,
@@ -4090,8 +4361,10 @@ def blackman_window(
     """
     return _BlackmanWindow(
         _BlackmanWindow.Attributes(
-            output_datatype=output_datatype,
-            periodic=periodic,
+            output_datatype=None
+            if output_datatype is None
+            else AttrInt64(output_datatype),
+            periodic=None if periodic is None else AttrInt64(periodic),
         ),
         _BlackmanWindow.Inputs(
             size=size,
@@ -4148,7 +4421,7 @@ def cast(
     """
     return _Cast(
         _Cast.Attributes(
-            to=to,
+            to=None if to is None else AttrDtype(to),
         ),
         _Cast.Inputs(
             input=input,
@@ -4269,7 +4542,7 @@ def celu(
     """
     return _Celu(
         _Celu.Attributes(
-            alpha=alpha,
+            alpha=None if alpha is None else AttrFloat32(alpha),
         ),
         _Celu.Inputs(
             X=X,
@@ -4361,7 +4634,7 @@ def compress(
     """
     return _Compress(
         _Compress.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Compress.Inputs(
             input=input,
@@ -4402,7 +4675,7 @@ def concat(
     """
     return _Concat(
         _Concat.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Concat.Inputs(
             inputs=inputs,
@@ -4450,8 +4723,8 @@ def concat_from_sequence(
     """
     return _ConcatFromSequence(
         _ConcatFromSequence.Attributes(
-            axis=axis,
-            new_axis=new_axis,
+            axis=None if axis is None else AttrInt64(axis),
+            new_axis=None if new_axis is None else AttrInt64(new_axis),
         ),
         _ConcatFromSequence.Inputs(
             input_sequence=input_sequence,
@@ -4461,7 +4734,6 @@ def concat_from_sequence(
 
 def constant(
     *,
-    sparse_value: None = None,
     value: Optional[ndarray] = None,
     value_float: Optional[float] = None,
     value_floats: Optional[Iterable[float]] = None,
@@ -4516,14 +4788,13 @@ def constant(
     """
     return _Constant(
         _Constant.Attributes(
-            sparse_value=sparse_value,
-            value=value,
-            value_float=value_float,
-            value_floats=value_floats,
-            value_int=value_int,
-            value_ints=value_ints,
-            value_string=value_string,
-            value_strings=value_strings,
+            value=None if value is None else AttrTensor(value),
+            value_float=None if value_float is None else AttrFloat32(value_float),
+            value_floats=None if value_floats is None else AttrFloat32s(value_floats),
+            value_int=None if value_int is None else AttrInt64(value_int),
+            value_ints=None if value_ints is None else AttrInt64s(value_ints),
+            value_string=None if value_string is None else AttrString(value_string),
+            value_strings=None if value_strings is None else AttrStrings(value_strings),
         ),
         _Constant.Inputs(),
     ).outputs.output
@@ -4562,7 +4833,7 @@ def constant_of_shape(
     """
     return _ConstantOfShape(
         _ConstantOfShape.Attributes(
-            value=value,
+            value=None if value is None else AttrTensor(value),
         ),
         _ConstantOfShape.Inputs(
             input=input,
@@ -4631,12 +4902,12 @@ def conv(
     """
     return _Conv(
         _Conv.Attributes(
-            auto_pad=auto_pad,
-            dilations=dilations,
-            group=group,
-            kernel_shape=kernel_shape,
-            pads=pads,
-            strides=strides,
+            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            dilations=None if dilations is None else AttrInt64s(dilations),
+            group=None if group is None else AttrInt64(group),
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            pads=None if pads is None else AttrInt64s(pads),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _Conv.Inputs(
             X=X,
@@ -4713,12 +4984,12 @@ def conv_integer(
     """
     return _ConvInteger(
         _ConvInteger.Attributes(
-            auto_pad=auto_pad,
-            dilations=dilations,
-            group=group,
-            kernel_shape=kernel_shape,
-            pads=pads,
-            strides=strides,
+            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            dilations=None if dilations is None else AttrInt64s(dilations),
+            group=None if group is None else AttrInt64(group),
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            pads=None if pads is None else AttrInt64s(pads),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _ConvInteger.Inputs(
             x=x,
@@ -4804,14 +5075,16 @@ def conv_transpose(
     """
     return _ConvTranspose(
         _ConvTranspose.Attributes(
-            auto_pad=auto_pad,
-            dilations=dilations,
-            group=group,
-            kernel_shape=kernel_shape,
-            output_padding=output_padding,
-            output_shape=output_shape,
-            pads=pads,
-            strides=strides,
+            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            dilations=None if dilations is None else AttrInt64s(dilations),
+            group=None if group is None else AttrInt64(group),
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            output_padding=None
+            if output_padding is None
+            else AttrInt64s(output_padding),
+            output_shape=None if output_shape is None else AttrInt64s(output_shape),
+            pads=None if pads is None else AttrInt64s(pads),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _ConvTranspose.Inputs(
             X=X,
@@ -4945,8 +5218,8 @@ def cum_sum(
     """
     return _CumSum(
         _CumSum.Attributes(
-            exclusive=exclusive,
-            reverse=reverse,
+            exclusive=None if exclusive is None else AttrInt64(exclusive),
+            reverse=None if reverse is None else AttrInt64(reverse),
         ),
         _CumSum.Inputs(
             x=x,
@@ -5000,9 +5273,9 @@ def dft(
     """
     return _DFT(
         _DFT.Attributes(
-            axis=axis,
-            inverse=inverse,
-            onesided=onesided,
+            axis=None if axis is None else AttrInt64(axis),
+            inverse=None if inverse is None else AttrInt64(inverse),
+            onesided=None if onesided is None else AttrInt64(onesided),
         ),
         _DFT.Inputs(
             input=input,
@@ -5062,8 +5335,8 @@ def depth_to_space(
     """
     return _DepthToSpace(
         _DepthToSpace.Attributes(
-            blocksize=blocksize,
-            mode=mode,
+            blocksize=None if blocksize is None else AttrInt64(blocksize),
+            mode=None if mode is None else AttrString(mode),
         ),
         _DepthToSpace.Inputs(
             input=input,
@@ -5115,7 +5388,7 @@ def dequantize_linear(
     """
     return _DequantizeLinear(
         _DequantizeLinear.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _DequantizeLinear.Inputs(
             x=x,
@@ -5258,7 +5531,7 @@ def dropout(
     """
     return _Dropout(
         _Dropout.Attributes(
-            seed=seed,
+            seed=None if seed is None else AttrInt64(seed),
         ),
         _Dropout.Inputs(
             data=data,
@@ -5377,7 +5650,7 @@ def einsum(
     """
     return _Einsum(
         _Einsum.Attributes(
-            equation=equation,
+            equation=None if equation is None else AttrString(equation),
         ),
         _Einsum.Inputs(
             Inputs=Inputs,
@@ -5419,7 +5692,7 @@ def elu(
     """
     return _Elu(
         _Elu.Attributes(
-            alpha=alpha,
+            alpha=None if alpha is None else AttrFloat32(alpha),
         ),
         _Elu.Inputs(
             X=X,
@@ -5622,8 +5895,8 @@ def eye_like(
     """
     return _EyeLike(
         _EyeLike.Attributes(
-            dtype=dtype,
-            k=k,
+            dtype=None if dtype is None else AttrDtype(dtype),
+            k=None if k is None else AttrInt64(k),
         ),
         _EyeLike.Inputs(
             input=input,
@@ -5665,7 +5938,7 @@ def flatten(
     """
     return _Flatten(
         _Flatten.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Flatten.Inputs(
             input=input,
@@ -5829,14 +6102,20 @@ def gru(
     """
     return _GRU(
         _GRU.Attributes(
-            activation_alpha=activation_alpha,
-            activation_beta=activation_beta,
-            activations=activations,
-            clip=clip,
-            direction=direction,
-            hidden_size=hidden_size,
-            layout=layout,
-            linear_before_reset=linear_before_reset,
+            activation_alpha=None
+            if activation_alpha is None
+            else AttrFloat32s(activation_alpha),
+            activation_beta=None
+            if activation_beta is None
+            else AttrFloat32s(activation_beta),
+            activations=None if activations is None else AttrStrings(activations),
+            clip=None if clip is None else AttrFloat32(clip),
+            direction=None if direction is None else AttrString(direction),
+            hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
+            layout=None if layout is None else AttrInt64(layout),
+            linear_before_reset=None
+            if linear_before_reset is None
+            else AttrInt64(linear_before_reset),
         ),
         _GRU.Inputs(
             X=X,
@@ -5935,7 +6214,7 @@ def gather(
     """
     return _Gather(
         _Gather.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Gather.Inputs(
             data=data,
@@ -6028,7 +6307,7 @@ def gather_elements(
     """
     return _GatherElements(
         _GatherElements.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _GatherElements.Inputs(
             data=data,
@@ -6122,7 +6401,7 @@ def gather_nd(
     """
     return _GatherND(
         _GatherND.Attributes(
-            batch_dims=batch_dims,
+            batch_dims=None if batch_dims is None else AttrInt64(batch_dims),
         ),
         _GatherND.Inputs(
             data=data,
@@ -6192,10 +6471,10 @@ def gemm(
     """
     return _Gemm(
         _Gemm.Attributes(
-            alpha=alpha,
-            beta=beta,
-            transA=transA,
-            transB=transB,
+            alpha=None if alpha is None else AttrFloat32(alpha),
+            beta=None if beta is None else AttrFloat32(beta),
+            transA=None if transA is None else AttrInt64(transA),
+            transB=None if transB is None else AttrInt64(transB),
         ),
         _Gemm.Inputs(
             A=A,
@@ -6274,7 +6553,7 @@ def global_lp_pool(
     """
     return _GlobalLpPool(
         _GlobalLpPool.Attributes(
-            p=p,
+            p=None if p is None else AttrInt64(p),
         ),
         _GlobalLpPool.Inputs(
             X=X,
@@ -6450,9 +6729,9 @@ def grid_sample(
     """
     return _GridSample(
         _GridSample.Attributes(
-            align_corners=align_corners,
-            mode=mode,
-            padding_mode=padding_mode,
+            align_corners=None if align_corners is None else AttrInt64(align_corners),
+            mode=None if mode is None else AttrString(mode),
+            padding_mode=None if padding_mode is None else AttrString(padding_mode),
         ),
         _GridSample.Inputs(
             X=X,
@@ -6498,8 +6777,10 @@ def hamming_window(
     """
     return _HammingWindow(
         _HammingWindow.Attributes(
-            output_datatype=output_datatype,
-            periodic=periodic,
+            output_datatype=None
+            if output_datatype is None
+            else AttrInt64(output_datatype),
+            periodic=None if periodic is None else AttrInt64(periodic),
         ),
         _HammingWindow.Inputs(
             size=size,
@@ -6544,8 +6825,10 @@ def hann_window(
     """
     return _HannWindow(
         _HannWindow.Attributes(
-            output_datatype=output_datatype,
-            periodic=periodic,
+            output_datatype=None
+            if output_datatype is None
+            else AttrInt64(output_datatype),
+            periodic=None if periodic is None else AttrInt64(periodic),
         ),
         _HannWindow.Inputs(
             size=size,
@@ -6591,8 +6874,8 @@ def hard_sigmoid(
     """
     return _HardSigmoid(
         _HardSigmoid.Attributes(
-            alpha=alpha,
-            beta=beta,
+            alpha=None if alpha is None else AttrFloat32(alpha),
+            beta=None if beta is None else AttrFloat32(beta),
         ),
         _HardSigmoid.Inputs(
             X=X,
@@ -6673,7 +6956,7 @@ def hardmax(
     """
     return _Hardmax(
         _Hardmax.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Hardmax.Inputs(
             input=input,
@@ -6751,8 +7034,8 @@ def if_(
     """
     return _If(
         _If.Attributes(
-            else_branch=else_branch,
-            then_branch=then_branch,
+            else_branch=None if else_branch is None else AttrGraph(else_branch),
+            then_branch=None if then_branch is None else AttrGraph(then_branch),
         ),
         _If.Inputs(
             cond=cond,
@@ -6804,7 +7087,7 @@ def instance_normalization(
     """
     return _InstanceNormalization(
         _InstanceNormalization.Attributes(
-            epsilon=epsilon,
+            epsilon=None if epsilon is None else AttrFloat32(epsilon),
         ),
         _InstanceNormalization.Inputs(
             input=input,
@@ -6851,8 +7134,12 @@ def is_inf(
     """
     return _IsInf(
         _IsInf.Attributes(
-            detect_negative=detect_negative,
-            detect_positive=detect_positive,
+            detect_negative=None
+            if detect_negative is None
+            else AttrInt64(detect_negative),
+            detect_positive=None
+            if detect_positive is None
+            else AttrInt64(detect_positive),
         ),
         _IsInf.Inputs(
             X=X,
@@ -6945,10 +7232,10 @@ def lrn(
     """
     return _LRN(
         _LRN.Attributes(
-            alpha=alpha,
-            beta=beta,
-            bias=bias,
-            size=size,
+            alpha=None if alpha is None else AttrFloat32(alpha),
+            beta=None if beta is None else AttrFloat32(beta),
+            bias=None if bias is None else AttrFloat32(bias),
+            size=None if size is None else AttrInt64(size),
         ),
         _LRN.Inputs(
             X=X,
@@ -7092,14 +7379,18 @@ def lstm(
     """
     return _LSTM(
         _LSTM.Attributes(
-            activation_alpha=activation_alpha,
-            activation_beta=activation_beta,
-            activations=activations,
-            clip=clip,
-            direction=direction,
-            hidden_size=hidden_size,
-            input_forget=input_forget,
-            layout=layout,
+            activation_alpha=None
+            if activation_alpha is None
+            else AttrFloat32s(activation_alpha),
+            activation_beta=None
+            if activation_beta is None
+            else AttrFloat32s(activation_beta),
+            activations=None if activations is None else AttrStrings(activations),
+            clip=None if clip is None else AttrFloat32(clip),
+            direction=None if direction is None else AttrString(direction),
+            hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
+            input_forget=None if input_forget is None else AttrInt64(input_forget),
+            layout=None if layout is None else AttrInt64(layout),
         ),
         _LSTM.Inputs(
             X=X,
@@ -7207,9 +7498,9 @@ def layer_normalization(
     """
     return _LayerNormalization(
         _LayerNormalization.Attributes(
-            axis=axis,
-            epsilon=epsilon,
-            stash_type=stash_type,
+            axis=None if axis is None else AttrInt64(axis),
+            epsilon=None if epsilon is None else AttrFloat32(epsilon),
+            stash_type=None if stash_type is None else AttrInt64(stash_type),
         ),
         _LayerNormalization.Inputs(
             X=X,
@@ -7255,7 +7546,7 @@ def leaky_relu(
     """
     return _LeakyRelu(
         _LeakyRelu.Attributes(
-            alpha=alpha,
+            alpha=None if alpha is None else AttrFloat32(alpha),
         ),
         _LeakyRelu.Inputs(
             X=X,
@@ -7416,7 +7707,7 @@ def log_softmax(
     """
     return _LogSoftmax(
         _LogSoftmax.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _LogSoftmax.Inputs(
             input=input,
@@ -7577,7 +7868,7 @@ def loop(
     """
     return _Loop(
         _Loop.Attributes(
-            body=body,
+            body=None if body is None else AttrGraph(body),
         ),
         _Loop.Inputs(
             M=M,
@@ -7624,8 +7915,8 @@ def lp_normalization(
     """
     return _LpNormalization(
         _LpNormalization.Attributes(
-            axis=axis,
-            p=p,
+            axis=None if axis is None else AttrInt64(axis),
+            p=None if p is None else AttrInt64(p),
         ),
         _LpNormalization.Inputs(
             input=input,
@@ -7685,11 +7976,11 @@ def lp_pool(
     """
     return _LpPool(
         _LpPool.Attributes(
-            auto_pad=auto_pad,
-            kernel_shape=kernel_shape,
-            p=p,
-            pads=pads,
-            strides=strides,
+            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            p=None if p is None else AttrInt64(p),
+            pads=None if pads is None else AttrInt64s(pads),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _LpPool.Inputs(
             X=X,
@@ -7906,13 +8197,13 @@ def max_pool(
     """
     return _MaxPool(
         _MaxPool.Attributes(
-            auto_pad=auto_pad,
-            ceil_mode=ceil_mode,
-            dilations=dilations,
-            kernel_shape=kernel_shape,
-            pads=pads,
-            storage_order=storage_order,
-            strides=strides,
+            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            ceil_mode=None if ceil_mode is None else AttrInt64(ceil_mode),
+            dilations=None if dilations is None else AttrInt64s(dilations),
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            pads=None if pads is None else AttrInt64s(pads),
+            storage_order=None if storage_order is None else AttrInt64(storage_order),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _MaxPool.Inputs(
             X=X,
@@ -7962,8 +8253,8 @@ def max_roi_pool(
     """
     return _MaxRoiPool(
         _MaxRoiPool.Attributes(
-            pooled_shape=pooled_shape,
-            spatial_scale=spatial_scale,
+            pooled_shape=None if pooled_shape is None else AttrInt64s(pooled_shape),
+            spatial_scale=None if spatial_scale is None else AttrFloat32(spatial_scale),
         ),
         _MaxRoiPool.Inputs(
             X=X,
@@ -8035,9 +8326,9 @@ def max_unpool(
     """
     return _MaxUnpool(
         _MaxUnpool.Attributes(
-            kernel_shape=kernel_shape,
-            pads=pads,
-            strides=strides,
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            pads=None if pads is None else AttrInt64s(pads),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _MaxUnpool.Inputs(
             X=X,
@@ -8115,7 +8406,7 @@ def mean_variance_normalization(
     """
     return _MeanVarianceNormalization(
         _MeanVarianceNormalization.Attributes(
-            axes=axes,
+            axes=None if axes is None else AttrInt64s(axes),
         ),
         _MeanVarianceNormalization.Inputs(
             X=X,
@@ -8177,7 +8468,9 @@ def mel_weight_matrix(
     """
     return _MelWeightMatrix(
         _MelWeightMatrix.Attributes(
-            output_datatype=output_datatype,
+            output_datatype=None
+            if output_datatype is None
+            else AttrInt64(output_datatype),
         ),
         _MelWeightMatrix.Inputs(
             num_mel_bins=num_mel_bins,
@@ -8268,7 +8561,7 @@ def mod(
     """
     return _Mod(
         _Mod.Attributes(
-            fmod=fmod,
+            fmod=None if fmod is None else AttrInt64(fmod),
         ),
         _Mod.Inputs(
             A=A,
@@ -8359,9 +8652,9 @@ def multinomial(
     """
     return _Multinomial(
         _Multinomial.Attributes(
-            dtype=dtype,
-            sample_size=sample_size,
-            seed=seed,
+            dtype=None if dtype is None else AttrDtype(dtype),
+            sample_size=None if sample_size is None else AttrInt64(sample_size),
+            seed=None if seed is None else AttrFloat32(seed),
         ),
         _Multinomial.Inputs(
             input=input,
@@ -8513,8 +8806,8 @@ def negative_log_likelihood_loss(
     """
     return _NegativeLogLikelihoodLoss(
         _NegativeLogLikelihoodLoss.Attributes(
-            ignore_index=ignore_index,
-            reduction=reduction,
+            ignore_index=None if ignore_index is None else AttrInt64(ignore_index),
+            reduction=None if reduction is None else AttrString(reduction),
         ),
         _NegativeLogLikelihoodLoss.Inputs(
             input=input,
@@ -8576,7 +8869,9 @@ def non_max_suppression(
     """
     return _NonMaxSuppression(
         _NonMaxSuppression.Attributes(
-            center_point_box=center_point_box,
+            center_point_box=None
+            if center_point_box is None
+            else AttrInt64(center_point_box),
         ),
         _NonMaxSuppression.Inputs(
             boxes=boxes,
@@ -8715,7 +9010,7 @@ def one_hot(
     """
     return _OneHot(
         _OneHot.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _OneHot.Inputs(
             indices=indices,
@@ -8759,7 +9054,7 @@ def optional(
     """
     return _Optional(
         _Optional.Attributes(
-            type=type,
+            type=None if type is None else AttrType(type),
         ),
         _Optional.Inputs(
             input=input,
@@ -9012,7 +9307,7 @@ def pad(
     """
     return _Pad(
         _Pad.Attributes(
-            mode=mode,
+            mode=None if mode is None else AttrString(mode),
         ),
         _Pad.Inputs(
             data=data,
@@ -9157,12 +9452,12 @@ def qlinear_conv(
     """
     return _QLinearConv(
         _QLinearConv.Attributes(
-            auto_pad=auto_pad,
-            dilations=dilations,
-            group=group,
-            kernel_shape=kernel_shape,
-            pads=pads,
-            strides=strides,
+            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            dilations=None if dilations is None else AttrInt64s(dilations),
+            group=None if group is None else AttrInt64(group),
+            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            pads=None if pads is None else AttrInt64s(pads),
+            strides=None if strides is None else AttrInt64s(strides),
         ),
         _QLinearConv.Inputs(
             x=x,
@@ -9303,7 +9598,7 @@ def quantize_linear(
     """
     return _QuantizeLinear(
         _QuantizeLinear.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _QuantizeLinear.Inputs(
             x=x,
@@ -9424,13 +9719,17 @@ def rnn(
     """
     return _RNN(
         _RNN.Attributes(
-            activation_alpha=activation_alpha,
-            activation_beta=activation_beta,
-            activations=activations,
-            clip=clip,
-            direction=direction,
-            hidden_size=hidden_size,
-            layout=layout,
+            activation_alpha=None
+            if activation_alpha is None
+            else AttrFloat32s(activation_alpha),
+            activation_beta=None
+            if activation_beta is None
+            else AttrFloat32s(activation_beta),
+            activations=None if activations is None else AttrStrings(activations),
+            clip=None if clip is None else AttrFloat32(clip),
+            direction=None if direction is None else AttrString(direction),
+            hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
+            layout=None if layout is None else AttrInt64(layout),
         ),
         _RNN.Inputs(
             X=X,
@@ -9492,11 +9791,11 @@ def random_normal(
     """
     return _RandomNormal(
         _RandomNormal.Attributes(
-            dtype=dtype,
-            mean=mean,
-            scale=scale,
-            seed=seed,
-            shape=shape,
+            dtype=None if dtype is None else AttrDtype(dtype),
+            mean=None if mean is None else AttrFloat32(mean),
+            scale=None if scale is None else AttrFloat32(scale),
+            seed=None if seed is None else AttrFloat32(seed),
+            shape=None if shape is None else AttrInt64s(shape),
         ),
         _RandomNormal.Inputs(),
     ).outputs.output
@@ -9552,10 +9851,10 @@ def random_normal_like(
     """
     return _RandomNormalLike(
         _RandomNormalLike.Attributes(
-            dtype=dtype,
-            mean=mean,
-            scale=scale,
-            seed=seed,
+            dtype=None if dtype is None else AttrDtype(dtype),
+            mean=None if mean is None else AttrFloat32(mean),
+            scale=None if scale is None else AttrFloat32(scale),
+            seed=None if seed is None else AttrFloat32(seed),
         ),
         _RandomNormalLike.Inputs(
             input=input,
@@ -9611,11 +9910,11 @@ def random_uniform(
     """
     return _RandomUniform(
         _RandomUniform.Attributes(
-            dtype=dtype,
-            high=high,
-            low=low,
-            seed=seed,
-            shape=shape,
+            dtype=None if dtype is None else AttrDtype(dtype),
+            high=None if high is None else AttrFloat32(high),
+            low=None if low is None else AttrFloat32(low),
+            seed=None if seed is None else AttrFloat32(seed),
+            shape=None if shape is None else AttrInt64s(shape),
         ),
         _RandomUniform.Inputs(),
     ).outputs.output
@@ -9671,10 +9970,10 @@ def random_uniform_like(
     """
     return _RandomUniformLike(
         _RandomUniformLike.Attributes(
-            dtype=dtype,
-            high=high,
-            low=low,
-            seed=seed,
+            dtype=None if dtype is None else AttrDtype(dtype),
+            high=None if high is None else AttrFloat32(high),
+            low=None if low is None else AttrFloat32(low),
+            seed=None if seed is None else AttrFloat32(seed),
         ),
         _RandomUniformLike.Inputs(
             input=input,
@@ -9814,8 +10113,8 @@ def reduce_l1(
     """
     return _ReduceL1(
         _ReduceL1.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceL1.Inputs(
             data=data,
@@ -9863,8 +10162,8 @@ def reduce_l2(
     """
     return _ReduceL2(
         _ReduceL2.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceL2.Inputs(
             data=data,
@@ -9912,8 +10211,8 @@ def reduce_log_sum(
     """
     return _ReduceLogSum(
         _ReduceLogSum.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceLogSum.Inputs(
             data=data,
@@ -9961,8 +10260,8 @@ def reduce_log_sum_exp(
     """
     return _ReduceLogSumExp(
         _ReduceLogSumExp.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceLogSumExp.Inputs(
             data=data,
@@ -10010,8 +10309,8 @@ def reduce_max(
     """
     return _ReduceMax(
         _ReduceMax.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceMax.Inputs(
             data=data,
@@ -10059,8 +10358,8 @@ def reduce_mean(
     """
     return _ReduceMean(
         _ReduceMean.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceMean.Inputs(
             data=data,
@@ -10108,8 +10407,8 @@ def reduce_min(
     """
     return _ReduceMin(
         _ReduceMin.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceMin.Inputs(
             data=data,
@@ -10157,8 +10456,8 @@ def reduce_prod(
     """
     return _ReduceProd(
         _ReduceProd.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceProd.Inputs(
             data=data,
@@ -10210,8 +10509,10 @@ def reduce_sum(
     """
     return _ReduceSum(
         _ReduceSum.Attributes(
-            keepdims=keepdims,
-            noop_with_empty_axes=noop_with_empty_axes,
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            noop_with_empty_axes=None
+            if noop_with_empty_axes is None
+            else AttrInt64(noop_with_empty_axes),
         ),
         _ReduceSum.Inputs(
             data=data,
@@ -10260,8 +10561,8 @@ def reduce_sum_square(
     """
     return _ReduceSumSquare(
         _ReduceSumSquare.Attributes(
-            axes=axes,
-            keepdims=keepdims,
+            axes=None if axes is None else AttrInt64s(axes),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _ReduceSumSquare.Inputs(
             data=data,
@@ -10348,7 +10649,7 @@ def reshape(
     """
     return _Reshape(
         _Reshape.Attributes(
-            allowzero=allowzero,
+            allowzero=None if allowzero is None else AttrInt64(allowzero),
         ),
         _Reshape.Inputs(
             data=data,
@@ -10436,12 +10737,18 @@ def resize(
     """
     return _Resize(
         _Resize.Attributes(
-            coordinate_transformation_mode=coordinate_transformation_mode,
-            cubic_coeff_a=cubic_coeff_a,
-            exclude_outside=exclude_outside,
-            extrapolation_value=extrapolation_value,
-            mode=mode,
-            nearest_mode=nearest_mode,
+            coordinate_transformation_mode=None
+            if coordinate_transformation_mode is None
+            else AttrString(coordinate_transformation_mode),
+            cubic_coeff_a=None if cubic_coeff_a is None else AttrFloat32(cubic_coeff_a),
+            exclude_outside=None
+            if exclude_outside is None
+            else AttrInt64(exclude_outside),
+            extrapolation_value=None
+            if extrapolation_value is None
+            else AttrFloat32(extrapolation_value),
+            mode=None if mode is None else AttrString(mode),
+            nearest_mode=None if nearest_mode is None else AttrString(nearest_mode),
         ),
         _Resize.Inputs(
             X=X,
@@ -10519,8 +10826,8 @@ def reverse_sequence(
     """
     return _ReverseSequence(
         _ReverseSequence.Attributes(
-            batch_axis=batch_axis,
-            time_axis=time_axis,
+            batch_axis=None if batch_axis is None else AttrInt64(batch_axis),
+            time_axis=None if time_axis is None else AttrInt64(time_axis),
         ),
         _ReverseSequence.Inputs(
             input=input,
@@ -10599,12 +10906,16 @@ def roi_align(
     """
     return _RoiAlign(
         _RoiAlign.Attributes(
-            coordinate_transformation_mode=coordinate_transformation_mode,
-            mode=mode,
-            output_height=output_height,
-            output_width=output_width,
-            sampling_ratio=sampling_ratio,
-            spatial_scale=spatial_scale,
+            coordinate_transformation_mode=None
+            if coordinate_transformation_mode is None
+            else AttrString(coordinate_transformation_mode),
+            mode=None if mode is None else AttrString(mode),
+            output_height=None if output_height is None else AttrInt64(output_height),
+            output_width=None if output_width is None else AttrInt64(output_width),
+            sampling_ratio=None
+            if sampling_ratio is None
+            else AttrInt64(sampling_ratio),
+            spatial_scale=None if spatial_scale is None else AttrFloat32(spatial_scale),
         ),
         _RoiAlign.Inputs(
             X=X,
@@ -10703,7 +11014,7 @@ def stft(
     """
     return _STFT(
         _STFT.Attributes(
-            onesided=onesided,
+            onesided=None if onesided is None else AttrInt64(onesided),
         ),
         _STFT.Inputs(
             signal=signal,
@@ -10867,12 +11178,22 @@ def scan(
     """
     return _Scan(
         _Scan.Attributes(
-            body=body,
-            num_scan_inputs=num_scan_inputs,
-            scan_input_axes=scan_input_axes,
-            scan_input_directions=scan_input_directions,
-            scan_output_axes=scan_output_axes,
-            scan_output_directions=scan_output_directions,
+            body=None if body is None else AttrGraph(body),
+            num_scan_inputs=None
+            if num_scan_inputs is None
+            else AttrInt64(num_scan_inputs),
+            scan_input_axes=None
+            if scan_input_axes is None
+            else AttrInt64s(scan_input_axes),
+            scan_input_directions=None
+            if scan_input_directions is None
+            else AttrInt64s(scan_input_directions),
+            scan_output_axes=None
+            if scan_output_axes is None
+            else AttrInt64s(scan_output_axes),
+            scan_output_directions=None
+            if scan_output_directions is None
+            else AttrInt64s(scan_output_directions),
         ),
         _Scan.Inputs(
             initial_state_and_scan_inputs=initial_state_and_scan_inputs,
@@ -10969,7 +11290,7 @@ def scatter(
     """
     return _Scatter(
         _Scatter.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Scatter.Inputs(
             data=data,
@@ -11083,8 +11404,8 @@ def scatter_elements(
     """
     return _ScatterElements(
         _ScatterElements.Attributes(
-            axis=axis,
-            reduction=reduction,
+            axis=None if axis is None else AttrInt64(axis),
+            reduction=None if reduction is None else AttrString(reduction),
         ),
         _ScatterElements.Inputs(
             data=data,
@@ -11195,7 +11516,7 @@ def scatter_nd(
     """
     return _ScatterND(
         _ScatterND.Attributes(
-            reduction=reduction,
+            reduction=None if reduction is None else AttrString(reduction),
         ),
         _ScatterND.Inputs(
             data=data,
@@ -11244,8 +11565,8 @@ def selu(
     """
     return _Selu(
         _Selu.Attributes(
-            alpha=alpha,
-            gamma=gamma,
+            alpha=None if alpha is None else AttrFloat32(alpha),
+            gamma=None if gamma is None else AttrFloat32(gamma),
         ),
         _Selu.Inputs(
             X=X,
@@ -11358,7 +11679,7 @@ def sequence_empty(
     """
     return _SequenceEmpty(
         _SequenceEmpty.Attributes(
-            dtype=dtype,
+            dtype=None if dtype is None else AttrDtype(dtype),
         ),
         _SequenceEmpty.Inputs(),
     ).outputs.output
@@ -11537,7 +11858,7 @@ def sequence_map(
     """
     return _SequenceMap(
         _SequenceMap.Attributes(
-            body=body,
+            body=None if body is None else AttrGraph(body),
         ),
         _SequenceMap.Inputs(
             input_sequence=input_sequence,
@@ -11608,8 +11929,8 @@ def shape(
     """
     return _Shape(
         _Shape.Attributes(
-            end=end,
-            start=start,
+            end=None if end is None else AttrInt64(end),
+            start=None if start is None else AttrInt64(start),
         ),
         _Shape.Inputs(
             data=data,
@@ -11656,8 +11977,8 @@ def shrink(
     """
     return _Shrink(
         _Shrink.Attributes(
-            bias=bias,
-            lambd=lambd,
+            bias=None if bias is None else AttrFloat32(bias),
+            lambd=None if lambd is None else AttrFloat32(lambd),
         ),
         _Shrink.Inputs(
             input=input,
@@ -11970,7 +12291,7 @@ def softmax(
     """
     return _Softmax(
         _Softmax.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Softmax.Inputs(
             input=input,
@@ -12051,8 +12372,8 @@ def softmax_cross_entropy_loss(
     """
     return _SoftmaxCrossEntropyLoss(
         _SoftmaxCrossEntropyLoss.Attributes(
-            ignore_index=ignore_index,
-            reduction=reduction,
+            ignore_index=None if ignore_index is None else AttrInt64(ignore_index),
+            reduction=None if reduction is None else AttrString(reduction),
         ),
         _SoftmaxCrossEntropyLoss.Inputs(
             scores=scores,
@@ -12164,7 +12485,7 @@ def space_to_depth(
     """
     return _SpaceToDepth(
         _SpaceToDepth.Attributes(
-            blocksize=blocksize,
+            blocksize=None if blocksize is None else AttrInt64(blocksize),
         ),
         _SpaceToDepth.Inputs(
             input=input,
@@ -12211,7 +12532,7 @@ def split(
     """
     return _Split(
         _Split.Attributes(
-            axis=axis,
+            axis=None if axis is None else AttrInt64(axis),
         ),
         _Split.Inputs(
             input=input,
@@ -12272,8 +12593,8 @@ def split_to_sequence(
     """
     return _SplitToSequence(
         _SplitToSequence.Attributes(
-            axis=axis,
-            keepdims=keepdims,
+            axis=None if axis is None else AttrInt64(axis),
+            keepdims=None if keepdims is None else AttrInt64(keepdims),
         ),
         _SplitToSequence.Inputs(
             input=input,
@@ -12408,10 +12729,14 @@ def string_normalizer(
     """
     return _StringNormalizer(
         _StringNormalizer.Attributes(
-            case_change_action=case_change_action,
-            is_case_sensitive=is_case_sensitive,
-            locale=locale,
-            stopwords=stopwords,
+            case_change_action=None
+            if case_change_action is None
+            else AttrString(case_change_action),
+            is_case_sensitive=None
+            if is_case_sensitive is None
+            else AttrInt64(is_case_sensitive),
+            locale=None if locale is None else AttrString(locale),
+            stopwords=None if stopwords is None else AttrStrings(stopwords),
         ),
         _StringNormalizer.Inputs(
             X=X,
@@ -12647,15 +12972,21 @@ def tf_idf_vectorizer(
     """
     return _TfIdfVectorizer(
         _TfIdfVectorizer.Attributes(
-            max_gram_length=max_gram_length,
-            max_skip_count=max_skip_count,
-            min_gram_length=min_gram_length,
-            mode=mode,
-            ngram_counts=ngram_counts,
-            ngram_indexes=ngram_indexes,
-            pool_int64s=pool_int64s,
-            pool_strings=pool_strings,
-            weights=weights,
+            max_gram_length=None
+            if max_gram_length is None
+            else AttrInt64(max_gram_length),
+            max_skip_count=None
+            if max_skip_count is None
+            else AttrInt64(max_skip_count),
+            min_gram_length=None
+            if min_gram_length is None
+            else AttrInt64(min_gram_length),
+            mode=None if mode is None else AttrString(mode),
+            ngram_counts=None if ngram_counts is None else AttrInt64s(ngram_counts),
+            ngram_indexes=None if ngram_indexes is None else AttrInt64s(ngram_indexes),
+            pool_int64s=None if pool_int64s is None else AttrInt64s(pool_int64s),
+            pool_strings=None if pool_strings is None else AttrStrings(pool_strings),
+            weights=None if weights is None else AttrFloat32s(weights),
         ),
         _TfIdfVectorizer.Inputs(
             X=X,
@@ -12697,7 +13028,7 @@ def thresholded_relu(
     """
     return _ThresholdedRelu(
         _ThresholdedRelu.Attributes(
-            alpha=alpha,
+            alpha=None if alpha is None else AttrFloat32(alpha),
         ),
         _ThresholdedRelu.Inputs(
             X=X,
@@ -12805,9 +13136,9 @@ def top_k(
     """
     return _TopK(
         _TopK.Attributes(
-            axis=axis,
-            largest=largest,
-            sorted=sorted,
+            axis=None if axis is None else AttrInt64(axis),
+            largest=None if largest is None else AttrInt64(largest),
+            sorted=None if sorted is None else AttrInt64(sorted),
         ),
         _TopK.Inputs(
             X=X,
@@ -12850,7 +13181,7 @@ def transpose(
     """
     return _Transpose(
         _Transpose.Attributes(
-            perm=perm,
+            perm=None if perm is None else AttrInt64s(perm),
         ),
         _Transpose.Inputs(
             data=data,
@@ -12905,7 +13236,7 @@ def trilu(
     """
     return _Trilu(
         _Trilu.Attributes(
-            upper=upper,
+            upper=None if upper is None else AttrInt64(upper),
         ),
         _Trilu.Inputs(
             input=input,
@@ -13018,8 +13349,8 @@ def unique(
     """
     return _Unique(
         _Unique.Attributes(
-            axis=axis,
-            sorted=sorted,
+            axis=None if axis is None else AttrInt64(axis),
+            sorted=None if sorted is None else AttrInt64(sorted),
         ),
         _Unique.Inputs(
             X=X,
@@ -13111,7 +13442,7 @@ def upsample(
     """
     return _Upsample(
         _Upsample.Attributes(
-            mode=mode,
+            mode=None if mode is None else AttrString(mode),
         ),
         _Upsample.Inputs(
             X=X,
