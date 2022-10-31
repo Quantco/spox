@@ -77,7 +77,7 @@ class _Initializer(_InternalNode):
     @dataclass
     class Attributes:
         type: AttrType
-        default: Optional[AttrTensor] = None
+        default: AttrTensor
 
     class Outputs(ArrowFields):
         arg: Arrow
@@ -92,9 +92,7 @@ class _Initializer(_InternalNode):
 
     def update_metadata(self, opset_req, initializers, functions):
         super().update_metadata(opset_req, initializers, functions)
-        initializers[self.outputs.arg] = (
-            self.attrs.default.value if self.attrs.default else None
-        )
+        initializers[self.outputs.arg] = self.attrs.default.value
 
     def to_onnx(
         self, scope: "Scope", doc_string: Optional[str] = None, build_subgraph=None
