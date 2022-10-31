@@ -83,7 +83,7 @@ class Node(ABC):
 
     def __init__(
         self,
-        attrs: Optional[Dataclass] = None,
+        attrs: Optional[Any] = None,
         inputs: Optional[ArrowFields] = None,
         outputs: Optional[ArrowFields] = None,
         *,
