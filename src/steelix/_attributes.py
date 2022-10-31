@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Generic, Iterable, Tuple, TypeVar, Union
+from typing import Any, Generic, Iterable, Tuple, Type, TypeVar, Union
 
 import numpy as np
 from onnx import AttributeProto
@@ -14,6 +14,7 @@ from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 from steelix import type_system
 from steelix._utils import from_array
 
+S = TypeVar("S")
 T = TypeVar("T")
 
 
@@ -101,7 +102,7 @@ class AttrType(Attr[type_system.Type]):
         return make_attribute(key, type_proto)
 
 
-class AttrDtype(Attr[Union[np.dtype, np.generic]]):
+class AttrDtype(Attr[Union[np.dtype, Type[np.generic]]]):
     """Special attribute for specifying data types as ``numpy.dtype``s, for example in ``Cast``."""
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
@@ -119,8 +120,8 @@ class AttrGraph(Attr[Any]):
         )
 
 
-class _AttrIterable(Attr[Tuple[T, ...]], ABC):
-    def __init__(self, value: Union[Iterable[T], _Ref]):
+class _AttrIterable(Attr[Tuple[S, ...]], ABC):
+    def __init__(self, value: Union[Iterable[S], _Ref[Tuple[S, ...]]]):
         super().__init__(value if isinstance(value, _Ref) else tuple(value))
 
 
