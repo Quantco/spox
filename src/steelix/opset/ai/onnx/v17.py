@@ -514,8 +514,6 @@ class _Constant(StandardNode):
         output: Arrow
 
     def propagate_values(self) -> Dict[str, Any]:
-        from dataclasses import asdict
-
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.__dict__.items() if v is not None
         )
