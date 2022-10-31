@@ -1,6 +1,5 @@
 from abc import ABC
-from dataclasses import dataclass
-from typing import Any, Iterable, Tuple, Union
+from typing import Any, Generic, Iterable, Tuple, TypeVar, Union
 
 import numpy as np
 from onnx import AttributeProto
@@ -10,36 +9,47 @@ from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 from steelix import type_system
 from steelix._utils import from_array
 
+T = TypeVar("T")
 
-class Attr(ABC):
-    _value: Any
+
+class Attr(ABC, Generic[T]):
+    _value: Union[T, "_Ref[T]"]
+
+    def __init__(self, value: Union[T, "_Ref[T]"]):
+        self._value = value
 
     @property
-    def value(self) -> Any:
+    def value(self) -> T:
         # implicitly "dereference" `_Ref`
         if isinstance(self._value, _Ref):
-            return self._value._concrete._value
+            return _deref(self._value)
         return self._value
 
     def _to_onnx(self, key: str) -> AttributeProto:
+        if isinstance(self._value, _Ref):
+            return self._value._to_onnx(key)
+        return self._to_onnx_deref(key)
+
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        """Conversion method for the dereferenced case."""
         raise NotImplementedError
 
 
-class _Ref:
+class _Ref(Generic[T]):
     """Special attribute value used in function bodies.
 
     An ``AttrRef`` is a reference to an attribute defined
     elsewhere. May be used as ``_value`` in ``Attr*`` classes.
     """
 
-    def __init__(self, concrete: Attr, outer_name: str):
+    def __init__(self, concrete: Attr[T], outer_name: str):
         self._concrete = concrete
         self._outer_name = outer_name
 
     @property
     def value(self):
         # Deref to the concrete value
-        return self._concrete._value
+        return self._concrete.value
 
     def _to_onnx(self, key: str) -> AttributeProto:
         parent_type = self._concrete._to_onnx(key).type
@@ -48,113 +58,31 @@ class _Ref:
         )
 
 
-@dataclass
-class AttrFloat32(Attr):
-    _value: Union[float, _Ref]
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self._value)
-
-
-@dataclass
-class AttrInt64(Attr):
-    _value: Union[int, _Ref]
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self._value)
+class AttrFloat32(Attr[float]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        if isinstance(self.value, int):
+            return make_attribute(key, float(self.value))
+        return make_attribute(key, self.value)
 
 
-@dataclass
-class AttrString(Attr):
-    _value: Union[str, _Ref]
+class AttrInt64(Attr[int]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        return make_attribute(key, self.value)
 
-    def _to_onnx(self, key: str) -> AttributeProto:
+
+class AttrString(Attr[str]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
         # Strings are bytes on the onnx side
-        if isinstance(self._value, _Ref):
-            return self._value._to_onnx(key)
         return make_attribute(key, self.value.encode())
 
 
-@dataclass
-class AttrFloat32s(Attr):
-    _value: Union[Tuple[float, ...], _Ref]
-
-    def __init__(self, value: Union[Iterable[float], _Ref]):
-        if isinstance(value, Iterable):
-            self._value = tuple(value)
-        else:
-            self._value = value
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self._value)
-
-
-@dataclass
-class AttrInt64s(Attr):
-    _value: Union[Tuple[int, ...], _Ref]
-
-    def __init__(self, value: Union[Iterable[int], _Ref]):
-        if isinstance(value, Iterable):
-            self._value = tuple(value)
-        else:
-            self._value = value
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        return _make_attribute_maybe_ref(key, self._value)
-
-
-@dataclass
-class AttrStrings(Attr):
-    _value: Union[Tuple[str, ...], _Ref]
-
-    def __init__(self, value: Union[Iterable[str], _Ref]):
-        if isinstance(value, Iterable):
-            self._value = tuple(value)
-        else:
-            self._value = value
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self._value, _Ref):
-            return self._value._to_onnx(key)
-        return make_attribute(key, [v.encode() for v in self.value])
-
-
-@dataclass
-class AttrTensors(Attr):
-    _value: Union[Tuple[np.ndarray, ...], _Ref]
-
-    def __init__(self, value: Union[Iterable[np.ndarray], _Ref]):
-        if isinstance(value, Iterable):
-            self._value = tuple(value)
-        else:
-            self._value = value
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self._value, _Ref):
-            return self._value._to_onnx(key)
-        tensors = [from_array(t) for t in self.value]
-        return make_attribute(key, tensors)
-
-
-@dataclass
-class AttrTensor(Attr):
-    _value: Union[np.ndarray, _Ref]
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self._value, _Ref):
-            return self._value._to_onnx(key)
-
+class AttrTensor(Attr[np.ndarray]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
         return make_attribute(key, from_array(self.value))
 
 
-@dataclass
-class AttrType(Attr):
-    _value: Union[type_system.Type, _Ref]
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self._value, _Ref):
-            return self._value._to_onnx(key)
-
+class AttrType(Attr[type_system.Type]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
         if isinstance(self.value, type_system.Tensor):
             type_proto = make_tensor_type_proto(
                 self.value.elem_type_to_onnx(self.value.elem_type),
@@ -167,16 +95,10 @@ class AttrType(Attr):
         return make_attribute(key, type_proto)
 
 
-@dataclass
-class AttrDtype(Attr):
+class AttrDtype(Attr[Union[np.dtype, np.generic]]):
     """Special attribute for sepecifying data types as `numpy.dtype`s."""
 
-    _value: Union[np.dtype, np.generic]
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        if isinstance(self._value, _Ref):
-            return self._value._to_onnx(key)
-
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
         dtype = np.dtype(self.value)
         # There are various different dtypes denoting strings
         if dtype.type == np.str_:
@@ -184,16 +106,45 @@ class AttrDtype(Attr):
         return make_attribute(key, NP_TYPE_TO_TENSOR_TYPE[dtype])
 
 
-@dataclass
-class AttrGraph(Attr):
-    _value: Any
-
-    def _to_onnx(self, key: str) -> AttributeProto:
-        # Build with build_subgraph in Node, currently
-        raise NotImplementedError
+class AttrGraph(Attr[Any]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        raise TypeError(
+            "Graph attributes must be build using `build_subgraph` in `Node.to_onnx`."
+        )
 
 
-def _make_attribute_maybe_ref(key, value: Union[Any, _Ref]) -> AttributeProto:
-    if isinstance(value, _Ref):
-        return value._to_onnx(key)
-    return make_attribute(key, value)
+class _AttrIterable(Attr[Tuple[T, ...]]):
+    def __init__(self, value: Union[Iterable[T], _Ref]):
+        if isinstance(value, _Ref):
+            self._value = value
+        else:
+            self._value = tuple(value)
+
+
+class AttrFloat32s(_AttrIterable[float]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        # ensure values are all floats
+        values = [float(v) for v in self.value]
+        return make_attribute(key, values)
+
+
+class AttrInt64s(_AttrIterable[int]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        return make_attribute(key, self.value)
+
+
+class AttrStrings(_AttrIterable[str]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        return make_attribute(key, [v.encode() for v in self.value])
+
+
+class AttrTensors(_AttrIterable[np.ndarray]):
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        tensors = [from_array(t) for t in self.value]
+        return make_attribute(key, tensors)
+
+
+def _deref(ref: _Ref[T]) -> T:
+    if isinstance(ref._concrete, _Ref):
+        return _deref(ref._concrete)
+    return ref._concrete._value  # type: ignore

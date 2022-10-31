@@ -134,7 +134,7 @@ def cubic(op, linear):
 @pytest.fixture
 def min_fun_graph(op, linear):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
-    return results(final=linear(start, 3.0, 2.0))
+    return results(final=linear(start, 3, 2))
 
 
 @pytest.fixture
@@ -142,19 +142,19 @@ def big_fun_graph(op, linear):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
-    return results(final=op.div(linear(op.add(first, second), 3.0, 2.0), second))
+    return results(final=op.div(linear(op.add(first, second), 3, 2), second))
 
 
 @pytest.fixture
 def double_fun_graph(op, linear):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
-    return results(final=linear(linear(start, 3.0, 2.0), 5.0, 3.0))
+    return results(final=linear(linear(start, 3, 2), 5, 3))
 
 
 @pytest.fixture
 def wrapped_linear_graph(op, linear2):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
-    return results(final=linear2(start, 3.0, 2.0))
+    return results(final=linear2(start, 3, 2))
 
 
 @pytest.fixture
