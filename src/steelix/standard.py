@@ -9,7 +9,6 @@ import onnx
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
-from ._attributes import _Ref
 from ._scope import Scope
 from ._type_inference import InferenceError
 from ._utils import from_array
@@ -75,7 +74,7 @@ class StandardNode(Node):
             # otherwise refs aren't handled properly).
             self.attrs = self.Attributes(
                 **{
-                    k: v._value._concrete if v and isinstance(v._value, _Ref) else v
+                    k: type(v)(v.value) if v is not None else v
                     for k, v in self.attrs.__dict__.items()
                 }
             )
