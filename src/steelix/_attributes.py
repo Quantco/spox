@@ -3,7 +3,12 @@ from typing import Any, Generic, Iterable, Tuple, TypeVar, Union
 
 import numpy as np
 from onnx import AttributeProto
-from onnx.helper import make_attribute, make_sequence_type_proto, make_tensor_type_proto
+from onnx.helper import (
+    make_attribute,
+    make_optional_type_proto,
+    make_sequence_type_proto,
+    make_tensor_type_proto,
+)
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
 from steelix import type_system
@@ -81,13 +86,16 @@ class AttrTensor(Attr[np.ndarray]):
 
 class AttrType(Attr[type_system.Type]):
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        if isinstance(self.value, type_system.Tensor):
+        value = self.value  # for type-checkers with limited property support
+        if isinstance(value, type_system.Tensor):
             type_proto = make_tensor_type_proto(
-                self.value.elem_type_to_onnx(self.value.elem_type),
-                self.value.shape.to_simple(),
+                value.elem_type_to_onnx(value.elem_type),
+                value.shape.to_simple(),
             )
-        elif isinstance(self.value, type_system.Sequence):
-            type_proto = make_sequence_type_proto(self.value.elem_type.to_onnx())
+        elif isinstance(value, type_system.Sequence):
+            type_proto = make_sequence_type_proto(value.elem_type.to_onnx())
+        elif isinstance(value, type_system.Optional):
+            type_proto = make_optional_type_proto(value.elem_type.to_onnx())
         else:
             raise NotImplementedError
         return make_attribute(key, type_proto)
