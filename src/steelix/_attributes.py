@@ -43,14 +43,11 @@ class _Ref(Generic[T]):
     elsewhere. May be used as ``_value`` in ``Attr*`` classes.
     """
 
+    _concrete: Attr[T]
+
     def __init__(self, concrete: Attr[T], outer_name: str):
         self._concrete = concrete
         self._outer_name = outer_name
-
-    @property
-    def value(self):
-        # Deref to the concrete value
-        return self._concrete.value
 
     def _to_onnx(self, key: str) -> AttributeProto:
         parent_type = self._concrete._to_onnx(key).type
@@ -143,6 +140,6 @@ class AttrTensors(_AttrIterable[np.ndarray]):
 
 
 def _deref(ref: _Ref[T]) -> T:
-    if isinstance(ref._concrete, _Ref):
-        return _deref(ref._concrete)
-    return ref._concrete._value  # type: ignore
+    if isinstance(ref._concrete._value, _Ref):
+        return _deref(ref._concrete._value)
+    return ref._concrete._value
