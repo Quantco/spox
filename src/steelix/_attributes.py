@@ -36,7 +36,8 @@ class Attr(ABC, Generic[T]):
 
 
 class _Ref(Generic[T]):
-    """Special attribute value used in function bodies.
+    """
+    Special attribute value used in function bodies.
 
     An ``AttrRef`` is a reference to an attribute defined
     elsewhere. May be used as ``_value`` in ``Attr*`` classes.
@@ -96,7 +97,7 @@ class AttrType(Attr[type_system.Type]):
 
 
 class AttrDtype(Attr[Union[np.dtype, np.generic]]):
-    """Special attribute for sepecifying data types as `numpy.dtype`s."""
+    """Special attribute for specifying data types as ``numpy.dtype``s, for example in ``Cast``."""
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         dtype = np.dtype(self.value)
@@ -109,16 +110,13 @@ class AttrDtype(Attr[Union[np.dtype, np.generic]]):
 class AttrGraph(Attr[Any]):
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         raise TypeError(
-            "Graph attributes must be build using `build_subgraph` in `Node.to_onnx`."
+            "Graph attributes must be built using the `build_subgraph` callback in `Node.to_onnx`."
         )
 
 
-class _AttrIterable(Attr[Tuple[T, ...]]):
+class _AttrIterable(Attr[Tuple[T, ...]], ABC):
     def __init__(self, value: Union[Iterable[T], _Ref]):
-        if isinstance(value, _Ref):
-            self._value = value
-        else:
-            self._value = tuple(value)
+        super().__init__(value if isinstance(value, _Ref) else tuple(value))
 
 
 class AttrFloat32s(_AttrIterable[float]):
