@@ -8,11 +8,13 @@ cases = {
 }
 for key, (imp, rep) in cases.items():
     if t.elem_type is key:
-        assert all(imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1)
+        if not all(imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1):
+            raise InferenceError("Only one input imputed type may be set.")
         break
 else:
-    assert False, "no matching element type"
-assert imp is not None
+    raise InferenceError("No matching element type")
+if imp is None:
+    raise InferenceError("Value list for imputation is required.")
 # If the number of features is known (last row, we can check this here)
 sim = t.shape.to_simple()
 last = sim[-1] if sim else 1

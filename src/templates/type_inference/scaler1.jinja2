@@ -1,7 +1,8 @@
 if self.inputs.X.type is None:
     return {}
 sc, off = self.attrs.scale, self.attrs.offset
-assert sc is not None and off is not None
+if sc is None or off is None:
+    raise InferenceError("Scale and offset are required attributes.")
 t = self.inputs.X.unwrap_tensor()
 # If the number of features is known (last row, we can check this here)
 sim = t.shape.to_simple()

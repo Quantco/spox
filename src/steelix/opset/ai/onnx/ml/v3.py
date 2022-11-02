@@ -54,8 +54,10 @@ class _ArrayFeatureExtractor(StandardNode):
         if not self.inputs.fully_typed:
             return {}
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
-        assert xt.shape.rank >= 1
-        assert xt.shape[:-1] == yt.shape
+        if xt.shape.rank < 1:
+            raise InferenceError("Expected rank >= 1")
+        if xt.shape[:-1] != yt.shape:
+            raise InferenceError("Mismatched shapes for entries & indices.")
         return {"Z": Tensor(xt.elem_type, yt.shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
@@ -124,11 +126,10 @@ class _CategoryMapper(StandardNode):
         if not self.inputs.fully_typed:
             return {}
         cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
-        assert (
-            cats1 is not None
-            and cats2 is not None
-            and len(cats1.value) == len(cats2.value)
-        )
+        if cats1 is None or cats2 is None:
+            raise InferenceError("Missing required attributes.")
+        if len(cats1.value) != len(cats2.value):
+            raise InferenceError("Categories lists have mismatched lengths.")
         t = self.inputs.X.unwrap_tensor()
         (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}  # type: ignore
         return {"Y": Tensor(elem_type, t.shape)}
@@ -208,13 +209,15 @@ class _Imputer(StandardNode):
         }
         for key, (imp, rep) in cases.items():
             if t.elem_type is key:
-                assert all(
+                if not all(
                     imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1
-                )
+                ):
+                    raise InferenceError("Only one input imputed type may be set.")
                 break
         else:
-            assert False, "no matching element type"
-        assert imp is not None
+            raise InferenceError("No matching element type")
+        if imp is None:
+            raise InferenceError("Value list for imputation is required.")
         # If the number of features is known (last row, we can check this here)
         sim = t.shape.to_simple()
         last = sim[-1] if sim else 1
@@ -314,7 +317,10 @@ class _Normalizer(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
-        assert self.attrs.norm.value in ("MAX", "L1", "L2")
+        if self.attrs.norm.value not in ("MAX", "L1", "L2"):
+            raise InferenceError(
+                f"Unknown normalisation method `{self.attrs.norm.value}`"
+            )
         return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Normalizer", "ai.onnx.ml", 1)
@@ -345,7 +351,7 @@ class _OneHotEncoder(StandardNode):
         elif self.attrs.cats_strings:
             n_encodings = len(self.attrs.cats_strings.value)
         else:
-            raise TypeError(
+            raise InferenceError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
         shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
@@ -428,7 +434,8 @@ class _Scaler(StandardNode):
         if self.inputs.X.type is None:
             return {}
         sc, off = self.attrs.scale, self.attrs.offset
-        assert sc is not None and off is not None
+        if sc is None or off is None:
+            raise InferenceError("Scale and offset are required attributes.")
         t = self.inputs.X.unwrap_tensor()
         # If the number of features is known (last row, we can check this here)
         sim = t.shape.to_simple()
