@@ -13,8 +13,6 @@ except ModuleNotFoundError:
 from . import (
     arrow,
     arrowfields,
-    attr,
-    attrfields,
     config,
     converter,
     fields,
@@ -31,8 +29,6 @@ from ._build import BuildError as _BuildError
 from ._scope import ScopeError as _ScopeError
 from .arrow import Arrow, result_type
 from .arrowfields import ArrowFields, NoArrows
-from .attr import Attr, from_array, to_array
-from .attrfields import AttrFields, NoAttrs
 from .converter import convert, converters
 from .graph import (
     arguments,
@@ -50,8 +46,6 @@ from .type_system import Optional, Sequence, Tensor, Type
 __all__ = [
     "arrow",
     "arrowfields",
-    "attr",
-    "attrfields",
     "config",
     "converter",
     "fields",
@@ -72,11 +66,6 @@ __all__ = [
     "result_type",
     "ArrowFields",
     "NoArrows",
-    "Attr",
-    "AttrFields",
-    "NoAttrs",
-    "from_array",
-    "to_array",
     "enum_arguments",
     "enum_results",
     "arguments",

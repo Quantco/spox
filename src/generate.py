@@ -8,7 +8,6 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 import jinja2
 import onnx
 
-import steelix
 from steelix.schemas import DOMAIN_VERSIONS, SCHEMAS
 
 DEFAULT_DOMAIN = "ai.onnx"
@@ -24,18 +23,32 @@ CONSTRUCTOR_RENAMES = {
 }
 
 # Mapping from attribute proto type integers to Python types.
-ATTRIBUTE_PROTO_TO_PY_TYPE = {
+ATTRIBUTE_PROTO_TO_INPUT_TYPE = {
     onnx.AttributeProto.FLOAT: "float",
     onnx.AttributeProto.INT: "int",
     onnx.AttributeProto.STRING: "str",
     onnx.AttributeProto.TENSOR: "ndarray",
     onnx.AttributeProto.GRAPH: "Graph",
     onnx.AttributeProto.TYPE_PROTO: "Type",
-    onnx.AttributeProto.FLOATS: "Sequence[float]",
-    onnx.AttributeProto.INTS: "Sequence[int]",
-    onnx.AttributeProto.STRINGS: "Sequence[str]",
-    onnx.AttributeProto.TENSORS: "Sequence[ndarray]",
-    onnx.AttributeProto.TYPE_PROTOS: "Sequence[steelix.Type]",
+    onnx.AttributeProto.FLOATS: "Iterable[float]",
+    onnx.AttributeProto.INTS: "Iterable[int]",
+    onnx.AttributeProto.STRINGS: "Iterable[str]",
+    onnx.AttributeProto.TENSORS: "Iterable[ndarray]",
+    onnx.AttributeProto.TYPE_PROTOS: "Iterable[steelix.Type]",
+}
+
+ATTRIBUTE_PROTO_TO_MEMBER_TYPE = {
+    onnx.AttributeProto.FLOAT: "AttrFloat32",
+    onnx.AttributeProto.INT: "AttrInt64",
+    onnx.AttributeProto.STRING: "AttrString",
+    onnx.AttributeProto.TENSOR: "AttrTensor",
+    onnx.AttributeProto.GRAPH: "AttrGraph",
+    onnx.AttributeProto.TYPE_PROTO: "AttrType",
+    onnx.AttributeProto.FLOATS: "AttrFloat32s",
+    onnx.AttributeProto.INTS: "AttrInt64s",
+    onnx.AttributeProto.STRINGS: "AttrStrings",
+    onnx.AttributeProto.TENSORS: "AttrTensors",
+    onnx.AttributeProto.TYPE_PROTOS: "AttrTypes",
 }
 
 _TEMPLATE_DIR = Path(str(importlib.resources.path("steelix", "."))).parent / "templates"
@@ -43,10 +56,26 @@ _TEMPLATE_DIR = Path(str(importlib.resources.path("steelix", "."))).parent / "te
 
 @dataclass
 class Attribute:
+    # The name of the attribute used as argument and member name
     name: str
-    member_type: str
-    constructor_type_hint: str
+    # Default value used in the constructor function
     constructor_default: Optional[str]
+    # Type hint used in the constructor function.  May be wrapped in `Optional`.
+    constructor_type_hint: str
+    # Member type without a potential ``Optional`` wrapper
+    _member_type: str
+
+    @property
+    def member_type(self) -> str:
+        """Type used in the ``Attribute`` class. May be wrapped in `Optional`."""
+        if self.constructor_default == "None":
+            return f"Optional[{self._member_type}]"
+        return self._member_type
+
+    @property
+    def attr_constructor(self) -> str:
+        """Constructor of for the corresponding ``Attr*`` class."""
+        return self._member_type
 
 
 def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attribute]:
@@ -55,34 +84,23 @@ def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attr
         default = _get_default_value(attr, attr_type_overrides)
         # Special case; not supported
         if attr.type == onnx.AttributeProto.SPARSE_TENSOR:
-            out.append(
-                Attribute(
-                    name=name,
-                    member_type="Attr[Any]",
-                    constructor_type_hint="None",
-                    constructor_default="None",
-                )
-            )
             continue
 
         if py_and_attr_type := attr_type_overrides.get(name):
-            py_ty, member_type = (str(el) for el in py_and_attr_type)
+            constructor_type_hint, member_type = (str(el) for el in py_and_attr_type)
         else:
-            py_ty = ATTRIBUTE_PROTO_TO_PY_TYPE[attr.type]  # type: ignore
-            member_type = f"Attr[{py_ty}]"
-            py_ty = str(py_ty).replace("Sequence", "Iterable")
+            constructor_type_hint = ATTRIBUTE_PROTO_TO_INPUT_TYPE[attr.type]
+            member_type = ATTRIBUTE_PROTO_TO_MEMBER_TYPE[attr.type]
 
         if default == "None":
-            # We should wrap the member in an optional, too, but
-            # that is currently not supported.
-            py_ty = f"Optional[{py_ty}]"
+            constructor_type_hint = f"Optional[{constructor_type_hint}]"
 
         out.append(
             Attribute(
                 name=name,
-                member_type=member_type,
-                constructor_type_hint=py_ty,
-                constructor_default=default,
+                _member_type=member_type,
+                constructor_type_hint=constructor_type_hint,
+                constructor_default=default,  # type: ignore
             )
         )
     return out
@@ -193,7 +211,6 @@ def get_env():
     env.globals["is_optional"] = is_optional
     env.globals["get_constructor_return"] = get_constructor_return
     env.globals["get_attributes"] = get_attributes
-    env.globals["Attr"] = steelix.attr.Attr
     return env
 
 
@@ -417,13 +434,15 @@ if __name__ == "__main__":
             "Loop": "len(body.requested_results) - 1",
         },
         attr_type_overrides=[
-            (None, "dtype", ("typing.Type[numpy.generic]", "Attr[numpy.generic]")),
-            ("Cast", "to", ("typing.Type[numpy.generic]", "Attr[numpy.generic]")),
+            (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype")),
+            ("Cast", "to", ("typing.Type[numpy.generic]", "AttrDtype")),
         ],
     )
     main(
         "ai.onnx.ml",
         3,
-        attr_type_overrides=[(None, "dtype", ("numpy.generic", "Attr[numpy.generic]"))],
+        attr_type_overrides=[
+            (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype"))
+        ],
         type_inference={"OneHotEncoder": "onehotencoder1"},
     )

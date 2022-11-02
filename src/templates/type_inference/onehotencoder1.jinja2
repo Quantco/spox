@@ -1,7 +1,9 @@
-try:
-    n_encodings = len(self.attrs.cats_int64s._value)
-except TypeError:
-    n_encodings = len(self.attrs.cats_strings._value)
+if self.attrs.cats_int64s:
+    n_encodings = len(self.attrs.cats_int64s.value)
+elif self.attrs.cats_strings:
+    n_encodings = len(self.attrs.cats_strings.value)
+else:
+    raise TypeError("Either `cats_int64s` or `cats_strings` attributes must be set.")
 shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
 return {
     "Y": Tensor(elem_type=numpy.float32, shape=shape)
