@@ -298,6 +298,20 @@ class _LinearRegressor(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        sim = self.inputs.X.unwrap_tensor().shape.to_simple()
+        assert sim is not None
+        if len(sim) == 2:
+            return {"Y": Tensor(numpy.float32, sim)}
+        elif len(sim) == 1:
+            return {"Y": Tensor(numpy.float32, (1, sim[0]))}
+        elif len(sim) == 0:
+            return {"Y": Tensor(numpy.float32, (1, 1))}
+        else:
+            raise InferenceError("Input shape must be at most a matrix.")
+
     op_type = OpType("LinearRegressor", "ai.onnx.ml", 1)
 
     attrs: Attributes
