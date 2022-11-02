@@ -20,7 +20,7 @@ T = TypeVar("T")
 
 class Attr(ABC, Generic[T]):
     _value: Union[T, "_Ref[T]"]
-    _attribute_proto_type_int: int
+    _attribute_proto_type_int: ClassVar[int]
 
     def __init__(self, value: Union[T, "_Ref[T]"]):
         self._value = value

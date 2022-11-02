@@ -441,6 +441,6 @@ if __name__ == "__main__":
     main(
         "ai.onnx.ml",
         3,
-        attr_type_overrides=[(None, "dtype", ("numpy.generic", "AttrDtype"))],
+        attr_type_overrides=[(None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype"))],
         type_inference={"OneHotEncoder": "onehotencoder1"},
     )
