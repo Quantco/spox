@@ -452,5 +452,6 @@ if __name__ == "__main__":
             "Normalizer": "normalizer1",
             "OneHotEncoder": "onehotencoder1",
             "Scaler": "scaler1",
+            "TreeEnsembleRegressor": "treeensembleregressor3",
         },
     )

@@ -527,6 +527,18 @@ class _TreeEnsembleRegressor(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        shape = self.inputs.X.unwrap_tensor().shape
+        if shape.rank != 2:
+            raise InferenceError("Expected input to be a matrix.")
+        sim = shape.to_simple()
+        assert sim is not None
+        n = sim[0]
+        e = self.attrs.n_targets.value if self.attrs.n_targets is not None else None
+        return {"Y": Tensor(numpy.float32, (n, e))}
+
     op_type = OpType("TreeEnsembleRegressor", "ai.onnx.ml", 3)
 
     attrs: Attributes
