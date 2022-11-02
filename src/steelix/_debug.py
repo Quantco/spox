@@ -1,8 +1,8 @@
 import sys
 from contextlib import contextmanager
 
-from steelix.arrow import Arrow
-from steelix.node import Node
+from steelix._arrow import Arrow
+from steelix._node import Node
 
 
 @contextmanager

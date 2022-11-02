@@ -1,6 +1,5 @@
-"""
-Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference.
-"""
+"""Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
+
 import typing
 from typing import Any, Dict, Tuple, Union
 
@@ -9,14 +8,14 @@ import onnx
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
+from ._arrow import Nothing, _nil
+from ._node import Node
+from ._schemas import SCHEMAS
 from ._scope import Scope
+from ._shape import Shape
 from ._type_inference import InferenceError
+from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
-from .arrow import Nothing, _nil
-from .node import Node
-from .schemas import SCHEMAS
-from .shape import Shape
-from .type_system import Optional, Sequence, Tensor, Type
 
 if typing.TYPE_CHECKING:
     from .graph import Graph

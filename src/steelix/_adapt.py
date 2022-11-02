@@ -5,12 +5,12 @@ import numpy
 import onnx
 import onnx.version_converter
 
+from ._arrow import Arrow
+from ._internal_op import _Embedded, _InternalNode
+from ._node import Node
+from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._utils import from_array
-from .arrow import Arrow
-from .internal_op import _Embedded, _InternalNode
-from .node import Node
-from .schemas import SCHEMAS
 
 
 def adapt_node(

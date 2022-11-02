@@ -9,13 +9,13 @@ from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 
 import onnx
 
+from ._arrow import Arrow
+from ._arrowfields import ArrowFields, NoArrows
 from ._attributes import AttrString, AttrTensor, AttrType
+from ._node import Node, OpType
 from ._scope import Scope
-from .arrow import Arrow
-from .arrowfields import ArrowFields, NoArrows
-from .node import Node, OpType
-from .shape import Shape, SimpleShape
-from .type_system import Tensor, Type
+from ._shape import Shape, SimpleShape
+from ._type_system import Tensor, Type
 
 
 class _InternalNode(Node, ABC):
@@ -241,9 +241,9 @@ class _Introduce(_InternalNode):
 
     @property
     def opset_req(self) -> Set[Tuple[str, int]]:
-        from . import config
+        from ._config import get_default_opset
 
-        return {("", config.get_default_opset()._OPERATORS["Identity"].op_type.version)}
+        return {("", get_default_opset()._OPERATORS["Identity"].op_type.version)}
 
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None

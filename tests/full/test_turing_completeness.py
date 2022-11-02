@@ -2,10 +2,10 @@ import numpy
 import pytest
 
 import steelix.opset.ai.onnx.v17 as op
-from steelix.arrow import Arrow
-from steelix.graph import arguments, results
-from steelix.internal_op import unsafe_reshape
-from steelix.type_system import Tensor
+from steelix._arrow import Arrow
+from steelix._graph import arguments, results
+from steelix._internal_op import unsafe_reshape
+from steelix._type_system import Tensor
 
 HELLO_WORLD_IMPL = """
 ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>."     Comments work!

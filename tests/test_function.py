@@ -9,13 +9,13 @@ import onnx.shape_inference
 import onnxruntime
 import pytest
 
+from steelix._arrow import Arrow
+from steelix._arrowfields import ArrowFields
 from steelix._attributes import AttrFloat32, _Ref
-from steelix.arrow import Arrow
-from steelix.arrowfields import ArrowFields
-from steelix.function import Function, to_function
-from steelix.graph import arguments, results
-from steelix.node import OpType
-from steelix.type_system import Tensor
+from steelix._function import Function, to_function
+from steelix._graph import arguments, results
+from steelix._node import OpType
+from steelix._type_system import Tensor
 
 
 @pytest.fixture

@@ -1,8 +1,8 @@
 import typing
 from typing import Dict, Iterable, Optional, Sequence, Union
 
-from .arrow import Arrow, _nil
-from .fields import Fields
+from ._arrow import Arrow, _nil
+from ._fields import Fields
 
 
 class ArrowFields(Fields[Arrow]):

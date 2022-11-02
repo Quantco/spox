@@ -17,6 +17,8 @@ from typing import cast as typing_cast  # noqa: F401
 import numpy  # noqa: F401
 from numpy import ndarray  # noqa: F401
 
+from steelix._arrow import Arrow, _nil, result_type  # noqa: F401
+from steelix._arrowfields import ArrowFields, NoArrows  # noqa: F401
 from steelix._attributes import (
     AttrDtype,
     AttrFloat32,
@@ -29,13 +31,11 @@ from steelix._attributes import (
     AttrTensor,
     AttrType,
 )
-from steelix.arrow import Arrow, _nil, result_type  # noqa: F401
-from steelix.arrowfields import ArrowFields, NoArrows  # noqa: F401
-from steelix.graph import Graph, subgraph  # noqa: F401
-from steelix.internal_op import intro  # noqa: F401
-from steelix.node import OpType  # noqa: F401
-from steelix.standard import StandardNode  # noqa: F401
-from steelix.type_system import Tensor, Type, type_match  # noqa: F401
+from steelix._graph import Graph, subgraph  # noqa: F401
+from steelix._internal_op import intro  # noqa: F401
+from steelix._node import OpType  # noqa: F401
+from steelix._standard import StandardNode  # noqa: F401
+from steelix._type_system import Tensor, Type, type_match  # noqa: F401
 
 
 class _ArrayFeatureExtractor(StandardNode):

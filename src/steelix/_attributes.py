@@ -11,7 +11,7 @@ from onnx.helper import (
 )
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from steelix import graph, type_system
+from steelix import _type_system
 from steelix._utils import from_array
 
 S = TypeVar("S")
@@ -101,19 +101,19 @@ class AttrTensor(Attr[np.ndarray]):
         return make_attribute(key, from_array(self.value))
 
 
-class AttrType(Attr[type_system.Type]):
+class AttrType(Attr[_type_system.Type]):
     _attribute_proto_type_int = AttributeProto.TYPE_PROTO
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         value = self.value  # for type-checkers with limited property support
-        if isinstance(value, type_system.Tensor):
+        if isinstance(value, _type_system.Tensor):
             type_proto = make_tensor_type_proto(
                 value.elem_type_to_onnx(value.elem_type),
                 value.shape.to_simple(),
             )
-        elif isinstance(value, type_system.Sequence):
+        elif isinstance(value, _type_system.Sequence):
             type_proto = make_sequence_type_proto(value.elem_type.to_onnx())
-        elif isinstance(value, type_system.Optional):
+        elif isinstance(value, _type_system.Optional):
             type_proto = make_optional_type_proto(value.elem_type.to_onnx())
         else:
             raise NotImplementedError
@@ -144,7 +144,9 @@ class AttrGraph(Attr[Any]):
     _attribute_proto_type_int = AttributeProto.GRAPH
 
     def _validate(self):
-        if not isinstance(self.value, graph.Graph):
+        from steelix._graph import Graph
+
+        if not isinstance(self.value, Graph):
             raise TypeError(
                 f"Expected value of type `steelix.graph.Graph found `{type(self.value)}`"
             )

@@ -3,12 +3,11 @@ from typing import Any, Generic, Optional, TypeVar, Union
 
 import numpy
 
-from . import type_system
-from .shape import Shape
-from .type_system import Tensor, Type
+from . import _type_system
+from ._shape import Shape
 
 if typing.TYPE_CHECKING:
-    from .node import Node
+    from ._node import Node
 
 T = TypeVar("T")
 
@@ -29,12 +28,17 @@ class Arrow(Generic[T]):
     Should not be constructed directly - the main source of Arrows is operator constructors & ``arguments``-like.
     """
 
-    type: Optional[Type]
+    type: Optional[_type_system.Type]
     value: Optional[Any]
     _op: "Node"
     _name: Optional[str]
 
-    def __init__(self, op: "Node", type_: Optional[Type], value: Optional[Any] = None):
+    def __init__(
+        self,
+        op: "Node",
+        type_: Optional[_type_system.Type],
+        value: Optional[Any] = None,
+    ):
         self.type = type_
         self.value = value
         self._op = op
@@ -49,18 +53,20 @@ class Arrow(Generic[T]):
         self._name = name
 
     @staticmethod
-    def _value_matches_type(value: Optional[Any], type_: Optional[Type]) -> bool:
+    def _value_matches_type(
+        value: Optional[Any], type_: Optional[_type_system.Type]
+    ) -> bool:
         if value is None or type_ is None:
             return True
-        if isinstance(type_, Tensor):
+        if isinstance(type_, _type_system.Tensor):
             return (
                 isinstance(value, numpy.ndarray)
                 and value.dtype.type is type_.elem_type
                 and Shape.from_simple(value.shape) <= type_.shape
             )
-        elif isinstance(type_, type_system.Optional):
+        elif isinstance(type_, _type_system.Optional):
             return value is Nothing or Arrow._value_matches_type(value, type_.elem_type)
-        elif isinstance(type_, type_system.Sequence):
+        elif isinstance(type_, _type_system.Sequence):
             return isinstance(value, list) and all(
                 Arrow._value_matches_type(elem, type_.elem_type) for elem in value
             )
@@ -69,9 +75,9 @@ class Arrow(Generic[T]):
     @property
     def default_opset(self):
         """Default operator set used for operator overloading."""
-        from . import config
+        from ._config import get_default_opset
 
-        return config.get_default_opset()
+        return get_default_opset()
 
     @property
     def _which_output(self) -> Optional[str]:
@@ -91,7 +97,7 @@ class Arrow(Generic[T]):
             f"{'' if self.value is None else ' = ' + str(self.value)}>"
         )
 
-    def unwrap_type(self) -> Type:
+    def unwrap_type(self) -> _type_system.Type:
         """
         Convenience function that raises if the type is unknown and returns it otherwise.
 
@@ -104,7 +110,7 @@ class Arrow(Generic[T]):
             raise TypeError("Cannot unwrap requested type for Arrow, as it is unknown.")
         return self.type
 
-    def unwrap_tensor(self) -> Tensor:
+    def unwrap_tensor(self) -> _type_system.Tensor:
         """
         Convenience function that raises if the type is not a Tensor and returns one otherwise.
 

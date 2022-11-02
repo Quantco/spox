@@ -20,16 +20,16 @@ from typing import (
 
 import onnx
 
+from ._arrow import Arrow
+from ._arrowfields import ArrowFields
 from ._attributes import AttrGraph
+from ._fields import Fields
 from ._type_inference import _warn_unknown_types, get_hint
-from .arrow import Arrow
-from .arrowfields import ArrowFields
-from .fields import Fields
-from .type_system import Type
+from ._type_system import Type
 
 if typing.TYPE_CHECKING:
+    from ._graph import Graph
     from ._scope import Scope
-    from .graph import Graph
 
 
 FieldsT = TypeVar("FieldsT", bound=Fields)

@@ -5,7 +5,7 @@ from typing import ClassVar, Set, TypeVar, Union
 import numpy
 import onnx
 
-from .shape import Shape, SimpleShape
+from ._shape import Shape, SimpleShape
 
 T = TypeVar("T")
 S = TypeVar("S")

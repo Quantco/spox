@@ -9,14 +9,14 @@ import onnx.shape_inference
 
 from . import _build
 from ._adapt import adapt_best_effort
+from ._arrow import Arrow
+from ._arrowfields import NoArrows
 from ._attributes import AttrString, AttrTensor, AttrType
+from ._internal_op import Argument, _Initializer
+from ._node import Node
+from ._schemas import max_opset_policy
+from ._type_system import Tensor, Type
 from ._utils import from_array
-from .arrow import Arrow
-from .arrowfields import NoArrows
-from .internal_op import Argument, _Initializer
-from .node import Node
-from .schemas import max_opset_policy
-from .type_system import Tensor, Type
 
 
 def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, Arrow]:

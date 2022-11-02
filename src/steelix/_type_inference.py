@@ -15,8 +15,8 @@ from typing import Any, Callable, Iterable, List, Optional, Set, Tuple, TypeVar,
 import onnx.shape_inference
 from typing_extensions import Annotated
 
-from .shape import Shape
-from .type_system import Tensor, Type
+from ._shape import Shape
+from ._type_system import Tensor, Type
 
 InferenceError = onnx.shape_inference.InferenceError
 ValidationError = onnx.checker.ValidationError

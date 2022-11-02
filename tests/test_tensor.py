@@ -1,8 +1,8 @@
 import numpy
 import pytest
 
-from steelix.shape import Constant, Natural, Shape, ShapeError, Unknown
-from steelix.type_system import Tensor
+from steelix._shape import Constant, Natural, Shape, ShapeError, Unknown
+from steelix._type_system import Tensor
 
 
 @pytest.fixture(params=[numpy.float64, numpy.int32, numpy.bool_])
