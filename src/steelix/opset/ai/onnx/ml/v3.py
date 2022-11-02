@@ -123,8 +123,12 @@ class _CategoryMapper(StandardNode):
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
-        cats1, cats2 = self.attrs.cats_int64s.value, self.attrs.cats_strings.value
-        assert cats1 and cats2 and len(cats1) == len(cats2)
+        cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
+        assert (
+            cats1 is not None
+            and cats2 is not None
+            and len(cats1.value) == len(cats2.value)
+        )
         t = self.inputs.X.unwrap_tensor()
         (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}  # type: ignore
         return {"Y": Tensor(elem_type, t.shape)}
@@ -194,12 +198,12 @@ class _Imputer(StandardNode):
         # We verify if the attributes are set correctly and matching the input elem type
         cases = {
             numpy.int64: (
-                self.attrs.imputed_value_int64s.value,
-                self.attrs.replaced_value_int64.value,
+                self.attrs.imputed_value_int64s,
+                self.attrs.replaced_value_int64,
             ),
             numpy.float32: (
-                self.attrs.imputed_value_floats.value,
-                self.attrs.replaced_value_float.value,
+                self.attrs.imputed_value_floats,
+                self.attrs.replaced_value_float,
             ),
         }
         for key, (imp, rep) in cases.items():
@@ -210,10 +214,11 @@ class _Imputer(StandardNode):
                 break
         else:
             assert False, "no matching element type"
+        assert imp is not None
         # If the number of features is known (last row, we can check this here)
         sim = t.shape.to_simple()
         last = sim[-1] if sim else 1
-        if isinstance(last, int) and len(imp) not in {1, last}:
+        if isinstance(last, int) and len(imp.value) not in {1, last}:
             raise InferenceError(
                 f"Mismatched expected ({len(imp)}) and actual ({last}) feature count."
             )
@@ -333,6 +338,8 @@ class _OneHotEncoder(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
         if self.attrs.cats_int64s:
             n_encodings = len(self.attrs.cats_int64s.value)
         elif self.attrs.cats_strings:
@@ -420,18 +427,19 @@ class _Scaler(StandardNode):
     def infer_output_types(self) -> Dict[str, Type]:
         if self.inputs.X.type is None:
             return {}
-        sc, off = self.attrs.scale.value, self.attrs.offset.value
+        sc, off = self.attrs.scale, self.attrs.offset
+        assert sc is not None and off is not None
         t = self.inputs.X.unwrap_tensor()
         # If the number of features is known (last row, we can check this here)
         sim = t.shape.to_simple()
         last = sim[-1] if sim else 1
-        if isinstance(last, int) and len(sc) not in {1, last}:
+        if isinstance(last, int) and len(sc.value) not in {1, last}:
             raise InferenceError(
-                f"Mismatched expected ({len(sc)}) and actual ({last}) feature count for scale."
+                f"Mismatched expected ({len(sc.value)}) and actual ({last}) feature count for scale."
             )
-        if isinstance(last, int) and len(off) not in {1, last}:
+        if isinstance(last, int) and len(off.value) not in {1, last}:
             raise InferenceError(
-                f"Mismatched expected ({len(off)}) and actual ({last}) feature count for offset."
+                f"Mismatched expected ({len(off.value)}) and actual ({last}) feature count for offset."
             )
         return {"Y": Tensor(numpy.float32, t.shape)}
 

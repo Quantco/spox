@@ -1,7 +1,7 @@
 if not self.inputs.fully_typed:
     return {}
-cats1, cats2 = self.attrs.cats_int64s.value, self.attrs.cats_strings.value
-assert cats1 and cats2 and len(cats1) == len(cats2)
+cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
+assert cats1 is not None and cats2 is not None and len(cats1.value) == len(cats2.value)
 t = self.inputs.X.unwrap_tensor()
 (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}  # type: ignore
 return {"Y": Tensor(elem_type, t.shape)}

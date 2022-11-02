@@ -1,12 +1,13 @@
 if self.inputs.X.type is None:
     return {}
-sc, off = self.attrs.scale.value, self.attrs.offset.value
+sc, off = self.attrs.scale, self.attrs.offset
+assert sc is not None and off is not None
 t = self.inputs.X.unwrap_tensor()
 # If the number of features is known (last row, we can check this here)
 sim = t.shape.to_simple()
 last = sim[-1] if sim else 1
-if isinstance(last, int) and len(sc) not in {1, last}:
-    raise InferenceError(f"Mismatched expected ({len(sc)}) and actual ({last}) feature count for scale.")
-if isinstance(last, int) and len(off) not in {1, last}:
-    raise InferenceError(f"Mismatched expected ({len(off)}) and actual ({last}) feature count for offset.")
+if isinstance(last, int) and len(sc.value) not in {1, last}:
+    raise InferenceError(f"Mismatched expected ({len(sc.value)}) and actual ({last}) feature count for scale.")
+if isinstance(last, int) and len(off.value) not in {1, last}:
+    raise InferenceError(f"Mismatched expected ({len(off.value)}) and actual ({last}) feature count for offset.")
 return {"Y": Tensor(numpy.float32, t.shape)}
