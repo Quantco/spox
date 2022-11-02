@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Generic, Iterable, Tuple, Type, TypeVar, Union
+from typing import Any, ClassVar, Generic, Iterable, Tuple, Type, TypeVar, Union
 
 import numpy as np
 from onnx import AttributeProto
