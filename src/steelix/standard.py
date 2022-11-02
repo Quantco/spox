@@ -9,11 +9,10 @@ import onnx
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
-from . import attr
 from ._scope import Scope
 from ._type_inference import InferenceError
+from ._utils import from_array
 from .arrow import Nothing, _nil
-from .attr import Attr
 from .node import Node
 from .schemas import SCHEMAS
 from .shape import Shape
@@ -55,7 +54,7 @@ class StandardNode(Node):
         return self.schema.min_output
 
     def to_singleton_onnx_model(
-        self, with_subgraphs: bool = True
+        self, *, dummy_outputs: bool = True, with_subgraphs: bool = True
     ) -> Tuple[onnx.ModelProto, Scope]:
         """Build a singleton model consisting of just this StandardNode. Used for type inference."""
         # Prepare names for the values in scope of the node
@@ -71,11 +70,12 @@ class StandardNode(Node):
         # We inject the evaluated attribute values here and then substitute back
         self_attrs = self.attrs
         try:
-            # Get exact attribute values to run inference (as otherwise refs aren't handled properly).
+            # Get exact attribute values to run inference (as
+            # otherwise refs aren't handled properly).
             self.attrs = self.Attributes(
                 **{
-                    k: Attr(v.value_type, v.value)
-                    for k, v in self.attrs.as_dict().items()
+                    k: type(v)(v.value) if v is not None else v
+                    for k, v in self.attrs.__dict__.items()
                 }
             )
             node_proto: onnx.NodeProto
@@ -93,15 +93,26 @@ class StandardNode(Node):
             for key, arrow in self.inputs.as_dict().items()
             if arrow
         ]
-        # Output types with placeholder empty TypeProto
-        output_dummy_info = [
-            onnx.helper.make_value_info(key, onnx.TypeProto())
-            for key in self.outputs.as_dict().keys()
+
+        # Output types with placeholder empty TypeProto (or actual type if not using dummies)
+        def out_value_info(curr_key, curr_arrow):
+            if (
+                dummy_outputs
+                or curr_arrow.type is None
+                or not curr_arrow.type.is_concrete
+            ):
+                return onnx.helper.make_value_info(curr_key, onnx.TypeProto())
+            return curr_arrow.unwrap_type().to_onnx_value_info(curr_key)
+
+        output_info = [
+            out_value_info(key, arrow)
+            for key, arrow in self.outputs.as_dict().items()
+            if arrow
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
         initializers = [
-            attr.from_array(arrow.value, key)
+            from_array(arrow.value, key)
             for key, arrow in self.inputs.as_dict().items()
             if isinstance(arrow.value, numpy.ndarray)
         ]
@@ -110,7 +121,7 @@ class StandardNode(Node):
             [node_proto],
             "StandardOpNode_infer_output_types_onnx",
             input_info,
-            output_dummy_info,
+            output_info,
             initializers,
         )
         # Subgraph internals are hidden by make_dummy_subgraph - so we don't care about subgraphs' opset requirements

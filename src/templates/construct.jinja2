@@ -1,7 +1,7 @@
 return _{{ schema.name }}(
     _{{ schema.name }}.Attributes(
-{% for attr in schema.attributes.values()
-        %}{{attr.name}}={{ attr.name }}, {%
+{% for attr in get_attributes(schema, attr_type_overrides)
+        %}{{attr.name}}=None if {{ attr.name }} is None else {{ attr.attr_constructor }}({{ attr.name }}), {%
 endfor %}
     ), _{{ schema.name }}.Inputs(
 {% for param in schema.inputs

@@ -4,17 +4,15 @@ They behave like a normal Node, but their inference, building and translation be
 """
 
 from abc import ABC
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 
-import numpy
 import onnx
 
+from ._attributes import AttrString, AttrTensor, AttrType
 from ._scope import Scope
 from .arrow import Arrow
 from .arrowfields import ArrowFields, NoArrows
-from .attr import Attr
-from .attrfields import AttrFields, NoAttrs
-from .fields import of
 from .node import Node, OpType
 from .shape import Shape, SimpleShape
 from .type_system import Tensor, Type
@@ -38,10 +36,11 @@ class Argument(_InternalNode):
 
     op_type = OpType("Argument", "steelix.internal", 0)
 
-    class Attributes(AttrFields):
-        type: Attr[Type]
-        name: Attr[str] = of(None)
-        default: Attr[numpy.ndarray] = of(None)
+    @dataclass
+    class Attributes:
+        type: AttrType
+        name: Optional[AttrString] = None
+        default: Optional[AttrTensor] = None
 
     class Outputs(ArrowFields):
         arg: Arrow
@@ -51,7 +50,7 @@ class Argument(_InternalNode):
     outputs: Outputs
 
     def post_init(self, **kwargs):
-        if self.attrs.name.value is not None:
+        if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
     def infer_output_types(self) -> Dict[str, Type]:
@@ -61,7 +60,7 @@ class Argument(_InternalNode):
     def update_metadata(self, opset_req, initializers, functions):
         super().update_metadata(opset_req, initializers, functions)
         arrow = self.outputs.arg
-        if self.attrs.default.value is not None:
+        if self.attrs.default is not None:
             initializers[arrow] = self.attrs.default.value
 
     def to_onnx(
@@ -75,9 +74,10 @@ class _Initializer(_InternalNode):
 
     op_type = OpType("Initializer", "steelix.internal", 0)
 
-    class Attributes(AttrFields):
-        type: Attr[Type]
-        default: Attr[numpy.ndarray] = of(None)
+    @dataclass
+    class Attributes:
+        type: AttrType
+        default: AttrTensor
 
     class Outputs(ArrowFields):
         arg: Arrow
@@ -105,6 +105,10 @@ class _Embedded(_InternalNode):
 
     model: onnx.ModelProto
 
+    @dataclass
+    class Attributes:
+        pass
+
     class Inputs(ArrowFields):
         inputs: Sequence[Arrow]
 
@@ -113,7 +117,7 @@ class _Embedded(_InternalNode):
 
     op_type = OpType("Embedded", "steelix.internal", 0)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
@@ -197,8 +201,8 @@ def embedded(model: onnx.ModelProto):
         """Local function created by ``embedded``. Call with expected embedded model inputs to get model outputs."""
         assert set(inputs) == {i.name for i in model.graph.input}
         node = _Embedded(
-            NoAttrs(),
-            _Embedded.Inputs([inputs[i.name] for i in model.graph.input]),
+            attrs=None,
+            inputs=_Embedded.Inputs([inputs[i.name] for i in model.graph.input]),
             out_variadic=len(model.graph.output),
             model=model,
         )
@@ -212,6 +216,10 @@ def embedded(model: onnx.ModelProto):
 class _Introduce(_InternalNode):
     """Internal operator used for introducing values, to manually evaluate them in the current scope."""
 
+    @dataclass
+    class Attributes:
+        pass
+
     class Inputs(ArrowFields):
         inputs: Sequence[Arrow]
 
@@ -220,7 +228,7 @@ class _Introduce(_InternalNode):
 
     op_type = OpType("Introduce", "steelix.internal", 0)
 
-    attrs: NoAttrs
+    attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
@@ -280,7 +288,7 @@ def intro(*args: Arrow) -> Arrow:
 def intros(*args: Arrow) -> Sequence[Arrow]:
     """Same as intro, but all the arguments are returned & made dependent on each other, and not only the last."""
     return _Introduce(
-        NoAttrs(), _Introduce.Inputs(args), out_variadic=len(args)
+        None, _Introduce.Inputs(args), out_variadic=len(args)
     ).outputs.outputs
 
 

@@ -1,14 +1,14 @@
-from typing import Iterable, Sequence
+from dataclasses import dataclass
+from typing import Iterable
 
 import numpy
 import onnx
 import onnx.parser
 import pytest
 
+from steelix._attributes import AttrInt64s
 from steelix.arrow import Arrow
 from steelix.arrowfields import ArrowFields
-from steelix.attr import Attr
-from steelix.attrfields import AttrFields
 from steelix.graph import arguments, results
 from steelix.internal_op import embedded
 from steelix.node import OpType
@@ -50,8 +50,9 @@ def embedded_old_squeeze_graph(op, old_squeeze):
 @pytest.fixture
 def old_squeeze_graph(op, old_squeeze):
     class Squeeze11(StandardNode):
-        class Attributes(AttrFields):
-            axes: Attr[Sequence[int]]
+        @dataclass
+        class Attributes:
+            axes: AttrInt64s
 
         class Inputs(ArrowFields):
             data: Arrow
@@ -67,7 +68,7 @@ def old_squeeze_graph(op, old_squeeze):
 
     def squeeze11(_data: Arrow, _axes: Iterable[int]):
         return Squeeze11(
-            Squeeze11.Attributes(_axes), Squeeze11.Inputs(_data)
+            Squeeze11.Attributes(AttrInt64s(_axes)), Squeeze11.Inputs(_data)
         ).outputs.squeezed
 
     (data,) = arguments(

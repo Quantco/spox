@@ -73,7 +73,7 @@ class Type:
     def is_concrete(self) -> bool:
         try:
             self.assert_concrete()
-        except ValueError:
+        except Exception:
             return False
         else:
             return True

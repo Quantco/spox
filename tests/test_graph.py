@@ -1,7 +1,6 @@
 import numpy
 import pytest
 
-from steelix._type_inference import InferenceWarning
 from steelix.graph import arguments, initializer, results
 from steelix.internal_op import intro
 from steelix.type_system import Tensor
@@ -114,12 +113,8 @@ def test_no_shape_throws(op):
 
 
 def test_no_type_throws(op):
-    first, second = arguments(first=Tensor(numpy.float32, (None,)), second=None)
-    with pytest.warns(InferenceWarning):
-        final = op.add(first, second)
-    fun = results(final=final)
     with pytest.raises(TypeError):
-        fun.to_onnx_model()
+        first, second = arguments(first=Tensor(numpy.float32, (None,)), second=None)
 
 
 def test_copy(onnx_helper, copy_graph):

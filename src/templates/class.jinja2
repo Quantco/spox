@@ -1,15 +1,13 @@
 class _{{ schema.name }}(StandardNode):
-{% if schema.attributes %}
-    class Attributes(AttrFields):
-    {% for attr in schema.attributes.values() %}
-        {{ attr.name }}: Attr[{{ get_attr_hint(attr, attr_type_overrides) }}]{# Could indicate optional attributes? #}
-
+    @dataclass
+    class Attributes:
+    {% if not get_attributes(schema, attr_type_overrides) %}
+        pass
+    {% else %}{% for attr in get_attributes(schema, attr_type_overrides) %}
+        {{ attr.name }}: {{ attr.member_type }}
     {% endfor %}
+    {% endif %}  
 
-{% else %}
-    Attributes = NoAttrs
-
-{% endif %}
 {% if schema.inputs %}
     class Inputs(ArrowFields):
     {% for input in schema.inputs %}
@@ -62,8 +60,7 @@ class _{{ schema.name }}(StandardNode):
 {% endif %}
     op_type = OpType("{{ schema.name }}", "{{ schema.domain }}", {{ schema.since_version }})
 
-    attrs: {% if schema.attributes %}Attributes{% else %}NoAttrs{% endif %}
-
+    attrs: Attributes
     inputs: {% if schema.inputs %}Inputs{% else %}NoArrows{% endif %}
 
     outputs: {% if schema.outputs %}Outputs{% else %}NoArrows{% endif %}

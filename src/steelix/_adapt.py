@@ -5,8 +5,8 @@ import numpy
 import onnx
 import onnx.version_converter
 
-from . import attr
 from ._scope import Scope
+from ._utils import from_array
 from .arrow import Arrow
 from .internal_op import _Embedded, _InternalNode
 from .node import Node
@@ -39,7 +39,7 @@ def adapt_node(
             if arrow
         ]
         initializers = [
-            attr.from_array(arrow.value, name)
+            from_array(arrow.value, name)
             for name, arrow in node.inputs.as_dict().items()
             if isinstance(arrow.value, numpy.ndarray)
         ]
