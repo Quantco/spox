@@ -14,8 +14,7 @@ from typing import (  # noqa: F401
 )
 from typing import cast as typing_cast  # noqa: F401
 
-import numpy  # noqa: F401
-from numpy import ndarray  # noqa: F401
+import numpy as np  # noqa: F401
 
 from steelix._arrow import Arrow, _nil, result_type  # noqa: F401
 from steelix._arrowfields import ArrowFields, NoArrows  # noqa: F401
@@ -286,7 +285,7 @@ class _OneHotEncoder(StandardNode):
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
         shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
-        return {"Y": Tensor(elem_type=numpy.float32, shape=shape)}
+        return {"Y": Tensor(elem_type=np.float32, shape=shape)}
 
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)
 
@@ -1516,25 +1515,25 @@ def tree_ensemble_classifier(
     X: Arrow,
     *,
     base_values: Optional[Iterable[float]] = None,
-    base_values_as_tensor: Optional[ndarray] = None,
+    base_values_as_tensor: Optional[np.ndarray] = None,
     class_ids: Optional[Iterable[int]] = None,
     class_nodeids: Optional[Iterable[int]] = None,
     class_treeids: Optional[Iterable[int]] = None,
     class_weights: Optional[Iterable[float]] = None,
-    class_weights_as_tensor: Optional[ndarray] = None,
+    class_weights_as_tensor: Optional[np.ndarray] = None,
     classlabels_int64s: Optional[Iterable[int]] = None,
     classlabels_strings: Optional[Iterable[str]] = None,
     nodes_falsenodeids: Optional[Iterable[int]] = None,
     nodes_featureids: Optional[Iterable[int]] = None,
     nodes_hitrates: Optional[Iterable[float]] = None,
-    nodes_hitrates_as_tensor: Optional[ndarray] = None,
+    nodes_hitrates_as_tensor: Optional[np.ndarray] = None,
     nodes_missing_value_tracks_true: Optional[Iterable[int]] = None,
     nodes_modes: Optional[Iterable[str]] = None,
     nodes_nodeids: Optional[Iterable[int]] = None,
     nodes_treeids: Optional[Iterable[int]] = None,
     nodes_truenodeids: Optional[Iterable[int]] = None,
     nodes_values: Optional[Iterable[float]] = None,
-    nodes_values_as_tensor: Optional[ndarray] = None,
+    nodes_values_as_tensor: Optional[np.ndarray] = None,
     post_transform: str = "NONE",
 ) -> _TreeEnsembleClassifier.Outputs:
     r"""
@@ -1713,25 +1712,25 @@ def tree_ensemble_regressor(
     *,
     aggregate_function: str = "SUM",
     base_values: Optional[Iterable[float]] = None,
-    base_values_as_tensor: Optional[ndarray] = None,
+    base_values_as_tensor: Optional[np.ndarray] = None,
     n_targets: Optional[int] = None,
     nodes_falsenodeids: Optional[Iterable[int]] = None,
     nodes_featureids: Optional[Iterable[int]] = None,
     nodes_hitrates: Optional[Iterable[float]] = None,
-    nodes_hitrates_as_tensor: Optional[ndarray] = None,
+    nodes_hitrates_as_tensor: Optional[np.ndarray] = None,
     nodes_missing_value_tracks_true: Optional[Iterable[int]] = None,
     nodes_modes: Optional[Iterable[str]] = None,
     nodes_nodeids: Optional[Iterable[int]] = None,
     nodes_treeids: Optional[Iterable[int]] = None,
     nodes_truenodeids: Optional[Iterable[int]] = None,
     nodes_values: Optional[Iterable[float]] = None,
-    nodes_values_as_tensor: Optional[ndarray] = None,
+    nodes_values_as_tensor: Optional[np.ndarray] = None,
     post_transform: str = "NONE",
     target_ids: Optional[Iterable[int]] = None,
     target_nodeids: Optional[Iterable[int]] = None,
     target_treeids: Optional[Iterable[int]] = None,
     target_weights: Optional[Iterable[float]] = None,
-    target_weights_as_tensor: Optional[ndarray] = None,
+    target_weights_as_tensor: Optional[np.ndarray] = None,
 ) -> Arrow:
     r"""
     Tree Ensemble regressor.  Returns the regressed values for each input in N.
@@ -1988,7 +1987,7 @@ _OPERATORS = {
     "ZipMap": _ZipMap,
 }
 
-CONSTRUCTORS = {
+_CONSTRUCTORS = {
     "ArrayFeatureExtractor": array_feature_extractor,
     "Binarizer": binarizer,
     "CastMap": cast_map,
@@ -2008,3 +2007,5 @@ CONSTRUCTORS = {
     "TreeEnsembleRegressor": tree_ensemble_regressor,
     "ZipMap": zip_map,
 }
+
+__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()]

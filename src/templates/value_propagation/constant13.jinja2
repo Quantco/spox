@@ -2,17 +2,17 @@
 if key == "value":
     value = raw
 elif key == "value_float":
-    value = numpy.array(raw, dtype=numpy.float32)
+    value = np.array(raw, dtype=np.float32)
 elif key == "value_int":
-    value = numpy.array(raw, dtype=numpy.int64)
+    value = np.array(raw, dtype=np.int64)
 elif key == "value_string":
-    value = numpy.array(raw, dtype=numpy.str_)
+    value = np.array(raw, dtype=np.str_)
 elif key == "value_floats":
-    value = numpy.array(list(raw), dtype=numpy.float32).reshape(-1)
+    value = np.array(list(raw), dtype=np.float32).reshape(-1)
 elif key == "value_ints":
-    value = numpy.array(list(raw), dtype=numpy.int64).reshape(-1)
+    value = np.array(list(raw), dtype=np.int64).reshape(-1)
 elif key == "value_strings":
-    value = numpy.array(list(raw), dtype=numpy.str_).reshape(-1)
+    value = np.array(list(raw), dtype=np.str_).reshape(-1)
 elif key == "sparse_value":
     return {}
 else:

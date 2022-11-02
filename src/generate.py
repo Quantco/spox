@@ -8,7 +8,7 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 import jinja2
 import onnx
 
-from steelix.schemas import DOMAIN_VERSIONS, SCHEMAS
+from steelix._schemas import DOMAIN_VERSIONS, SCHEMAS
 
 DEFAULT_DOMAIN = "ai.onnx"
 
@@ -27,14 +27,14 @@ ATTRIBUTE_PROTO_TO_INPUT_TYPE = {
     onnx.AttributeProto.FLOAT: "float",
     onnx.AttributeProto.INT: "int",
     onnx.AttributeProto.STRING: "str",
-    onnx.AttributeProto.TENSOR: "ndarray",
+    onnx.AttributeProto.TENSOR: "np.ndarray",
     onnx.AttributeProto.GRAPH: "Graph",
     onnx.AttributeProto.TYPE_PROTO: "Type",
     onnx.AttributeProto.FLOATS: "Iterable[float]",
     onnx.AttributeProto.INTS: "Iterable[int]",
     onnx.AttributeProto.STRINGS: "Iterable[str]",
-    onnx.AttributeProto.TENSORS: "Iterable[ndarray]",
-    onnx.AttributeProto.TYPE_PROTOS: "Iterable[steelix.Type]",
+    onnx.AttributeProto.TENSORS: "Iterable[np.ndarray]",
+    onnx.AttributeProto.TYPE_PROTOS: "Iterable[Type]",
 }
 
 ATTRIBUTE_PROTO_TO_MEMBER_TYPE = {
@@ -126,9 +126,9 @@ def _get_default_value(attr, attr_type_overrides) -> Optional[str]:
     # We want to use e.g. np.int32 instead of an integer for dtypes
     if (
         attr.name in attr_type_overrides
-        and "numpy.generic" in attr_type_overrides[attr.name][0]
+        and "np.generic" in attr_type_overrides[attr.name][0]
     ):
-        return f"numpy.{onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[default].name}"
+        return f"np.{onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[default].name}"
 
     # Strings are bytes at this point and they
     # need to be wrapped in quotes.
@@ -434,15 +434,13 @@ if __name__ == "__main__":
             "Loop": "len(body.requested_results) - 1",
         },
         attr_type_overrides=[
-            (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype")),
-            ("Cast", "to", ("typing.Type[numpy.generic]", "AttrDtype")),
+            (None, "dtype", ("typing.Type[np.generic]", "AttrDtype")),
+            ("Cast", "to", ("typing.Type[np.generic]", "AttrDtype")),
         ],
     )
     main(
         "ai.onnx.ml",
         3,
-        attr_type_overrides=[
-            (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype"))
-        ],
+        attr_type_overrides=[(None, "dtype", ("typing.Type[np.generic]", "AttrDtype"))],
         type_inference={"OneHotEncoder": "onehotencoder1"},
     )
