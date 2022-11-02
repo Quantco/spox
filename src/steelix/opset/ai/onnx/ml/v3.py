@@ -220,7 +220,7 @@ class _Imputer(StandardNode):
         last = sim[-1] if sim else 1
         if isinstance(last, int) and len(imp.value) not in {1, last}:
             raise InferenceError(
-                f"Mismatched expected ({len(imp)}) and actual ({last}) feature count."
+                f"Mismatched expected ({len(imp.value)}) and actual ({last}) feature count."
             )
         return {"Y": t}
 
