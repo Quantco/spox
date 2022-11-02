@@ -69,6 +69,7 @@ class Type:
         """
         return self
 
+    @property
     def is_concrete(self) -> bool:
         try:
             self.assert_concrete()
