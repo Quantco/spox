@@ -30,23 +30,23 @@ def assert_equal_value(arr, expected):
     - Optional - steelix.arrow.Nothing or the underlying type
     - Sequence - list of underlying type
     """
-    assert arr.value is not None, "arrow.value expected to be known"
+    assert arr._value is not None, "arrow.value expected to be known"
     if isinstance(arr.type, _type_system.Tensor):
         expected = numpy.array(expected)
         assert arr.type.elem_type == expected.dtype.type, "element type must match"
-        assert Shape.from_simple(expected.shape) <= arr.type.shape, "shape must match"
-        numpy.testing.assert_allclose(arr.value, expected)
+        assert Shape.from_simple(expected.shape) <= arr.type._shape, "shape must match"
+        numpy.testing.assert_allclose(arr._value, expected)
     elif isinstance(arr.type, _type_system.Optional):
         if expected is None:
             assert (
-                arr.value is _arrow.Nothing
+                arr._value is _arrow.Nothing
             ), "value must be Nothing when optional is empty"
         else:
-            assert_equal_value(dummy_arrow(arr.type.elem_type, arr.value), expected)
+            assert_equal_value(dummy_arrow(arr.type.elem_type, arr._value), expected)
     elif isinstance(arr.type, _type_system.Sequence):
-        assert isinstance(arr.value, list), "value must be list when it is a Sequence"
-        assert len(arr.value) == len(expected), "sequence length must match"
-        for a, b in zip(arr.value, expected):
+        assert isinstance(arr._value, list), "value must be list when it is a Sequence"
+        assert len(arr._value) == len(expected), "sequence length must match"
+        for a, b in zip(arr._value, expected):
             assert_equal_value(dummy_arrow(arr.type.elem_type, a), b)
     else:
         raise NotImplementedError(f"Datatype {arr.type}")

@@ -197,8 +197,10 @@ class Shape:
         else:
             return True
 
-    def broadcast(self, other: "Shape") -> "Shape":
+    def broadcast(self, other: Union["Shape", SimpleShape]) -> "Shape":
         """Return the result of shape broadcasting on ``self`` and ``other``."""
+        if not isinstance(other, Shape):
+            other = Shape.from_simple(other)
         a, b = self.to_simple(), other.to_simple()
         if a is None or b is None:
             return Shape(None)

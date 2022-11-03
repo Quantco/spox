@@ -1,11 +1,13 @@
 import typing
 from dataclasses import dataclass
-from typing import ClassVar, Set, TypeVar, Union
+from typing import ClassVar, Set, TypeVar
 
-import numpy
+import numpy as np
+import numpy.typing as npt
 import onnx
 
 from ._shape import Shape, SimpleShape
+from ._utils import _DTYPE_TO_TENSOR_TYPE, dtype_to_tensor_type, tensor_type_to_dtype
 
 T = TypeVar("T")
 S = TypeVar("S")
@@ -32,7 +34,7 @@ class Type:
     """
 
     @classmethod
-    def from_onnx(cls, proto: onnx.TypeProto) -> "Type":
+    def _from_onnx(cls, proto: onnx.TypeProto) -> "Type":
         """
         Parameters
         ----------
@@ -49,20 +51,20 @@ class Type:
         """
         if proto.HasField("tensor_type"):
             return Tensor(
-                Tensor.elem_type_from_onnx(proto.tensor_type.elem_type),
-                Shape.from_onnx(proto.tensor_type.shape)
+                tensor_type_to_dtype(proto.tensor_type.elem_type),
+                Shape.from_onnx(proto.tensor_type.shape).to_simple()
                 if proto.tensor_type.HasField("shape")
                 else None,
             )
         elif proto.HasField("sequence_type"):
-            return Sequence(Type.from_onnx(proto.sequence_type.elem_type))
+            return Sequence(Type._from_onnx(proto.sequence_type.elem_type))
         elif proto.HasField("optional_type"):
-            return Optional(Type.from_onnx(proto.optional_type.elem_type))
+            return Optional(Type._from_onnx(proto.optional_type.elem_type))
         raise ValueError(
             f"Cannot get Type from invalid protobuf (not tensor, sequence or optional): {proto}"
         )
 
-    def assert_concrete(self, *, _traceback_name: str = "?"):
+    def _assert_concrete(self, *, _traceback_name: str = "?"):
         """
         Function used by the build process to check if a type is well-specified (e.g. Tensor shape is defined).
         Inheritors of Type should throw if they do not specify enough information to be accepted as Model input/outputs.
@@ -70,9 +72,9 @@ class Type:
         return self
 
     @property
-    def is_concrete(self) -> bool:
+    def _is_concrete(self) -> bool:
         try:
-            self.assert_concrete()
+            self._assert_concrete()
         except Exception:
             return False
         else:
@@ -95,13 +97,13 @@ class Type:
             )
         return self
 
-    def to_onnx(self) -> onnx.TypeProto:
+    def _to_onnx(self) -> onnx.TypeProto:
         """Translate ``self`` into an ONNX TypeProto."""
         raise TypeError(
             f"Cannot generate ONNX TypeProto for {self} (not implemented or bad type)."
         )
 
-    def to_onnx_value_info(
+    def _to_onnx_value_info(
         self,
         name: str,
         doc_string: str = "",
@@ -111,10 +113,10 @@ class Type:
     ) -> onnx.ValueInfoProto:
         """Translation of ``self`` into an ONNX ValueInfoProto"""
         if concrete:
-            self.assert_concrete(_traceback_name=_traceback_name)
+            self._assert_concrete(_traceback_name=_traceback_name)
         return onnx.helper.make_value_info(
             name,
-            self.to_onnx(),
+            self._to_onnx(),
             doc_string,
         )
 
@@ -149,91 +151,58 @@ class Tensor(Type):
     However, this is not very strictly enforced.
     """
 
-    elem_type: typing.Type[numpy.generic]
-    shape: Shape
+    elem_type: typing.Type[np.generic]
+    _shape: Shape
 
-    VALID_TYPES: ClassVar[Set[typing.Type[numpy.generic]]] = (
-        {dtype.type for dtype in onnx.helper.mapping.NP_TYPE_TO_TENSOR_TYPE}
-        | {numpy.str_}
-    ) - {numpy.object_}
+    VALID_TYPES: ClassVar[Set[typing.Type[np.generic]]] = {
+        dtype.type for dtype in _DTYPE_TO_TENSOR_TYPE
+    }
 
     def __init__(
         self,
-        elem_type: typing.Type[numpy.generic],
-        shape: Union[Shape, SimpleShape] = None,
+        elem_type: npt.DTypeLike,
+        shape: SimpleShape = None,
     ):
         """
         Raises
         ------
         TypeError
-            If the passed ``elem_type`` is not a proper element type (not a member of Tensor.VALID_TYPES).
+            If the passed ``elem_type`` is not a proper element type (not a member of ``Tensor.VALID_TYPES``).
         """
-        if not self.is_valid_elem_type(elem_type):
+        if elem_type is None or np.dtype(elem_type).type not in self.VALID_TYPES:
             raise TypeError(
                 f"'{elem_type}' is not a proper Tensor elem type, the allowed Tensor elem_types are Tensor.VALID_TYPES"
                 f" ('numpy.generic' with exceptions, like 'object')."
             )
-        if shape is None or isinstance(shape, tuple):
-            shape = Shape.from_simple(shape)
-        if not isinstance(shape, Shape):
+        rich_shape = Shape.from_simple(shape)
+        if not isinstance(rich_shape, Shape):
             raise TypeError(
                 "Tensor shape must be of type Shape (or passed in as a simple-representation tuple/None)."
             )
-        object.__setattr__(self, "elem_type", elem_type)
-        object.__setattr__(self, "shape", shape)
+        object.__setattr__(self, "elem_type", np.dtype(elem_type).type)
+        object.__setattr__(self, "_shape", rich_shape)
 
-    @classmethod
-    def like_array(cls, array: numpy.ndarray) -> "Tensor":
-        """Return a Tensor object with a type like ``array`` (same element type & constant shape)."""
-        return cls(array.dtype.type, tuple(array.shape))
+    @property
+    def shape(self) -> SimpleShape:
+        return self._shape.to_simple()
 
-    @classmethod
-    def is_valid_elem_type(cls, typ: typing.Type[numpy.generic]) -> bool:
-        if not isinstance(typ, type) or not issubclass(typ, numpy.generic):
-            return False
-        return typ in cls.VALID_TYPES
-
-    @staticmethod
-    def elem_type_from_onnx(elem_type: int) -> typing.Type[numpy.generic]:
-        """
-        Convert the ONNX-format element type (integer) into a numpy scalar.
-        Special-cases strings, because ``onnx`` specifies them to be ``object_`` instead of ``str_`` (as in Steelix).
-        """
-        dtype = typing.cast(
-            numpy.dtype, onnx.helper.mapping.TENSOR_TYPE_TO_NP_TYPE[elem_type]
-        )
-        if dtype.type is numpy.object_:
-            return numpy.str_
-        return dtype.type
-
-    @staticmethod
-    def elem_type_to_onnx(
-        elem_type: typing.Type[numpy.generic],
-    ) -> onnx.TensorProto.DataType:
-        """
-        Inverse of ``Tensor.elem_type_from_onnx``.
-        """
-        if elem_type is numpy.str_:
-            return onnx.TensorProto.STRING
-        return onnx.helper.mapping.NP_TYPE_TO_TENSOR_TYPE[numpy.dtype(elem_type)]
-
-    def to_onnx(self) -> onnx.TypeProto:
+    def _to_onnx(self) -> onnx.TypeProto:
         return onnx.helper.make_tensor_type_proto(
-            self.elem_type_to_onnx(self.elem_type), self.shape.to_simple()
+            dtype_to_tensor_type(self.elem_type), self.shape
         )
 
-    def assert_concrete(self, *, _traceback_name: str = "?"):
-        if not self.shape:
+    def _assert_concrete(self, *, _traceback_name: str = "?"):
+        if self._shape is None:
             raise ValueError(
                 f"Tensor {self} does not specify the shape -- in {_traceback_name}."
             )
         return self
 
     def __repr__(self):
-        return f"{type(self).__name__}(elem_type={self.elem_type.__name__}, shape={self.shape.to_simple()})"
+        return f"{type(self).__name__}(elem_type={self.elem_type.__name__}, shape={self.shape})"
 
     def __str__(self):
-        dims = self.shape.to_simple()
+        dims = self.shape
         dims_repr = (
             "".join(f"[{dim if dim is not None else '?'}]" for dim in dims)
             if dims is not None
@@ -248,22 +217,24 @@ class Tensor(Type):
             return True
         if not isinstance(other, Tensor):
             return False
-        return issubclass(self.elem_type, other.elem_type) and self.shape <= other.shape
+        return (
+            issubclass(self.elem_type, other.elem_type) and self._shape <= other._shape
+        )
 
     def __or__(self, other):
         if not isinstance(other, Type):
             return NotImplemented
         if not isinstance(other, Tensor) or self.elem_type != other.elem_type:
             return Type()
-        return Tensor(self.elem_type, self.shape | other.shape)
+        return Tensor(self.elem_type, (self._shape | other._shape).to_simple())
 
 
 @dataclass(frozen=True)
 class Sequence(Type):
     elem_type: Type
 
-    def to_onnx(self) -> onnx.TypeProto:
-        return onnx.helper.make_sequence_type_proto(self.elem_type.to_onnx())
+    def _to_onnx(self) -> onnx.TypeProto:
+        return onnx.helper.make_sequence_type_proto(self.elem_type._to_onnx())
 
     def __repr__(self):
         return f"{type(self).__name__}(elem_type={self.elem_type!r}"
@@ -292,8 +263,8 @@ class Sequence(Type):
 class Optional(Type):
     elem_type: Type
 
-    def to_onnx(self) -> onnx.TypeProto:
-        return onnx.helper.make_optional_type_proto(self.elem_type.to_onnx())
+    def _to_onnx(self) -> onnx.TypeProto:
+        return onnx.helper.make_optional_type_proto(self.elem_type._to_onnx())
 
     def __repr__(self):
         return f"{type(self).__name__}(elem_type={self.elem_type!r}"

@@ -108,7 +108,9 @@ def _resolve_generic(
                     f"{init_name} of {init_elem_type} != {name} of {tensor.elem_type}."
                 )
         shape = functools.reduce(
-            Shape.broadcast, (tensor.shape for _, tensor in tensors)
+            # mypy gets confused by broadcast accepting a union.
+            Shape.broadcast,  # type: ignore
+            (tensor.shape for _, tensor in tensors),
         )
         return Tensor(init_elem_type, shape)
     init_name, init_type = types[0]
@@ -133,7 +135,7 @@ def _warn_unknown_types(
         )
         return True
     try:
-        value_type.assert_concrete()
+        value_type._assert_concrete()
     except Exception as e:
         warnings.warn(
             InferenceWarning(

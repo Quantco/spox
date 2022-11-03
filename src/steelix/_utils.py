@@ -1,7 +1,32 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import numpy as np
+import numpy.typing as npt
 from onnx import TensorProto, numpy_helper
+from onnx.helper import mapping
+
+_DTYPE_TO_TENSOR_TYPE: Dict[np.dtype[Any], int] = {
+    **{
+        dtype: ttype
+        for dtype, ttype in mapping.NP_TYPE_TO_TENSOR_TYPE.items()
+        if dtype != np.object_
+    },
+    np.dtype(str): TensorProto.STRING,
+}
+
+_TENSOR_TYPE_TO_DTYPE = {ttype: dtype for dtype, ttype in _DTYPE_TO_TENSOR_TYPE.items()}
+
+
+def tensor_type_to_dtype(ttype: int) -> np.dtype:
+    """Convert integer tensor types to ``numpy.dtype`` objects."""
+    return _TENSOR_TYPE_TO_DTYPE[ttype]
+
+
+def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
+    """Convert numpy data types into integer tensor types."""
+    # normalize string data types
+    dtype = np.dtype(np.dtype(dtype_like).type)
+    return _DTYPE_TO_TENSOR_TYPE[dtype]
 
 
 def from_array(array: np.ndarray, name: Optional[str] = None) -> TensorProto:
