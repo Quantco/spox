@@ -34,7 +34,7 @@ from steelix.arrowfields import ArrowFields, NoArrows  # noqa: F401
 from steelix.graph import Graph, subgraph  # noqa: F401
 from steelix.internal_op import intro  # noqa: F401
 from steelix.node import OpType  # noqa: F401
-from steelix.standard import StandardNode  # noqa: F401
+from steelix.standard import InferenceError, StandardNode  # noqa: F401
 from steelix.type_system import Tensor, Type, type_match  # noqa: F401
 
 

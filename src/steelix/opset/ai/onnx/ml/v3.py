@@ -34,7 +34,7 @@ from steelix.arrowfields import ArrowFields, NoArrows  # noqa: F401
 from steelix.graph import Graph, subgraph  # noqa: F401
 from steelix.internal_op import intro  # noqa: F401
 from steelix.node import OpType  # noqa: F401
-from steelix.standard import StandardNode  # noqa: F401
+from steelix.standard import InferenceError, StandardNode  # noqa: F401
 from steelix.type_system import Tensor, Type, type_match  # noqa: F401
 
 
@@ -49,6 +49,16 @@ class _ArrayFeatureExtractor(StandardNode):
 
     class Outputs(ArrowFields):
         Z: Arrow
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
+        if xt.shape.rank < 1:
+            raise InferenceError("Expected rank >= 1")
+        if xt.shape[:-1] != yt.shape:
+            raise InferenceError("Mismatched shapes for entries & indices.")
+        return {"Z": Tensor(xt.elem_type, yt.shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
 
@@ -67,6 +77,9 @@ class _Binarizer(StandardNode):
 
     class Outputs(ArrowFields):
         Y: Arrow
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
 
@@ -108,6 +121,18 @@ class _CategoryMapper(StandardNode):
 
     class Outputs(ArrowFields):
         Y: Arrow
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
+        if cats1 is None or cats2 is None:
+            raise InferenceError("Missing required attributes.")
+        if len(cats1.value) != len(cats2.value):
+            raise InferenceError("Categories lists have mismatched lengths.")
+        t = self.inputs.X.unwrap_tensor()
+        (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}  # type: ignore
+        return {"Y": Tensor(elem_type, t.shape)}
 
     op_type = OpType("CategoryMapper", "ai.onnx.ml", 1)
 
@@ -166,6 +191,41 @@ class _Imputer(StandardNode):
 
     class Outputs(ArrowFields):
         Y: Arrow
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        t = self.inputs.X.unwrap_tensor()
+        # We verify if the attributes are set correctly and matching the input elem type
+        cases = {
+            numpy.int64: (
+                self.attrs.imputed_value_int64s,
+                self.attrs.replaced_value_int64,
+            ),
+            numpy.float32: (
+                self.attrs.imputed_value_floats,
+                self.attrs.replaced_value_float,
+            ),
+        }
+        for key, (imp, rep) in cases.items():
+            if t.elem_type is key:
+                if not all(
+                    imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1
+                ):
+                    raise InferenceError("Only one input imputed type may be set.")
+                break
+        else:
+            raise InferenceError("No matching element type")
+        if imp is None:
+            raise InferenceError("Value list for imputation is required.")
+        # If the number of features is known (last row, we can check this here)
+        sim = t.shape.to_simple()
+        last = sim[-1] if sim else 1
+        if isinstance(last, int) and len(imp.value) not in {1, last}:
+            raise InferenceError(
+                f"Mismatched expected ({len(imp.value)}) and actual ({last}) feature count."
+            )
+        return {"Y": t}
 
     op_type = OpType("Imputer", "ai.onnx.ml", 1)
 
@@ -238,6 +298,20 @@ class _LinearRegressor(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
+        sim = self.inputs.X.unwrap_tensor().shape.to_simple()
+        assert sim is not None
+        if len(sim) == 2:
+            return {"Y": Tensor(numpy.float32, sim)}
+        elif len(sim) == 1:
+            return {"Y": Tensor(numpy.float32, (1, sim[0]))}
+        elif len(sim) == 0:
+            return {"Y": Tensor(numpy.float32, (1, 1))}
+        else:
+            raise InferenceError("Input shape must be at most a matrix.")
+
     op_type = OpType("LinearRegressor", "ai.onnx.ml", 1)
 
     attrs: Attributes
@@ -255,6 +329,13 @@ class _Normalizer(StandardNode):
 
     class Outputs(ArrowFields):
         Y: Arrow
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        if self.attrs.norm.value not in ("MAX", "L1", "L2"):
+            raise InferenceError(
+                f"Unknown normalisation method `{self.attrs.norm.value}`"
+            )
+        return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Normalizer", "ai.onnx.ml", 1)
 
@@ -282,10 +363,13 @@ class _OneHotEncoder(StandardNode):
         elif self.attrs.cats_strings:
             n_encodings = len(self.attrs.cats_strings.value)
         else:
-            raise TypeError(
+            raise InferenceError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
-        shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
+        if self.inputs.fully_typed:
+            shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
+        else:
+            shape = (None, n_encodings)
         return {"Y": Tensor(elem_type=numpy.float32, shape=shape)}
 
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)
@@ -361,6 +445,26 @@ class _Scaler(StandardNode):
     class Outputs(ArrowFields):
         Y: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        if self.inputs.X.type is None:
+            return {}
+        sc, off = self.attrs.scale, self.attrs.offset
+        if sc is None or off is None:
+            raise InferenceError("Scale and offset are required attributes.")
+        t = self.inputs.X.unwrap_tensor()
+        # If the number of features is known (last row, we can check this here)
+        sim = t.shape.to_simple()
+        last = sim[-1] if sim else 1
+        if isinstance(last, int) and len(sc.value) not in {1, last}:
+            raise InferenceError(
+                f"Mismatched expected ({len(sc.value)}) and actual ({last}) feature count for scale."
+            )
+        if isinstance(last, int) and len(off.value) not in {1, last}:
+            raise InferenceError(
+                f"Mismatched expected ({len(off.value)}) and actual ({last}) feature count for offset."
+            )
+        return {"Y": Tensor(numpy.float32, t.shape)}
+
     op_type = OpType("Scaler", "ai.onnx.ml", 1)
 
     attrs: Attributes
@@ -400,6 +504,31 @@ class _TreeEnsembleClassifier(StandardNode):
         Y: Arrow
         Z: Arrow
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        e = (
+            len(self.attrs.class_ids.value)
+            if self.attrs.class_ids is not None
+            else None
+        )
+        if self.attrs.classlabels_strings is not None:
+            y_type = numpy.str_
+        elif self.attrs.classlabels_int64s is not None:
+            y_type = numpy.int64  # type: ignore
+        else:
+            raise InferenceError(
+                "Either string or int64 class labels should be defined"
+            )
+        if self.inputs.fully_typed:
+            shape = self.inputs.X.unwrap_tensor().shape
+            if shape.rank != 2:
+                raise InferenceError("Expected input to be a matrix.")
+            sim = shape.to_simple()
+            assert sim is not None
+            n = sim[0]
+        else:
+            n = None
+        return {"Y": Tensor(y_type, (n,)), "Z": Tensor(numpy.float32, (n, e))}
+
     op_type = OpType("TreeEnsembleClassifier", "ai.onnx.ml", 3)
 
     attrs: Attributes
@@ -437,6 +566,19 @@ class _TreeEnsembleRegressor(StandardNode):
 
     class Outputs(ArrowFields):
         Y: Arrow
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        if self.inputs.fully_typed:
+            shape = self.inputs.X.unwrap_tensor().shape
+            if shape.rank != 2:
+                raise InferenceError("Expected input to be a matrix.")
+            sim = shape.to_simple()
+            assert sim is not None
+            n = sim[0]
+        else:
+            n = None
+        e = self.attrs.n_targets.value if self.attrs.n_targets is not None else None
+        return {"Y": Tensor(numpy.float32, (n, e))}
 
     op_type = OpType("TreeEnsembleRegressor", "ai.onnx.ml", 3)
 

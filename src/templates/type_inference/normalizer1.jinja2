@@ -1,0 +1,3 @@
+if self.attrs.norm.value not in ("MAX", "L1", "L2"):
+    raise InferenceError(f"Unknown normalisation method `{self.attrs.norm.value}`")
+return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
