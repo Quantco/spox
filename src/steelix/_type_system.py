@@ -1,13 +1,13 @@
 import typing
 from dataclasses import dataclass
-from typing import ClassVar, Set, TypeVar
+from typing import TypeVar
 
 import numpy as np
 import numpy.typing as npt
 import onnx
 
 from ._shape import Shape, SimpleShape
-from ._utils import _DTYPE_TO_TENSOR_TYPE, dtype_to_tensor_type, tensor_type_to_dtype
+from ._utils import dtype_to_tensor_type, tensor_type_to_dtype
 
 T = TypeVar("T")
 S = TypeVar("S")
@@ -17,8 +17,6 @@ S = TypeVar("S")
 class Type:
     """
     Base class for representing Steelix Types, which are based on ONNX types.
-
-    The key methods include ``from_onnx`` and ``to_onnx`` to facilitate conversion between formats.
 
     Additionally, Types support membership testing (with <= and >=) and least-matching unions (with |).
     In essence, membership testing tests for subset types, and unions are the least general superset of both types.
@@ -144,8 +142,8 @@ class Tensor(Type):
     Numpy scalar types (``numpy.generic``) are used to store the element types.
 
     The ``shape`` may be passed in as a simple tuple (``SimpleShape``)
-    of integers (constants), strings (parameters) and Nones (unknown values).
-    Alternatively, an explicit ``Shape`` object may be constructed, which is used internally.
+    of integers (constants), strings (parameters) and Nones (unknown
+    values).
 
     If you want to specify that dimensions will be equal, you can use the same parameter strings.
     However, this is not very strictly enforced.
@@ -153,10 +151,6 @@ class Tensor(Type):
 
     elem_type: typing.Type[np.generic]
     _shape: Shape
-
-    VALID_TYPES: ClassVar[Set[typing.Type[np.generic]]] = {
-        dtype.type for dtype in _DTYPE_TO_TENSOR_TYPE
-    }
 
     def __init__(
         self,
@@ -167,18 +161,18 @@ class Tensor(Type):
         Raises
         ------
         TypeError
-            If the passed ``elem_type`` is not a proper element type (not a member of ``Tensor.VALID_TYPES``).
+            If the passed ``elem_type`` does not correspond to one of
+            the following numpy scalar types: ``numpy.bool_``,
+            ``numpy.complex128``, ``numpy.complex64``,
+            ``numpy.float16``, ``numpy.float32``, ``numpy.float64``,
+            ``numpy.int16``, ``numpy.int32``, ``numpy.int64``,
+            ``numpy.int8``, ``numpy.str_``, ``numpy.uint16``,
+            ``numpy.uint32``, ``numpy.uint64``, ``numpy.uint8``.
         """
-        if elem_type is None or np.dtype(elem_type).type not in self.VALID_TYPES:
-            raise TypeError(
-                f"'{elem_type}' is not a proper Tensor elem type, the allowed Tensor elem_types are Tensor.VALID_TYPES"
-                f" ('numpy.generic' with exceptions, like 'object')."
-            )
+        # Try converting to a tensor type. If it fails, we allow the
+        # exception to bubble up.
+        dtype_to_tensor_type(elem_type)
         rich_shape = Shape.from_simple(shape)
-        if not isinstance(rich_shape, Shape):
-            raise TypeError(
-                "Tensor shape must be of type Shape (or passed in as a simple-representation tuple/None)."
-            )
         object.__setattr__(self, "elem_type", np.dtype(elem_type).type)
         object.__setattr__(self, "_shape", rich_shape)
 

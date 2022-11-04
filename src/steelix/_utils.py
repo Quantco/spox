@@ -23,10 +23,25 @@ def tensor_type_to_dtype(ttype: int) -> np.dtype:
 
 
 def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
-    """Convert numpy data types into integer tensor types."""
+    """Convert numpy data types into integer tensor types.
+
+    Raises
+    ------
+    TypeError:
+        If ``dtype_like`` has no corresponding tensor type in the ONNX
+        standard.
+    """
+    err_msg = f"{dtype_like} has no corresponding tensor type in the ONNX standard."
+    if dtype_like is None:
+        # Numpy defaults implicitly to float64. I don't think we want
+        # to do the same?
+        raise TypeError(err_msg)
     # normalize string data types
     dtype = np.dtype(np.dtype(dtype_like).type)
-    return _DTYPE_TO_TENSOR_TYPE[dtype]
+    try:
+        return _DTYPE_TO_TENSOR_TYPE[dtype]
+    except KeyError:
+        raise TypeError(err_msg)
 
 
 def from_array(array: np.ndarray, name: Optional[str] = None) -> TensorProto:
