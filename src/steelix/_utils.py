@@ -1,11 +1,11 @@
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import numpy as np
 import numpy.typing as npt
 from onnx import TensorProto, numpy_helper
 from onnx.helper import mapping
 
-_DTYPE_TO_TENSOR_TYPE: Dict[np.dtype[Any], int] = {
+_DTYPE_TO_TENSOR_TYPE: Dict[np.dtype, int] = {
     **{
         dtype: ttype
         for dtype, ttype in mapping.NP_TYPE_TO_TENSOR_TYPE.items()
