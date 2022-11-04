@@ -33,7 +33,7 @@ def assert_equal_value(arr, expected):
     assert arr._value is not None, "arrow.value expected to be known"
     if isinstance(arr.type, _type_system.Tensor):
         expected = numpy.array(expected)
-        assert arr.type.elem_type == expected.dtype.type, "element type must match"
+        assert arr.type.dtype.type == expected.dtype.type, "element type must match"
         assert Shape.from_simple(expected.shape) <= arr.type._shape, "shape must match"
         numpy.testing.assert_allclose(arr._value, expected)
     elif isinstance(arr.type, _type_system.Optional):

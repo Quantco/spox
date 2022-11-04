@@ -340,4 +340,4 @@ def unsafe_reshape(x: Arrow, shape: SimpleShape) -> Arrow:
     Arrow
         Arrow with the same Tensor element type, but different shape.
     """
-    return unsafe_cast(x, Tensor(x.unwrap_tensor().elem_type, shape))
+    return unsafe_cast(x, Tensor(x.unwrap_tensor().dtype, shape))

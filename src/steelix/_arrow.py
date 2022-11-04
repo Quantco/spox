@@ -62,7 +62,7 @@ class Arrow(Generic[T]):
         if isinstance(type_, _type_system.Tensor):
             return (
                 isinstance(value, numpy.ndarray)
-                and value.dtype.type is type_.elem_type
+                and value.dtype.type is type_.dtype.type
                 and Shape.from_simple(value.shape) <= type_._shape
             )
         elif isinstance(type_, _type_system.Optional):
@@ -195,7 +195,7 @@ def result_type(
     return numpy.dtype(
         numpy.result_type(
             *(
-                typ.unwrap_tensor().elem_type if isinstance(typ, Arrow) else typ
+                typ.unwrap_tensor().dtype if isinstance(typ, Arrow) else typ
                 for typ in types
             )
         )

@@ -107,7 +107,7 @@ class AttrType(Attr[_type_system.Type]):
         value = self.value  # for type-checkers with limited property support
         if isinstance(value, _type_system.Tensor):
             type_proto = make_tensor_type_proto(
-                dtype_to_tensor_type(value.elem_type),
+                dtype_to_tensor_type(value.dtype),
                 value.shape,
             )
         elif isinstance(value, _type_system.Sequence):

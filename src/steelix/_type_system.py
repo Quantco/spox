@@ -137,7 +137,7 @@ class Type:
 @dataclass(frozen=True)
 class Tensor(Type):
     """
-    Represents a ``Tensor`` of given ``elem_type`` and ``shape``.
+    Represents a ``Tensor`` of given ``dtype`` and ``shape``.
 
     Numpy scalar types (``numpy.generic``) are used to store the element types.
 
@@ -148,12 +148,12 @@ class Tensor(Type):
     However, this is not very strictly enforced.
     """
 
-    elem_type: typing.Type[np.generic]
+    _elem_type: typing.Type[np.generic]
     _shape: Shape
 
     def __init__(
         self,
-        elem_type: npt.DTypeLike,
+        dtype: npt.DTypeLike,
         shape: SimpleShape = None,
     ):
         """
@@ -170,10 +170,15 @@ class Tensor(Type):
         """
         # Try converting to a tensor type. If it fails, we allow the
         # exception to bubble up.
-        dtype_to_tensor_type(elem_type)
+        dtype_to_tensor_type(dtype)
         rich_shape = Shape.from_simple(shape)
-        object.__setattr__(self, "elem_type", np.dtype(elem_type).type)
+        object.__setattr__(self, "_elem_type", np.dtype(dtype).type)
         object.__setattr__(self, "_shape", rich_shape)
+
+    @property
+    def dtype(self) -> np.dtype:
+        """Data type of this tensor."""
+        return np.dtype(self._elem_type)
 
     @property
     def shape(self) -> SimpleShape:
@@ -193,7 +198,7 @@ class Tensor(Type):
 
     def _to_onnx(self) -> onnx.TypeProto:
         return onnx.helper.make_tensor_type_proto(
-            dtype_to_tensor_type(self.elem_type), self.shape
+            dtype_to_tensor_type(self._elem_type), self.shape
         )
 
     def _assert_concrete(self, *, _traceback_name: str = "?"):
@@ -204,7 +209,7 @@ class Tensor(Type):
         return self
 
     def __repr__(self):
-        return f"{type(self).__name__}(elem_type={self.elem_type.__name__}, shape={self.shape})"
+        return f"{type(self).__name__}(elem_type={self._elem_type.__name__}, shape={self.shape})"
 
     def __str__(self):
         dims = self.shape
@@ -213,7 +218,7 @@ class Tensor(Type):
             if dims is not None
             else "[...]"
         )
-        return f"{self.elem_type.__name__.rstrip('_')}" + dims_repr
+        return f"{self._elem_type.__name__.rstrip('_')}" + dims_repr
 
     def __le__(self, other: Type) -> bool:
         if not isinstance(other, Type):
@@ -223,15 +228,16 @@ class Tensor(Type):
         if not isinstance(other, Tensor):
             return False
         return (
-            issubclass(self.elem_type, other.elem_type) and self._shape <= other._shape
+            issubclass(self._elem_type, other._elem_type)
+            and self._shape <= other._shape
         )
 
     def __or__(self, other):
         if not isinstance(other, Type):
             return NotImplemented
-        if not isinstance(other, Tensor) or self.elem_type != other.elem_type:
+        if not isinstance(other, Tensor) or self._elem_type != other._elem_type:
             return Type()
-        return Tensor(self.elem_type, (self._shape | other._shape).to_simple())
+        return Tensor(self._elem_type, (self._shape | other._shape).to_simple())
 
 
 @dataclass(frozen=True)

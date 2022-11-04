@@ -220,7 +220,7 @@ def _strip_unk_param_shape(shape: SimpleShape) -> SimpleShape:
 def _strip_unk_param(typ: Type) -> Type:
     """Apply ``_strip_unk_param_shape`` to all shapes present in this ``Type``."""
     if isinstance(typ, Tensor):
-        return Tensor(typ.elem_type, _strip_unk_param_shape(typ.shape))
+        return Tensor(typ.dtype, _strip_unk_param_shape(typ.shape))
     elif isinstance(typ, Sequence):
         return Sequence(_strip_unk_param(typ.elem_type))
     elif isinstance(typ, Optional):
