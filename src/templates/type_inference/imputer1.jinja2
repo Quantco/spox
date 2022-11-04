@@ -7,7 +7,7 @@ cases = {
     np.float32: (self.attrs.imputed_value_floats, self.attrs.replaced_value_float)
 }
 for key, (imp, rep) in cases.items():
-    if t.elem_type is key:
+    if t.dtype.type is key:
         if not all(imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1):
             raise InferenceError("Only one input imputed type may be set.")
         break
@@ -16,7 +16,7 @@ else:
 if imp is None:
     raise InferenceError("Value list for imputation is required.")
 # If the number of features is known (last row, we can check this here)
-sim = t.shape.to_simple()
+sim = t.shape
 last = sim[-1] if sim else 1
 if isinstance(last, int) and len(imp.value) not in {1, last}:
     raise InferenceError(f"Mismatched expected ({len(imp.value)}) and actual ({last}) feature count.")

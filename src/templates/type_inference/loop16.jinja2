@@ -44,6 +44,6 @@ for name, arrow in zip(scan_names, scan_outputs):
     tensor = arrow.unwrap_tensor()
     assert tensor.shape is not None
     scan_shape = (None,) + tensor.shape  # type: ignore
-    output_types[name] = Tensor(tensor.elem_type, scan_shape)
+    output_types[name] = Tensor(tensor.dtype, scan_shape)
 
 return output_types

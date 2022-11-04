@@ -53,11 +53,13 @@ class _ArrayFeatureExtractor(StandardNode):
         if not self.inputs.fully_typed:
             return {}
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
-        if xt.shape.rank < 1:
+        assert xt.shape is not None  # already checked with fully_typed
+        assert yt.shape is not None  # already checked with fully_typed
+        if len(xt.shape) < 1:
             raise InferenceError("Expected rank >= 1")
         if xt.shape[:-1] != yt.shape:
             raise InferenceError("Mismatched shapes for entries & indices.")
-        return {"Z": Tensor(xt.elem_type, yt.shape)}
+        return {"Z": Tensor(xt.dtype, yt.shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
 
@@ -130,7 +132,7 @@ class _CategoryMapper(StandardNode):
         if len(cats1.value) != len(cats2.value):
             raise InferenceError("Categories lists have mismatched lengths.")
         t = self.inputs.X.unwrap_tensor()
-        (elem_type,) = {np.int64, np.str_} - {t.elem_type}  # type: ignore
+        (elem_type,) = {np.int64, np.str_} - {t.dtype.type}  # type: ignore
         return {"Y": Tensor(elem_type, t.shape)}
 
     op_type = OpType("CategoryMapper", "ai.onnx.ml", 1)
@@ -207,7 +209,7 @@ class _Imputer(StandardNode):
             ),
         }
         for key, (imp, rep) in cases.items():
-            if t.elem_type is key:
+            if t.dtype.type is key:
                 if not all(
                     imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1
                 ):
@@ -218,7 +220,7 @@ class _Imputer(StandardNode):
         if imp is None:
             raise InferenceError("Value list for imputation is required.")
         # If the number of features is known (last row, we can check this here)
-        sim = t.shape.to_simple()
+        sim = t.shape
         last = sim[-1] if sim else 1
         if isinstance(last, int) and len(imp.value) not in {1, last}:
             raise InferenceError(
@@ -300,7 +302,7 @@ class _LinearRegressor(StandardNode):
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
-        sim = self.inputs.X.unwrap_tensor().shape.to_simple()
+        sim = self.inputs.X.unwrap_tensor().shape
         assert sim is not None
         if len(sim) == 2:
             return {"Y": Tensor(np.float32, sim)}
@@ -451,8 +453,7 @@ class _Scaler(StandardNode):
             raise InferenceError("Scale and offset are required attributes.")
         t = self.inputs.X.unwrap_tensor()
         # If the number of features is known (last row, we can check this here)
-        sim = t.shape.to_simple()
-        last = sim[-1] if sim else 1
+        last = t.shape[-1] if t.shape else 1
         if isinstance(last, int) and len(sc.value) not in {1, last}:
             raise InferenceError(
                 f"Mismatched expected ({len(sc.value)}) and actual ({last}) feature count for scale."
@@ -506,11 +507,11 @@ class _TreeEnsembleClassifier(StandardNode):
         if not self.inputs.fully_typed:
             return {}
         shape = self.inputs.X.unwrap_tensor().shape
-        if shape.rank != 2:
+        assert shape is not None  # already checked with fully_typed
+        if len(shape) != 2:
             raise InferenceError("Expected input to be a matrix.")
-        sim = shape.to_simple()
-        assert sim is not None
-        n = sim[0]
+        assert shape is not None
+        n = shape[0]
         e = (
             len(self.attrs.class_ids.value)
             if self.attrs.class_ids is not None
@@ -568,11 +569,11 @@ class _TreeEnsembleRegressor(StandardNode):
         if not self.inputs.fully_typed:
             return {}
         shape = self.inputs.X.unwrap_tensor().shape
-        if shape.rank != 2:
+        assert shape is not None  # already checked with fully_typed
+        if len(shape) != 2:
             raise InferenceError("Expected input to be a matrix.")
-        sim = shape.to_simple()
-        assert sim is not None
-        n = sim[0]
+        assert shape is not None
+        n = shape[0]
         e = self.attrs.n_targets.value if self.attrs.n_targets is not None else None
         return {"Y": Tensor(np.float32, (n, e))}
 
