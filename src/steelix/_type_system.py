@@ -141,9 +141,8 @@ class Tensor(Type):
 
     Numpy scalar types (``numpy.generic``) are used to store the element types.
 
-    The ``shape`` may be passed in as a simple tuple (``SimpleShape``)
-    of integers (constants), strings (parameters) and Nones (unknown
-    values).
+    The ``shape`` may be passed in as a simple tuple of integers
+    (constants), strings (parameters) and Nones (unknown values).
 
     If you want to specify that dimensions will be equal, you can use the same parameter strings.
     However, this is not very strictly enforced.
