@@ -11,9 +11,12 @@ except ModuleNotFoundError:
     pass
 
 from steelix._arrow import Arrow
+from steelix._type_system import Tensor, Type
 
 __all__ = [
     "Arrow",
+    "Tensor",
+    "Type",
 ]
 
 try:
