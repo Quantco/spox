@@ -1,0 +1,12 @@
+if not self.inputs.fully_typed:
+    return {}
+sim = self.inputs.X.unwrap_tensor().shape.to_simple()
+assert sim is not None
+if len(sim) == 2:
+    return {"Y": Tensor(np.float32, sim)}
+elif len(sim) == 1:
+    return {"Y": Tensor(np.float32, (1, sim[0]))}
+elif len(sim) == 0:
+    return {"Y": Tensor(np.float32, (1, 1))}
+else:
+    raise InferenceError("Input shape must be at most a matrix.")

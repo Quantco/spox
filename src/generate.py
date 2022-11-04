@@ -442,5 +442,16 @@ if __name__ == "__main__":
         "ai.onnx.ml",
         3,
         attr_type_overrides=[(None, "dtype", ("typing.Type[np.generic]", "AttrDtype"))],
-        type_inference={"OneHotEncoder": "onehotencoder1"},
+        type_inference={
+            "ArrayFeatureExtractor": "arrayfeatureextractor1",
+            "Binarizer": "binarizer1",
+            "CategoryMapper": "categorymapper1",
+            "Imputer": "imputer1",
+            "LinearRegressor": "linearregressor1",
+            "Normalizer": "normalizer1",
+            "OneHotEncoder": "onehotencoder1",
+            "Scaler": "scaler1",
+            "TreeEnsembleClassifier": "treeensembleclassifier3",
+            "TreeEnsembleRegressor": "treeensembleregressor3",
+        },
     )

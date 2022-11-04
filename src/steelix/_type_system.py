@@ -223,7 +223,7 @@ class Tensor(Type):
         )
 
     def assert_concrete(self, *, _traceback_name: str = "?"):
-        if self.shape.dims is None:
+        if not self.shape:
             raise ValueError(
                 f"Tensor {self} does not specify the shape -- in {_traceback_name}."
             )
