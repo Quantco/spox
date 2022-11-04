@@ -184,6 +184,18 @@ class Tensor(Type):
 
     @property
     def shape(self) -> SimpleShape:
+        """Return the shape of this tensor if it is known.
+
+        If the rank of the tensor is unknown ``None`` is returned,
+        otherwise a tuple is returned. Each element of the tuple
+        denotes information about the length of that dimension and may
+        be:
+
+            - An ``int`` denoting a statically known length
+            - A ``str`` denoting a named, runtime dependent length
+            - ``None`` representing an unknown dynamic length.
+
+        """
         return self._shape.to_simple()
 
     def _to_onnx(self) -> onnx.TypeProto:
