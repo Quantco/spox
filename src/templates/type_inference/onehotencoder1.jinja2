@@ -1,12 +1,13 @@
-if not self.inputs.fully_typed:
-    return {}
 if self.attrs.cats_int64s:
     n_encodings = len(self.attrs.cats_int64s.value)
 elif self.attrs.cats_strings:
     n_encodings = len(self.attrs.cats_strings.value)
 else:
-    raise InferenceError("Either `cats_int64s` or `cats_strings` attributes must be set.")
-shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
-return {
-    "Y": Tensor(elem_type=np.float32, shape=shape)
-}
+    raise InferenceError(
+        "Either `cats_int64s` or `cats_strings` attributes must be set."
+    )
+if self.inputs.fully_typed:
+    shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
+else:
+    shape = (None, n_encodings)
+return {"Y": Tensor(elem_type=np.float32, shape=shape)}

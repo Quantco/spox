@@ -357,8 +357,6 @@ class _OneHotEncoder(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
-        if not self.inputs.fully_typed:
-            return {}
         if self.attrs.cats_int64s:
             n_encodings = len(self.attrs.cats_int64s.value)
         elif self.attrs.cats_strings:
@@ -367,7 +365,10 @@ class _OneHotEncoder(StandardNode):
             raise InferenceError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
-        shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
+        if self.inputs.fully_typed:
+            shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
+        else:
+            shape = (None, n_encodings)
         return {"Y": Tensor(elem_type=np.float32, shape=shape)}
 
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)
@@ -503,14 +504,6 @@ class _TreeEnsembleClassifier(StandardNode):
         Z: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
-        if not self.inputs.fully_typed:
-            return {}
-        shape = self.inputs.X.unwrap_tensor().shape
-        if shape.rank != 2:
-            raise InferenceError("Expected input to be a matrix.")
-        sim = shape.to_simple()
-        assert sim is not None
-        n = sim[0]
         e = (
             len(self.attrs.class_ids.value)
             if self.attrs.class_ids is not None
@@ -519,11 +512,20 @@ class _TreeEnsembleClassifier(StandardNode):
         if self.attrs.classlabels_strings is not None:
             y_type = np.str_
         elif self.attrs.classlabels_int64s is not None:
-            y_type = np.int64
+            y_type = np.int64  # type: ignore
         else:
             raise InferenceError(
                 "Either string or int64 class labels should be defined"
             )
+        if self.inputs.fully_typed:
+            shape = self.inputs.X.unwrap_tensor().shape
+            if shape.rank != 2:
+                raise InferenceError("Expected input to be a matrix.")
+            sim = shape.to_simple()
+            assert sim is not None
+            n = sim[0]
+        else:
+            n = None
         return {"Y": Tensor(y_type, (n,)), "Z": Tensor(np.float32, (n, e))}
 
     op_type = OpType("TreeEnsembleClassifier", "ai.onnx.ml", 3)
@@ -565,14 +567,15 @@ class _TreeEnsembleRegressor(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
-        if not self.inputs.fully_typed:
-            return {}
-        shape = self.inputs.X.unwrap_tensor().shape
-        if shape.rank != 2:
-            raise InferenceError("Expected input to be a matrix.")
-        sim = shape.to_simple()
-        assert sim is not None
-        n = sim[0]
+        if self.inputs.fully_typed:
+            shape = self.inputs.X.unwrap_tensor().shape
+            if shape.rank != 2:
+                raise InferenceError("Expected input to be a matrix.")
+            sim = shape.to_simple()
+            assert sim is not None
+            n = sim[0]
+        else:
+            n = None
         e = self.attrs.n_targets.value if self.attrs.n_targets is not None else None
         return {"Y": Tensor(np.float32, (n, e))}
 

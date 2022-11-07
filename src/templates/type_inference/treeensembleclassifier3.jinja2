@@ -1,16 +1,23 @@
-if not self.inputs.fully_typed:
-    return {}
-shape = self.inputs.X.unwrap_tensor().shape
-if shape.rank != 2:
-    raise InferenceError("Expected input to be a matrix.")
-sim = shape.to_simple()
-assert sim is not None
-n = sim[0]
-e = len(self.attrs.class_ids.value) if self.attrs.class_ids is not None else None
+e = (
+    len(self.attrs.class_ids.value)
+    if self.attrs.class_ids is not None
+    else None
+)
 if self.attrs.classlabels_strings is not None:
     y_type = np.str_
 elif self.attrs.classlabels_int64s is not None:
-    y_type = np.int64
+    y_type = np.int64  # type: ignore
 else:
-    raise InferenceError("Either string or int64 class labels should be defined")
+    raise InferenceError(
+        "Either string or int64 class labels should be defined"
+    )
+if self.inputs.fully_typed:
+    shape = self.inputs.X.unwrap_tensor().shape
+    if shape.rank != 2:
+        raise InferenceError("Expected input to be a matrix.")
+    sim = shape.to_simple()
+    assert sim is not None
+    n = sim[0]
+else:
+    n = None
 return {"Y": Tensor(y_type, (n,)), "Z": Tensor(np.float32, (n, e))}
