@@ -42,7 +42,7 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
                 NoArrows(),
             ).outputs.arg
         elif isinstance(info, numpy.ndarray):
-            ty = Tensor(info.dtype.type, info.shape)
+            ty = Tensor(info.dtype, info.shape)
             result[name] = Argument(
                 Argument.Attributes(
                     name=attr_name, type=AttrType(ty), default=AttrTensor(info)
@@ -98,7 +98,7 @@ def initializer(arr: numpy.ndarray) -> Arrow:
     -------
         Arrow which is always equal to the respective value provided by `arr`.
     """
-    ty = Tensor(arr.dtype.type, arr.shape)
+    ty = Tensor(arr.dtype, arr.shape)
     return _Initializer(
         _Initializer.Attributes(type=AttrType(ty), default=AttrTensor(arr)),
         NoArrows(),
