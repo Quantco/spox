@@ -357,18 +357,17 @@ class _OneHotEncoder(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
         if self.attrs.cats_int64s:
             n_encodings = len(self.attrs.cats_int64s.value)
         elif self.attrs.cats_strings:
             n_encodings = len(self.attrs.cats_strings.value)
         else:
-            raise InferenceError(
+            raise TypeError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
-        if self.inputs.fully_typed:
-            shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
-        else:
-            shape = (None, n_encodings)
+        shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
         return {"Y": Tensor(elem_type=np.float32, shape=shape)}
 
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)
