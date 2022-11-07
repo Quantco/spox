@@ -364,7 +364,7 @@ class _OneHotEncoder(StandardNode):
         elif self.attrs.cats_strings:
             n_encodings = len(self.attrs.cats_strings.value)
         else:
-            raise TypeError(
+            raise InferenceError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
         shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
