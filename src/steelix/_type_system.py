@@ -229,6 +229,8 @@ class Tensor(Type):
 
 @dataclass(frozen=True)
 class Sequence(Type):
+    """Ordered collection of elements that are of homogeneous types."""
+
     elem_type: Type
 
     def _to_onnx(self) -> onnx.TypeProto:
@@ -252,6 +254,9 @@ class Sequence(Type):
 
 @dataclass(frozen=True)
 class Optional(Type):
+    """wrapper that may contain an element of ``Tensor`` or
+    ``Sequence`` type, or may be empty (containing none)."""
+
     elem_type: Type
 
     def _to_onnx(self) -> onnx.TypeProto:
