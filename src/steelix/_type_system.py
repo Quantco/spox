@@ -18,17 +18,17 @@ class Type:
     """
     Base class for representing Steelix Types, which are based on ONNX types.
 
-    Additionally, Types support membership testing (with <= and >=) and least-matching unions (with |).
-    In essence, membership testing tests for subset types, and unions are the least general superset of both types.
+    Additionally, ``Types`` support membership testing (with <= and >=).
+    One ``Type`` is a subset of another ``Type`` if both of the
+    following is true:
+    - They have identical ``dtype``s
+    - The former's shape is equal or less specific (but compatible)
+      with the shape of the latter
 
     >>> Tensor(numpy.int64, (1, 2, 3)) <= Tensor(numpy.int64)
     True
     >>> Tensor(numpy.int64, (1, 2, 3)) <= Tensor(numpy.int32)
     False
-    >>> Tensor(numpy.int64, (3, 5)) | Tensor(numpy.int64, ())
-    Tensor(elem_type=int64, shape=None)
-    >>> Tensor(numpy.int64, ('M', 3)) | Tensor(numpy.int64, ('M', 'N'))
-    Tensor(elem_type=int64, shape=('M', None))
     """
 
     @classmethod
@@ -126,12 +126,6 @@ class Type:
         if not isinstance(other, Type):
             return NotImplemented
         return self == Type() or other == Type() or self == other
-
-    def __or__(self, other: "Type") -> "Type":
-        """Type set "intersection". Returns a minimally-constrained type matching both parameters."""
-        if not isinstance(other, Type):
-            return NotImplemented
-        return self if self == other else Type()
 
 
 @dataclass(frozen=True)
@@ -232,13 +226,6 @@ class Tensor(Type):
             and self._shape <= other._shape
         )
 
-    def __or__(self, other):
-        if not isinstance(other, Type):
-            return NotImplemented
-        if not isinstance(other, Tensor) or self._elem_type != other._elem_type:
-            return Type()
-        return Tensor(self._elem_type, (self._shape | other._shape).to_simple())
-
 
 @dataclass(frozen=True)
 class Sequence(Type):
@@ -262,13 +249,6 @@ class Sequence(Type):
             return False
         return self.elem_type <= other.elem_type
 
-    def __or__(self, other):
-        if not isinstance(other, Type):
-            return NotImplemented
-        if not isinstance(other, Sequence):
-            return Type()
-        return Sequence(self.elem_type | other.elem_type)
-
 
 @dataclass(frozen=True)
 class Optional(Type):
@@ -291,13 +271,6 @@ class Optional(Type):
         if not isinstance(other, Optional):
             return False
         return self.elem_type <= other.elem_type
-
-    def __or__(self, other):
-        if not isinstance(other, Type):
-            return NotImplemented
-        if not isinstance(other, Optional):
-            return Type()
-        return Optional(self.elem_type | other.elem_type)
 
 
 def type_match(first: typing.Optional[Type], second: typing.Optional[Type]) -> bool:

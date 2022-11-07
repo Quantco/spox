@@ -85,12 +85,6 @@ class Natural(abc.ABC):
             return NotImplemented
         return other == Unknown()
 
-    def __or__(self, other: "Natural") -> "Natural":
-        """Natural "intersection". Returns a minimally-constrained Natural matching both parameters."""
-        if not isinstance(other, Natural):
-            return NotImplemented
-        return self if self == other else Unknown()
-
 
 @dataclass(frozen=True)
 class Unknown(Natural):
@@ -223,18 +217,6 @@ class Shape:
         elif self.rank != other.rank:
             return False
         return all(x <= y for x, y in zip(self.dims, other.dims))
-
-    def __or__(self, other: "Shape") -> "Shape":
-        """Shape set "intersection". Returns a least-general shape matching both parameters."""
-        if not isinstance(other, Shape):
-            return NotImplemented
-        if (
-            self.maybe_rank != other.maybe_rank
-            or self.dims is None
-            or other.dims is None
-        ):
-            return Shape(None)
-        return Shape(tuple(x | y for x, y in zip(self.dims, other.dims)))
 
 
 def _broadcast_elem(x: SimpleShapeElem, y: SimpleShapeElem) -> SimpleShapeElem:
