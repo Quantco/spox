@@ -1,7 +1,8 @@
 from abc import ABC
-from typing import Any, ClassVar, Generic, Iterable, Tuple, Type, TypeVar, Union
+from typing import Any, ClassVar, Generic, Iterable, Tuple, TypeVar, Union
 
 import numpy as np
+import numpy.typing as npt
 from onnx import AttributeProto
 from onnx.helper import (
     make_attribute,
@@ -120,24 +121,33 @@ class AttrType(Attr[type_system.Type]):
         return make_attribute(key, type_proto)
 
 
-class AttrDtype(Attr[Union[np.dtype, Type[np.generic]]]):
+class AttrDtype(Attr[npt.DTypeLike]):
     """Special attribute for specifying data types as ``numpy.dtype``s, for example in ``Cast``."""
 
     _attribute_proto_type_int = AttributeProto.INT
 
     def _validate(self):
-        val = self.value
-        if not (issubclass(val, np.generic) or isinstance(val, np.dtype)):  # type: ignore
-            raise TypeError(
-                f"Expected value of type `np.dtype` or `np.generic` found `{type(self.value)}`"
-            )
+        if self.value is None:
+            raise TypeError("")
+        self._get_tensor_type()
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _get_tensor_type(self) -> int:
         dtype = np.dtype(self.value)
         # There are various different dtypes denoting strings
         if dtype.type == np.str_:
-            return make_attribute(key, NP_TYPE_TO_TENSOR_TYPE[np.dtype("O")])
-        return make_attribute(key, NP_TYPE_TO_TENSOR_TYPE[dtype])
+            dtype = np.dtype("O")
+
+        # `None` is included in DTypeLike and defaults to
+        # `float64`. We don't want to allow that implicit behavior
+        # (for now).
+        if self.value is None or dtype not in NP_TYPE_TO_TENSOR_TYPE:
+            raise TypeError(
+                f"`{self.value}` does not have a corresponding tensor type."
+            )
+        return NP_TYPE_TO_TENSOR_TYPE[dtype]
+
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        return make_attribute(key, self._get_tensor_type())
 
 
 class AttrGraph(Attr[Any]):
