@@ -3,6 +3,7 @@ if not self.inputs.fully_typed:
 xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
 if xt.shape.rank < 1:
     raise InferenceError("Expected rank >= 1")
-if xt.shape[:-1] != yt.shape:
-    raise InferenceError("Mismatched shapes for entries & indices.")
-return {"Z": Tensor(xt.elem_type, yt.shape)}
+if yt.shape.rank != 1:
+    raise InferenceError("Input `Y` must be of rank 1.")
+shape = tuple(list(xt.shape.to_simple()[:-1]) + [yt.shape.to_simple()[-1]])
+return {"Z": Tensor(xt.elem_type, shape)}

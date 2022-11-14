@@ -56,9 +56,10 @@ class _ArrayFeatureExtractor(StandardNode):
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
         if xt.shape.rank < 1:
             raise InferenceError("Expected rank >= 1")
-        if xt.shape[:-1] != yt.shape:
-            raise InferenceError("Mismatched shapes for entries & indices.")
-        return {"Z": Tensor(xt.elem_type, yt.shape)}
+        if yt.shape.rank != 1:
+            raise InferenceError("Input `Y` must be of rank 1.")
+        shape = tuple(list(xt.shape.to_simple()[:-1]) + [yt.shape.to_simple()[-1]])
+        return {"Z": Tensor(xt.elem_type, shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
 
@@ -358,6 +359,8 @@ class _OneHotEncoder(StandardNode):
         Y: Arrow
 
     def infer_output_types(self) -> Dict[str, Type]:
+        if not self.inputs.fully_typed:
+            return {}
         if self.attrs.cats_int64s:
             n_encodings = len(self.attrs.cats_int64s.value)
         elif self.attrs.cats_strings:
@@ -366,10 +369,7 @@ class _OneHotEncoder(StandardNode):
             raise InferenceError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
-        if self.inputs.fully_typed:
-            shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
-        else:
-            shape = (None, n_encodings)
+        shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
         return {"Y": Tensor(elem_type=numpy.float32, shape=shape)}
 
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)

@@ -14,10 +14,10 @@ def test_array_feature_extractor_inference():
                 "N",
             ),
         ),
-        y=Tensor(np.int64, (None, 5)),
+        y=Tensor(np.int64, (3,)),
     )
     r = op_ml.array_feature_extractor(x, y)
-    assert r.type == Tensor(np.str_, (None, 5))
+    assert r.type == Tensor(np.str_, (None, 5, 3))
 
 
 def test_array_feature_extractor_inference_untyped():
