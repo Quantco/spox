@@ -58,7 +58,7 @@ class _ArrayFeatureExtractor(StandardNode):
             raise InferenceError("Expected rank >= 1")
         if yt.shape.rank != 1:
             raise InferenceError("Input `Y` must be of rank 1.")
-        shape = tuple(list(xt.shape.to_simple()[:-1]) + [yt.shape.to_simple()[-1]])
+        shape = tuple(list(xt.shape.to_simple()[:-1]) + [yt.shape.to_simple()[-1]])  # type: ignore
         return {"Z": Tensor(xt.elem_type, shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
