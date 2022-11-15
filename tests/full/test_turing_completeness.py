@@ -27,10 +27,10 @@ def bf_interpreter_graph(ext):
     )
     maybe_matches = ext.match_brackets(brackets)
     matches = op.optional_get_element(maybe_matches)
-    (matches,) = op.xif(
+    (matches,) = op.if_(
         ext.empty(matches),
-        then_branch=(op.reshape(ext.empty_i64(), op.const([0, 2])),),
-        else_branch=(
+        then_branch=lambda: (op.reshape(ext.empty_i64(), op.const([0, 2])),),
+        else_branch=lambda: (
             unsafe_reshape(
                 op.concat_from_sequence(matches, axis=0, new_axis=1), (None, 2)
             ),
@@ -56,55 +56,58 @@ def bf_interpreter_graph(ext):
         at_tape = op.unsqueeze(ext.at(tape, ptr), op.const([0]))
         cmd = ext.at(prog, ip)
 
-        (tape_inc,) = op.xif(
+        (tape_inc,) = op.if_(
             ext.is_token(cmd, "+"),
-            then_branch=(op.add(tape, ext.onehot(op.size(tape), ptr)),),
-            else_branch=(tape,),
+            then_branch=lambda: (op.add(tape, ext.onehot(op.size(tape), ptr)),),
+            else_branch=lambda: (tape,),
         )
-        (tape_dec,) = op.xif(
+        (tape_dec,) = op.if_(
             ext.is_token(cmd, "-"),
-            then_branch=(op.sub(tape, ext.onehot(op.size(tape), ptr)),),
-            else_branch=(tape_inc,),
+            then_branch=lambda: (op.sub(tape, ext.onehot(op.size(tape), ptr)),),
+            else_branch=lambda: (tape_inc,),
         )
 
-        (at_iptr,) = op.xif(
+        (at_iptr,) = op.if_(
             op.less(iptr, op.size(inputs)),
-            then_branch=(ext.at(inputs, iptr),),
-            else_branch=(op.const(0),),
+            then_branch=lambda: (ext.at(inputs, iptr),),
+            else_branch=lambda: (op.const(0),),
         )
-        tape_read, iptr_read = op.xif(
+        tape_read, iptr_read = op.if_(
             ext.is_token(cmd, ","),
-            then_branch=(ext.set_to(tape, ptr, at_iptr), op.add(iptr, op.const(1))),
-            else_branch=(tape_dec, iptr),
+            then_branch=lambda: (
+                ext.set_to(tape, ptr, at_iptr),
+                op.add(iptr, op.const(1)),
+            ),
+            else_branch=lambda: (tape_dec, iptr),
         )
 
-        (output_seq_write,) = op.xif(
+        (output_seq_write,) = op.if_(
             ext.is_token(cmd, "."),
-            then_branch=(op.sequence_insert(output_seq, at_tape),),
-            else_branch=(output_seq,),
+            then_branch=lambda: (op.sequence_insert(output_seq, at_tape),),
+            else_branch=lambda: (output_seq,),
         )
 
-        (ptr_inc,) = op.xif(
+        (ptr_inc,) = op.if_(
             ext.is_token(cmd, ">"),
-            then_branch=(op.mod(op.add(ptr, op.const(1)), op.const(TAPE)),),
-            else_branch=(ptr,),
+            then_branch=lambda: (op.mod(op.add(ptr, op.const(1)), op.const(TAPE)),),
+            else_branch=lambda: (ptr,),
         )
-        (ptr_dec,) = op.xif(
+        (ptr_dec,) = op.if_(
             ext.is_token(cmd, "<"),
-            then_branch=(op.mod(op.sub(ptr, op.const(1)), op.const(TAPE)),),
-            else_branch=(ptr_inc,),
+            then_branch=lambda: (op.mod(op.sub(ptr, op.const(1)), op.const(TAPE)),),
+            else_branch=lambda: (ptr_inc,),
         )
 
         zero_at_tape = op.equal(at_tape, op.const(0))
-        (ip_jump_right,) = op.xif(
+        (ip_jump_right,) = op.if_(
             op.and_(ext.is_token(cmd, "["), zero_at_tape),
-            then_branch=(ext.remap(lefts, rights, ip),),
-            else_branch=(ip,),
+            then_branch=lambda: (ext.remap(lefts, rights, ip),),
+            else_branch=lambda: (ip,),
         )
-        (ip_jump_left,) = op.xif(
+        (ip_jump_left,) = op.if_(
             op.and_(ext.is_token(cmd, "]"), op.not_(zero_at_tape)),
-            then_branch=(ext.remap(rights, lefts, ip),),
-            else_branch=(ip_jump_right,),
+            then_branch=lambda: (ext.remap(rights, lefts, ip),),
+            else_branch=lambda: (ip_jump_right,),
         )
 
         next_ip = op.add(ip_jump_left, op.const(1))
@@ -113,9 +116,9 @@ def bf_interpreter_graph(ext):
         next_tape = tape_read
         next_output_seq = output_seq_write
 
-        return op.xif(
+        return op.if_(
             op.less(ip, op.size(prog)),
-            then_branch=(
+            then_branch=lambda: (
                 ext.true(),
                 next_ip,
                 next_ptr,
@@ -123,19 +126,19 @@ def bf_interpreter_graph(ext):
                 next_tape,
                 next_output_seq,
             ),
-            else_branch=(ext.false(), ip, ptr, iptr, tape, output_seq),
+            else_branch=lambda: (ext.false(), ip, ptr, iptr, tape, output_seq),
         )
 
-    _final_ip, _final_ptr, _final_iptr, final_tape, final_output_seq = op.xloop(
+    _final_ip, _final_ptr, _final_iptr, final_tape, final_output_seq = op.loop(
         op.const([TERM]),
-        initial=[
+        v_initial=[
             op.const(0),
             op.const(0),
             op.const(0),
             op.const(numpy.array([0] * TAPE, dtype=numpy.int64)),
             op.sequence_empty(dtype=numpy.int64),
         ],
-        fun=step,
+        body=step,
     )
 
     output = ext.flat_concat(final_output_seq)

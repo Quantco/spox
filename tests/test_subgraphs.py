@@ -6,9 +6,9 @@ from steelix.type_system import Tensor
 
 def test_subgraph(op, onnx_helper):
     (e,) = arguments(e=Tensor(numpy.int64, ()))
-    lp, sc = op.xloop(
-        initial=[op.const([0.0])],  # Initial carry
-        fun=lambda iter_num, cond_in, carry_in: (
+    lp, sc = op.loop(
+        v_initial=[op.const([0.0])],  # Initial carry
+        body=lambda iter_num, cond_in, carry_in: (
             # Stop condition: iter_num < e
             op.less(iter_num, e),
             # Carried: carry_in + iter_num
@@ -31,7 +31,7 @@ def test_subgraph_copy_result(op, onnx_helper):
     b, x, y = arguments(
         b=Tensor(numpy.bool_, ()), x=Tensor(numpy.int64, ()), y=Tensor(numpy.int64, ())
     )
-    z1, z2 = op.xif(b, then_branch=(x, x), else_branch=(y, y))
+    z1, z2 = op.if_(b, then_branch=lambda: (x, x), else_branch=lambda: (y, y))
     graph = results(z1=z1, z2=z2)
     onnx_helper.assert_close(
         onnx_helper.run(
@@ -65,7 +65,7 @@ def test_subgraph_non_copy_repeated_result(op, onnx_helper):
     )
     x = op.mul(x, op.const(2))
     y = op.mul(y, op.const(2))
-    z1, z2 = op.xif(b, then_branch=(x, x), else_branch=(y, y))
+    z1, z2 = op.if_(b, then_branch=lambda: (x, x), else_branch=lambda: (y, y))
     graph = results(z1=z1, z2=z2)
     onnx_helper.assert_close(
         onnx_helper.run(
@@ -95,7 +95,9 @@ def test_subgraph_non_copy_repeated_result(op, onnx_helper):
 
 def test_outer_scope_arguments(op, onnx_helper):
     b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.float32, (None,)))
-    (r,) = op.xif(b, else_branch=[op.add(x, x)], then_branch=[op.mul(x, x)])
+    (r,) = op.if_(
+        b, else_branch=lambda: [op.add(x, x)], then_branch=lambda: [op.mul(x, x)]
+    )
     graph = results(r=r)
     onnx_helper.assert_close(
         onnx_helper.run(
@@ -124,10 +126,12 @@ def test_outer_scope_arguments_nested(op, onnx_helper):
         x=Tensor(numpy.float32, (None,)),
         y=Tensor(numpy.float32, (None,)),
     )
-    (r,) = op.xif(
+    (r,) = op.if_(
         b,
-        else_branch=[x],
-        then_branch=op.xif(c, else_branch=[y], then_branch=[op.add(y, y)]),
+        else_branch=lambda: [x],
+        then_branch=lambda: op.if_(
+            c, else_branch=lambda: [y], then_branch=lambda: [op.add(y, y)]
+        ),
     )
     graph = results(r=r)
     onnx_helper.assert_close(
@@ -173,10 +177,12 @@ def test_outer_scope_arguments_nested_used_in_both(op, onnx_helper):
         y=Tensor(numpy.float32, (None,)),
     )
     # An argument is used only in a nested context, and then also afterwards.
-    (r,) = op.xif(
+    (r,) = op.if_(
         b,
-        else_branch=[y],
-        then_branch=op.xif(c, else_branch=[y], then_branch=[op.add(x, y)]),
+        else_branch=lambda: [y],
+        then_branch=lambda: op.if_(
+            c, else_branch=lambda: [y], then_branch=lambda: [op.add(x, y)]
+        ),
     )
     r = op.add(r, x)
     graph = results(r=r)
@@ -184,15 +190,15 @@ def test_outer_scope_arguments_nested_used_in_both(op, onnx_helper):
 
 
 def test_subgraph_argument_used_only_in_subsubgraph(op, onnx_helper):
-    (r,) = op.xloop(
-        max_iter=op.const([5]),
-        initial=[],
-        fun=lambda i, _: (
+    (r,) = op.loop(
+        M=op.const([5]),
+        v_initial=[],
+        body=lambda i, _: (
             op.const(numpy.array(True)),
-            op.xif(
+            op.if_(
                 op.const(numpy.array(True)),
-                else_branch=[op.const([0])],
-                then_branch=[i],
+                else_branch=lambda: [op.const([0])],
+                then_branch=lambda: [i],
             )[0],
         ),
     )
@@ -202,7 +208,7 @@ def test_subgraph_argument_used_only_in_subsubgraph(op, onnx_helper):
 
 def test_copied_outer_argument(op, onnx_helper):
     b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.float32, (None,)))
-    (r,) = op.xif(b, else_branch=[x], then_branch=[x])
+    (r,) = op.if_(b, else_branch=lambda: [x], then_branch=lambda: [x])
     graph = results(r=op.add(x, r))
     onnx_helper.assert_close(
         onnx_helper.run(
@@ -217,7 +223,9 @@ def test_copied_outer_argument(op, onnx_helper):
 
 def test_outer_scope_argument_used_only_inner(op, onnx_helper):
     b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.float32, (None,)))
-    (r,) = op.xif(b, else_branch=[x], then_branch=[op.mul(op.const(2.0), x)])
+    (r,) = op.if_(
+        b, else_branch=lambda: [x], then_branch=lambda: [op.mul(op.const(2.0), x)]
+    )
     graph = results(r=r)
     onnx_helper.assert_close(
         onnx_helper.run(
@@ -242,13 +250,13 @@ def test_outer_scope_argument_used_only_inner(op, onnx_helper):
 def test_subgraph_arguments_kept_separate(op, onnx_helper):
     a, b = arguments(a=Tensor(numpy.int64, ()), b=Tensor(numpy.int64, ()))
 
-    x, y = op.xloop(
-        initial=[a, b],  # _a = a, _b = b
-        fun=lambda _i, _c, _a, _b: (
+    x, y = op.loop(
+        v_initial=[a, b],  # _a = a, _b = b
+        body=lambda _i, _c, _a, _b: (
             op.const(False),
-            *op.xloop(
-                initial=[_b, _a],  # _A = _b, _B = _a
-                fun=lambda _I, _C, _A, _B: (op.const(False), _a, _b),
+            *op.loop(
+                v_initial=[_b, _a],  # _A = _b, _B = _a
+                body=lambda _I, _C, _A, _B: (op.const(False), _a, _b),
             ),
         ),  # -> (_a, _b) = (a, b)
     )  # (a, b)

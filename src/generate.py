@@ -1,6 +1,7 @@
 import importlib.resources
 import re
 import subprocess
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
@@ -28,7 +29,7 @@ ATTRIBUTE_PROTO_TO_INPUT_TYPE = {
     onnx.AttributeProto.INT: "int",
     onnx.AttributeProto.STRING: "str",
     onnx.AttributeProto.TENSOR: "ndarray",
-    onnx.AttributeProto.GRAPH: "Graph",
+    onnx.AttributeProto.GRAPH: "Callable[..., Iterable[Arrow]]",
     onnx.AttributeProto.TYPE_PROTO: "Type",
     onnx.AttributeProto.FLOATS: "Iterable[float]",
     onnx.AttributeProto.INTS: "Iterable[int]",
@@ -64,6 +65,20 @@ class Attribute:
     constructor_type_hint: str
     # Member type without a potential ``Optional`` wrapper
     _member_type: str
+    # Python expression for generating the argument types for this subgraph
+    subgraph_solution: Optional[str] = None
+
+    def __post_init__(self):
+        if self.attr_constructor != "AttrGraph" and self.subgraph_solution is not None:
+            raise TypeError(
+                "Subgraph input types should only be specified for an AttrGraph."
+            )
+        if self.attr_constructor == "AttrGraph" and self.subgraph_solution is None:
+            warnings.warn(
+                UserWarning(
+                    f"No subgraph input types specified for attribute {self.name}, typecheck will fail."
+                )
+            )
 
     @property
     def member_type(self) -> str:
@@ -78,7 +93,9 @@ class Attribute:
         return self._member_type
 
 
-def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attribute]:
+def get_attributes(
+    schema: onnx.defs.OpSchema, attr_type_overrides, subgraph_solutions
+) -> List[Attribute]:
     out = []
     for name, attr in schema.attributes.items():
         default = _get_default_value(attr, attr_type_overrides)
@@ -101,6 +118,7 @@ def get_attributes(schema: onnx.defs.OpSchema, attr_type_overrides) -> List[Attr
                 _member_type=member_type,
                 constructor_type_hint=constructor_type_hint,
                 constructor_default=default,  # type: ignore
+                subgraph_solution=subgraph_solutions.get(name),
             )
         )
     return out
@@ -220,6 +238,7 @@ def write_schemas_code(
     type_inference: Dict[str, str],
     value_propagation: Dict[str, str],
     out_variadic_solutions: Dict[str, str],
+    subgraphs_solutions: Dict[str, Dict[str, str]],
     attr_type_overrides: List[Tuple[Optional[str], str, Tuple[str, str]]],
     extras: Sequence[str],
     gen_docstrings: bool,
@@ -241,8 +260,6 @@ def write_schemas_code(
 
     # Operator classes
     for schema in sorted(schemas, key=lambda s: s.name):
-        if not schema.has_type_and_shape_inference_function:
-            print(schema.name, ":(")
         # Override for attribute type
         attr_over = {
             name: target
@@ -270,6 +287,7 @@ def write_schemas_code(
                 type_inference=inf,
                 value_propagation=prop,
                 attr_type_overrides=attr_over,
+                subgraph_solutions=subgraphs_solutions.get(schema.name, {}),
             ),
             file=file,
             end="\n\n",
@@ -294,6 +312,7 @@ def write_schemas_code(
                 gen_docstrings=gen_docstrings,
                 out_variadic_solution=var_sol,
                 attr_type_overrides=attr_over,
+                subgraph_solutions=subgraphs_solutions.get(schema.name, {}),
             ),
             file=file,
             end="\n\n\n",
@@ -330,6 +349,7 @@ def main(
     type_inference: Optional[Dict[str, str]] = None,
     value_propagation: Optional[Dict[str, str]] = None,
     out_variadic_solutions: Optional[Dict[str, str]] = None,
+    subgraphs_solutions: Optional[Dict[str, Dict[str, str]]] = None,
     attr_type_overrides: Optional[
         List[Tuple[Optional[str], str, Tuple[str, str]]]
     ] = None,
@@ -358,6 +378,9 @@ def main(
         String for an expression that evaluates to the number of outputs of a variadic-output operator.
         Evaluated within the constructor.
         Keys are operator names, values are the expression strings.
+    subgraphs_solutions
+        Dictionary from operator names, into attribute names, into strings representing input types for the subgraph
+        of that name. The string is a Python expression evaluating int an Iterable of Types.
     attr_type_overrides
         List of replacements for constructor-level types.
         For example, in Cast the ``to`` attribute accepts ``numpy.generic`` instead of ``int``.
@@ -382,6 +405,8 @@ def main(
         value_propagation = {}
     if out_variadic_solutions is None:
         out_variadic_solutions = {}
+    if subgraphs_solutions is None:
+        subgraphs_solutions = {}
     if attr_type_overrides is None:
         attr_type_overrides = []
 
@@ -404,6 +429,7 @@ def main(
             type_inference,
             value_propagation,
             out_variadic_solutions,
+            subgraphs_solutions,
             attr_type_overrides,
             extras,
             gen_docstrings,
@@ -426,12 +452,21 @@ if __name__ == "__main__":
     main(
         "ai.onnx",
         17,
-        extras=["const", "xloop", "xif", "promote"],
+        extras=["const", "promote"],
         type_inference={},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions={
-            "If": "len(else_branch.requested_results)",
-            "Loop": "len(body.requested_results) - 1",
+            "If": "len(_else_branch_subgraph.requested_results)",
+            "Loop": "len(_body_subgraph.requested_results) - 1",
+        },
+        subgraphs_solutions={
+            "If": {"else_branch": "()", "then_branch": "()"},
+            "Loop": {
+                "body": "typing_cast(List[Type], [Tensor(numpy.int64, (1,)), Tensor(numpy.bool_, (1,))])"
+                "+ [arrow.unwrap_type() for arrow in v_initial]"
+            },
+            "Scan": {"body": "()"},  # FIXME
+            "SequenceMap": {"body": "()"},  # FIXME
         },
         attr_type_overrides=[
             (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype")),

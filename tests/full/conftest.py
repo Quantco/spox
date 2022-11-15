@@ -31,10 +31,10 @@ class Extras:
 
     @staticmethod
     def maybe(cond: Arrow, arrow: Arrow) -> Arrow:
-        (i,) = op.xif(
+        (i,) = op.if_(
             cond,
-            else_branch=[op.optional(type=arrow.type)],
-            then_branch=[op.optional(arrow)],
+            else_branch=lambda: [op.optional(type=arrow.type)],
+            then_branch=lambda: [op.optional(arrow)],
         )
         return i
 
@@ -70,24 +70,22 @@ class Extras:
             ignore = op.equal(*op.promote(ext.at(xs, i), 0))
             pair = op.concat([ext.top(stack), i], axis=-1)
             ok = op.not_(op.and_(closing, ext.empty(stack)))
-            stack_after, result_after = op.xif(
+            stack_after, result_after = op.if_(
                 ignore,
-                then_branch=(stack, result),
-                else_branch=(
-                    op.xif(
-                        ok,
-                        then_branch=op.xif(
-                            closing,
-                            then_branch=(ext.pop(stack), ext.push(result, pair)),
-                            else_branch=(ext.push(stack, i), result),
-                        ),
-                        else_branch=(stack, result),
-                    )
+                then_branch=lambda: (stack, result),
+                else_branch=lambda: op.if_(
+                    ok,
+                    then_branch=lambda: op.if_(
+                        closing,
+                        then_branch=lambda: (ext.pop(stack), ext.push(result, pair)),
+                        else_branch=lambda: (ext.push(stack, i), result),
+                    ),
+                    else_branch=lambda: (stack, result),
                 ),
             )
             return ok, stack_after, result_after, ok
 
-        unpaired, pairs, all_ok = op.xloop(
+        unpaired, pairs, all_ok = op.loop(
             op.reshape(op.size(xs), op.const([1])),
             None,
             [
@@ -95,7 +93,7 @@ class Extras:
                 op.sequence_empty(dtype=numpy.int64),
                 op.const(numpy.array(True)),
             ],
-            fun=bracket_matcher_step,
+            body=bracket_matcher_step,
         )
         return ext.maybe(op.and_(all_ok, ext.empty(unpaired)), pairs)
 
@@ -116,10 +114,12 @@ class Extras:
         )
 
     def flat_concat(ext, s: Arrow) -> Arrow:
-        return op.xif(
+        return op.if_(
             ext.empty(s),
-            then_branch=(ext.empty_i64(),),
-            else_branch=(unsafe_reshape(op.concat_from_sequence(s, axis=0), (None,)),),
+            then_branch=lambda: (ext.empty_i64(),),
+            else_branch=lambda: (
+                unsafe_reshape(op.concat_from_sequence(s, axis=0), (None,)),
+            ),
         )[0]
 
     def remap(ext, s: Arrow, t: Arrow, x: Arrow) -> Arrow:
@@ -127,13 +127,13 @@ class Extras:
 
     def find(ext, t: Arrow, x: Arrow) -> Arrow:
         x = op.reshape(op.identity(x), ext.empty_i64())
-        (ret,) = op.xloop(
+        (ret,) = op.loop(
             op.size(t),
-            initial=[op.const([-1])],
-            fun=lambda i, _1, _2: op.xif(
+            v_initial=[op.const([-1])],
+            body=lambda i, _1, _2: op.if_(
                 op.equal(ext.at(t, i), x),
-                then_branch=(ext.false(), i, ext.at(t, i)),
-                else_branch=(ext.true(), op.const([-1]), ext.at(t, i)),
+                then_branch=lambda: (ext.false(), i, ext.at(t, i)),
+                else_branch=lambda: (ext.true(), op.const([-1]), ext.at(t, i)),
             ),
         )
         return ret
