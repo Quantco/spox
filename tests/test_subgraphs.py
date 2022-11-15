@@ -1,7 +1,7 @@
 import numpy
 
 from steelix.graph import arguments, results
-from steelix.type_system import Tensor
+from steelix.type_system import Sequence, Tensor
 
 
 def test_subgraph(op, onnx_helper):
@@ -272,4 +272,20 @@ def test_subgraph_arguments_kept_separate(op, onnx_helper):
             b=numpy.array(1),
         ),
         0,
+    )
+
+
+def test_sequence_map(op, onnx_helper):
+    xs, ys = arguments(
+        xs=Sequence(Tensor(numpy.int32)), ys=Sequence(Tensor(numpy.int32))
+    )
+    zs, _xs = op.sequence_map(xs, [ys], body=lambda x, y: (op.mul(x, y), x))
+    onnx_helper.assert_close(
+        onnx_helper.run(
+            results(zs=zs),
+            "zs",
+            xs=[numpy.array([1]), numpy.array([2]), numpy.array([3])],
+            ys=[numpy.array([-1]), numpy.array([0]), numpy.array([1])],
+        ),
+        [numpy.array([-1]), numpy.array([0]), numpy.array([3])],
     )

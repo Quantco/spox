@@ -466,7 +466,7 @@ if __name__ == "__main__":
             "If": "len(_else_branch_subgraph.requested_results)",
             "Loop": "len(_body_subgraph.requested_results) - 1",
             "Scan": "len(_body_subgraph.requested_results)",
-            "SequenceMap": "1 + len(_body_subgraph.requested_results)",
+            "SequenceMap": "1 + len(additional_inputs)",
         },
         subgraphs_solutions={
             "If": {"else_branch": "()", "then_branch": "()"},
@@ -478,7 +478,8 @@ if __name__ == "__main__":
                 "body": "[arrow.unwrap_type() for arrow in initial_state_and_scan_inputs]"
             },
             "SequenceMap": {
-                "body": "[input_sequence.unwrap_type()] + [arrow.unwrap_type() for arrow in additional_inputs]"
+                "body": "[typing_cast(SteelixSequence, input_sequence.unwrap_type()).elem_type] + "
+                "[typing_cast(SteelixSequence, arrow.unwrap_type()).elem_type for arrow in additional_inputs]"
             },
         },
         attr_type_overrides=[
