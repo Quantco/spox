@@ -275,7 +275,21 @@ def test_subgraph_arguments_kept_separate(op, onnx_helper):
     )
 
 
-def test_sequence_map(op, onnx_helper):
+def test_scan_for_product(op, onnx_helper):
+    (x,) = arguments(x=Tensor(numpy.int32, ("N",)))
+    one = op.const(numpy.array(1, dtype=numpy.int32))
+    prod, _x = op.scan([one, x], body=lambda a, p: [op.mul(a, p), a], num_scan_inputs=1)
+    onnx_helper.assert_close(
+        onnx_helper.run(
+            results(prod=prod),
+            "prod",
+            x=numpy.array([1, 2, 3, 4, 5], dtype=numpy.int32),
+        ),
+        numpy.array(1 * 2 * 3 * 4 * 5, numpy.int32),
+    )
+
+
+def test_sequence_map_for_zip_mul(op, onnx_helper):
     xs, ys = arguments(
         xs=Sequence(Tensor(numpy.int32)), ys=Sequence(Tensor(numpy.int32))
     )

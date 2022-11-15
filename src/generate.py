@@ -475,7 +475,11 @@ if __name__ == "__main__":
                 "+ [arrow.unwrap_type() for arrow in v_initial]"
             },
             "Scan": {
-                "body": "[arrow.unwrap_type() for arrow in initial_state_and_scan_inputs]"
+                "body": "[Tensor(arrow.unwrap_tensor().elem_type, "
+                "   (lambda x: x[1:] if x is not None else None)(arrow.unwrap_tensor().shape.to_simple())) "
+                "for arrow in initial_state_and_scan_inputs[:num_scan_inputs]] + "
+                "[Tensor(arrow.unwrap_tensor().elem_type) "
+                "for arrow in initial_state_and_scan_inputs[num_scan_inputs:]]"
             },
             "SequenceMap": {
                 "body": "[typing_cast(SteelixSequence, input_sequence.unwrap_type()).elem_type] + "

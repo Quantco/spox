@@ -11184,7 +11184,20 @@ def scan(
      - V: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _body_subgraph: Graph = subgraph(
-        [arrow.unwrap_type() for arrow in initial_state_and_scan_inputs], body
+        [
+            Tensor(
+                arrow.unwrap_tensor().elem_type,
+                (lambda x: x[1:] if x is not None else None)(
+                    arrow.unwrap_tensor().shape.to_simple()
+                ),
+            )
+            for arrow in initial_state_and_scan_inputs[:num_scan_inputs]
+        ]
+        + [
+            Tensor(arrow.unwrap_tensor().elem_type)
+            for arrow in initial_state_and_scan_inputs[num_scan_inputs:]
+        ],
+        body,
     )
     return _Scan(
         _Scan.Attributes(
