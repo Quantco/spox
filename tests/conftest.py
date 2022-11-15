@@ -53,9 +53,15 @@ class ONNXRuntimeHelper:
         if given is None:
             assert expected is None
         else:
-            numpy.testing.assert_allclose(
-                given, numpy.array(expected, dtype=given.dtype)
-            )
+            if isinstance(given, list):
+                for subarray in given:
+                    numpy.testing.assert_allclose(
+                        given, numpy.array(expected, dtype=subarray.dtype)
+                    )
+            else:
+                numpy.testing.assert_allclose(
+                    given, numpy.array(expected, dtype=given.dtype)
+                )
 
 
 @pytest.fixture(scope="session")
