@@ -11035,7 +11035,6 @@ def stft(
 def scan(
     initial_state_and_scan_inputs: Sequence[Arrow],
     *,
-    final_state_and_scan_outputs_count: int,
     body: Callable[..., Iterable[Arrow]],
     num_scan_inputs: int,
     scan_input_axes: Optional[Iterable[int]] = None,
@@ -11183,7 +11182,9 @@ def scan(
     Type constraints:
      - V: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    _body_subgraph: Graph = subgraph((), body)
+    _body_subgraph: Graph = subgraph(
+        [arrow.unwrap_type() for arrow in initial_state_and_scan_inputs], body
+    )
     return _Scan(
         _Scan.Attributes(
             body=None if body is None else AttrGraph(_body_subgraph),
@@ -11206,7 +11207,7 @@ def scan(
         _Scan.Inputs(
             initial_state_and_scan_inputs=initial_state_and_scan_inputs,
         ),
-        out_variadic=final_state_and_scan_outputs_count,
+        out_variadic=len(_body_subgraph.requested_results),
     ).outputs.final_state_and_scan_outputs
 
 
@@ -11822,7 +11823,6 @@ def sequence_map(
     input_sequence: Arrow,
     additional_inputs: Sequence[Arrow] = (),
     *,
-    out_sequence_count: int,
     body: Callable[..., Iterable[Arrow]],
 ) -> Sequence[Arrow]:
     r"""
@@ -11864,7 +11864,11 @@ def sequence_map(
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    _body_subgraph: Graph = subgraph((), body)
+    _body_subgraph: Graph = subgraph(
+        [input_sequence.unwrap_type()]
+        + [arrow.unwrap_type() for arrow in additional_inputs],
+        body,
+    )
     return _SequenceMap(
         _SequenceMap.Attributes(
             body=None if body is None else AttrGraph(_body_subgraph),
@@ -11873,7 +11877,7 @@ def sequence_map(
             input_sequence=input_sequence,
             additional_inputs=additional_inputs,
         ),
-        out_variadic=out_sequence_count,
+        out_variadic=1 + len(_body_subgraph.requested_results),
     ).outputs.out_sequence
 
 

@@ -458,6 +458,8 @@ if __name__ == "__main__":
         out_variadic_solutions={
             "If": "len(_else_branch_subgraph.requested_results)",
             "Loop": "len(_body_subgraph.requested_results) - 1",
+            "Scan": "len(_body_subgraph.requested_results)",
+            "SequenceMap": "1 + len(_body_subgraph.requested_results)",
         },
         subgraphs_solutions={
             "If": {"else_branch": "()", "then_branch": "()"},
@@ -465,8 +467,12 @@ if __name__ == "__main__":
                 "body": "typing_cast(List[Type], [Tensor(numpy.int64, (1,)), Tensor(numpy.bool_, (1,))])"
                 "+ [arrow.unwrap_type() for arrow in v_initial]"
             },
-            "Scan": {"body": "()"},  # FIXME
-            "SequenceMap": {"body": "()"},  # FIXME
+            "Scan": {
+                "body": "[arrow.unwrap_type() for arrow in initial_state_and_scan_inputs]"
+            },
+            "SequenceMap": {
+                "body": "[input_sequence.unwrap_type()] + [arrow.unwrap_type() for arrow in additional_inputs]"
+            },
         },
         attr_type_overrides=[
             (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype")),
