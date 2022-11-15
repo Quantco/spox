@@ -300,6 +300,13 @@ def write_schemas_code(
             continue
         # Output variadic solution
         var_sol = out_variadic_solutions.get(schema.name)
+        if is_variadic(schema.outputs[-1]) and var_sol is None:
+            warnings.warn(
+                UserWarning(
+                    f"Operator {schema.name} has a variadic output but no solution was provided. "
+                    f"An extra attribute {schema.outputs[-1].name}_count will be generated."
+                )
+            )
         # Override for attribute type
         attr_over = {
             name: target
