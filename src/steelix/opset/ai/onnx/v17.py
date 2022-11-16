@@ -6997,8 +6997,8 @@ def identity(
 def if_(
     cond: Arrow,
     *,
-    else_branch: Callable[..., Iterable[Arrow]],
-    then_branch: Callable[..., Iterable[Arrow]],
+    else_branch: Callable[[], Iterable[Arrow]],
+    then_branch: Callable[[], Iterable[Arrow]],
 ) -> Sequence[Arrow]:
     r"""
     If conditional

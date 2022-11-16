@@ -489,6 +489,8 @@ if __name__ == "__main__":
         attr_type_overrides=[
             (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype")),
             ("Cast", "to", ("typing.Type[numpy.generic]", "AttrDtype")),
+            ("If", "then_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
+            ("If", "else_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
         ],
     )
     main(
