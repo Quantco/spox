@@ -12,7 +12,7 @@ endif %}{% endfor %}
     endif %}{%
 if is_variadic(schema.outputs[-1]) and not out_variadic_solution
     %}{{ schema.outputs[-1].name }}_count: int, {% endif %}
-    {% for attr in get_attributes(schema, attr_type_overrides) %}
+    {% for attr in get_attributes(schema, attr_type_overrides, subgraph_solutions) %}
     {{ attr.name }}: {{ attr.constructor_type_hint }}{% if attr.constructor_default %} = {{ attr.constructor_default }}{% endif %},
 {% endfor %}
 ) -> {{ get_constructor_return(schema) }}:

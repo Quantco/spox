@@ -1,9 +1,9 @@
 class _{{ schema.name }}(StandardNode):
     @dataclass
     class Attributes:
-    {% if not get_attributes(schema, attr_type_overrides) %}
+    {% if not get_attributes(schema, attr_type_overrides, subgraph_solutions) %}
         pass
-    {% else %}{% for attr in get_attributes(schema, attr_type_overrides) %}
+    {% else %}{% for attr in get_attributes(schema, attr_type_overrides, subgraph_solutions) %}
         {{ attr.name }}: {{ attr.member_type }}
     {% endfor %}
     {% endif %}  

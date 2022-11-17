@@ -34,7 +34,8 @@ from steelix._graph import Graph, subgraph  # noqa: F401
 from steelix._internal_op import intro  # noqa: F401
 from steelix._node import OpType  # noqa: F401
 from steelix._standard import InferenceError, StandardNode  # noqa: F401
-from steelix._type_system import Tensor, Type, type_match  # noqa: F401
+from steelix._type_system import Sequence as SteelixSequence  # noqa: F401
+from steelix._type_system import Tensor, Type, type_match
 
 
 class _ArrayFeatureExtractor(StandardNode):

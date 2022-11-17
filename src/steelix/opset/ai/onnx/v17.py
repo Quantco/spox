@@ -34,7 +34,8 @@ from steelix._graph import Graph, subgraph  # noqa: F401
 from steelix._internal_op import intro  # noqa: F401
 from steelix._node import OpType  # noqa: F401
 from steelix._standard import InferenceError, StandardNode  # noqa: F401
-from steelix._type_system import Tensor, Type, type_match  # noqa: F401
+from steelix._type_system import Sequence as SteelixSequence  # noqa: F401
+from steelix._type_system import Tensor, Type, type_match
 
 
 class _Abs(StandardNode):
@@ -6995,8 +6996,8 @@ def identity(
 def if_(
     cond: Arrow,
     *,
-    else_branch: Graph,
-    then_branch: Graph,
+    else_branch: Callable[[], Iterable[Arrow]],
+    then_branch: Callable[[], Iterable[Arrow]],
 ) -> Sequence[Arrow]:
     r"""
     If conditional
@@ -7027,15 +7028,21 @@ def if_(
      - B: `tensor(bool)`
      - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    _else_branch_subgraph: Graph = subgraph((), else_branch)
+    _then_branch_subgraph: Graph = subgraph((), then_branch)
     return _If(
         _If.Attributes(
-            else_branch=None if else_branch is None else AttrGraph(else_branch),
-            then_branch=None if then_branch is None else AttrGraph(then_branch),
+            else_branch=None
+            if else_branch is None
+            else AttrGraph(_else_branch_subgraph),
+            then_branch=None
+            if then_branch is None
+            else AttrGraph(_then_branch_subgraph),
         ),
         _If.Inputs(
             cond=cond,
         ),
-        out_variadic=len(else_branch.requested_results),
+        out_variadic=len(_else_branch_subgraph.requested_results),
     ).outputs.outputs
 
 
@@ -7715,7 +7722,7 @@ def loop(
     cond: Optional[Arrow] = None,
     v_initial: Sequence[Arrow] = (),
     *,
-    body: Graph,
+    body: Callable[..., Iterable[Arrow]],
 ) -> Sequence[Arrow]:
     r"""
     Generic Looping construct. This loop has multiple termination conditions:
@@ -7861,16 +7868,21 @@ def loop(
      - B: `tensor(bool)`
      - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    _body_subgraph: Graph = subgraph(
+        typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
+        + [arrow.unwrap_type() for arrow in v_initial],
+        body,
+    )
     return _Loop(
         _Loop.Attributes(
-            body=None if body is None else AttrGraph(body),
+            body=None if body is None else AttrGraph(_body_subgraph),
         ),
         _Loop.Inputs(
             M=M,
             cond=cond,
             v_initial=v_initial,
         ),
-        out_variadic=len(body.requested_results) - 1,
+        out_variadic=len(_body_subgraph.requested_results) - 1,
     ).outputs.v_final_and_scan_outputs
 
 
@@ -11023,8 +11035,7 @@ def stft(
 def scan(
     initial_state_and_scan_inputs: Sequence[Arrow],
     *,
-    final_state_and_scan_outputs_count: int,
-    body: Graph,
+    body: Callable[..., Iterable[Arrow]],
     num_scan_inputs: int,
     scan_input_axes: Optional[Iterable[int]] = None,
     scan_input_directions: Optional[Iterable[int]] = None,
@@ -11171,9 +11182,25 @@ def scan(
     Type constraints:
      - V: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    _body_subgraph: Graph = subgraph(
+        [
+            Tensor(
+                arrow.unwrap_tensor().dtype,
+                (lambda x: x[1:] if x is not None else None)(
+                    arrow.unwrap_tensor().shape
+                ),
+            )
+            for arrow in initial_state_and_scan_inputs[:num_scan_inputs]
+        ]
+        + [
+            Tensor(arrow.unwrap_tensor().dtype)
+            for arrow in initial_state_and_scan_inputs[num_scan_inputs:]
+        ],
+        body,
+    )
     return _Scan(
         _Scan.Attributes(
-            body=None if body is None else AttrGraph(body),
+            body=None if body is None else AttrGraph(_body_subgraph),
             num_scan_inputs=None
             if num_scan_inputs is None
             else AttrInt64(num_scan_inputs),
@@ -11193,7 +11220,7 @@ def scan(
         _Scan.Inputs(
             initial_state_and_scan_inputs=initial_state_and_scan_inputs,
         ),
-        out_variadic=final_state_and_scan_outputs_count,
+        out_variadic=len(_body_subgraph.requested_results),
     ).outputs.final_state_and_scan_outputs
 
 
@@ -11809,8 +11836,7 @@ def sequence_map(
     input_sequence: Arrow,
     additional_inputs: Sequence[Arrow] = (),
     *,
-    out_sequence_count: int,
-    body: Graph,
+    body: Callable[..., Iterable[Arrow]],
 ) -> Sequence[Arrow]:
     r"""
     Applies a sub-graph to each sample in the input sequence(s).
@@ -11851,15 +11877,23 @@ def sequence_map(
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    _body_subgraph: Graph = subgraph(
+        [typing_cast(SteelixSequence, input_sequence.unwrap_type()).elem_type]
+        + [
+            typing_cast(SteelixSequence, arrow.unwrap_type()).elem_type
+            for arrow in additional_inputs
+        ],
+        body,
+    )
     return _SequenceMap(
         _SequenceMap.Attributes(
-            body=None if body is None else AttrGraph(body),
+            body=None if body is None else AttrGraph(_body_subgraph),
         ),
         _SequenceMap.Inputs(
             input_sequence=input_sequence,
             additional_inputs=additional_inputs,
         ),
-        out_variadic=out_sequence_count,
+        out_variadic=len(_body_subgraph.requested_results),
     ).outputs.out_sequence
 
 
@@ -13578,76 +13612,6 @@ def const(
         else:
             raise TypeError(f"Bad container values for requested Constant: {elems}")
     raise TypeError(f"Bad value for requested Constant: {value}")
-
-
-def xloop(
-    max_iter: Optional[Arrow] = None,
-    start_loop: Optional[Arrow] = None,
-    initial: Sequence[Arrow] = (),
-    *,
-    fun: Callable[..., Iterable[Arrow]],
-) -> Sequence[Arrow]:
-    """
-    Simplified constructor for the Loop operator.
-
-    Instead of a Graph this constructor takes ``fun``, which should
-    take 2+N Arrow arguments and 1+N+K Arrow results.
-
-    - The first two arguments are 1-vectors for (int64) iteration and (boolean) stop condition.
-    - The first result is a 1-vector (boolean) for the next stop condition.
-    - N: *carried* values. Carried from previous iteration (or initial). The last carried outputs are stored in the first element of the returned tuple.
-    - K: *scanned* values. All such outputs must be Tensors, and they are concatenated. They are stored in the second element of the returned tuple.
-
-    Note that ``fun`` may use values from the outer scope,
-    but to make sure they defined in the outer scope (instead of inlined in the inner scope) they
-    should be marked with ``intro(*outer, loop(...))``.
-
-    For the details of Loop behaviour, see the docstring for loop.
-    """
-    if max_iter is not None:
-        max_iter = reshape(max_iter, const([1]))
-    if start_loop is not None:
-        start_loop = reshape(start_loop, const([1]))
-    return loop(
-        max_iter,
-        start_loop,
-        initial,
-        body=subgraph(
-            typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
-            + [arrow.unwrap_type() for arrow in initial],
-            fun,
-        ),
-    )
-
-
-def xif(
-    cond: Arrow,
-    /,
-    *,
-    else_branch: Iterable[Arrow],
-    then_branch: Iterable[Arrow],
-    to_outer_scope: bool = False,
-) -> Sequence[Arrow]:
-    """
-    Simplified constructor for the If operator.
-
-    The return values are equal to those of ``else_branch`` or ``then_branch``, depending on the value of the boolean ``cond`` at runtime.
-
-    Results for both branches should have the same number of elements and their types should be respectively compatible.
-
-    Note that elements of ``else_branch`` and ``then_branch`` may use values from the outer scope,
-    but to make sure they defined in the outer scope (instead of inlined in the inner scope) they
-    should be marked with ``intro(*outer, loop(...))``.
-
-    For the details of If behaviour, see the docstring for if_.
-    """
-    if to_outer_scope:
-        cond = intro(*else_branch, *then_branch, cond)
-    return if_(
-        cond,
-        else_branch=subgraph((), lambda: else_branch),
-        then_branch=subgraph((), lambda: then_branch),
-    )
 
 
 def promote(
