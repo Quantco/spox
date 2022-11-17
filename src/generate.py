@@ -466,7 +466,7 @@ if __name__ == "__main__":
             "If": "len(_else_branch_subgraph.requested_results)",
             "Loop": "len(_body_subgraph.requested_results) - 1",
             "Scan": "len(_body_subgraph.requested_results)",
-            "SequenceMap": "1 + len(additional_inputs)",
+            "SequenceMap": "len(_body_subgraph.requested_results)",
         },
         subgraphs_solutions={
             "If": {"else_branch": "()", "then_branch": "()"},

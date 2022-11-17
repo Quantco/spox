@@ -11894,7 +11894,7 @@ def sequence_map(
             input_sequence=input_sequence,
             additional_inputs=additional_inputs,
         ),
-        out_variadic=1 + len(additional_inputs),
+        out_variadic=len(_body_subgraph.requested_results),
     ).outputs.out_sequence
 
 

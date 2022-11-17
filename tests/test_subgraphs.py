@@ -293,7 +293,7 @@ def test_sequence_map_for_zip_mul(op, onnx_helper):
     xs, ys = arguments(
         xs=Sequence(Tensor(numpy.int32)), ys=Sequence(Tensor(numpy.int32))
     )
-    zs, _xs = op.sequence_map(xs, [ys], body=lambda x, y: (op.mul(x, y), x))
+    (zs,) = op.sequence_map(xs, [ys], body=lambda x, y: (op.mul(x, y),))
     onnx_helper.assert_close(
         onnx_helper.run(
             results(zs=zs),
