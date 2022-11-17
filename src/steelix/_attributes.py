@@ -1,7 +1,8 @@
 from abc import ABC
-from typing import Any, ClassVar, Generic, Iterable, Tuple, Type, TypeVar, Union
+from typing import Any, ClassVar, Generic, Iterable, Tuple, TypeVar, Union
 
 import numpy as np
+import numpy.typing as npt
 from onnx import AttributeProto
 from onnx.helper import (
     make_attribute,
@@ -119,17 +120,13 @@ class AttrType(Attr[_type_system.Type]):
         return make_attribute(key, type_proto)
 
 
-class AttrDtype(Attr[Union[np.dtype, Type[np.generic]]]):
+class AttrDtype(Attr[npt.DTypeLike]):
     """Special attribute for specifying data types as ``numpy.dtype``s, for example in ``Cast``."""
 
     _attribute_proto_type_int = AttributeProto.INT
 
     def _validate(self):
-        val = self.value
-        if not (issubclass(val, np.generic) or isinstance(val, np.dtype)):  # type: ignore
-            raise TypeError(
-                f"Expected value of type `np.dtype` or `np.generic` found `{type(self.value)}`"
-            )
+        dtype_to_tensor_type(self.value)
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         return make_attribute(key, dtype_to_tensor_type(self.value))

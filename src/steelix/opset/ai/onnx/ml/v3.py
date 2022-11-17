@@ -57,9 +57,10 @@ class _ArrayFeatureExtractor(StandardNode):
         assert yt.shape is not None  # already checked with fully_typed
         if len(xt.shape) < 1:
             raise InferenceError("Expected rank >= 1")
-        if xt.shape[:-1] != yt.shape:
-            raise InferenceError("Mismatched shapes for entries & indices.")
-        return {"Z": Tensor(xt.dtype, yt.shape)}
+        if len(yt.shape) != 1:
+            raise InferenceError("Input `Y` must be of rank 1.")
+        shape = tuple(list(xt.shape[:-1]) + [yt.shape[-1]])  # type: ignore
+        return {"Z": Tensor(xt.dtype, shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
 
@@ -522,7 +523,6 @@ class _TreeEnsembleClassifier(StandardNode):
             assert shape is not None  # already checked with fully_typed
             if len(shape) != 2:
                 raise InferenceError("Expected input to be a matrix.")
-            assert shape is not None
             n = shape[0]
         else:
             n = None
