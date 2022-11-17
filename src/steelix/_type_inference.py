@@ -15,8 +15,8 @@ from typing import Any, Callable, Iterable, List, Optional, Set, Tuple, TypeVar,
 import onnx.shape_inference
 from typing_extensions import Annotated
 
-from .shape import Shape
-from .type_system import Tensor, Type
+from ._shape import Shape
+from ._type_system import Tensor, Type
 
 InferenceError = onnx.shape_inference.InferenceError
 ValidationError = onnx.checker.ValidationError
@@ -64,7 +64,7 @@ def get_hint(annotation, expect_origin: Optional[Iterable[Any]] = None):
 def weak_type_eq(first: Type, second: Type) -> bool:
     """Checks if types are equivalent, but for Tensors only element types are compared."""
     if isinstance(first, Tensor) and isinstance(second, Tensor):
-        return first.elem_type == second.elem_type
+        return first.dtype == second.dtype
     return first == second
 
 
@@ -99,18 +99,20 @@ def _resolve_generic(
                     f"expected broadcast targets to be Tensors, found {name} of {in_type}."
                 )
             tensors.append((name, in_type))
-        init_name, init_elem_type = tensors[0][0], tensors[0][1].elem_type
+        init_name, init_dtype = tensors[0][0], tensors[0][1].dtype
         for name, tensor in tensors:
-            if init_elem_type != tensor.elem_type:
+            if init_dtype != tensor.dtype:
                 raise InferenceError(
                     f"Invalid types in operator {op_name}, generic {in_var} - "
                     f"broadcast-mismatched element types "
-                    f"{init_name} of {init_elem_type} != {name} of {tensor.elem_type}."
+                    f"{init_name} of {init_dtype} != {name} of {tensor.dtype}."
                 )
         shape = functools.reduce(
-            Shape.broadcast, (tensor.shape for _, tensor in tensors)
+            # mypy gets confused by broadcast accepting a union.
+            Shape.broadcast,  # type: ignore
+            (tensor.shape for _, tensor in tensors),
         )
-        return Tensor(init_elem_type, shape)
+        return Tensor(init_dtype, shape)
     init_name, init_type = types[0]
     for name, in_type in types:
         if not weak_type_eq(init_type, in_type):
@@ -133,7 +135,7 @@ def _warn_unknown_types(
         )
         return True
     try:
-        value_type.assert_concrete()
+        value_type._assert_concrete()
     except Exception as e:
         warnings.warn(
             InferenceWarning(

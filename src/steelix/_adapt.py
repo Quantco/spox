@@ -5,12 +5,12 @@ import numpy
 import onnx
 import onnx.version_converter
 
+from ._arrow import Arrow
+from ._internal_op import _Embedded, _InternalNode
+from ._node import Node
+from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._utils import from_array
-from .arrow import Arrow
-from .internal_op import _Embedded, _InternalNode
-from .node import Node
-from .schemas import SCHEMAS
 
 
 def adapt_node(
@@ -25,23 +25,23 @@ def adapt_node(
 
     try:
         input_info = [
-            arrow.unwrap_type().to_onnx_value_info(
+            arrow.unwrap_type()._to_onnx_value_info(
                 arrow_names[arrow], _traceback_name=f"adapt-input {key}"
             )
             for key, arrow in node.inputs.as_dict().items()
             if arrow
         ]
         output_info = [
-            arrow.unwrap_type().to_onnx_value_info(
+            arrow.unwrap_type()._to_onnx_value_info(
                 arrow_names[arrow], _traceback_name=f"adapt-output {key}"
             )
             for key, arrow in node.outputs.as_dict().items()
             if arrow
         ]
         initializers = [
-            from_array(arrow.value, name)
+            from_array(arrow._value, name)
             for name, arrow in node.inputs.as_dict().items()
-            if isinstance(arrow.value, numpy.ndarray)
+            if isinstance(arrow._value, numpy.ndarray)
         ]
     except ValueError:
         return None

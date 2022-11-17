@@ -3,8 +3,8 @@ from typing import List
 import numpy
 import pytest
 
-from steelix.shape import Shape
-from steelix.type_system import Tensor, Type
+from steelix._shape import Shape
+from steelix._type_system import Tensor, Type
 
 
 @pytest.fixture(

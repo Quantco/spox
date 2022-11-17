@@ -27,7 +27,7 @@ def xloop(
     if start_loop is not None:
         start_loop = reshape(start_loop, const([1]))
     return loop(max_iter, start_loop, initial, body=subgraph(
-        typing_cast(List[Type], [Tensor(numpy.int64, (1,)), Tensor(numpy.bool_, (1,))])
+        typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
         + [arrow.unwrap_type() for arrow in initial],
         fun
     ))

@@ -5,17 +5,17 @@ They behave like a normal Node, but their inference, building and translation be
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Set, Tuple
 
 import onnx
 
+from ._arrow import Arrow
+from ._arrowfields import ArrowFields, NoArrows
 from ._attributes import AttrString, AttrTensor, AttrType
+from ._node import Node, OpType
 from ._scope import Scope
-from .arrow import Arrow
-from .arrowfields import ArrowFields, NoArrows
-from .node import Node, OpType
-from .shape import Shape, SimpleShape
-from .type_system import Tensor, Type
+from ._shape import SimpleShape
+from ._type_system import Tensor, Type
 
 
 class _InternalNode(Node, ABC):
@@ -135,14 +135,14 @@ class _Embedded(_InternalNode):
     def infer_output_types(self) -> Dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
         for i, arrow in zip(self.graph.input, self.inputs.inputs):
-            if arrow.type is not None and not (arrow.type <= Type.from_onnx(i.type)):
+            if arrow.type is not None and not (arrow.type <= Type._from_onnx(i.type)):
                 raise TypeError(
                     f"Embedded model input {i.name} type {arrow.type} "
-                    f"does not match expected {Type.from_onnx(i.type)}."
+                    f"does not match expected {Type._from_onnx(i.type)}."
                 )
         # If we do, take the types as declared in the model
         return {
-            f"outputs_{k}": Type.from_onnx(o.type)
+            f"outputs_{k}": Type._from_onnx(o.type)
             for k, o in enumerate(self.graph.output)
         }
 
@@ -241,9 +241,9 @@ class _Introduce(_InternalNode):
 
     @property
     def opset_req(self) -> Set[Tuple[str, int]]:
-        from . import config
+        from ._config import get_default_opset
 
-        return {("", config.get_default_opset()._OPERATORS["Identity"].op_type.version)}
+        return {("", get_default_opset()._OPERATORS["Identity"].op_type.version)}
 
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
@@ -319,7 +319,7 @@ def unsafe_cast(x: Arrow, typ: Type) -> Arrow:
     return x
 
 
-def unsafe_reshape(x: Arrow, shape: Union[Shape, SimpleShape]) -> Arrow:
+def unsafe_reshape(x: Arrow, shape: SimpleShape) -> Arrow:
     """
     Creates a new arrow with the shape forcefully set to ``shape`` (like an unsafe cast).
 
@@ -340,4 +340,4 @@ def unsafe_reshape(x: Arrow, shape: Union[Shape, SimpleShape]) -> Arrow:
     Arrow
         Arrow with the same Tensor element type, but different shape.
     """
-    return unsafe_cast(x, Tensor(x.unwrap_tensor().elem_type, shape))
+    return unsafe_cast(x, Tensor(x.unwrap_tensor().dtype, shape))

@@ -16,12 +16,12 @@ from typing import (
 import numpy
 import onnx
 
-from . import function
+from . import _function
+from ._arrow import Arrow, _nil
+from ._internal_op import Argument, intros
+from ._node import Node
 from ._scope import Scope
 from ._traverse import iterative_dfs
-from .arrow import Arrow, _nil
-from .internal_op import Argument, intros
-from .node import Node
 
 if TYPE_CHECKING:
     from .graph import Graph
@@ -70,7 +70,7 @@ class BuildResult:
     arguments: Tuple[Arrow, ...]
     results: Tuple[Arrow, ...]
     opset_req: Set[Tuple[str, int]]
-    functions: Tuple["function.Function", ...]
+    functions: Tuple["_function.Function", ...]
     initializers: Dict[Arrow, numpy.ndarray]
 
 
@@ -414,7 +414,7 @@ class Builder:
         nodes: Dict[Node, Tuple[onnx.NodeProto, ...]] = {}
         # A bunch of model metadata we're collecting
         opset_req: Set[Tuple[str, int]] = set()
-        functions: List[function.Function] = []
+        functions: List[_function.Function] = []
         initializers: Dict[Arrow, numpy.ndarray] = {}
 
         # Add arguments to our scope

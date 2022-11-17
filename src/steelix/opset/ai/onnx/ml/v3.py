@@ -14,9 +14,10 @@ from typing import (  # noqa: F401
 )
 from typing import cast as typing_cast  # noqa: F401
 
-import numpy  # noqa: F401
-from numpy import ndarray  # noqa: F401
+import numpy as np  # noqa: F401
 
+from steelix._arrow import Arrow, _nil, result_type  # noqa: F401
+from steelix._arrowfields import ArrowFields, NoArrows  # noqa: F401
 from steelix._attributes import (
     AttrDtype,
     AttrFloat32,
@@ -29,13 +30,11 @@ from steelix._attributes import (
     AttrTensor,
     AttrType,
 )
-from steelix.arrow import Arrow, _nil, result_type  # noqa: F401
-from steelix.arrowfields import ArrowFields, NoArrows  # noqa: F401
-from steelix.graph import Graph, subgraph  # noqa: F401
-from steelix.internal_op import intro  # noqa: F401
-from steelix.node import OpType  # noqa: F401
-from steelix.standard import InferenceError, StandardNode  # noqa: F401
-from steelix.type_system import Tensor, Type, type_match  # noqa: F401
+from steelix._graph import Graph, subgraph  # noqa: F401
+from steelix._internal_op import intro  # noqa: F401
+from steelix._node import OpType  # noqa: F401
+from steelix._standard import InferenceError, StandardNode  # noqa: F401
+from steelix._type_system import Tensor, Type, type_match  # noqa: F401
 
 
 class _ArrayFeatureExtractor(StandardNode):
@@ -54,12 +53,14 @@ class _ArrayFeatureExtractor(StandardNode):
         if not self.inputs.fully_typed:
             return {}
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
-        if xt.shape.rank < 1:
+        assert xt.shape is not None  # already checked with fully_typed
+        assert yt.shape is not None  # already checked with fully_typed
+        if len(xt.shape) < 1:
             raise InferenceError("Expected rank >= 1")
-        if yt.shape.rank != 1:
+        if len(yt.shape) != 1:
             raise InferenceError("Input `Y` must be of rank 1.")
-        shape = tuple(list(xt.shape.to_simple()[:-1]) + [yt.shape.to_simple()[-1]])  # type: ignore
-        return {"Z": Tensor(xt.elem_type, shape)}
+        shape = tuple(list(xt.shape[:-1]) + [yt.shape[-1]])  # type: ignore
+        return {"Z": Tensor(xt.dtype, shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
 
@@ -132,7 +133,7 @@ class _CategoryMapper(StandardNode):
         if len(cats1.value) != len(cats2.value):
             raise InferenceError("Categories lists have mismatched lengths.")
         t = self.inputs.X.unwrap_tensor()
-        (elem_type,) = {numpy.int64, numpy.str_} - {t.elem_type}  # type: ignore
+        (elem_type,) = {np.int64, np.str_} - {t.dtype.type}  # type: ignore
         return {"Y": Tensor(elem_type, t.shape)}
 
     op_type = OpType("CategoryMapper", "ai.onnx.ml", 1)
@@ -199,17 +200,17 @@ class _Imputer(StandardNode):
         t = self.inputs.X.unwrap_tensor()
         # We verify if the attributes are set correctly and matching the input elem type
         cases = {
-            numpy.int64: (
+            np.int64: (
                 self.attrs.imputed_value_int64s,
                 self.attrs.replaced_value_int64,
             ),
-            numpy.float32: (
+            np.float32: (
                 self.attrs.imputed_value_floats,
                 self.attrs.replaced_value_float,
             ),
         }
         for key, (imp, rep) in cases.items():
-            if t.elem_type is key:
+            if t.dtype.type is key:
                 if not all(
                     imp1 is None for key1, (imp1, rep1) in cases.items() if key != key1
                 ):
@@ -220,7 +221,7 @@ class _Imputer(StandardNode):
         if imp is None:
             raise InferenceError("Value list for imputation is required.")
         # If the number of features is known (last row, we can check this here)
-        sim = t.shape.to_simple()
+        sim = t.shape
         last = sim[-1] if sim else 1
         if isinstance(last, int) and len(imp.value) not in {1, last}:
             raise InferenceError(
@@ -302,14 +303,14 @@ class _LinearRegressor(StandardNode):
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
-        sim = self.inputs.X.unwrap_tensor().shape.to_simple()
+        sim = self.inputs.X.unwrap_tensor().shape
         assert sim is not None
         if len(sim) == 2:
-            return {"Y": Tensor(numpy.float32, sim)}
+            return {"Y": Tensor(np.float32, sim)}
         elif len(sim) == 1:
-            return {"Y": Tensor(numpy.float32, (1, sim[0]))}
+            return {"Y": Tensor(np.float32, (1, sim[0]))}
         elif len(sim) == 0:
-            return {"Y": Tensor(numpy.float32, (1, 1))}
+            return {"Y": Tensor(np.float32, (1, 1))}
         else:
             raise InferenceError("Input shape must be at most a matrix.")
 
@@ -369,8 +370,8 @@ class _OneHotEncoder(StandardNode):
             raise InferenceError(
                 "Either `cats_int64s` or `cats_strings` attributes must be set."
             )
-        shape = (*self.inputs.X.unwrap_tensor().shape.to_simple(), n_encodings)  # type: ignore
-        return {"Y": Tensor(elem_type=numpy.float32, shape=shape)}
+        shape = (*self.inputs.X.unwrap_tensor().shape, n_encodings)  # type: ignore
+        return {"Y": Tensor(dtype=np.float32, shape=shape)}
 
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)
 
@@ -453,8 +454,7 @@ class _Scaler(StandardNode):
             raise InferenceError("Scale and offset are required attributes.")
         t = self.inputs.X.unwrap_tensor()
         # If the number of features is known (last row, we can check this here)
-        sim = t.shape.to_simple()
-        last = sim[-1] if sim else 1
+        last = t.shape[-1] if t.shape else 1
         if isinstance(last, int) and len(sc.value) not in {1, last}:
             raise InferenceError(
                 f"Mismatched expected ({len(sc.value)}) and actual ({last}) feature count for scale."
@@ -463,7 +463,7 @@ class _Scaler(StandardNode):
             raise InferenceError(
                 f"Mismatched expected ({len(off.value)}) and actual ({last}) feature count for offset."
             )
-        return {"Y": Tensor(numpy.float32, t.shape)}
+        return {"Y": Tensor(np.float32, t.shape)}
 
     op_type = OpType("Scaler", "ai.onnx.ml", 1)
 
@@ -511,23 +511,22 @@ class _TreeEnsembleClassifier(StandardNode):
             else None
         )
         if self.attrs.classlabels_strings is not None:
-            y_type = numpy.str_
+            y_type = np.str_
         elif self.attrs.classlabels_int64s is not None:
-            y_type = numpy.int64  # type: ignore
+            y_type = np.int64  # type: ignore
         else:
             raise InferenceError(
                 "Either string or int64 class labels should be defined"
             )
         if self.inputs.fully_typed:
             shape = self.inputs.X.unwrap_tensor().shape
-            if shape.rank != 2:
+            assert shape is not None  # already checked with fully_typed
+            if len(shape) != 2:
                 raise InferenceError("Expected input to be a matrix.")
-            sim = shape.to_simple()
-            assert sim is not None
-            n = sim[0]
+            n = shape[0]
         else:
             n = None
-        return {"Y": Tensor(y_type, (n,)), "Z": Tensor(numpy.float32, (n, e))}
+        return {"Y": Tensor(y_type, (n,)), "Z": Tensor(np.float32, (n, e))}
 
     op_type = OpType("TreeEnsembleClassifier", "ai.onnx.ml", 3)
 
@@ -570,15 +569,15 @@ class _TreeEnsembleRegressor(StandardNode):
     def infer_output_types(self) -> Dict[str, Type]:
         if self.inputs.fully_typed:
             shape = self.inputs.X.unwrap_tensor().shape
-            if shape.rank != 2:
+            assert shape is not None  # already checked with fully_typed
+            if len(shape) != 2:
                 raise InferenceError("Expected input to be a matrix.")
-            sim = shape.to_simple()
-            assert sim is not None
-            n = sim[0]
+            assert shape is not None
+            n = shape[0]
         else:
             n = None
         e = self.attrs.n_targets.value if self.attrs.n_targets is not None else None
-        return {"Y": Tensor(numpy.float32, (n, e))}
+        return {"Y": Tensor(np.float32, (n, e))}
 
     op_type = OpType("TreeEnsembleRegressor", "ai.onnx.ml", 3)
 
@@ -1658,25 +1657,25 @@ def tree_ensemble_classifier(
     X: Arrow,
     *,
     base_values: Optional[Iterable[float]] = None,
-    base_values_as_tensor: Optional[ndarray] = None,
+    base_values_as_tensor: Optional[np.ndarray] = None,
     class_ids: Optional[Iterable[int]] = None,
     class_nodeids: Optional[Iterable[int]] = None,
     class_treeids: Optional[Iterable[int]] = None,
     class_weights: Optional[Iterable[float]] = None,
-    class_weights_as_tensor: Optional[ndarray] = None,
+    class_weights_as_tensor: Optional[np.ndarray] = None,
     classlabels_int64s: Optional[Iterable[int]] = None,
     classlabels_strings: Optional[Iterable[str]] = None,
     nodes_falsenodeids: Optional[Iterable[int]] = None,
     nodes_featureids: Optional[Iterable[int]] = None,
     nodes_hitrates: Optional[Iterable[float]] = None,
-    nodes_hitrates_as_tensor: Optional[ndarray] = None,
+    nodes_hitrates_as_tensor: Optional[np.ndarray] = None,
     nodes_missing_value_tracks_true: Optional[Iterable[int]] = None,
     nodes_modes: Optional[Iterable[str]] = None,
     nodes_nodeids: Optional[Iterable[int]] = None,
     nodes_treeids: Optional[Iterable[int]] = None,
     nodes_truenodeids: Optional[Iterable[int]] = None,
     nodes_values: Optional[Iterable[float]] = None,
-    nodes_values_as_tensor: Optional[ndarray] = None,
+    nodes_values_as_tensor: Optional[np.ndarray] = None,
     post_transform: str = "NONE",
 ) -> _TreeEnsembleClassifier.Outputs:
     r"""
@@ -1855,25 +1854,25 @@ def tree_ensemble_regressor(
     *,
     aggregate_function: str = "SUM",
     base_values: Optional[Iterable[float]] = None,
-    base_values_as_tensor: Optional[ndarray] = None,
+    base_values_as_tensor: Optional[np.ndarray] = None,
     n_targets: Optional[int] = None,
     nodes_falsenodeids: Optional[Iterable[int]] = None,
     nodes_featureids: Optional[Iterable[int]] = None,
     nodes_hitrates: Optional[Iterable[float]] = None,
-    nodes_hitrates_as_tensor: Optional[ndarray] = None,
+    nodes_hitrates_as_tensor: Optional[np.ndarray] = None,
     nodes_missing_value_tracks_true: Optional[Iterable[int]] = None,
     nodes_modes: Optional[Iterable[str]] = None,
     nodes_nodeids: Optional[Iterable[int]] = None,
     nodes_treeids: Optional[Iterable[int]] = None,
     nodes_truenodeids: Optional[Iterable[int]] = None,
     nodes_values: Optional[Iterable[float]] = None,
-    nodes_values_as_tensor: Optional[ndarray] = None,
+    nodes_values_as_tensor: Optional[np.ndarray] = None,
     post_transform: str = "NONE",
     target_ids: Optional[Iterable[int]] = None,
     target_nodeids: Optional[Iterable[int]] = None,
     target_treeids: Optional[Iterable[int]] = None,
     target_weights: Optional[Iterable[float]] = None,
-    target_weights_as_tensor: Optional[ndarray] = None,
+    target_weights_as_tensor: Optional[np.ndarray] = None,
 ) -> Arrow:
     r"""
     Tree Ensemble regressor.  Returns the regressed values for each input in N.
@@ -2130,7 +2129,7 @@ _OPERATORS = {
     "ZipMap": _ZipMap,
 }
 
-CONSTRUCTORS = {
+_CONSTRUCTORS = {
     "ArrayFeatureExtractor": array_feature_extractor,
     "Binarizer": binarizer,
     "CastMap": cast_map,
@@ -2150,3 +2149,5 @@ CONSTRUCTORS = {
     "TreeEnsembleRegressor": tree_ensemble_regressor,
     "ZipMap": zip_map,
 }
+
+__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()]

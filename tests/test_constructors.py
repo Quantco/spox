@@ -1,7 +1,7 @@
 import numpy
 
-from steelix.graph import arguments, results
-from steelix.type_system import Tensor
+from steelix._graph import arguments, results
+from steelix._type_system import Tensor
 
 
 def test_explicit_unspecified_optional(op, onnx_helper):

@@ -1,9 +1,11 @@
 if not self.inputs.fully_typed:
     return {}
 xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
-if xt.shape.rank < 1:
+assert xt.shape is not None  # already checked with fully_typed
+assert yt.shape is not None  # already checked with fully_typed
+if len(xt.shape) < 1:
     raise InferenceError("Expected rank >= 1")
-if yt.shape.rank != 1:
+if len(yt.shape) != 1:
     raise InferenceError("Input `Y` must be of rank 1.")
-shape = tuple(list(xt.shape.to_simple()[:-1]) + [yt.shape.to_simple()[-1]])  # type: ignore
-return {"Z": Tensor(xt.elem_type, shape)}
+shape = tuple(list(xt.shape[:-1]) + [yt.shape[-1]])  # type: ignore
+return {"Z": Tensor(xt.dtype, shape)}

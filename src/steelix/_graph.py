@@ -9,14 +9,14 @@ import onnx.shape_inference
 
 from . import _build
 from ._adapt import adapt_best_effort
+from ._arrow import Arrow
+from ._arrowfields import NoArrows
 from ._attributes import AttrString, AttrTensor, AttrType
+from ._internal_op import Argument, _Initializer
+from ._node import Node
+from ._schemas import max_opset_policy
+from ._type_system import Tensor, Type
 from ._utils import from_array
-from .arrow import Arrow
-from .arrowfields import NoArrows
-from .internal_op import Argument, _Initializer
-from .node import Node
-from .schemas import max_opset_policy
-from .type_system import Tensor, Type
 
 
 def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, Arrow]:
@@ -42,7 +42,7 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
                 NoArrows(),
             ).outputs.arg
         elif isinstance(info, numpy.ndarray):
-            ty = Tensor.like_array(info)
+            ty = Tensor(info.dtype, info.shape)
             result[name] = Argument(
                 Argument.Attributes(
                     name=attr_name, type=AttrType(ty), default=AttrTensor(info)
@@ -98,7 +98,7 @@ def initializer(arr: numpy.ndarray) -> Arrow:
     -------
         Arrow which is always equal to the respective value provided by `arr`.
     """
-    ty = Tensor.like_array(arr)
+    ty = Tensor(arr.dtype, arr.shape)
     return _Initializer(
         _Initializer.Attributes(type=AttrType(ty), default=AttrTensor(arr)),
         NoArrows(),
@@ -314,13 +314,13 @@ class Graph:
             raise ValueError("Attempt to build graph without results.")
 
         argument_info = [
-            arrow.unwrap_type().to_onnx_value_info(
+            arrow.unwrap_type()._to_onnx_value_info(
                 name, concrete=concrete, _traceback_name=f"argument {name} ({arrow})"
             )
             for name, arrow in self.get_arguments().items()
         ]
         result_info = [
-            arrow.unwrap_type().to_onnx_value_info(
+            arrow.unwrap_type()._to_onnx_value_info(
                 name, concrete=concrete, _traceback_name=f"result {name} ({arrow})"
             )
             for name, arrow in self.get_results().items()

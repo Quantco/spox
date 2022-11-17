@@ -2,24 +2,26 @@ import numpy
 import onnxruntime.capi.onnxruntime_pybind11_state
 import pytest
 
-import steelix
+from steelix import Arrow, _arrow, _standard, _type_system
+from steelix._graph import arguments, results
+from steelix._shape import Shape
 
 
 @pytest.fixture(scope="function")
 def enable_onnx_value_propagation():
     """Fixture for enabling ONNX Runtime value propagation for tests that use it."""
-    prev = steelix.standard._USE_ONNXRUNTIME_VALUE_PROP
-    steelix.standard._USE_ONNXRUNTIME_VALUE_PROP = True
+    prev = _standard._USE_ONNXRUNTIME_VALUE_PROP
+    _standard._USE_ONNXRUNTIME_VALUE_PROP = True
     yield
-    steelix.standard._USE_ONNXRUNTIME_VALUE_PROP = prev
+    _standard._USE_ONNXRUNTIME_VALUE_PROP = prev
 
 
 def dummy_arrow(typ=None, value=None):
     """Function for creating an arrow without an operator but with a type and value."""
-    return steelix.Arrow(None, typ, value)  # type: ignore
+    return Arrow(None, typ, value)  # type: ignore
 
 
-def assert_equal_value(arrow, expected):
+def assert_equal_value(arr, expected):
     """
     Convenience function for comparing an arrow's propagated value and an expected one.
     Expected Types vs value types:
@@ -28,32 +30,30 @@ def assert_equal_value(arrow, expected):
     - Optional - steelix.arrow.Nothing or the underlying type
     - Sequence - list of underlying type
     """
-    assert arrow.value is not None, "arrow.value expected to be known"
-    if isinstance(arrow.type, steelix.Tensor):
+    assert arr._value is not None, "arrow.value expected to be known"
+    if isinstance(arr.type, _type_system.Tensor):
         expected = numpy.array(expected)
-        assert arrow.type.elem_type == expected.dtype.type, "element type must match"
-        assert (
-            steelix.shape.Shape.from_simple(expected.shape) <= arrow.type.shape
-        ), "shape must match"
-        numpy.testing.assert_allclose(arrow.value, expected)
-    elif isinstance(arrow.type, steelix.Optional):
+        assert arr.type.dtype.type == expected.dtype.type, "element type must match"
+        assert Shape.from_simple(expected.shape) <= arr.type._shape, "shape must match"
+        numpy.testing.assert_allclose(arr._value, expected)
+    elif isinstance(arr.type, _type_system.Optional):
         if expected is None:
             assert (
-                arrow.value is steelix.arrow.Nothing
+                arr._value is _arrow.Nothing
             ), "value must be Nothing when optional is empty"
         else:
-            assert_equal_value(dummy_arrow(arrow.type.elem_type, arrow.value), expected)
-    elif isinstance(arrow.type, steelix.Sequence):
-        assert isinstance(arrow.value, list), "value must be list when it is a Sequence"
-        assert len(arrow.value) == len(expected), "sequence length must match"
-        for a, b in zip(arrow.value, expected):
-            assert_equal_value(dummy_arrow(arrow.type.elem_type, a), b)
+            assert_equal_value(dummy_arrow(arr.type.elem_type, arr._value), expected)
+    elif isinstance(arr.type, _type_system.Sequence):
+        assert isinstance(arr._value, list), "value must be list when it is a Sequence"
+        assert len(arr._value) == len(expected), "sequence length must match"
+        for a, b in zip(arr._value, expected):
+            assert_equal_value(dummy_arrow(arr.type.elem_type, a), b)
     else:
-        raise NotImplementedError(f"Datatype {arrow.type}")
+        raise NotImplementedError(f"Datatype {arr.type}")
 
 
 def test_sanity_no_prop(enable_onnx_value_propagation, op):
-    (x,) = steelix.arguments(x=steelix.Tensor(numpy.int64, ()))
+    (x,) = arguments(x=_type_system.Tensor(numpy.int64, ()))
     op.add(x, x)
 
 
@@ -90,12 +90,14 @@ def test_optional(enable_onnx_value_propagation, op):
 
 
 def test_empty_optional(enable_onnx_value_propagation, op):
-    assert_equal_value(op.optional(type=steelix.Tensor(numpy.float32, ())), None)
+    assert_equal_value(op.optional(type=_type_system.Tensor(numpy.float32, ())), None)
 
 
 def test_empty_optional_has_no_element(enable_onnx_value_propagation, op):
     assert_equal_value(
-        op.optional_has_element(op.optional(type=steelix.Tensor(numpy.float32, ()))),
+        op.optional_has_element(
+            op.optional(type=_type_system.Tensor(numpy.float32, ()))
+        ),
         False,
     )
 
@@ -112,14 +114,13 @@ def test_sequence_append(enable_onnx_value_propagation, op):
 
 
 def test_with_reconstruct(enable_onnx_value_propagation, op):
-    a, b = steelix.arguments(
-        a=steelix.Tensor(numpy.int64, ()), b=steelix.Tensor(numpy.int64, ())
+    a, b = arguments(
+        a=_type_system.Tensor(numpy.int64, ()),
+        b=_type_system.Tensor(numpy.int64, ()),
     )
     c = op.add(a, b)
     graph = (
-        steelix.results(c=c)
-        .with_arguments(a, b)
-        ._with_constructor(lambda x, y: [op.add(x, y)])
+        results(c=c).with_arguments(a, b)._with_constructor(lambda x, y: [op.add(x, y)])
     )
     assert_equal_value(
         graph._reconstruct(op.const(2), op.const(3)).requested_results["c"], 5

@@ -14,9 +14,10 @@ from typing import (  # noqa: F401
 )
 from typing import cast as typing_cast  # noqa: F401
 
-import numpy  # noqa: F401
-from numpy import ndarray  # noqa: F401
+import numpy as np  # noqa: F401
 
+from steelix._arrow import Arrow, _nil, result_type  # noqa: F401
+from steelix._arrowfields import ArrowFields, NoArrows  # noqa: F401
 from steelix._attributes import (
     AttrDtype,
     AttrFloat32,
@@ -29,13 +30,11 @@ from steelix._attributes import (
     AttrTensor,
     AttrType,
 )
-from steelix.arrow import Arrow, _nil, result_type  # noqa: F401
-from steelix.arrowfields import ArrowFields, NoArrows  # noqa: F401
-from steelix.graph import Graph, subgraph  # noqa: F401
-from steelix.internal_op import intro  # noqa: F401
-from steelix.node import OpType  # noqa: F401
-from steelix.standard import InferenceError, StandardNode  # noqa: F401
-from steelix.type_system import Tensor, Type, type_match  # noqa: F401
+from steelix._graph import Graph, subgraph  # noqa: F401
+from steelix._internal_op import intro  # noqa: F401
+from steelix._node import OpType  # noqa: F401
+from steelix._standard import InferenceError, StandardNode  # noqa: F401
+from steelix._type_system import Tensor, Type, type_match  # noqa: F401
 
 
 class _Abs(StandardNode):
@@ -520,17 +519,17 @@ class _Constant(StandardNode):
         if key == "value":
             value = raw
         elif key == "value_float":
-            value = numpy.array(raw, dtype=numpy.float32)
+            value = np.array(raw, dtype=np.float32)
         elif key == "value_int":
-            value = numpy.array(raw, dtype=numpy.int64)
+            value = np.array(raw, dtype=np.int64)
         elif key == "value_string":
-            value = numpy.array(raw, dtype=numpy.str_)
+            value = np.array(raw, dtype=np.str_)
         elif key == "value_floats":
-            value = numpy.array(list(raw), dtype=numpy.float32).reshape(-1)
+            value = np.array(list(raw), dtype=np.float32).reshape(-1)
         elif key == "value_ints":
-            value = numpy.array(list(raw), dtype=numpy.int64).reshape(-1)
+            value = np.array(list(raw), dtype=np.int64).reshape(-1)
         elif key == "value_strings":
-            value = numpy.array(list(raw), dtype=numpy.str_).reshape(-1)
+            value = np.array(list(raw), dtype=np.str_).reshape(-1)
         elif key == "sparse_value":
             return {}
         else:
@@ -4218,7 +4217,7 @@ def batch_normalization(
 def bernoulli(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[numpy.generic]] = None,
+    dtype: Optional[typing.Type[np.generic]] = None,
     seed: Optional[float] = None,
 ) -> Arrow:
     r"""
@@ -4371,7 +4370,7 @@ def blackman_window(
 def cast(
     input: Arrow,
     *,
-    to: typing.Type[numpy.generic],
+    to: typing.Type[np.generic],
 ) -> Arrow:
     r"""
     The operator casts the elements of a given input tensor to a data type
@@ -4730,7 +4729,7 @@ def concat_from_sequence(
 
 def constant(
     *,
-    value: Optional[ndarray] = None,
+    value: Optional[np.ndarray] = None,
     value_float: Optional[float] = None,
     value_floats: Optional[Iterable[float]] = None,
     value_int: Optional[int] = None,
@@ -4799,7 +4798,7 @@ def constant(
 def constant_of_shape(
     input: Arrow,
     *,
-    value: Optional[ndarray] = None,
+    value: Optional[np.ndarray] = None,
 ) -> Arrow:
     r"""
     Generate a tensor with given value and shape.
@@ -5851,7 +5850,7 @@ def expand(
 def eye_like(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[numpy.generic]] = None,
+    dtype: Optional[typing.Type[np.generic]] = None,
     k: int = 0,
 ) -> Arrow:
     r"""
@@ -8609,7 +8608,7 @@ def mul(
 def multinomial(
     input: Arrow,
     *,
-    dtype: typing.Type[numpy.generic] = numpy.int32,
+    dtype: typing.Type[np.generic] = np.int32,
     sample_size: int = 1,
     seed: Optional[float] = None,
 ) -> Arrow:
@@ -9740,7 +9739,7 @@ def rnn(
 
 def random_normal(
     *,
-    dtype: typing.Type[numpy.generic] = numpy.float32,
+    dtype: typing.Type[np.generic] = np.float32,
     mean: float = 0.0,
     scale: float = 1.0,
     seed: Optional[float] = None,
@@ -9800,7 +9799,7 @@ def random_normal(
 def random_normal_like(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[numpy.generic]] = None,
+    dtype: Optional[typing.Type[np.generic]] = None,
     mean: float = 0.0,
     scale: float = 1.0,
     seed: Optional[float] = None,
@@ -9860,7 +9859,7 @@ def random_normal_like(
 
 def random_uniform(
     *,
-    dtype: typing.Type[numpy.generic] = numpy.float32,
+    dtype: typing.Type[np.generic] = np.float32,
     high: float = 1.0,
     low: float = 0.0,
     seed: Optional[float] = None,
@@ -9919,7 +9918,7 @@ def random_uniform(
 def random_uniform_like(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[numpy.generic]] = None,
+    dtype: Optional[typing.Type[np.generic]] = None,
     high: float = 1.0,
     low: float = 0.0,
     seed: Optional[float] = None,
@@ -11649,7 +11648,7 @@ def sequence_construct(
 
 def sequence_empty(
     *,
-    dtype: Optional[typing.Type[numpy.generic]] = None,
+    dtype: Optional[typing.Type[np.generic]] = None,
 ) -> Arrow:
     r"""
     Construct an empty tensor sequence, with given data type.
@@ -13540,8 +13539,8 @@ def xor(
 
 def const(
     value: Union[
-        ndarray,
-        numpy.generic,
+        np.ndarray,
+        np.generic,
         bool,
         float,
         int,
@@ -13556,12 +13555,12 @@ def const(
     Calls the right overload of Constant (setting the right attribute) depending on the type.
     """
 
-    if isinstance(value, ndarray):
+    if isinstance(value, np.ndarray):
         return constant(value=value)
-    elif isinstance(value, numpy.generic):
-        return constant(value=numpy.array(value))
+    elif isinstance(value, np.generic):
+        return constant(value=np.array(value))
     elif isinstance(value, bool):
-        return constant(value=numpy.array(value, dtype=numpy.bool_))
+        return constant(value=np.array(value, dtype=np.bool_))
     elif isinstance(value, int):
         return constant(value_int=value)
     elif isinstance(value, float):
@@ -13614,9 +13613,7 @@ def xloop(
         start_loop,
         initial,
         body=subgraph(
-            typing_cast(
-                List[Type], [Tensor(numpy.int64, (1,)), Tensor(numpy.bool_, (1,))]
-            )
+            typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
             + [arrow.unwrap_type() for arrow in initial],
             fun,
         ),
@@ -13654,13 +13651,14 @@ def xif(
 
 
 def promote(
-    *types: Union[Arrow, numpy.generic, int, float, None]
+    *types: Union[Arrow, np.generic, int, float, None]
 ) -> Tuple[Optional[Arrow], ...]:
     """
     Apply constant promotion and type promotion to given parameters, creating constants and/or casting.
 
     None-valued parameters are only kept in for ordering.
     """
+    from steelix._arrow import result_type
 
     promotable = [typ for typ in types if typ is not None]
     if not promotable:
@@ -13669,10 +13667,10 @@ def promote(
     target_type = result_type(*promotable)
 
     def _promote_target(
-        obj: Union[Arrow, numpy.generic, int, float, None]
+        obj: Union[Arrow, np.generic, int, float, None]
     ) -> Optional[Arrow]:
-        if isinstance(obj, (numpy.generic, int, float)):
-            return const(numpy.array(obj, dtype=target_type))
+        if isinstance(obj, (np.generic, int, float)):
+            return const(np.array(obj, dtype=target_type))
         elif isinstance(obj, Arrow):
             return cast(obj, to=target_type)
         assert obj is None
@@ -13862,7 +13860,7 @@ _OPERATORS = {
     "Xor": _Xor,
 }
 
-CONSTRUCTORS = {
+_CONSTRUCTORS = {
     "Abs": abs,
     "Acos": acos,
     "Acosh": acosh,
@@ -14042,3 +14040,5 @@ CONSTRUCTORS = {
     "Where": where,
     "Xor": xor,
 }
+
+__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()]

@@ -1,7 +1,7 @@
 import numpy
 
-from steelix.graph import arguments
-from steelix.type_system import Optional, Tensor
+from steelix._graph import arguments
+from steelix._type_system import Optional, Tensor
 
 
 def test_optional_type_objects(op):

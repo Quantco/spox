@@ -4,14 +4,13 @@ import numpy
 import onnx
 import pytest
 
-from steelix.shape import Shape
-from steelix.type_system import Optional, Sequence, Tensor, Type
+from steelix._shape import Shape
+from steelix._type_system import Optional, Sequence, Tensor, Type
+from steelix._utils import dtype_to_tensor_type, tensor_type_to_dtype
 
 
 def tensor_type_proto(elem_type, shape):
-    return onnx.helper.make_tensor_type_proto(
-        Tensor.elem_type_to_onnx(elem_type), shape
-    )
+    return onnx.helper.make_tensor_type_proto(dtype_to_tensor_type(elem_type), shape)
 
 
 def tensor_shape_proto(shape):
@@ -56,16 +55,16 @@ def type_pairs() -> List[Tuple[Type, onnx.TypeProto]]:
 
 def test_tensor_elem_type_to_onnx(tensor_elem_type_pairs):
     for first, second in tensor_elem_type_pairs:
-        assert Tensor.elem_type_to_onnx(first) == second
+        assert dtype_to_tensor_type(first) == second
 
 
 def test_tensor_elem_type_from_onnx(tensor_elem_type_pairs):
     for first, second in tensor_elem_type_pairs:
-        assert Tensor.elem_type_from_onnx(second) == first
+        assert tensor_type_to_dtype(second) == first
 
 
 def test_scalar_is_not_unknown_shape():
-    assert Tensor(numpy.float32).to_onnx() != Tensor(numpy.float32, ()).to_onnx()
+    assert Tensor(numpy.float32)._to_onnx() != Tensor(numpy.float32, ())._to_onnx()
     assert Shape.from_simple(None) != Shape.from_simple(())
     assert Shape.from_simple(None).to_onnx() != Shape.from_simple(()).to_onnx()
 
@@ -82,9 +81,9 @@ def test_tensor_shape_from_onnx(tensor_shape_pairs):
 
 def test_type_to_onnx(type_pairs):
     for first, second in type_pairs:
-        assert first.to_onnx() == second
+        assert first._to_onnx() == second
 
 
 def test_type_from_onnx(type_pairs):
     for first, second in type_pairs:
-        assert Type.from_onnx(second) == first
+        assert Type._from_onnx(second) == first

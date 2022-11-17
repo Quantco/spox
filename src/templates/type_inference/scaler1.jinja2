@@ -5,10 +5,9 @@ if sc is None or off is None:
     raise InferenceError("Scale and offset are required attributes.")
 t = self.inputs.X.unwrap_tensor()
 # If the number of features is known (last row, we can check this here)
-sim = t.shape.to_simple()
-last = sim[-1] if sim else 1
+last = t.shape[-1] if t.shape else 1
 if isinstance(last, int) and len(sc.value) not in {1, last}:
     raise InferenceError(f"Mismatched expected ({len(sc.value)}) and actual ({last}) feature count for scale.")
 if isinstance(last, int) and len(off.value) not in {1, last}:
     raise InferenceError(f"Mismatched expected ({len(off.value)}) and actual ({last}) feature count for offset.")
-return {"Y": Tensor(numpy.float32, t.shape)}
+return {"Y": Tensor(np.float32, t.shape)}

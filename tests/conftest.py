@@ -6,8 +6,8 @@ import onnxruntime
 import pytest
 
 import steelix.opset.ai.onnx.v17
-from steelix.debug import show_construction_tracebacks
-from steelix.graph import Graph
+from steelix._debug import show_construction_tracebacks
+from steelix._graph import Graph
 
 
 class ONNXRuntimeHelper:
