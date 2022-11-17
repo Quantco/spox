@@ -66,7 +66,7 @@ def test_tensor_shorthand(scalar_type, shape_pair):
 
 
 def test_bad_tensor_type():
-    # assert Tensor(numpy.float32) != Tensor(numpy.float64)  # sanity check
+    assert Tensor(numpy.float32) != Tensor(numpy.float64)  # sanity check
     for typ in (numpy.object_, object, None):
         with pytest.raises(TypeError):
             Tensor(typ)
