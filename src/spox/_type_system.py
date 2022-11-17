@@ -276,7 +276,3 @@ class Optional(Type):
         if not isinstance(other, Optional):
             return False
         return self.elem_type <= other.elem_type
-
-
-def type_match(first: typing.Optional[Type], second: typing.Optional[Type]) -> bool:
-    return first is None or second is None or first <= second or second <= first

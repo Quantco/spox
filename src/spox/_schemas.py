@@ -29,11 +29,6 @@ V = TypeVar("V")
 T = TypeVar("T", bound=_Comparable)
 
 
-def _inv_dict(mapping: Dict[K, V]) -> Dict[V, K]:
-    """Inverse mapping of a given dictionary."""
-    return {v: k for k, v in mapping.items()}
-
-
 def _key_groups(seq: Iterable[S], key: Callable[[S], T]):
     """Group a sequence by a given key."""
     return itertools.groupby(sorted(seq, key=key), key)

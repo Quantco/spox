@@ -35,7 +35,7 @@ from spox._internal_op import intro  # noqa: F401
 from spox._node import OpType  # noqa: F401
 from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
-from spox._type_system import Tensor, Type, type_match
+from spox._type_system import Tensor, Type
 
 
 class _ArrayFeatureExtractor(StandardNode):
