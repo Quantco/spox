@@ -1,6 +1,6 @@
 if not self.inputs.fully_typed:
     return {}
-sim = self.inputs.X.unwrap_tensor().shape.to_simple()
+sim = self.inputs.X.unwrap_tensor().shape
 assert sim is not None
 if len(sim) == 2:
     return {"Y": Tensor(np.float32, sim)}

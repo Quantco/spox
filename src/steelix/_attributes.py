@@ -9,10 +9,9 @@ from onnx.helper import (
     make_sequence_type_proto,
     make_tensor_type_proto,
 )
-from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
 from steelix import _type_system
-from steelix._utils import from_array
+from steelix._utils import dtype_to_tensor_type, from_array
 
 S = TypeVar("S")
 T = TypeVar("T")
@@ -108,13 +107,13 @@ class AttrType(Attr[_type_system.Type]):
         value = self.value  # for type-checkers with limited property support
         if isinstance(value, _type_system.Tensor):
             type_proto = make_tensor_type_proto(
-                value.elem_type_to_onnx(value.elem_type),
-                value.shape.to_simple(),
+                dtype_to_tensor_type(value.dtype),
+                value.shape,
             )
         elif isinstance(value, _type_system.Sequence):
-            type_proto = make_sequence_type_proto(value.elem_type.to_onnx())
+            type_proto = make_sequence_type_proto(value.elem_type._to_onnx())
         elif isinstance(value, _type_system.Optional):
-            type_proto = make_optional_type_proto(value.elem_type.to_onnx())
+            type_proto = make_optional_type_proto(value.elem_type._to_onnx())
         else:
             raise NotImplementedError
         return make_attribute(key, type_proto)
@@ -133,11 +132,7 @@ class AttrDtype(Attr[Union[np.dtype, Type[np.generic]]]):
             )
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        dtype = np.dtype(self.value)
-        # There are various different dtypes denoting strings
-        if dtype.type == np.str_:
-            return make_attribute(key, NP_TYPE_TO_TENSOR_TYPE[np.dtype("O")])
-        return make_attribute(key, NP_TYPE_TO_TENSOR_TYPE[dtype])
+        return make_attribute(key, dtype_to_tensor_type(self.value))
 
 
 class AttrGraph(Attr[Any]):

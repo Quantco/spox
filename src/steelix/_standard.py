@@ -12,7 +12,7 @@ from ._arrow import Nothing, _nil
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
-from ._shape import Shape
+from ._shape import SimpleShape
 from ._type_inference import InferenceError
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
@@ -88,7 +88,7 @@ class StandardNode(Node):
         # Create a singleton graph for type inference with our node
         # Input types
         input_info = [
-            arrow.unwrap_type().to_onnx_value_info(key)
+            arrow.unwrap_type()._to_onnx_value_info(key)
             for key, arrow in self.inputs.as_dict().items()
             if arrow
         ]
@@ -98,10 +98,10 @@ class StandardNode(Node):
             if (
                 dummy_outputs
                 or curr_arrow.type is None
-                or not curr_arrow.type.is_concrete
+                or not curr_arrow.type._is_concrete
             ):
                 return onnx.helper.make_value_info(curr_key, onnx.TypeProto())
-            return curr_arrow.unwrap_type().to_onnx_value_info(curr_key)
+            return curr_arrow.unwrap_type()._to_onnx_value_info(curr_key)
 
         output_info = [
             out_value_info(key, arrow)
@@ -111,9 +111,9 @@ class StandardNode(Node):
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
         initializers = [
-            from_array(arrow.value, key)
+            from_array(arrow._value, key)
             for key, arrow in self.inputs.as_dict().items()
-            if isinstance(arrow.value, numpy.ndarray)
+            if isinstance(arrow._value, numpy.ndarray)
         ]
         #  Graph and model
         graph = onnx.helper.make_graph(
@@ -154,7 +154,7 @@ class StandardNode(Node):
 
         # Recover the types from protobuf, ignoring empty protobuf objects for failing/unimplemented type inference.
         results = {
-            info.name: Type.from_onnx(info.type)
+            info.name: Type._from_onnx(info.type)
             for info in typed_model.graph.output
             if info.type != onnx.TypeProto()
         }
@@ -168,7 +168,7 @@ class StandardNode(Node):
         Assumes onnxruntime was imported successfully. Does not support subgraphs.
         """
         if any(
-            arrow and arrow.value is None for arrow in self.inputs.as_dict().values()
+            arrow and arrow._value is None for arrow in self.inputs.as_dict().values()
         ):
             # Cannot do propagation when some inputs were not propagated
             return {}
@@ -182,7 +182,7 @@ class StandardNode(Node):
         model, scope = self.to_singleton_onnx_model(with_subgraphs=False)
         session = onnxruntime.InferenceSession(model.SerializeToString(), options)
         input_feed = {
-            scope.arrow[arrow]: _value_prop_to_ort(arrow.value)
+            scope.arrow[arrow]: _value_prop_to_ort(arrow._value)
             for arrow in self.inputs.as_dict().values()
         }
         # Get outputs and give a map from output field names
@@ -206,26 +206,21 @@ class StandardNode(Node):
         return {}
 
 
-def _strip_unk_param_shape(shape: Shape) -> Shape:
+def _strip_unk_param_shape(shape: SimpleShape) -> SimpleShape:
     """
     Remove all instances all ``unk__`` dimension parameters from a shape -- created when running
     ONNX shape inference and no parameter to use existed. It is stripped to avoid conflicts (due to global scoping).
     """
-    if shape.dims is None:
+    if shape is None:
         return shape
-    xs = list(
-        typing.cast(typing.Tuple[typing.Union[int, str, None]], shape.to_simple())
-    )
-    for i, x in enumerate(xs):
-        if isinstance(x, str) and x.startswith("unk__"):
-            xs[i] = None
-    return Shape.from_simple(tuple(xs))
+    xs = [None if isinstance(x, str) and x.startswith("unk__") else x for x in shape]
+    return tuple(xs)
 
 
 def _strip_unk_param(typ: Type) -> Type:
     """Apply ``_strip_unk_param_shape`` to all shapes present in this ``Type``."""
     if isinstance(typ, Tensor):
-        return Tensor(typ.elem_type, _strip_unk_param_shape(typ.shape))
+        return Tensor(typ.dtype, _strip_unk_param_shape(typ.shape))
     elif isinstance(typ, Sequence):
         return Sequence(_strip_unk_param(typ.elem_type))
     elif isinstance(typ, Optional):
@@ -251,13 +246,13 @@ def _make_dummy_subgraph(_node: Node, key: str, graph: "Graph") -> onnx.GraphPro
 
     inputs = []
     for i, arr in enumerate(graph.requested_arguments):
-        inputs.append(arr.unwrap_type().to_onnx_value_info(f"__dummy_input{i}"))
+        inputs.append(arr.unwrap_type()._to_onnx_value_info(f"__dummy_input{i}"))
     nodes = []
     outputs = []
     for i, arr in enumerate(graph.requested_results.values()):
         outer = f"__dummy_outer_output{i}"
         out = f"__dummy_output{i}"
-        outputs.append(arr.unwrap_type().to_onnx_value_info(out))
+        outputs.append(arr.unwrap_type()._to_onnx_value_info(out))
         nodes.append(onnx.helper.make_node("Identity", [outer], [out]))
 
     return onnx.helper.make_graph(nodes, f"__dummy_{key}", inputs, outputs)

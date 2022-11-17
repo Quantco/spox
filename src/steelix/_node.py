@@ -184,7 +184,7 @@ class Node(ABC):
 
         def fmt_input(key, arrow):
             return f"{key}: {arrow.type}" + (
-                f" = {arrow.value}" if arrow.value is not None else ""
+                f" = {arrow._value}" if arrow._value is not None else ""
             )
 
         sign = ", ".join(

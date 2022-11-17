@@ -60,9 +60,9 @@ def test_shape_indexing():
     assert Shape.from_simple(("X", 2, 3, "Y"))[1:3] == Shape.from_simple((2, 3))
 
 
-@pytest.mark.parametrize("s,z", [(0, 0), (0, 1), (1, 0), (1, 1)])
-def test_tensor_shorthand(scalar_type, shape_pair, s, z):
-    assert Tensor(scalar_type, shape_pair[s]) == Tensor(scalar_type, shape_pair[z])
+def test_tensor_shorthand(scalar_type, shape_pair):
+    rich, simple = shape_pair
+    assert Tensor(scalar_type, simple)._shape == rich
 
 
 def test_bad_tensor_type():

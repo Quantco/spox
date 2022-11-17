@@ -4,6 +4,7 @@ from typing import Any, Generic, Optional, TypeVar, Union
 import numpy
 
 from . import _type_system
+from ._config import get_default_opset
 from ._shape import Shape
 
 if typing.TYPE_CHECKING:
@@ -29,7 +30,7 @@ class Arrow(Generic[T]):
     """
 
     type: Optional[_type_system.Type]
-    value: Optional[Any]
+    _value: Optional[Any]
     _op: "Node"
     _name: Optional[str]
 
@@ -40,7 +41,7 @@ class Arrow(Generic[T]):
         value: Optional[Any] = None,
     ):
         self.type = type_
-        self.value = value
+        self._value = value
         self._op = op
         self._name = None
         if not self._value_matches_type(value, type_):
@@ -61,8 +62,8 @@ class Arrow(Generic[T]):
         if isinstance(type_, _type_system.Tensor):
             return (
                 isinstance(value, numpy.ndarray)
-                and value.dtype.type is type_.elem_type
-                and Shape.from_simple(value.shape) <= type_.shape
+                and value.dtype.type is type_.dtype.type
+                and Shape.from_simple(value.shape) <= type_._shape
             )
         elif isinstance(type_, _type_system.Optional):
             return value is Nothing or Arrow._value_matches_type(value, type_.elem_type)
@@ -71,13 +72,6 @@ class Arrow(Generic[T]):
                 Arrow._value_matches_type(elem, type_.elem_type) for elem in value
             )
         return True
-
-    @property
-    def default_opset(self):
-        """Default operator set used for operator overloading."""
-        from ._config import get_default_opset
-
-        return get_default_opset()
 
     @property
     def _which_output(self) -> Optional[str]:
@@ -94,7 +88,7 @@ class Arrow(Generic[T]):
         which_repr = "->??" if which is None else (f"->{which}" if is_unary else "")
         return (
             f"<Arrow {nm}from {op_repr}{which_repr} of {self.type}"
-            f"{'' if self.value is None else ' = ' + str(self.value)}>"
+            f"{'' if self._value is None else ' = ' + str(self._value)}>"
         )
 
     def unwrap_type(self) -> _type_system.Type:
@@ -123,41 +117,41 @@ class Arrow(Generic[T]):
 
     def __add__(self, other) -> "Arrow":
         if isinstance(other, Arrow):
-            return self.default_opset.add(self, other)
+            return get_default_opset().add(self, other)
         return NotImplemented
 
     def __sub__(self, other) -> "Arrow":
         if isinstance(other, Arrow):
-            return self.default_opset.sub(self, other)
+            return get_default_opset().sub(self, other)
         return NotImplemented
 
     def __mul__(self, other) -> "Arrow":
         if isinstance(other, Arrow):
-            return self.default_opset.mul(self, other)
+            return get_default_opset().mul(self, other)
         return NotImplemented
 
     def __truediv__(self, other) -> "Arrow":
         if isinstance(other, Arrow):
-            return self.default_opset.div(self, other)
+            return get_default_opset().div(self, other)
         return NotImplemented
 
     def __and__(self, other) -> "Arrow":
         if isinstance(other, Arrow):
-            return self.default_opset.and_(self, other)
+            return get_default_opset().and_(self, other)
         return NotImplemented
 
     def __or__(self, other) -> "Arrow":
         if isinstance(other, Arrow):
-            return self.default_opset.or_(self, other)
+            return get_default_opset().or_(self, other)
         return NotImplemented
 
     def __xor__(self, other) -> "Arrow":
         if isinstance(other, Arrow):
-            return self.default_opset.xor(self, other)
+            return get_default_opset().xor(self, other)
         return NotImplemented
 
     def __invert__(self) -> "Arrow":
-        return self.default_opset.not_(self)
+        return get_default_opset().not_(self)
 
 
 class _NilArrow(Arrow):
@@ -173,7 +167,7 @@ class _NilArrow(Arrow):
 
     def __init__(self):  # noqa
         self.type = None
-        self.value = None
+        self._value = None
         self._name = ""
 
     def __hash__(self):
@@ -201,7 +195,7 @@ def result_type(
     return numpy.dtype(
         numpy.result_type(
             *(
-                typ.unwrap_tensor().elem_type if isinstance(typ, Arrow) else typ
+                typ.unwrap_tensor().dtype if isinstance(typ, Arrow) else typ
                 for typ in types
             )
         )

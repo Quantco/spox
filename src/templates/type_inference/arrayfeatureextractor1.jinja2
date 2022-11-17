@@ -1,8 +1,10 @@
 if not self.inputs.fully_typed:
     return {}
 xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
-if xt.shape.rank < 1:
+assert xt.shape is not None  # already checked with fully_typed
+assert yt.shape is not None  # already checked with fully_typed
+if len(xt.shape) < 1:
     raise InferenceError("Expected rank >= 1")
 if xt.shape[:-1] != yt.shape:
     raise InferenceError("Mismatched shapes for entries & indices.")
-return {"Z": Tensor(xt.elem_type, yt.shape)}
+return {"Z": Tensor(xt.dtype, yt.shape)}
