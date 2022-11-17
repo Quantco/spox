@@ -17,9 +17,9 @@ from typing import cast as typing_cast  # noqa: F401
 import numpy as np  # noqa: F401
 
 
-from steelix._arrow import Arrow, _nil, result_type  # noqa: F401
-from steelix._arrowfields import ArrowFields, NoArrows  # noqa: F401
-from steelix._attributes import (
+from spox._arrow import Arrow, _nil, result_type  # noqa: F401
+from spox._arrowfields import ArrowFields, NoArrows  # noqa: F401
+from spox._attributes import (
     AttrDtype,
     AttrFloat32,
     AttrFloat32s,
@@ -31,8 +31,8 @@ from steelix._attributes import (
     AttrTensor,
     AttrType,
 )
-from steelix._graph import Graph, subgraph  # noqa: F401
-from steelix._internal_op import intro  # noqa: F401
-from steelix._node import OpType  # noqa: F401
-from steelix._standard import InferenceError, StandardNode  # noqa: F401
-from steelix._type_system import Tensor, Type, Sequence as SteelixSequence, type_match  # noqa: F401
+from spox._graph import Graph, subgraph  # noqa: F401
+from spox._internal_op import intro  # noqa: F401
+from spox._node import OpType  # noqa: F401
+from spox._standard import InferenceError, StandardNode  # noqa: F401
+from spox._type_system import Tensor, Type, Sequence as SpoxSequence, type_match  # noqa: F401
