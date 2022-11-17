@@ -2,8 +2,8 @@ from typing import Dict, Optional
 
 import numpy as np
 import numpy.typing as npt
-from onnx import TensorProto, numpy_helper
-from onnx.helper import mapping
+from onnx import TensorProto
+from onnx.helper import make_tensor, mapping
 
 _DTYPE_TO_TENSOR_TYPE: Dict[np.dtype, int] = {
     **{
@@ -44,16 +44,23 @@ def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
         raise TypeError(err_msg)
 
 
-def from_array(array: np.ndarray, name: Optional[str] = None) -> TensorProto:
-    """
-    Helper function for converting numpy arrays into TensorProto.
+def from_array(arr: np.ndarray, name: Optional[str] = None) -> TensorProto:
+    """Convert the given ``numpy.array`` into a ``onnx.TensorProto``.
 
     As it may be useful to name the TensorProto (e.g. in
     initializers), there is a ``name`` parameter.
 
-    Uses ``numpy.str_`` instead of ``numpy.object_`` for strings,
-    calling ``onnx.numpy_helper.from_array`` internally.
+    This function differs from ``onnx.numpy_helper.from_array`` by not
+    using the ``raw_data`` field.
     """
-    if array.dtype.type is np.str_:
-        array = array.astype(np.object_)
-    return numpy_helper.from_array(array, name=name)
+    cast_to_bytes = False
+    if arr.dtype.type in [np.str_, np.object_]:
+        cast_to_bytes = True
+    return make_tensor(
+        name=name or "",
+        data_type=dtype_to_tensor_type(arr.dtype),
+        dims=arr.shape,
+        # make_tensor fails on scalars. We fix it by calling flatten
+        vals=(arr.astype(bytes) if cast_to_bytes else arr).flatten(),
+        raw=False,
+    )
