@@ -20,8 +20,8 @@ def uniform_of_shape(shape: steelix.Arrow) -> steelix.Arrow:
     )
 
 
-def get_pi_graph() -> steelix.graph.Graph:
-    (n,) = steelix.arguments(n=steelix.Tensor(numpy.int64, ()))
+def get_pi_graph() -> steelix._graph.Graph:
+    (n,) = steelix._graph.arguments(n=steelix._type_system.Tensor(numpy.int64, ()))
 
     xs = uniform_of_shape(op.reshape(n, op.const([1])))
     ys = uniform_of_shape(op.reshape(n, op.const([1])))
@@ -34,7 +34,7 @@ def get_pi_graph() -> steelix.graph.Graph:
     )
 
     return (
-        steelix.results(pi=pi)
+        steelix._graph.results(pi=pi)
         .with_name("monte_carlo_pi")
         .with_doc("Computes Pi by Monte Carlo with n samples.")
     )

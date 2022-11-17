@@ -9,7 +9,7 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 import jinja2
 import onnx
 
-from steelix.schemas import DOMAIN_VERSIONS, SCHEMAS
+from steelix._schemas import DOMAIN_VERSIONS, SCHEMAS
 
 DEFAULT_DOMAIN = "ai.onnx"
 
@@ -28,14 +28,14 @@ ATTRIBUTE_PROTO_TO_INPUT_TYPE = {
     onnx.AttributeProto.FLOAT: "float",
     onnx.AttributeProto.INT: "int",
     onnx.AttributeProto.STRING: "str",
-    onnx.AttributeProto.TENSOR: "ndarray",
+    onnx.AttributeProto.TENSOR: "np.ndarray",
     onnx.AttributeProto.GRAPH: "Callable[..., Iterable[Arrow]]",
     onnx.AttributeProto.TYPE_PROTO: "Type",
     onnx.AttributeProto.FLOATS: "Iterable[float]",
     onnx.AttributeProto.INTS: "Iterable[int]",
     onnx.AttributeProto.STRINGS: "Iterable[str]",
-    onnx.AttributeProto.TENSORS: "Iterable[ndarray]",
-    onnx.AttributeProto.TYPE_PROTOS: "Iterable[steelix.Type]",
+    onnx.AttributeProto.TENSORS: "Iterable[np.ndarray]",
+    onnx.AttributeProto.TYPE_PROTOS: "Iterable[Type]",
 }
 
 ATTRIBUTE_PROTO_TO_MEMBER_TYPE = {
@@ -144,9 +144,9 @@ def _get_default_value(attr, attr_type_overrides) -> Optional[str]:
     # We want to use e.g. np.int32 instead of an integer for dtypes
     if (
         attr.name in attr_type_overrides
-        and "numpy.generic" in attr_type_overrides[attr.name][0]
+        and "np.generic" in attr_type_overrides[attr.name][0]
     ):
-        return f"numpy.{onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[default].name}"
+        return f"np.{onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[default].name}"
 
     # Strings are bytes at this point and they
     # need to be wrapped in quotes.
@@ -471,14 +471,14 @@ if __name__ == "__main__":
         subgraphs_solutions={
             "If": {"else_branch": "()", "then_branch": "()"},
             "Loop": {
-                "body": "typing_cast(List[Type], [Tensor(numpy.int64, (1,)), Tensor(numpy.bool_, (1,))])"
+                "body": "typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])"
                 "+ [arrow.unwrap_type() for arrow in v_initial]"
             },
             "Scan": {
-                "body": "[Tensor(arrow.unwrap_tensor().elem_type, "
-                "   (lambda x: x[1:] if x is not None else None)(arrow.unwrap_tensor().shape.to_simple())) "
+                "body": "[Tensor(arrow.unwrap_tensor().dtype, "
+                "   (lambda x: x[1:] if x is not None else None)(arrow.unwrap_tensor().shape)) "
                 "for arrow in initial_state_and_scan_inputs[:num_scan_inputs]] + "
-                "[Tensor(arrow.unwrap_tensor().elem_type) "
+                "[Tensor(arrow.unwrap_tensor().dtype) "
                 "for arrow in initial_state_and_scan_inputs[num_scan_inputs:]]"
             },
             "SequenceMap": {
@@ -487,8 +487,8 @@ if __name__ == "__main__":
             },
         },
         attr_type_overrides=[
-            (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype")),
-            ("Cast", "to", ("typing.Type[numpy.generic]", "AttrDtype")),
+            (None, "dtype", ("typing.Type[np.generic]", "AttrDtype")),
+            ("Cast", "to", ("typing.Type[np.generic]", "AttrDtype")),
             ("If", "then_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
             ("If", "else_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
         ],
@@ -496,9 +496,7 @@ if __name__ == "__main__":
     main(
         "ai.onnx.ml",
         3,
-        attr_type_overrides=[
-            (None, "dtype", ("typing.Type[numpy.generic]", "AttrDtype"))
-        ],
+        attr_type_overrides=[(None, "dtype", ("typing.Type[np.generic]", "AttrDtype"))],
         type_inference={
             "ArrayFeatureExtractor": "arrayfeatureextractor1",
             "Binarizer": "binarizer1",

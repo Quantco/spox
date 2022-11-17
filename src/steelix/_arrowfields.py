@@ -1,8 +1,8 @@
 import typing
 from typing import Dict, Iterable, Optional, Sequence, Union
 
-from .arrow import Arrow, _nil
-from .fields import Fields
+from ._arrow import Arrow, _nil
+from ._fields import Fields
 
 
 class ArrowFields(Fields[Arrow]):
@@ -135,7 +135,7 @@ class ArrowFields(Fields[Arrow]):
     @property
     def fully_typed(self) -> bool:
         return all(
-            arrow.type is not None and arrow.type.is_concrete
+            arrow.type is not None and arrow.type._is_concrete
             for arrow in self.as_dict().values()
             if arrow
         )

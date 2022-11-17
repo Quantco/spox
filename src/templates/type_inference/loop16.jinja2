@@ -1,7 +1,7 @@
 if self.inputs.M.type is not None:
-    assert self.inputs.M.unwrap_type() <= Tensor(numpy.int64, (1,)), f"Maximum trip-count must be an int64 1-vector, got {self.inputs.M.type}"
+    assert self.inputs.M.unwrap_type() <= Tensor(np.int64, (1,)), f"Maximum trip-count must be an int64 1-vector, got {self.inputs.M.type}"
 if self.inputs.cond.type is not None:
-    assert self.inputs.cond.unwrap_type() <= Tensor(numpy.bool_, (1,)), f"Terminal condition must be a boolean 1-vector, got {self.inputs.cond.type}"
+    assert self.inputs.cond.unwrap_type() <= Tensor(np.bool_, (1,)), f"Terminal condition must be a boolean 1-vector, got {self.inputs.cond.type}"
 
 carried_init = self.inputs.v_initial
 
@@ -25,8 +25,8 @@ body_signature = (
     f"scan: {[a.type for a in scan_outputs]})"
 )
 
-assert iter_num.unwrap_type() <= Tensor(numpy.int64, (1,))
-assert cond.unwrap_type() <= Tensor(numpy.bool_, (1,))
+assert iter_num.unwrap_type() <= Tensor(np.int64, (1,))
+assert cond.unwrap_type() <= Tensor(np.bool_, (1,))
 assert len(carried_init) == len(carried_in) == len(carried_out), f"Carried lengths (n) must match, body: {body_signature}"
 assert all(type_match(x.type, y.type) and type_match(y.type, z.type) and type_match(x.type, z.type) for x, y, z in zip(carried_init, carried_in, carried_out)), \
     f"Types for carried Loop values must all match, body: {body_signature}"
@@ -42,8 +42,8 @@ for name, typ in zip(carried_names, carried_types):
     output_types[name] = typ
 for name, arrow in zip(scan_names, scan_outputs):
     tensor = arrow.unwrap_tensor()
-    assert tensor.shape.dims is not None
-    scan_shape = (None,) + tensor.shape.to_simple()  # type: ignore
-    output_types[name] = Tensor(tensor.elem_type, scan_shape)
+    assert tensor.shape is not None
+    scan_shape = (None,) + tensor.shape  # type: ignore
+    output_types[name] = Tensor(tensor.dtype, scan_shape)
 
 return output_types

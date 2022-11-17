@@ -1,18 +1,20 @@
 import inspect
 import itertools
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, Optional, TypeVar
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, Optional, TypeVar
 
 import onnx
 from typing_extensions import TypeAlias
 
-from . import graph
-from ._attributes import _Ref
-from .arrow import Arrow
-from .arrowfields import ArrowFields
-from .internal_op import _InternalNode
-from .node import Node, OpType
-from .type_system import Type
+from . import _attributes
+from ._arrow import Arrow
+from ._arrowfields import ArrowFields
+from ._internal_op import _InternalNode
+from ._node import Node, OpType
+from ._type_system import Type
+
+if TYPE_CHECKING:
+    from . import _graph
 
 DEFAULT_FUNCTION_DOMAIN = "steelix.default"
 
@@ -39,10 +41,10 @@ class Function(_InternalNode):
     """
 
     func_args: Dict[str, Arrow]
-    func_attrs: Dict[str, _Ref]
+    func_attrs: Dict[str, _attributes._Ref]
     func_inputs: ArrowFields
     func_outputs: ArrowFields
-    func_graph: graph.Graph
+    func_graph: "_graph.Graph"
 
     def constructor(self, attrs, inputs):
         """
@@ -58,18 +60,20 @@ class Function(_InternalNode):
         )
 
     def infer_output_types(self) -> Dict[str, Type]:
-        self.func_args = graph.arguments_dict(
+        from . import _graph
+
+        self.func_args = _graph.arguments_dict(
             **{name: arrow.type for name, arrow in self.inputs.as_dict().items()}
         )
 
         func_attrs = {}
         for name, attr in self.attrs.__dict__.items():
-            func_attrs[name] = _Ref(concrete=attr, outer_name=name)
+            func_attrs[name] = _attributes._Ref(concrete=attr, outer_name=name)
         self.func_attrs = func_attrs
 
         self.func_inputs = self.Inputs(**self.func_args)
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
-        self.func_graph = graph.results(**self.func_outputs.as_dict()).with_arguments(
+        self.func_graph = _graph.results(**self.func_outputs.as_dict()).with_arguments(
             *self.func_args.values()
         )
 

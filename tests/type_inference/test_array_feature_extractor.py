@@ -1,7 +1,8 @@
 import numpy as np
 
 import steelix.opset.ai.onnx.ml.v3 as op_ml
-from steelix import Tensor, arguments
+from steelix._graph import arguments
+from steelix._type_system import Tensor
 
 
 def test_array_feature_extractor_inference():

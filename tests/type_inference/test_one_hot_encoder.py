@@ -1,7 +1,8 @@
 import numpy as np
 
 import steelix.opset.ai.onnx.ml.v3 as op_ml
-from steelix import Tensor, arguments, results
+from steelix._graph import arguments, results
+from steelix._type_system import Tensor
 
 
 def test_one_hot_encoder_inference():

@@ -4,9 +4,9 @@ import numpy
 import pytest
 
 import steelix.opset.ai.onnx.v17 as op
-from steelix.arrow import Arrow
-from steelix.graph import arguments, results
-from steelix.type_system import Tensor
+from steelix._arrow import Arrow
+from steelix._graph import arguments, results
+from steelix._type_system import Tensor
 
 
 @pytest.fixture(scope="session")

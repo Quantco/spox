@@ -1,7 +1,7 @@
 from typing import Dict, Generic, Hashable, Optional, TypeVar, Union, overload
 
-from .arrow import Arrow
-from .node import Node
+from ._arrow import Arrow
+from ._node import Node
 
 H = TypeVar("H", bound=Hashable)
 

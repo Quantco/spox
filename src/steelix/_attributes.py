@@ -10,10 +10,9 @@ from onnx.helper import (
     make_sequence_type_proto,
     make_tensor_type_proto,
 )
-from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from steelix import graph, type_system
-from steelix._utils import from_array
+from steelix import _type_system
+from steelix._utils import dtype_to_tensor_type, from_array
 
 S = TypeVar("S")
 T = TypeVar("T")
@@ -102,20 +101,20 @@ class AttrTensor(Attr[np.ndarray]):
         return make_attribute(key, from_array(self.value))
 
 
-class AttrType(Attr[type_system.Type]):
+class AttrType(Attr[_type_system.Type]):
     _attribute_proto_type_int = AttributeProto.TYPE_PROTO
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         value = self.value  # for type-checkers with limited property support
-        if isinstance(value, type_system.Tensor):
+        if isinstance(value, _type_system.Tensor):
             type_proto = make_tensor_type_proto(
-                value.elem_type_to_onnx(value.elem_type),
-                value.shape.to_simple(),
+                dtype_to_tensor_type(value.dtype),
+                value.shape,
             )
-        elif isinstance(value, type_system.Sequence):
-            type_proto = make_sequence_type_proto(value.elem_type.to_onnx())
-        elif isinstance(value, type_system.Optional):
-            type_proto = make_optional_type_proto(value.elem_type.to_onnx())
+        elif isinstance(value, _type_system.Sequence):
+            type_proto = make_sequence_type_proto(value.elem_type._to_onnx())
+        elif isinstance(value, _type_system.Optional):
+            type_proto = make_optional_type_proto(value.elem_type._to_onnx())
         else:
             raise NotImplementedError
         return make_attribute(key, type_proto)
@@ -127,34 +126,19 @@ class AttrDtype(Attr[npt.DTypeLike]):
     _attribute_proto_type_int = AttributeProto.INT
 
     def _validate(self):
-        if self.value is None:
-            raise TypeError("")
-        self._get_tensor_type()
-
-    def _get_tensor_type(self) -> int:
-        dtype = np.dtype(self.value)
-        # There are various different dtypes denoting strings
-        if dtype.type == np.str_:
-            dtype = np.dtype("O")
-
-        # `None` is included in DTypeLike and defaults to
-        # `float64`. We don't want to allow that implicit behavior
-        # (for now).
-        if self.value is None or dtype not in NP_TYPE_TO_TENSOR_TYPE:
-            raise TypeError(
-                f"`{self.value}` does not have a corresponding tensor type."
-            )
-        return NP_TYPE_TO_TENSOR_TYPE[dtype]
+        dtype_to_tensor_type(self.value)
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, self._get_tensor_type())
+        return make_attribute(key, dtype_to_tensor_type(self.value))
 
 
 class AttrGraph(Attr[Any]):
     _attribute_proto_type_int = AttributeProto.GRAPH
 
     def _validate(self):
-        if not isinstance(self.value, graph.Graph):
+        from steelix._graph import Graph
+
+        if not isinstance(self.value, Graph):
             raise TypeError(
                 f"Expected value of type `steelix.graph.Graph found `{type(self.value)}`"
             )

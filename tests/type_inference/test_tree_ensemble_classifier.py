@@ -3,7 +3,8 @@ from typing import Any
 import numpy as np
 
 import steelix.opset.ai.onnx.ml.v3 as op_ml
-from steelix import Tensor, arguments
+from steelix._graph import arguments
+from steelix._type_system import Tensor
 
 
 def test_tree_ensemble_regressor_inference_str():
