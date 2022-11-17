@@ -49,7 +49,7 @@ def adapt_node(
     source_model = onnx.helper.make_model(
         onnx.helper.make_graph(
             [proto],
-            "steelix__singleton_adapter_graph",
+            "spox__singleton_adapter_graph",
             input_info,
             output_info,
             initializers,

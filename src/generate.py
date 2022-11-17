@@ -9,7 +9,7 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 import jinja2
 import onnx
 
-from steelix._schemas import DOMAIN_VERSIONS, SCHEMAS
+from spox._schemas import DOMAIN_VERSIONS, SCHEMAS
 
 DEFAULT_DOMAIN = "ai.onnx"
 
@@ -52,7 +52,7 @@ ATTRIBUTE_PROTO_TO_MEMBER_TYPE = {
     onnx.AttributeProto.TYPE_PROTOS: "AttrTypes",
 }
 
-_TEMPLATE_DIR = Path(str(importlib.resources.path("steelix", "."))).parent / "templates"
+_TEMPLATE_DIR = Path(str(importlib.resources.path("spox", "."))).parent / "templates"
 
 
 @dataclass
@@ -361,7 +361,7 @@ def main(
         List[Tuple[Optional[str], str, Tuple[str, str]]]
     ] = None,
     extras: Sequence[str] = (),
-    target: str = "src/steelix/opset/",
+    target: str = "src/spox/opset/",
     pre_commit_hooks: bool = True,
     gen_docstrings: bool = True,
 ):
@@ -482,8 +482,8 @@ if __name__ == "__main__":
                 "for arrow in initial_state_and_scan_inputs[num_scan_inputs:]]"
             },
             "SequenceMap": {
-                "body": "[typing_cast(SteelixSequence, input_sequence.unwrap_type()).elem_type] + "
-                "[typing_cast(SteelixSequence, arrow.unwrap_type()).elem_type for arrow in additional_inputs]"
+                "body": "[typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type] + "
+                "[typing_cast(SpoxSequence, arrow.unwrap_type()).elem_type for arrow in additional_inputs]"
             },
         },
         attr_type_overrides=[

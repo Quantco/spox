@@ -16,9 +16,9 @@ from typing import cast as typing_cast  # noqa: F401
 
 import numpy as np  # noqa: F401
 
-from steelix._arrow import Arrow, _nil, result_type  # noqa: F401
-from steelix._arrowfields import ArrowFields, NoArrows  # noqa: F401
-from steelix._attributes import (
+from spox._arrow import Arrow, _nil, result_type  # noqa: F401
+from spox._arrowfields import ArrowFields, NoArrows  # noqa: F401
+from spox._attributes import (
     AttrDtype,
     AttrFloat32,
     AttrFloat32s,
@@ -30,12 +30,12 @@ from steelix._attributes import (
     AttrTensor,
     AttrType,
 )
-from steelix._graph import Graph, subgraph  # noqa: F401
-from steelix._internal_op import intro  # noqa: F401
-from steelix._node import OpType  # noqa: F401
-from steelix._standard import InferenceError, StandardNode  # noqa: F401
-from steelix._type_system import Sequence as SteelixSequence  # noqa: F401
-from steelix._type_system import Tensor, Type, type_match
+from spox._graph import Graph, subgraph  # noqa: F401
+from spox._internal_op import intro  # noqa: F401
+from spox._node import OpType  # noqa: F401
+from spox._standard import InferenceError, StandardNode  # noqa: F401
+from spox._type_system import Sequence as SpoxSequence  # noqa: F401
+from spox._type_system import Tensor, Type, type_match
 
 
 class _Abs(StandardNode):
@@ -11878,9 +11878,9 @@ def sequence_map(
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _body_subgraph: Graph = subgraph(
-        [typing_cast(SteelixSequence, input_sequence.unwrap_type()).elem_type]
+        [typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type]
         + [
-            typing_cast(SteelixSequence, arrow.unwrap_type()).elem_type
+            typing_cast(SpoxSequence, arrow.unwrap_type()).elem_type
             for arrow in additional_inputs
         ],
         body,
@@ -13585,7 +13585,7 @@ def const(
     ]
 ) -> Arrow:
     """
-    Convenience Steelix function for creating Arrows for constants.
+    Convenience Spox function for creating Arrows for constants.
     Calls the right overload of Constant (setting the right attribute) depending on the type.
     """
 
@@ -13622,7 +13622,7 @@ def promote(
 
     None-valued parameters are only kept in for ordering.
     """
-    from steelix._arrow import result_type
+    from spox._arrow import result_type
 
     promotable = [typ for typ in types if typ is not None]
     if not promotable:

@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 
-import steelix.opset.ai.onnx.ml.v3 as op_ml
-from steelix._graph import arguments
-from steelix._standard import InferenceError
-from steelix._type_system import Tensor
+import spox.opset.ai.onnx.ml.v3 as op_ml
+from spox._graph import arguments
+from spox._standard import InferenceError
+from spox._type_system import Tensor
 
 
 def test_imputer_inference():

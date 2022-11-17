@@ -1,9 +1,9 @@
 import numpy
 import pytest
 
-from steelix._graph import arguments, initializer, results
-from steelix._internal_op import intro
-from steelix._type_system import Tensor
+from spox._graph import arguments, initializer, results
+from spox._internal_op import intro
+from spox._type_system import Tensor
 
 
 @pytest.fixture

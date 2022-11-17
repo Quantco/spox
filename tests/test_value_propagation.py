@@ -2,9 +2,9 @@ import numpy
 import onnxruntime.capi.onnxruntime_pybind11_state
 import pytest
 
-from steelix import Arrow, _arrow, _standard, _type_system
-from steelix._graph import arguments, results
-from steelix._shape import Shape
+from spox import Arrow, _arrow, _standard, _type_system
+from spox._graph import arguments, results
+from spox._shape import Shape
 
 
 @pytest.fixture(scope="function")
@@ -27,7 +27,7 @@ def assert_equal_value(arr, expected):
     Expected Types vs value types:
 
     - Tensor - numpy.ndarray
-    - Optional - steelix.arrow.Nothing or the underlying type
+    - Optional - spox.arrow.Nothing or the underlying type
     - Sequence - list of underlying type
     """
     assert arr._value is not None, "arrow.value expected to be known"

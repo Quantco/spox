@@ -16,7 +16,7 @@ S = TypeVar("S")
 @dataclass(frozen=True)
 class Type:
     """
-    Base class for representing Steelix Types, which are based on ONNX types.
+    Base class for representing Spox Types, which are based on ONNX types.
 
     Additionally, ``Types`` support membership testing (with <= and >=).
     One ``Type`` is a subset of another ``Type`` if both of the

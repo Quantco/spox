@@ -9,13 +9,13 @@ import onnx.shape_inference
 import onnxruntime
 import pytest
 
-from steelix._arrow import Arrow
-from steelix._arrowfields import ArrowFields
-from steelix._attributes import AttrFloat32, _Ref
-from steelix._function import Function, to_function
-from steelix._graph import arguments, results
-from steelix._node import OpType
-from steelix._type_system import Tensor
+from spox._arrow import Arrow
+from spox._arrowfields import ArrowFields
+from spox._attributes import AttrFloat32, _Ref
+from spox._function import Function, to_function
+from spox._graph import arguments, results
+from spox._node import OpType
+from spox._type_system import Tensor
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def linear(op):
         class Outputs(ArrowFields):
             Y: Arrow
 
-        op_type = OpType("LinearFunction", "steelix.test", 0)
+        op_type = OpType("LinearFunction", "spox.test", 0)
 
         attrs: Attributes
         inputs: Inputs
@@ -67,7 +67,7 @@ def linear2(op, linear):
         class Outputs(ArrowFields):
             Y: Arrow
 
-        op_type = OpType("LinearFunction2", "steelix.test", 0)
+        op_type = OpType("LinearFunction2", "spox.test", 0)
 
         attrs: Attributes
         inputs: Inputs
@@ -101,7 +101,7 @@ def cubic(op, linear):
         class Outputs(ArrowFields):
             Y: Arrow
 
-        op_type = OpType("CubicFunction", "steelix.test.extra", 0)
+        op_type = OpType("CubicFunction", "spox.test.extra", 0)
 
         attrs: Attributes
         inputs: Inputs
@@ -183,7 +183,7 @@ def isnan_graph(op):
         z=Tensor(numpy.float64, ()),
     )
 
-    @to_function("IsNaN", "steelix.test")
+    @to_function("IsNaN", "spox.test")
     def isnan(v: Arrow) -> List[Arrow]:
         return [op.not_(op.equal(v, v))]
 

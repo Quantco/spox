@@ -1,5 +1,5 @@
 """
-Module for Steelix operators that implement special internal behaviour that does not fit into the ONNX IR.
+Module for Spox operators that implement special internal behaviour that does not fit into the ONNX IR.
 They behave like a normal Node, but their inference, building and translation behaviour may be overriden.
 """
 
@@ -34,7 +34,7 @@ class Argument(_InternalNode):
       but note that ONNX Runtime only supports non-overridable initializers (implemented by Initializer).
     """
 
-    op_type = OpType("Argument", "steelix.internal", 0)
+    op_type = OpType("Argument", "spox.internal", 0)
 
     @dataclass
     class Attributes:
@@ -72,7 +72,7 @@ class Argument(_InternalNode):
 class _Initializer(_InternalNode):
     """Internal operator representing a non-overridable initializer."""
 
-    op_type = OpType("Initializer", "steelix.internal", 0)
+    op_type = OpType("Initializer", "spox.internal", 0)
 
     @dataclass
     class Attributes:
@@ -101,7 +101,7 @@ class _Initializer(_InternalNode):
 
 
 class _Embedded(_InternalNode):
-    """Internal operator used for embedding an existing ONNX ModelProto inside a Steelix graph."""
+    """Internal operator used for embedding an existing ONNX ModelProto inside a Spox graph."""
 
     model: onnx.ModelProto
 
@@ -115,7 +115,7 @@ class _Embedded(_InternalNode):
     class Outputs(ArrowFields):
         outputs: Sequence[Arrow]
 
-    op_type = OpType("Embedded", "steelix.internal", 0)
+    op_type = OpType("Embedded", "spox.internal", 0)
 
     attrs: Attributes
     inputs: Inputs
@@ -226,7 +226,7 @@ class _Introduce(_InternalNode):
     class Outputs(ArrowFields):
         outputs: Sequence[Arrow]
 
-    op_type = OpType("Introduce", "steelix.internal", 0)
+    op_type = OpType("Introduce", "spox.internal", 0)
 
     attrs: Attributes
     inputs: Inputs

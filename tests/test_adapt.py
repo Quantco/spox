@@ -6,14 +6,14 @@ import onnx
 import onnx.parser
 import pytest
 
-from steelix._arrow import Arrow
-from steelix._arrowfields import ArrowFields
-from steelix._attributes import AttrInt64s
-from steelix._graph import arguments, results
-from steelix._internal_op import embedded
-from steelix._node import OpType
-from steelix._standard import StandardNode
-from steelix._type_system import Tensor
+from spox._arrow import Arrow
+from spox._arrowfields import ArrowFields
+from spox._attributes import AttrInt64s
+from spox._graph import arguments, results
+from spox._internal_op import embedded
+from spox._node import OpType
+from spox._standard import StandardNode
+from spox._type_system import Tensor
 
 
 @pytest.fixture

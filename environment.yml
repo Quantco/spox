@@ -1,4 +1,4 @@
-name: steelix
+name: spox
 channels:
   - qc-internal
   - conda-forge

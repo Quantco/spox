@@ -10,8 +10,8 @@ try:
 except ModuleNotFoundError:
     pass
 
-from steelix._arrow import Arrow
-from steelix._type_system import Optional, Sequence, Tensor
+from spox._arrow import Arrow
+from spox._type_system import Optional, Sequence, Tensor
 
 __all__ = [
     "Arrow",

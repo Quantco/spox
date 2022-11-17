@@ -6,7 +6,7 @@ def promote(
 
     None-valued parameters are only kept in for ordering.
     """
-    from steelix._arrow import result_type
+    from spox._arrow import result_type
 
     promotable = [typ for typ in types if typ is not None]
     if not promotable:

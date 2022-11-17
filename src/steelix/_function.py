@@ -16,7 +16,7 @@ from ._type_system import Type
 if TYPE_CHECKING:
     from . import _graph
 
-DEFAULT_FUNCTION_DOMAIN = "steelix.default"
+DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
 Constructor: TypeAlias = Callable[..., Iterable[Arrow]]
 ConstructorT = TypeVar("ConstructorT", bound=Constructor)
@@ -142,9 +142,9 @@ def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
     return _Func
 
 
-def to_function(name: str, domain: str = "steelix.function", *, _version: int = 0):
+def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
     """
-    Decorate a given function to make the operation performed by it add a Steelix function to the graph.
+    Decorate a given function to make the operation performed by it add a Spox function to the graph.
 
     The function must be deterministic in the performed operations, as otherwise an error will be raised at build
     due to inconsistent function bodies.

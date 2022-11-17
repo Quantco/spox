@@ -5,11 +5,11 @@ import time
 import numpy
 import onnxruntime
 
-import steelix
-import steelix.opset.ai.onnx.v17 as op
+import spox
+import spox.opset.ai.onnx.v17 as op
 
 
-def uniform_of_shape(shape: steelix.Arrow) -> steelix.Arrow:
+def uniform_of_shape(shape: spox.Arrow) -> spox.Arrow:
     # Not providing the seed for randomness yields an undefined one - ONNX runtime seems to use the same one twice,
     # so we use a Python seed.
     return op.cast(
@@ -20,8 +20,8 @@ def uniform_of_shape(shape: steelix.Arrow) -> steelix.Arrow:
     )
 
 
-def get_pi_graph() -> steelix._graph.Graph:
-    (n,) = steelix._graph.arguments(n=steelix._type_system.Tensor(numpy.int64, ()))
+def get_pi_graph() -> spox._graph.Graph:
+    (n,) = spox._graph.arguments(n=spox._type_system.Tensor(numpy.int64, ()))
 
     xs = uniform_of_shape(op.reshape(n, op.const([1])))
     ys = uniform_of_shape(op.reshape(n, op.const([1])))
@@ -34,7 +34,7 @@ def get_pi_graph() -> steelix._graph.Graph:
     )
 
     return (
-        steelix._graph.results(pi=pi)
+        spox._graph.results(pi=pi)
         .with_name("monte_carlo_pi")
         .with_doc("Computes Pi by Monte Carlo with n samples.")
     )

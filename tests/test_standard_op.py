@@ -1,9 +1,9 @@
 import numpy
 import pytest
 
-from steelix._graph import arguments
-from steelix._type_inference import InferenceError
-from steelix._type_system import Tensor
+from spox._graph import arguments
+from spox._type_inference import InferenceError
+from spox._type_system import Tensor
 
 
 def test_basic_inference(op):
