@@ -4,9 +4,9 @@ import numpy
 import onnx
 import pytest
 
-from steelix._shape import Shape
-from steelix._type_system import Optional, Sequence, Tensor, Type
-from steelix._utils import dtype_to_tensor_type, tensor_type_to_dtype
+from spox._shape import Shape
+from spox._type_system import Optional, Sequence, Tensor, Type
+from spox._utils import dtype_to_tensor_type, tensor_type_to_dtype
 
 
 def tensor_type_proto(elem_type, shape):

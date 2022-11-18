@@ -3,9 +3,9 @@ import onnx
 import onnx.parser
 import pytest
 
-from steelix._graph import arguments, results
-from steelix._internal_op import embedded
-from steelix._type_system import Tensor
+from spox._graph import arguments, results
+from spox._internal_op import embedded
+from spox._type_system import Tensor
 
 
 @pytest.fixture

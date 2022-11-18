@@ -5,9 +5,9 @@ import numpy
 import onnxruntime
 import pytest
 
-import steelix.opset.ai.onnx.v17
-from steelix._debug import show_construction_tracebacks
-from steelix._graph import Graph
+import spox.opset.ai.onnx.v17
+from spox._debug import show_construction_tracebacks
+from spox._graph import Graph
 
 
 class ONNXRuntimeHelper:
@@ -70,6 +70,6 @@ def onnx_helper():
 
 
 # Selects operator sets for testing
-@pytest.fixture(params=[steelix.opset.ai.onnx.v17])
+@pytest.fixture(params=[spox.opset.ai.onnx.v17])
 def op(request):
     return request.param

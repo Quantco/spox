@@ -1,7 +1,7 @@
 import numpy
 
-from steelix._graph import arguments, results
-from steelix._type_system import Sequence, Tensor
+from spox._graph import arguments, results
+from spox._type_system import Sequence, Tensor
 
 
 def test_subgraph(op, onnx_helper):

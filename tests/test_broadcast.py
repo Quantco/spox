@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pytest
 
-from steelix._shape import Shape
+from spox._shape import Shape
 
 
 @pytest.fixture(

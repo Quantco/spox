@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from steelix._attributes import AttrTensor
+from spox._attributes import AttrTensor
 
 
 def test_bad_attribute_type_cast_fails(op):

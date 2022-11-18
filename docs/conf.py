@@ -26,10 +26,10 @@ import sys
 from subprocess import CalledProcessError
 from typing import cast
 
-_mod = importlib.import_module("steelix")
+_mod = importlib.import_module("spox")
 
 
-project = "steelix"
+project = "spox"
 copyright = f"{datetime.date.today().year}, QuantCo, Inc"
 author = "QuantCo, Inc."
 
@@ -39,7 +39,7 @@ extensions = [
     "sphinxcontrib.apidoc",
 ]
 
-apidoc_module_dir = "../src/steelix"
+apidoc_module_dir = "../src/spox"
 apidoc_output_dir = "api"
 apidoc_separate_modules = True
 apidoc_extra_args = ["--implicit-namespaces"]
@@ -103,6 +103,6 @@ def linkcode_resolve(domain, info):
         commit = "main"
 
     return (
-        "https://github.com/quantco/steelix"
+        "https://github.com/quantco/spox"
         f"/blob/{commit}/src/{_mod.__name__.replace('.', '/')}/{fn}{linespec}"
     )

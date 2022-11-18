@@ -11,8 +11,8 @@ from onnx.helper import (
     make_tensor_type_proto,
 )
 
-from steelix import _type_system
-from steelix._utils import dtype_to_tensor_type, from_array
+from spox import _type_system
+from spox._utils import dtype_to_tensor_type, from_array
 
 S = TypeVar("S")
 T = TypeVar("T")
@@ -136,11 +136,11 @@ class AttrGraph(Attr[Any]):
     _attribute_proto_type_int = AttributeProto.GRAPH
 
     def _validate(self):
-        from steelix._graph import Graph
+        from spox._graph import Graph
 
         if not isinstance(self.value, Graph):
             raise TypeError(
-                f"Expected value of type `steelix.graph.Graph found `{type(self.value)}`"
+                f"Expected value of type `spox.graph.Graph found `{type(self.value)}`"
             )
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:

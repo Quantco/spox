@@ -1,6 +1,6 @@
 
 package:
-  name: steelix
+  name: spox
   version: {{ environ.get('GIT_DESCRIBE_TAG', '').lstrip('v') }}{% if environ.get('GIT_DESCRIBE_NUMBER', 0)|int != 0 %}.post{{ GIT_DESCRIBE_NUMBER }}+{{ GIT_DESCRIBE_HASH }}{% endif %}
 
 source:
@@ -29,8 +29,8 @@ test:
   commands:
     - pip check
   imports:
-    - steelix
+    - spox
 
 about:
-  home: https://github.com/quantco/steelix
+  home: https://github.com/quantco/spox
   license: Proprietary

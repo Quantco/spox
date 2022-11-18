@@ -3,9 +3,9 @@ from typing import Tuple
 import numpy
 import pytest
 
-import steelix.opset.ai.onnx.v17 as op
-from steelix._arrow import Arrow
-from steelix._internal_op import unsafe_reshape
+import spox.opset.ai.onnx.v17 as op
+from spox._arrow import Arrow
+from spox._internal_op import unsafe_reshape
 
 
 # noinspection PyMethodParameters

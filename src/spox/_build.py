@@ -50,7 +50,7 @@ class Cached(Generic[T]):
 
 class BuildError(Exception):
     """
-    Indicates an error within the build, usually meaning that Steelix failed to resolve the graph structure
+    Indicates an error within the build, usually meaning that Spox failed to resolve the graph structure
     due to an internal error - for example if the implicit Node graph was tampered with or the algorithm had a fault.
     """
 
@@ -409,7 +409,7 @@ class Builder:
         -------
         ~
             See the definition for the exact contents of the BuildResult dataclass. Used to build GraphProto/ModelProto
-            from a Steelix Graph.
+            from a Spox Graph.
         """
         nodes: Dict[Node, Tuple[onnx.NodeProto, ...]] = {}
         # A bunch of model metadata we're collecting

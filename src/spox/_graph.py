@@ -177,7 +177,7 @@ class Graph:
     def with_opset(self, *args: Tuple[str, int]) -> "Graph":
         """
         Add the given minimum opset requirements to the graph.
-        Useful when the graph is using legacy nodes, but Steelix should attempt to convert them to a required version.
+        Useful when the graph is using legacy nodes, but Spox should attempt to convert them to a required version.
         """
         extra_opset_req = set(args)
         if self._extra_opset_req is not None:
@@ -287,7 +287,7 @@ class Graph:
         return consistent_nodes
 
     def to_onnx(self, *, concrete: bool = False) -> onnx.GraphProto:
-        """Perform the Steelix build process, gathering arguments,
+        """Perform the Spox build process, gathering arguments,
         results, nodes and other information.
 
         - Saves type information for arguments & results.
@@ -329,7 +329,7 @@ class Graph:
         if self._name:
             name = self._name
         else:
-            name = "steelix_graph"
+            name = "spox_graph"
 
         initializer_tensors = [
             from_array(arr, name)
@@ -348,7 +348,7 @@ class Graph:
 
     def to_onnx_model(
         self,
-        producer_name: str = "steelix",
+        producer_name: str = "spox",
         model_doc_string: str = "",
         infer_shapes: bool = False,
         check_model: Union[Literal[0], Literal[1], Literal[2]] = 1,

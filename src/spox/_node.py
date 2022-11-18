@@ -52,13 +52,13 @@ class Dataclass(Protocol):
 
 class Node(ABC):
     """
-    Abstract base class for representing operators in the Steelix graph, both standard ONNX and some internal.
+    Abstract base class for representing operators in the Spox graph, both standard ONNX and some internal.
     Should not be created directly - proper instances are created by various operator constructors internally.
 
     When subclassing, ``ArrowFields`` subtypes must be hinted in
     ``inputs``, ``outputs``. These hints by default specify results of
     ``in_type``, ``out_type``. ``Attributes`` must be a ``dataclass``
-    where its members are subclasses of :class:`steelix._attributes.Attr`.
+    where its members are subclasses of :class:`spox._attributes.Attr`.
 
     Names of fields in ``attrs`` and order of fields in ``inputs``, ``outputs`` are interpreted during building (ONNX).
 
