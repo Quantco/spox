@@ -24,7 +24,7 @@ from ._arrow import Arrow
 from ._arrowfields import ArrowFields
 from ._attributes import AttrGraph
 from ._fields import Fields
-from ._type_inference import _warn_unknown_types, get_hint
+from ._type_inference import _warn_unknown_types
 from ._type_system import Type
 
 if typing.TYPE_CHECKING:
@@ -251,7 +251,7 @@ class Node(ABC):
     def validate_types(self, warn_unknown: bool = True) -> None:
         """Validation of types, ran at the end of Node creation."""
         if warn_unknown:
-            for name, _, value_type in self._type_checks:
+            for name, value_type in self._type_checks:
                 _warn_unknown_types(value_type, name, self.get_op_repr())
 
     @property
@@ -261,9 +261,8 @@ class Node(ABC):
                 arrow = getattr(source, name)
                 if not arrow:
                     continue
-                hint = get_hint(typ)
                 value_type = arrow.type
-                yield name, hint, value_type
+                yield name, value_type
 
     def _init_output_arrows(
         self, types: Dict[str, Type], values: Dict[str, Any]
