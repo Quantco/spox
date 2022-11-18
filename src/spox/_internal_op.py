@@ -314,9 +314,10 @@ def unsafe_cast(x: Arrow, typ: Type) -> Arrow:
     Arrow
         Arrow with the type reset to whatever was given.
     """
-    x = intro(x)
-    x.type = typ
-    return x
+    y = intro(x)
+    y.type = typ
+    y._value = x._value
+    return y
 
 
 def unsafe_reshape(x: Arrow, shape: SimpleShape) -> Arrow:
