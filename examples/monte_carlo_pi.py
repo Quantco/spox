@@ -6,6 +6,7 @@ import numpy
 import onnxruntime
 
 import spox
+import spox._graph
 import spox.opset.ai.onnx.v17 as op
 
 
