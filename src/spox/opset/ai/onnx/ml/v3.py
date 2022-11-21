@@ -60,6 +60,8 @@ class _ArrayFeatureExtractor(StandardNode):
             raise InferenceError("Expected rank >= 1")
         if len(yt.shape) != 1:
             raise InferenceError("Input `Y` must be of rank 1.")
+        if len(xt.shape) == 1:
+            return {"Z": Tensor(xt.dtype, (1, yt.shape[-1]))}
         shape = tuple(list(xt.shape[:-1]) + [yt.shape[-1]])  # type: ignore
         return {"Z": Tensor(xt.dtype, shape)}
 
