@@ -7016,7 +7016,7 @@ def if_(
 
     Returns
     =======
-    outputs : Arrow
+    outputs : Sequence[Arrow]
         Type V.
         Values that are live-out to the enclosing scope. The return values in the `then_branch` and `else_branch` must be of the same data type. The `then_branch` and `else_branch` may produce tensors with the same element type and different shapes. If corresponding outputs from the then-branch and the else-branch have static shapes S1 and S2, then the shape of the corresponding output variable of the if-node (if present) must be compatible with both S1 and S2 as it represents the union of both possible shapes.For example, if in a model file, the the first output of `then_branch` is typed float tensor with shape [2] and the first output of `else_branch` is another float tensor with shape [3], If's first output should have (a) no shape set, or (b) a shape of rank 1 with neither `dim_value` nor `dim_param` set, or (c) a shape of rank 1 with a unique `dim_param`. In contrast, the first output cannot have the shape [2] since [2] and [3] are not compatible.
 
@@ -7855,7 +7855,7 @@ def loop(
 
     Returns
     =======
-    v_final_and_scan_outputs : Arrow
+    v_final_and_scan_outputs : Sequence[Arrow]
         Type V.
         Final N loop carried dependency values then K scan_outputs. Scan outputs must be Tensors.
 
@@ -11171,7 +11171,7 @@ def scan(
 
     Returns
     =======
-    final_state_and_scan_outputs : Arrow
+    final_state_and_scan_outputs : Sequence[Arrow]
         Type V.
         Final values of the loop's N state variables followed by K scan_outputs
 
@@ -11865,7 +11865,7 @@ def sequence_map(
 
     Returns
     =======
-    out_sequence : Arrow
+    out_sequence : Sequence[Arrow]
         Type S.
         Output sequence(s)
 
@@ -12548,7 +12548,7 @@ def split(
 
     Returns
     =======
-    outputs : Arrow
+    outputs : Sequence[Arrow]
         Type T.
         One or more outputs forming list of tensors after splitting
 
