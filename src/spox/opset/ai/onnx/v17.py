@@ -12506,6 +12506,9 @@ def split(
     axis
         Attribute.
         Which axis to split on. A negative value means counting dimensions from the back. Accepted range is [-rank, rank-1] where r = rank(input).
+    outputs_count
+        Specifies the number of variadic outputs of this operator.
+        Non-standard parameter created by the opset generator, as inference (a solution) it was not implemented or is impossible.
 
     Returns
     =======

@@ -12,8 +12,12 @@ endif %}{% endfor %}
     endif %}{%
 if is_variadic(schema.outputs[-1]) and not out_variadic_solution
     %}{{ schema.outputs[-1].name }}_count: int, {% endif %}
-    {% for attr in get_attributes(schema, attr_type_overrides, subgraph_solutions) %}
-    {{ attr.name }}: {{ attr.constructor_type_hint }}{% if attr.constructor_default %} = {{ attr.constructor_default }}{% endif %},
+{% for attr in attributes %}
+    {{ attr.name }}: {{ attr.constructor_type_hint }}{% if attr.constructor_default %} = {{ attr.constructor_default }}{% endif %}, {%
+endfor %}
+{% for attr in attributes %}{%
+    if (attr.attr_constructor == 'AttrGraph') and (attr.subgraph_solution is none)
+    %}{{ attr.name }}_input_types: Iterable[Type], {% endif %}
 {% endfor %}
 ) -> {{ get_constructor_return(schema) }}:
 {% filter indent(width=4) %}

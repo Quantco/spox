@@ -1,10 +1,9 @@
 import importlib.resources
 import re
 import subprocess
-import warnings
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union
 
 import jinja2
 import onnx
@@ -67,17 +66,22 @@ class Attribute:
     _member_type: str
     # Python expression for generating the argument types for this subgraph
     subgraph_solution: Optional[str] = None
+    # Mark whether generating extra constructor arguments caused by this should raise
+    allow_extra: bool = False
 
     def __post_init__(self):
         if self.attr_constructor != "AttrGraph" and self.subgraph_solution is not None:
             raise TypeError(
                 "Subgraph input types should only be specified for an AttrGraph."
             )
-        if self.attr_constructor == "AttrGraph" and self.subgraph_solution is None:
-            warnings.warn(
-                UserWarning(
-                    f"No subgraph input types specified for attribute {self.name}, typecheck will fail."
-                )
+        if (
+            self.attr_constructor == "AttrGraph"
+            and self.subgraph_solution is None
+            and not self.allow_extra
+        ):
+            raise RuntimeError(
+                f"Attribute {self.name} is a subgraph but no input types solution was provided. "
+                f"An argument {self.name}_input_types would be generated if it was in the allow list."
             )
 
     @property
@@ -94,7 +98,10 @@ class Attribute:
 
 
 def get_attributes(
-    schema: onnx.defs.OpSchema, attr_type_overrides, subgraph_solutions
+    schema: onnx.defs.OpSchema,
+    attr_type_overrides,
+    subgraph_solutions: Dict[str, str],
+    allow_extra: bool,
 ) -> List[Attribute]:
     out = []
     for name, attr in schema.attributes.items():
@@ -119,6 +126,7 @@ def get_attributes(
                 constructor_type_hint=constructor_type_hint,
                 constructor_default=default,  # type: ignore
                 subgraph_solution=subgraph_solutions.get(name),
+                allow_extra=allow_extra,
             )
         )
     return out
@@ -240,6 +248,7 @@ def write_schemas_code(
     out_variadic_solutions: Dict[str, str],
     subgraphs_solutions: Dict[str, Dict[str, str]],
     attr_type_overrides: List[Tuple[Optional[str], str, Tuple[str, str]]],
+    allow_extra_constructor_arguments: Set[str],
     extras: Sequence[str],
     gen_docstrings: bool,
 ) -> None:
@@ -280,10 +289,16 @@ def write_schemas_code(
             if schema.name in value_propagation
             else None
         )
-
+        allow_extra = schema.name in allow_extra_constructor_arguments
         print(
             class_.render(
                 schema=schema,
+                attributes=get_attributes(
+                    schema,
+                    attr_over,
+                    subgraphs_solutions.get(schema.name, {}),
+                    allow_extra,
+                ),
                 type_inference=inf,
                 value_propagation=prop,
                 attr_type_overrides=attr_over,
@@ -298,14 +313,13 @@ def write_schemas_code(
     for schema in sorted(schemas, key=lambda s: s.name):
         if schema.name not in built_names:
             continue
+        allow_extra = schema.name in allow_extra_constructor_arguments
         # Output variadic solution
         var_sol = out_variadic_solutions.get(schema.name)
-        if is_variadic(schema.outputs[-1]) and var_sol is None:
-            warnings.warn(
-                UserWarning(
-                    f"Operator {schema.name} has a variadic output but no solution was provided. "
-                    f"An extra attribute {schema.outputs[-1].name}_count will be generated."
-                )
+        if is_variadic(schema.outputs[-1]) and var_sol is None and not allow_extra:
+            raise RuntimeError(
+                f"Operator {schema.name} has a variadic output but no solution was provided. "
+                f"An argument {schema.outputs[-1].name}_count would be generated if it was in the allow list."
             )
         # Override for attribute type
         attr_over = {
@@ -316,10 +330,17 @@ def write_schemas_code(
         print(
             constructor.render(
                 schema=schema,
+                attributes=get_attributes(
+                    schema,
+                    attr_over,
+                    subgraphs_solutions.get(schema.name, {}),
+                    allow_extra,
+                ),
                 gen_docstrings=gen_docstrings,
                 out_variadic_solution=var_sol,
-                attr_type_overrides=attr_over,
                 subgraph_solutions=subgraphs_solutions.get(schema.name, {}),
+                attr_type_overrides=attr_over,
+                allow_extra=allow_extra,
             ),
             file=file,
             end="\n\n\n",
@@ -360,6 +381,7 @@ def main(
     attr_type_overrides: Optional[
         List[Tuple[Optional[str], str, Tuple[str, str]]]
     ] = None,
+    allow_extra_constructor_arguments: Optional[Iterable[str]] = None,
     extras: Sequence[str] = (),
     target: str = "src/spox/opset/",
     pre_commit_hooks: bool = True,
@@ -396,6 +418,9 @@ def main(
         Last element is a tuple where the first element is the user
         facing type hint used in the constructor function and the
         second element is the Attr type used internally.
+    allow_extra_constructor_arguments
+        List of operators for which creating an extra constructor argument should not raise.
+        This happens in the case of missing solutions for output variadic count or subgraph input types.
     extras
         List of template names under ``jinja_templates/extras/`` to add at the end of the code.
         This includes convenience functions that may use the rest of the operator set.
@@ -416,6 +441,9 @@ def main(
         subgraphs_solutions = {}
     if attr_type_overrides is None:
         attr_type_overrides = []
+    if allow_extra_constructor_arguments is None:
+        allow_extra_constructor_arguments = ()
+    allow_extra_constructor_arguments = set(allow_extra_constructor_arguments)
 
     onnx_domain = domain if domain != DEFAULT_DOMAIN else ""
     if version is None:
@@ -438,6 +466,7 @@ def main(
             out_variadic_solutions,
             subgraphs_solutions,
             attr_type_overrides,
+            allow_extra_constructor_arguments,
             extras,
             gen_docstrings,
         )
@@ -492,6 +521,7 @@ if __name__ == "__main__":
             ("If", "then_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
             ("If", "else_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
         ],
+        allow_extra_constructor_arguments=["Split"],
     )
     main(
         "ai.onnx.ml",
