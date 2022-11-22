@@ -15,6 +15,7 @@ from typing import (  # noqa: F401
 from typing import cast as typing_cast  # noqa: F401
 
 import numpy as np  # noqa: F401
+import numpy.typing as npt  # noqa: F401
 
 from spox._arrow import Arrow, _nil, result_type  # noqa: F401
 from spox._arrowfields import ArrowFields, NoArrows  # noqa: F401
@@ -681,7 +682,7 @@ def binarizer(
     """
     return _Binarizer(
         _Binarizer.Attributes(
-            threshold=None if threshold is None else AttrFloat32(threshold),
+            threshold=AttrFloat32(threshold),
         ),
         _Binarizer.Inputs(
             X=X,
@@ -738,9 +739,9 @@ def cast_map(
     """
     return _CastMap(
         _CastMap.Attributes(
-            cast_to=None if cast_to is None else AttrString(cast_to),
-            map_form=None if map_form is None else AttrString(map_form),
-            max_map=None if max_map is None else AttrInt64(max_map),
+            cast_to=AttrString(cast_to),
+            map_form=AttrString(map_form),
+            max_map=AttrInt64(max_map),
         ),
         _CastMap.Inputs(
             X=X,
@@ -812,10 +813,8 @@ def category_mapper(
         _CategoryMapper.Attributes(
             cats_int64s=None if cats_int64s is None else AttrInt64s(cats_int64s),
             cats_strings=None if cats_strings is None else AttrStrings(cats_strings),
-            default_int64=None if default_int64 is None else AttrInt64(default_int64),
-            default_string=None
-            if default_string is None
-            else AttrString(default_string),
+            default_int64=AttrInt64(default_int64),
+            default_string=AttrString(default_string),
         ),
         _CategoryMapper.Inputs(
             X=X,
@@ -1007,12 +1006,8 @@ def imputer(
             imputed_value_int64s=None
             if imputed_value_int64s is None
             else AttrInt64s(imputed_value_int64s),
-            replaced_value_float=None
-            if replaced_value_float is None
-            else AttrFloat32(replaced_value_float),
-            replaced_value_int64=None
-            if replaced_value_int64 is None
-            else AttrInt64(replaced_value_int64),
+            replaced_value_float=AttrFloat32(replaced_value_float),
+            replaced_value_int64=AttrInt64(replaced_value_int64),
         ),
         _Imputer.Inputs(
             X=X,
@@ -1111,11 +1106,9 @@ def label_encoder(
     """
     return _LabelEncoder(
         _LabelEncoder.Attributes(
-            default_float=None if default_float is None else AttrFloat32(default_float),
-            default_int64=None if default_int64 is None else AttrInt64(default_int64),
-            default_string=None
-            if default_string is None
-            else AttrString(default_string),
+            default_float=AttrFloat32(default_float),
+            default_int64=AttrInt64(default_int64),
+            default_string=AttrString(default_string),
             keys_floats=None if keys_floats is None else AttrFloat32s(keys_floats),
             keys_int64s=None if keys_int64s is None else AttrInt64s(keys_int64s),
             keys_strings=None if keys_strings is None else AttrStrings(keys_strings),
@@ -1197,12 +1190,10 @@ def linear_classifier(
             classlabels_strings=None
             if classlabels_strings is None
             else AttrStrings(classlabels_strings),
-            coefficients=None if coefficients is None else AttrFloat32s(coefficients),
+            coefficients=AttrFloat32s(coefficients),
             intercepts=None if intercepts is None else AttrFloat32s(intercepts),
-            multi_class=None if multi_class is None else AttrInt64(multi_class),
-            post_transform=None
-            if post_transform is None
-            else AttrString(post_transform),
+            multi_class=AttrInt64(multi_class),
+            post_transform=AttrString(post_transform),
         ),
         _LinearClassifier.Inputs(
             X=X,
@@ -1269,10 +1260,8 @@ def linear_regressor(
         _LinearRegressor.Attributes(
             coefficients=None if coefficients is None else AttrFloat32s(coefficients),
             intercepts=None if intercepts is None else AttrFloat32s(intercepts),
-            post_transform=None
-            if post_transform is None
-            else AttrString(post_transform),
-            targets=None if targets is None else AttrInt64(targets),
+            post_transform=AttrString(post_transform),
+            targets=AttrInt64(targets),
         ),
         _LinearRegressor.Inputs(
             X=X,
@@ -1333,7 +1322,7 @@ def normalizer(
     """
     return _Normalizer(
         _Normalizer.Attributes(
-            norm=None if norm is None else AttrString(norm),
+            norm=AttrString(norm),
         ),
         _Normalizer.Inputs(
             X=X,
@@ -1400,7 +1389,7 @@ def one_hot_encoder(
         _OneHotEncoder.Attributes(
             cats_int64s=None if cats_int64s is None else AttrInt64s(cats_int64s),
             cats_strings=None if cats_strings is None else AttrStrings(cats_strings),
-            zeros=None if zeros is None else AttrInt64(zeros),
+            zeros=AttrInt64(zeros),
         ),
         _OneHotEncoder.Inputs(
             X=X,
@@ -1502,10 +1491,8 @@ def svmclassifier(
             kernel_params=None
             if kernel_params is None
             else AttrFloat32s(kernel_params),
-            kernel_type=None if kernel_type is None else AttrString(kernel_type),
-            post_transform=None
-            if post_transform is None
-            else AttrString(post_transform),
+            kernel_type=AttrString(kernel_type),
+            post_transform=AttrString(post_transform),
             prob_a=None if prob_a is None else AttrFloat32s(prob_a),
             prob_b=None if prob_b is None else AttrFloat32s(prob_b),
             rho=None if rho is None else AttrFloat32s(rho),
@@ -1588,12 +1575,10 @@ def svmregressor(
             kernel_params=None
             if kernel_params is None
             else AttrFloat32s(kernel_params),
-            kernel_type=None if kernel_type is None else AttrString(kernel_type),
-            n_supports=None if n_supports is None else AttrInt64(n_supports),
-            one_class=None if one_class is None else AttrInt64(one_class),
-            post_transform=None
-            if post_transform is None
-            else AttrString(post_transform),
+            kernel_type=AttrString(kernel_type),
+            n_supports=AttrInt64(n_supports),
+            one_class=AttrInt64(one_class),
+            post_transform=AttrString(post_transform),
             rho=None if rho is None else AttrFloat32s(rho),
             support_vectors=None
             if support_vectors is None
@@ -1842,9 +1827,7 @@ def tree_ensemble_classifier(
             nodes_values_as_tensor=None
             if nodes_values_as_tensor is None
             else AttrTensor(nodes_values_as_tensor),
-            post_transform=None
-            if post_transform is None
-            else AttrString(post_transform),
+            post_transform=AttrString(post_transform),
         ),
         _TreeEnsembleClassifier.Inputs(
             X=X,
@@ -1993,9 +1976,7 @@ def tree_ensemble_regressor(
     """
     return _TreeEnsembleRegressor(
         _TreeEnsembleRegressor.Attributes(
-            aggregate_function=None
-            if aggregate_function is None
-            else AttrString(aggregate_function),
+            aggregate_function=AttrString(aggregate_function),
             base_values=None if base_values is None else AttrFloat32s(base_values),
             base_values_as_tensor=None
             if base_values_as_tensor is None
@@ -2026,9 +2007,7 @@ def tree_ensemble_regressor(
             nodes_values_as_tensor=None
             if nodes_values_as_tensor is None
             else AttrTensor(nodes_values_as_tensor),
-            post_transform=None
-            if post_transform is None
-            else AttrString(post_transform),
+            post_transform=AttrString(post_transform),
             target_ids=None if target_ids is None else AttrInt64s(target_ids),
             target_nodeids=None
             if target_nodeids is None

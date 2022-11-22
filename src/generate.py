@@ -144,7 +144,7 @@ def _get_default_value(attr, attr_type_overrides) -> Optional[str]:
     # We want to use e.g. np.int32 instead of an integer for dtypes
     if (
         attr.name in attr_type_overrides
-        and "np.generic" in attr_type_overrides[attr.name][0]
+        and attr_type_overrides[attr.name][0] == "npt.DTypeLike"
     ):
         return f"np.{onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[default].name}"
 
@@ -487,8 +487,8 @@ if __name__ == "__main__":
             },
         },
         attr_type_overrides=[
-            (None, "dtype", ("typing.Type[np.generic]", "AttrDtype")),
-            ("Cast", "to", ("typing.Type[np.generic]", "AttrDtype")),
+            (None, "dtype", ("npt.DTypeLike", "AttrDtype")),
+            ("Cast", "to", ("npt.DTypeLike", "AttrDtype")),
             ("If", "then_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
             ("If", "else_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
         ],
@@ -496,7 +496,7 @@ if __name__ == "__main__":
     main(
         "ai.onnx.ml",
         3,
-        attr_type_overrides=[(None, "dtype", ("typing.Type[np.generic]", "AttrDtype"))],
+        attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
         type_inference={
             "ArrayFeatureExtractor": "arrayfeatureextractor1",
             "Binarizer": "binarizer1",

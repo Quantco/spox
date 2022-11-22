@@ -15,6 +15,7 @@ from typing import (  # noqa: F401
 from typing import cast as typing_cast  # noqa: F401
 
 import numpy as np  # noqa: F401
+import numpy.typing as npt  # noqa: F401
 
 from spox._arrow import Arrow, _nil, result_type  # noqa: F401
 from spox._arrowfields import ArrowFields, NoArrows  # noqa: F401
@@ -3813,11 +3814,9 @@ def arg_max(
     """
     return _ArgMax(
         _ArgMax.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
-            select_last_index=None
-            if select_last_index is None
-            else AttrInt64(select_last_index),
+            axis=AttrInt64(axis),
+            keepdims=AttrInt64(keepdims),
+            select_last_index=AttrInt64(select_last_index),
         ),
         _ArgMax.Inputs(
             data=data,
@@ -3871,11 +3870,9 @@ def arg_min(
     """
     return _ArgMin(
         _ArgMin.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
-            select_last_index=None
-            if select_last_index is None
-            else AttrInt64(select_last_index),
+            axis=AttrInt64(axis),
+            keepdims=AttrInt64(keepdims),
+            select_last_index=AttrInt64(select_last_index),
         ),
         _ArgMin.Inputs(
             data=data,
@@ -4092,12 +4089,10 @@ def average_pool(
     """
     return _AveragePool(
         _AveragePool.Attributes(
-            auto_pad=None if auto_pad is None else AttrString(auto_pad),
-            ceil_mode=None if ceil_mode is None else AttrInt64(ceil_mode),
-            count_include_pad=None
-            if count_include_pad is None
-            else AttrInt64(count_include_pad),
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            auto_pad=AttrString(auto_pad),
+            ceil_mode=AttrInt64(ceil_mode),
+            count_include_pad=AttrInt64(count_include_pad),
+            kernel_shape=AttrInt64s(kernel_shape),
             pads=None if pads is None else AttrInt64s(pads),
             strides=None if strides is None else AttrInt64s(strides),
         ),
@@ -4201,9 +4196,9 @@ def batch_normalization(
     """
     return _BatchNormalization(
         _BatchNormalization.Attributes(
-            epsilon=None if epsilon is None else AttrFloat32(epsilon),
-            momentum=None if momentum is None else AttrFloat32(momentum),
-            training_mode=None if training_mode is None else AttrInt64(training_mode),
+            epsilon=AttrFloat32(epsilon),
+            momentum=AttrFloat32(momentum),
+            training_mode=AttrInt64(training_mode),
         ),
         _BatchNormalization.Inputs(
             X=X,
@@ -4218,7 +4213,7 @@ def batch_normalization(
 def bernoulli(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[np.generic]] = None,
+    dtype: Optional[npt.DTypeLike] = None,
     seed: Optional[float] = None,
 ) -> Arrow:
     r"""
@@ -4311,7 +4306,7 @@ def bit_shift(
     """
     return _BitShift(
         _BitShift.Attributes(
-            direction=None if direction is None else AttrString(direction),
+            direction=AttrString(direction),
         ),
         _BitShift.Inputs(
             X=X,
@@ -4357,10 +4352,8 @@ def blackman_window(
     """
     return _BlackmanWindow(
         _BlackmanWindow.Attributes(
-            output_datatype=None
-            if output_datatype is None
-            else AttrInt64(output_datatype),
-            periodic=None if periodic is None else AttrInt64(periodic),
+            output_datatype=AttrInt64(output_datatype),
+            periodic=AttrInt64(periodic),
         ),
         _BlackmanWindow.Inputs(
             size=size,
@@ -4371,7 +4364,7 @@ def blackman_window(
 def cast(
     input: Arrow,
     *,
-    to: typing.Type[np.generic],
+    to: npt.DTypeLike,
 ) -> Arrow:
     r"""
     The operator casts the elements of a given input tensor to a data type
@@ -4417,7 +4410,7 @@ def cast(
     """
     return _Cast(
         _Cast.Attributes(
-            to=None if to is None else AttrDtype(to),
+            to=AttrDtype(to),
         ),
         _Cast.Inputs(
             input=input,
@@ -4538,7 +4531,7 @@ def celu(
     """
     return _Celu(
         _Celu.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha),
         ),
         _Celu.Inputs(
             X=X,
@@ -4671,7 +4664,7 @@ def concat(
     """
     return _Concat(
         _Concat.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _Concat.Inputs(
             inputs=inputs,
@@ -4719,8 +4712,8 @@ def concat_from_sequence(
     """
     return _ConcatFromSequence(
         _ConcatFromSequence.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            new_axis=None if new_axis is None else AttrInt64(new_axis),
+            axis=AttrInt64(axis),
+            new_axis=AttrInt64(new_axis),
         ),
         _ConcatFromSequence.Inputs(
             input_sequence=input_sequence,
@@ -4898,9 +4891,9 @@ def conv(
     """
     return _Conv(
         _Conv.Attributes(
-            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            auto_pad=AttrString(auto_pad),
             dilations=None if dilations is None else AttrInt64s(dilations),
-            group=None if group is None else AttrInt64(group),
+            group=AttrInt64(group),
             kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
             pads=None if pads is None else AttrInt64s(pads),
             strides=None if strides is None else AttrInt64s(strides),
@@ -4980,9 +4973,9 @@ def conv_integer(
     """
     return _ConvInteger(
         _ConvInteger.Attributes(
-            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            auto_pad=AttrString(auto_pad),
             dilations=None if dilations is None else AttrInt64s(dilations),
-            group=None if group is None else AttrInt64(group),
+            group=AttrInt64(group),
             kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
             pads=None if pads is None else AttrInt64s(pads),
             strides=None if strides is None else AttrInt64s(strides),
@@ -5071,9 +5064,9 @@ def conv_transpose(
     """
     return _ConvTranspose(
         _ConvTranspose.Attributes(
-            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            auto_pad=AttrString(auto_pad),
             dilations=None if dilations is None else AttrInt64s(dilations),
-            group=None if group is None else AttrInt64(group),
+            group=AttrInt64(group),
             kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
             output_padding=None
             if output_padding is None
@@ -5214,8 +5207,8 @@ def cum_sum(
     """
     return _CumSum(
         _CumSum.Attributes(
-            exclusive=None if exclusive is None else AttrInt64(exclusive),
-            reverse=None if reverse is None else AttrInt64(reverse),
+            exclusive=AttrInt64(exclusive),
+            reverse=AttrInt64(reverse),
         ),
         _CumSum.Inputs(
             x=x,
@@ -5269,9 +5262,9 @@ def dft(
     """
     return _DFT(
         _DFT.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            inverse=None if inverse is None else AttrInt64(inverse),
-            onesided=None if onesided is None else AttrInt64(onesided),
+            axis=AttrInt64(axis),
+            inverse=AttrInt64(inverse),
+            onesided=AttrInt64(onesided),
         ),
         _DFT.Inputs(
             input=input,
@@ -5331,8 +5324,8 @@ def depth_to_space(
     """
     return _DepthToSpace(
         _DepthToSpace.Attributes(
-            blocksize=None if blocksize is None else AttrInt64(blocksize),
-            mode=None if mode is None else AttrString(mode),
+            blocksize=AttrInt64(blocksize),
+            mode=AttrString(mode),
         ),
         _DepthToSpace.Inputs(
             input=input,
@@ -5384,7 +5377,7 @@ def dequantize_linear(
     """
     return _DequantizeLinear(
         _DequantizeLinear.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _DequantizeLinear.Inputs(
             x=x,
@@ -5646,7 +5639,7 @@ def einsum(
     """
     return _Einsum(
         _Einsum.Attributes(
-            equation=None if equation is None else AttrString(equation),
+            equation=AttrString(equation),
         ),
         _Einsum.Inputs(
             Inputs=Inputs,
@@ -5688,7 +5681,7 @@ def elu(
     """
     return _Elu(
         _Elu.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha),
         ),
         _Elu.Inputs(
             X=X,
@@ -5851,7 +5844,7 @@ def expand(
 def eye_like(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[np.generic]] = None,
+    dtype: Optional[npt.DTypeLike] = None,
     k: int = 0,
 ) -> Arrow:
     r"""
@@ -5892,7 +5885,7 @@ def eye_like(
     return _EyeLike(
         _EyeLike.Attributes(
             dtype=None if dtype is None else AttrDtype(dtype),
-            k=None if k is None else AttrInt64(k),
+            k=AttrInt64(k),
         ),
         _EyeLike.Inputs(
             input=input,
@@ -5934,7 +5927,7 @@ def flatten(
     """
     return _Flatten(
         _Flatten.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _Flatten.Inputs(
             input=input,
@@ -6106,12 +6099,10 @@ def gru(
             else AttrFloat32s(activation_beta),
             activations=None if activations is None else AttrStrings(activations),
             clip=None if clip is None else AttrFloat32(clip),
-            direction=None if direction is None else AttrString(direction),
+            direction=AttrString(direction),
             hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
-            layout=None if layout is None else AttrInt64(layout),
-            linear_before_reset=None
-            if linear_before_reset is None
-            else AttrInt64(linear_before_reset),
+            layout=AttrInt64(layout),
+            linear_before_reset=AttrInt64(linear_before_reset),
         ),
         _GRU.Inputs(
             X=X,
@@ -6210,7 +6201,7 @@ def gather(
     """
     return _Gather(
         _Gather.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _Gather.Inputs(
             data=data,
@@ -6303,7 +6294,7 @@ def gather_elements(
     """
     return _GatherElements(
         _GatherElements.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _GatherElements.Inputs(
             data=data,
@@ -6397,7 +6388,7 @@ def gather_nd(
     """
     return _GatherND(
         _GatherND.Attributes(
-            batch_dims=None if batch_dims is None else AttrInt64(batch_dims),
+            batch_dims=AttrInt64(batch_dims),
         ),
         _GatherND.Inputs(
             data=data,
@@ -6467,10 +6458,10 @@ def gemm(
     """
     return _Gemm(
         _Gemm.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
-            beta=None if beta is None else AttrFloat32(beta),
-            transA=None if transA is None else AttrInt64(transA),
-            transB=None if transB is None else AttrInt64(transB),
+            alpha=AttrFloat32(alpha),
+            beta=AttrFloat32(beta),
+            transA=AttrInt64(transA),
+            transB=AttrInt64(transB),
         ),
         _Gemm.Inputs(
             A=A,
@@ -6549,7 +6540,7 @@ def global_lp_pool(
     """
     return _GlobalLpPool(
         _GlobalLpPool.Attributes(
-            p=None if p is None else AttrInt64(p),
+            p=AttrInt64(p),
         ),
         _GlobalLpPool.Inputs(
             X=X,
@@ -6725,9 +6716,9 @@ def grid_sample(
     """
     return _GridSample(
         _GridSample.Attributes(
-            align_corners=None if align_corners is None else AttrInt64(align_corners),
-            mode=None if mode is None else AttrString(mode),
-            padding_mode=None if padding_mode is None else AttrString(padding_mode),
+            align_corners=AttrInt64(align_corners),
+            mode=AttrString(mode),
+            padding_mode=AttrString(padding_mode),
         ),
         _GridSample.Inputs(
             X=X,
@@ -6773,10 +6764,8 @@ def hamming_window(
     """
     return _HammingWindow(
         _HammingWindow.Attributes(
-            output_datatype=None
-            if output_datatype is None
-            else AttrInt64(output_datatype),
-            periodic=None if periodic is None else AttrInt64(periodic),
+            output_datatype=AttrInt64(output_datatype),
+            periodic=AttrInt64(periodic),
         ),
         _HammingWindow.Inputs(
             size=size,
@@ -6821,10 +6810,8 @@ def hann_window(
     """
     return _HannWindow(
         _HannWindow.Attributes(
-            output_datatype=None
-            if output_datatype is None
-            else AttrInt64(output_datatype),
-            periodic=None if periodic is None else AttrInt64(periodic),
+            output_datatype=AttrInt64(output_datatype),
+            periodic=AttrInt64(periodic),
         ),
         _HannWindow.Inputs(
             size=size,
@@ -6870,8 +6857,8 @@ def hard_sigmoid(
     """
     return _HardSigmoid(
         _HardSigmoid.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
-            beta=None if beta is None else AttrFloat32(beta),
+            alpha=AttrFloat32(alpha),
+            beta=AttrFloat32(beta),
         ),
         _HardSigmoid.Inputs(
             X=X,
@@ -6952,7 +6939,7 @@ def hardmax(
     """
     return _Hardmax(
         _Hardmax.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _Hardmax.Inputs(
             input=input,
@@ -7032,12 +7019,8 @@ def if_(
     _then_branch_subgraph: Graph = subgraph((), then_branch)
     return _If(
         _If.Attributes(
-            else_branch=None
-            if else_branch is None
-            else AttrGraph(_else_branch_subgraph),
-            then_branch=None
-            if then_branch is None
-            else AttrGraph(_then_branch_subgraph),
+            else_branch=AttrGraph(_else_branch_subgraph),
+            then_branch=AttrGraph(_then_branch_subgraph),
         ),
         _If.Inputs(
             cond=cond,
@@ -7089,7 +7072,7 @@ def instance_normalization(
     """
     return _InstanceNormalization(
         _InstanceNormalization.Attributes(
-            epsilon=None if epsilon is None else AttrFloat32(epsilon),
+            epsilon=AttrFloat32(epsilon),
         ),
         _InstanceNormalization.Inputs(
             input=input,
@@ -7136,12 +7119,8 @@ def is_inf(
     """
     return _IsInf(
         _IsInf.Attributes(
-            detect_negative=None
-            if detect_negative is None
-            else AttrInt64(detect_negative),
-            detect_positive=None
-            if detect_positive is None
-            else AttrInt64(detect_positive),
+            detect_negative=AttrInt64(detect_negative),
+            detect_positive=AttrInt64(detect_positive),
         ),
         _IsInf.Inputs(
             X=X,
@@ -7234,10 +7213,10 @@ def lrn(
     """
     return _LRN(
         _LRN.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
-            beta=None if beta is None else AttrFloat32(beta),
-            bias=None if bias is None else AttrFloat32(bias),
-            size=None if size is None else AttrInt64(size),
+            alpha=AttrFloat32(alpha),
+            beta=AttrFloat32(beta),
+            bias=AttrFloat32(bias),
+            size=AttrInt64(size),
         ),
         _LRN.Inputs(
             X=X,
@@ -7389,10 +7368,10 @@ def lstm(
             else AttrFloat32s(activation_beta),
             activations=None if activations is None else AttrStrings(activations),
             clip=None if clip is None else AttrFloat32(clip),
-            direction=None if direction is None else AttrString(direction),
+            direction=AttrString(direction),
             hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
-            input_forget=None if input_forget is None else AttrInt64(input_forget),
-            layout=None if layout is None else AttrInt64(layout),
+            input_forget=AttrInt64(input_forget),
+            layout=AttrInt64(layout),
         ),
         _LSTM.Inputs(
             X=X,
@@ -7500,9 +7479,9 @@ def layer_normalization(
     """
     return _LayerNormalization(
         _LayerNormalization.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            epsilon=None if epsilon is None else AttrFloat32(epsilon),
-            stash_type=None if stash_type is None else AttrInt64(stash_type),
+            axis=AttrInt64(axis),
+            epsilon=AttrFloat32(epsilon),
+            stash_type=AttrInt64(stash_type),
         ),
         _LayerNormalization.Inputs(
             X=X,
@@ -7548,7 +7527,7 @@ def leaky_relu(
     """
     return _LeakyRelu(
         _LeakyRelu.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha),
         ),
         _LeakyRelu.Inputs(
             X=X,
@@ -7709,7 +7688,7 @@ def log_softmax(
     """
     return _LogSoftmax(
         _LogSoftmax.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _LogSoftmax.Inputs(
             input=input,
@@ -7875,7 +7854,7 @@ def loop(
     )
     return _Loop(
         _Loop.Attributes(
-            body=None if body is None else AttrGraph(_body_subgraph),
+            body=AttrGraph(_body_subgraph),
         ),
         _Loop.Inputs(
             M=M,
@@ -7922,8 +7901,8 @@ def lp_normalization(
     """
     return _LpNormalization(
         _LpNormalization.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            p=None if p is None else AttrInt64(p),
+            axis=AttrInt64(axis),
+            p=AttrInt64(p),
         ),
         _LpNormalization.Inputs(
             input=input,
@@ -7983,9 +7962,9 @@ def lp_pool(
     """
     return _LpPool(
         _LpPool.Attributes(
-            auto_pad=None if auto_pad is None else AttrString(auto_pad),
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
-            p=None if p is None else AttrInt64(p),
+            auto_pad=AttrString(auto_pad),
+            kernel_shape=AttrInt64s(kernel_shape),
+            p=AttrInt64(p),
             pads=None if pads is None else AttrInt64s(pads),
             strides=None if strides is None else AttrInt64s(strides),
         ),
@@ -8204,12 +8183,12 @@ def max_pool(
     """
     return _MaxPool(
         _MaxPool.Attributes(
-            auto_pad=None if auto_pad is None else AttrString(auto_pad),
-            ceil_mode=None if ceil_mode is None else AttrInt64(ceil_mode),
+            auto_pad=AttrString(auto_pad),
+            ceil_mode=AttrInt64(ceil_mode),
             dilations=None if dilations is None else AttrInt64s(dilations),
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            kernel_shape=AttrInt64s(kernel_shape),
             pads=None if pads is None else AttrInt64s(pads),
-            storage_order=None if storage_order is None else AttrInt64(storage_order),
+            storage_order=AttrInt64(storage_order),
             strides=None if strides is None else AttrInt64s(strides),
         ),
         _MaxPool.Inputs(
@@ -8260,8 +8239,8 @@ def max_roi_pool(
     """
     return _MaxRoiPool(
         _MaxRoiPool.Attributes(
-            pooled_shape=None if pooled_shape is None else AttrInt64s(pooled_shape),
-            spatial_scale=None if spatial_scale is None else AttrFloat32(spatial_scale),
+            pooled_shape=AttrInt64s(pooled_shape),
+            spatial_scale=AttrFloat32(spatial_scale),
         ),
         _MaxRoiPool.Inputs(
             X=X,
@@ -8333,7 +8312,7 @@ def max_unpool(
     """
     return _MaxUnpool(
         _MaxUnpool.Attributes(
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
+            kernel_shape=AttrInt64s(kernel_shape),
             pads=None if pads is None else AttrInt64s(pads),
             strides=None if strides is None else AttrInt64s(strides),
         ),
@@ -8413,7 +8392,7 @@ def mean_variance_normalization(
     """
     return _MeanVarianceNormalization(
         _MeanVarianceNormalization.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s(axes),
         ),
         _MeanVarianceNormalization.Inputs(
             X=X,
@@ -8475,9 +8454,7 @@ def mel_weight_matrix(
     """
     return _MelWeightMatrix(
         _MelWeightMatrix.Attributes(
-            output_datatype=None
-            if output_datatype is None
-            else AttrInt64(output_datatype),
+            output_datatype=AttrInt64(output_datatype),
         ),
         _MelWeightMatrix.Inputs(
             num_mel_bins=num_mel_bins,
@@ -8568,7 +8545,7 @@ def mod(
     """
     return _Mod(
         _Mod.Attributes(
-            fmod=None if fmod is None else AttrInt64(fmod),
+            fmod=AttrInt64(fmod),
         ),
         _Mod.Inputs(
             A=A,
@@ -8620,7 +8597,7 @@ def mul(
 def multinomial(
     input: Arrow,
     *,
-    dtype: typing.Type[np.generic] = np.int32,
+    dtype: npt.DTypeLike = np.int32,
     sample_size: int = 1,
     seed: Optional[float] = None,
 ) -> Arrow:
@@ -8659,8 +8636,8 @@ def multinomial(
     """
     return _Multinomial(
         _Multinomial.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
-            sample_size=None if sample_size is None else AttrInt64(sample_size),
+            dtype=AttrDtype(dtype),
+            sample_size=AttrInt64(sample_size),
             seed=None if seed is None else AttrFloat32(seed),
         ),
         _Multinomial.Inputs(
@@ -8814,7 +8791,7 @@ def negative_log_likelihood_loss(
     return _NegativeLogLikelihoodLoss(
         _NegativeLogLikelihoodLoss.Attributes(
             ignore_index=None if ignore_index is None else AttrInt64(ignore_index),
-            reduction=None if reduction is None else AttrString(reduction),
+            reduction=AttrString(reduction),
         ),
         _NegativeLogLikelihoodLoss.Inputs(
             input=input,
@@ -8876,9 +8853,7 @@ def non_max_suppression(
     """
     return _NonMaxSuppression(
         _NonMaxSuppression.Attributes(
-            center_point_box=None
-            if center_point_box is None
-            else AttrInt64(center_point_box),
+            center_point_box=AttrInt64(center_point_box),
         ),
         _NonMaxSuppression.Inputs(
             boxes=boxes,
@@ -9017,7 +8992,7 @@ def one_hot(
     """
     return _OneHot(
         _OneHot.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _OneHot.Inputs(
             indices=indices,
@@ -9314,7 +9289,7 @@ def pad(
     """
     return _Pad(
         _Pad.Attributes(
-            mode=None if mode is None else AttrString(mode),
+            mode=AttrString(mode),
         ),
         _Pad.Inputs(
             data=data,
@@ -9459,9 +9434,9 @@ def qlinear_conv(
     """
     return _QLinearConv(
         _QLinearConv.Attributes(
-            auto_pad=None if auto_pad is None else AttrString(auto_pad),
+            auto_pad=AttrString(auto_pad),
             dilations=None if dilations is None else AttrInt64s(dilations),
-            group=None if group is None else AttrInt64(group),
+            group=AttrInt64(group),
             kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
             pads=None if pads is None else AttrInt64s(pads),
             strides=None if strides is None else AttrInt64s(strides),
@@ -9605,7 +9580,7 @@ def quantize_linear(
     """
     return _QuantizeLinear(
         _QuantizeLinear.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _QuantizeLinear.Inputs(
             x=x,
@@ -9732,11 +9707,11 @@ def rnn(
             activation_beta=None
             if activation_beta is None
             else AttrFloat32s(activation_beta),
-            activations=None if activations is None else AttrStrings(activations),
+            activations=AttrStrings(activations),
             clip=None if clip is None else AttrFloat32(clip),
-            direction=None if direction is None else AttrString(direction),
+            direction=AttrString(direction),
             hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
-            layout=None if layout is None else AttrInt64(layout),
+            layout=AttrInt64(layout),
         ),
         _RNN.Inputs(
             X=X,
@@ -9751,7 +9726,7 @@ def rnn(
 
 def random_normal(
     *,
-    dtype: typing.Type[np.generic] = np.float32,
+    dtype: npt.DTypeLike = np.float32,
     mean: float = 0.0,
     scale: float = 1.0,
     seed: Optional[float] = None,
@@ -9798,11 +9773,11 @@ def random_normal(
     """
     return _RandomNormal(
         _RandomNormal.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
-            mean=None if mean is None else AttrFloat32(mean),
-            scale=None if scale is None else AttrFloat32(scale),
+            dtype=AttrDtype(dtype),
+            mean=AttrFloat32(mean),
+            scale=AttrFloat32(scale),
             seed=None if seed is None else AttrFloat32(seed),
-            shape=None if shape is None else AttrInt64s(shape),
+            shape=AttrInt64s(shape),
         ),
         _RandomNormal.Inputs(),
     ).outputs.output
@@ -9811,7 +9786,7 @@ def random_normal(
 def random_normal_like(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[np.generic]] = None,
+    dtype: Optional[npt.DTypeLike] = None,
     mean: float = 0.0,
     scale: float = 1.0,
     seed: Optional[float] = None,
@@ -9859,8 +9834,8 @@ def random_normal_like(
     return _RandomNormalLike(
         _RandomNormalLike.Attributes(
             dtype=None if dtype is None else AttrDtype(dtype),
-            mean=None if mean is None else AttrFloat32(mean),
-            scale=None if scale is None else AttrFloat32(scale),
+            mean=AttrFloat32(mean),
+            scale=AttrFloat32(scale),
             seed=None if seed is None else AttrFloat32(seed),
         ),
         _RandomNormalLike.Inputs(
@@ -9871,7 +9846,7 @@ def random_normal_like(
 
 def random_uniform(
     *,
-    dtype: typing.Type[np.generic] = np.float32,
+    dtype: npt.DTypeLike = np.float32,
     high: float = 1.0,
     low: float = 0.0,
     seed: Optional[float] = None,
@@ -9917,11 +9892,11 @@ def random_uniform(
     """
     return _RandomUniform(
         _RandomUniform.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
-            high=None if high is None else AttrFloat32(high),
-            low=None if low is None else AttrFloat32(low),
+            dtype=AttrDtype(dtype),
+            high=AttrFloat32(high),
+            low=AttrFloat32(low),
             seed=None if seed is None else AttrFloat32(seed),
-            shape=None if shape is None else AttrInt64s(shape),
+            shape=AttrInt64s(shape),
         ),
         _RandomUniform.Inputs(),
     ).outputs.output
@@ -9930,7 +9905,7 @@ def random_uniform(
 def random_uniform_like(
     input: Arrow,
     *,
-    dtype: Optional[typing.Type[np.generic]] = None,
+    dtype: Optional[npt.DTypeLike] = None,
     high: float = 1.0,
     low: float = 0.0,
     seed: Optional[float] = None,
@@ -9978,8 +9953,8 @@ def random_uniform_like(
     return _RandomUniformLike(
         _RandomUniformLike.Attributes(
             dtype=None if dtype is None else AttrDtype(dtype),
-            high=None if high is None else AttrFloat32(high),
-            low=None if low is None else AttrFloat32(low),
+            high=AttrFloat32(high),
+            low=AttrFloat32(low),
             seed=None if seed is None else AttrFloat32(seed),
         ),
         _RandomUniformLike.Inputs(
@@ -10121,7 +10096,7 @@ def reduce_l1(
     return _ReduceL1(
         _ReduceL1.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceL1.Inputs(
             data=data,
@@ -10170,7 +10145,7 @@ def reduce_l2(
     return _ReduceL2(
         _ReduceL2.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceL2.Inputs(
             data=data,
@@ -10219,7 +10194,7 @@ def reduce_log_sum(
     return _ReduceLogSum(
         _ReduceLogSum.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceLogSum.Inputs(
             data=data,
@@ -10268,7 +10243,7 @@ def reduce_log_sum_exp(
     return _ReduceLogSumExp(
         _ReduceLogSumExp.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceLogSumExp.Inputs(
             data=data,
@@ -10317,7 +10292,7 @@ def reduce_max(
     return _ReduceMax(
         _ReduceMax.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceMax.Inputs(
             data=data,
@@ -10366,7 +10341,7 @@ def reduce_mean(
     return _ReduceMean(
         _ReduceMean.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceMean.Inputs(
             data=data,
@@ -10415,7 +10390,7 @@ def reduce_min(
     return _ReduceMin(
         _ReduceMin.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceMin.Inputs(
             data=data,
@@ -10464,7 +10439,7 @@ def reduce_prod(
     return _ReduceProd(
         _ReduceProd.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceProd.Inputs(
             data=data,
@@ -10516,10 +10491,8 @@ def reduce_sum(
     """
     return _ReduceSum(
         _ReduceSum.Attributes(
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
-            noop_with_empty_axes=None
-            if noop_with_empty_axes is None
-            else AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims),
+            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
         ),
         _ReduceSum.Inputs(
             data=data,
@@ -10569,7 +10542,7 @@ def reduce_sum_square(
     return _ReduceSumSquare(
         _ReduceSumSquare.Attributes(
             axes=None if axes is None else AttrInt64s(axes),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            keepdims=AttrInt64(keepdims),
         ),
         _ReduceSumSquare.Inputs(
             data=data,
@@ -10656,7 +10629,7 @@ def reshape(
     """
     return _Reshape(
         _Reshape.Attributes(
-            allowzero=None if allowzero is None else AttrInt64(allowzero),
+            allowzero=AttrInt64(allowzero),
         ),
         _Reshape.Inputs(
             data=data,
@@ -10744,18 +10717,12 @@ def resize(
     """
     return _Resize(
         _Resize.Attributes(
-            coordinate_transformation_mode=None
-            if coordinate_transformation_mode is None
-            else AttrString(coordinate_transformation_mode),
-            cubic_coeff_a=None if cubic_coeff_a is None else AttrFloat32(cubic_coeff_a),
-            exclude_outside=None
-            if exclude_outside is None
-            else AttrInt64(exclude_outside),
-            extrapolation_value=None
-            if extrapolation_value is None
-            else AttrFloat32(extrapolation_value),
-            mode=None if mode is None else AttrString(mode),
-            nearest_mode=None if nearest_mode is None else AttrString(nearest_mode),
+            coordinate_transformation_mode=AttrString(coordinate_transformation_mode),
+            cubic_coeff_a=AttrFloat32(cubic_coeff_a),
+            exclude_outside=AttrInt64(exclude_outside),
+            extrapolation_value=AttrFloat32(extrapolation_value),
+            mode=AttrString(mode),
+            nearest_mode=AttrString(nearest_mode),
         ),
         _Resize.Inputs(
             X=X,
@@ -10833,8 +10800,8 @@ def reverse_sequence(
     """
     return _ReverseSequence(
         _ReverseSequence.Attributes(
-            batch_axis=None if batch_axis is None else AttrInt64(batch_axis),
-            time_axis=None if time_axis is None else AttrInt64(time_axis),
+            batch_axis=AttrInt64(batch_axis),
+            time_axis=AttrInt64(time_axis),
         ),
         _ReverseSequence.Inputs(
             input=input,
@@ -10913,16 +10880,12 @@ def roi_align(
     """
     return _RoiAlign(
         _RoiAlign.Attributes(
-            coordinate_transformation_mode=None
-            if coordinate_transformation_mode is None
-            else AttrString(coordinate_transformation_mode),
-            mode=None if mode is None else AttrString(mode),
-            output_height=None if output_height is None else AttrInt64(output_height),
-            output_width=None if output_width is None else AttrInt64(output_width),
-            sampling_ratio=None
-            if sampling_ratio is None
-            else AttrInt64(sampling_ratio),
-            spatial_scale=None if spatial_scale is None else AttrFloat32(spatial_scale),
+            coordinate_transformation_mode=AttrString(coordinate_transformation_mode),
+            mode=AttrString(mode),
+            output_height=AttrInt64(output_height),
+            output_width=AttrInt64(output_width),
+            sampling_ratio=AttrInt64(sampling_ratio),
+            spatial_scale=AttrFloat32(spatial_scale),
         ),
         _RoiAlign.Inputs(
             X=X,
@@ -11021,7 +10984,7 @@ def stft(
     """
     return _STFT(
         _STFT.Attributes(
-            onesided=None if onesided is None else AttrInt64(onesided),
+            onesided=AttrInt64(onesided),
         ),
         _STFT.Inputs(
             signal=signal,
@@ -11200,10 +11163,8 @@ def scan(
     )
     return _Scan(
         _Scan.Attributes(
-            body=None if body is None else AttrGraph(_body_subgraph),
-            num_scan_inputs=None
-            if num_scan_inputs is None
-            else AttrInt64(num_scan_inputs),
+            body=AttrGraph(_body_subgraph),
+            num_scan_inputs=AttrInt64(num_scan_inputs),
             scan_input_axes=None
             if scan_input_axes is None
             else AttrInt64s(scan_input_axes),
@@ -11312,7 +11273,7 @@ def scatter(
     """
     return _Scatter(
         _Scatter.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _Scatter.Inputs(
             data=data,
@@ -11426,8 +11387,8 @@ def scatter_elements(
     """
     return _ScatterElements(
         _ScatterElements.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            reduction=None if reduction is None else AttrString(reduction),
+            axis=AttrInt64(axis),
+            reduction=AttrString(reduction),
         ),
         _ScatterElements.Inputs(
             data=data,
@@ -11538,7 +11499,7 @@ def scatter_nd(
     """
     return _ScatterND(
         _ScatterND.Attributes(
-            reduction=None if reduction is None else AttrString(reduction),
+            reduction=AttrString(reduction),
         ),
         _ScatterND.Inputs(
             data=data,
@@ -11587,8 +11548,8 @@ def selu(
     """
     return _Selu(
         _Selu.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
-            gamma=None if gamma is None else AttrFloat32(gamma),
+            alpha=AttrFloat32(alpha),
+            gamma=AttrFloat32(gamma),
         ),
         _Selu.Inputs(
             X=X,
@@ -11675,7 +11636,7 @@ def sequence_construct(
 
 def sequence_empty(
     *,
-    dtype: Optional[typing.Type[np.generic]] = None,
+    dtype: Optional[npt.DTypeLike] = None,
 ) -> Arrow:
     r"""
     Construct an empty tensor sequence, with given data type.
@@ -11887,7 +11848,7 @@ def sequence_map(
     )
     return _SequenceMap(
         _SequenceMap.Attributes(
-            body=None if body is None else AttrGraph(_body_subgraph),
+            body=AttrGraph(_body_subgraph),
         ),
         _SequenceMap.Inputs(
             input_sequence=input_sequence,
@@ -11959,7 +11920,7 @@ def shape(
     return _Shape(
         _Shape.Attributes(
             end=None if end is None else AttrInt64(end),
-            start=None if start is None else AttrInt64(start),
+            start=AttrInt64(start),
         ),
         _Shape.Inputs(
             data=data,
@@ -12006,8 +11967,8 @@ def shrink(
     """
     return _Shrink(
         _Shrink.Attributes(
-            bias=None if bias is None else AttrFloat32(bias),
-            lambd=None if lambd is None else AttrFloat32(lambd),
+            bias=AttrFloat32(bias),
+            lambd=AttrFloat32(lambd),
         ),
         _Shrink.Inputs(
             input=input,
@@ -12320,7 +12281,7 @@ def softmax(
     """
     return _Softmax(
         _Softmax.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _Softmax.Inputs(
             input=input,
@@ -12402,7 +12363,7 @@ def softmax_cross_entropy_loss(
     return _SoftmaxCrossEntropyLoss(
         _SoftmaxCrossEntropyLoss.Attributes(
             ignore_index=None if ignore_index is None else AttrInt64(ignore_index),
-            reduction=None if reduction is None else AttrString(reduction),
+            reduction=AttrString(reduction),
         ),
         _SoftmaxCrossEntropyLoss.Inputs(
             scores=scores,
@@ -12514,7 +12475,7 @@ def space_to_depth(
     """
     return _SpaceToDepth(
         _SpaceToDepth.Attributes(
-            blocksize=None if blocksize is None else AttrInt64(blocksize),
+            blocksize=AttrInt64(blocksize),
         ),
         _SpaceToDepth.Inputs(
             input=input,
@@ -12561,7 +12522,7 @@ def split(
     """
     return _Split(
         _Split.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64(axis),
         ),
         _Split.Inputs(
             input=input,
@@ -12622,8 +12583,8 @@ def split_to_sequence(
     """
     return _SplitToSequence(
         _SplitToSequence.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            keepdims=None if keepdims is None else AttrInt64(keepdims),
+            axis=AttrInt64(axis),
+            keepdims=AttrInt64(keepdims),
         ),
         _SplitToSequence.Inputs(
             input=input,
@@ -12758,12 +12719,8 @@ def string_normalizer(
     """
     return _StringNormalizer(
         _StringNormalizer.Attributes(
-            case_change_action=None
-            if case_change_action is None
-            else AttrString(case_change_action),
-            is_case_sensitive=None
-            if is_case_sensitive is None
-            else AttrInt64(is_case_sensitive),
+            case_change_action=AttrString(case_change_action),
+            is_case_sensitive=AttrInt64(is_case_sensitive),
             locale=None if locale is None else AttrString(locale),
             stopwords=None if stopwords is None else AttrStrings(stopwords),
         ),
@@ -13001,18 +12958,12 @@ def tf_idf_vectorizer(
     """
     return _TfIdfVectorizer(
         _TfIdfVectorizer.Attributes(
-            max_gram_length=None
-            if max_gram_length is None
-            else AttrInt64(max_gram_length),
-            max_skip_count=None
-            if max_skip_count is None
-            else AttrInt64(max_skip_count),
-            min_gram_length=None
-            if min_gram_length is None
-            else AttrInt64(min_gram_length),
-            mode=None if mode is None else AttrString(mode),
-            ngram_counts=None if ngram_counts is None else AttrInt64s(ngram_counts),
-            ngram_indexes=None if ngram_indexes is None else AttrInt64s(ngram_indexes),
+            max_gram_length=AttrInt64(max_gram_length),
+            max_skip_count=AttrInt64(max_skip_count),
+            min_gram_length=AttrInt64(min_gram_length),
+            mode=AttrString(mode),
+            ngram_counts=AttrInt64s(ngram_counts),
+            ngram_indexes=AttrInt64s(ngram_indexes),
             pool_int64s=None if pool_int64s is None else AttrInt64s(pool_int64s),
             pool_strings=None if pool_strings is None else AttrStrings(pool_strings),
             weights=None if weights is None else AttrFloat32s(weights),
@@ -13057,7 +13008,7 @@ def thresholded_relu(
     """
     return _ThresholdedRelu(
         _ThresholdedRelu.Attributes(
-            alpha=None if alpha is None else AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha),
         ),
         _ThresholdedRelu.Inputs(
             X=X,
@@ -13165,9 +13116,9 @@ def top_k(
     """
     return _TopK(
         _TopK.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
-            largest=None if largest is None else AttrInt64(largest),
-            sorted=None if sorted is None else AttrInt64(sorted),
+            axis=AttrInt64(axis),
+            largest=AttrInt64(largest),
+            sorted=AttrInt64(sorted),
         ),
         _TopK.Inputs(
             X=X,
@@ -13265,7 +13216,7 @@ def trilu(
     """
     return _Trilu(
         _Trilu.Attributes(
-            upper=None if upper is None else AttrInt64(upper),
+            upper=AttrInt64(upper),
         ),
         _Trilu.Inputs(
             input=input,
@@ -13379,7 +13330,7 @@ def unique(
     return _Unique(
         _Unique.Attributes(
             axis=None if axis is None else AttrInt64(axis),
-            sorted=None if sorted is None else AttrInt64(sorted),
+            sorted=AttrInt64(sorted),
         ),
         _Unique.Inputs(
             X=X,
@@ -13471,7 +13422,7 @@ def upsample(
     """
     return _Upsample(
         _Upsample.Attributes(
-            mode=None if mode is None else AttrString(mode),
+            mode=AttrString(mode),
         ),
         _Upsample.Inputs(
             X=X,
