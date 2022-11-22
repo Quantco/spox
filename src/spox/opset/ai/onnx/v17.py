@@ -13565,35 +13565,6 @@ def const(
     raise TypeError(f"Bad value for requested Constant: {value}")
 
 
-def promote(
-    *types: Union[Arrow, np.generic, int, float, None]
-) -> Tuple[Optional[Arrow], ...]:
-    """
-    Apply constant promotion and type promotion to given parameters, creating constants and/or casting.
-
-    None-valued parameters are only kept in for ordering.
-    """
-    from spox._arrow import result_type
-
-    promotable = [typ for typ in types if typ is not None]
-    if not promotable:
-        return typing_cast(Tuple[None, ...], types)
-
-    target_type = result_type(*promotable)
-
-    def _promote_target(
-        obj: Union[Arrow, np.generic, int, float, None]
-    ) -> Optional[Arrow]:
-        if isinstance(obj, (np.generic, int, float)):
-            return const(np.array(obj, dtype=target_type))
-        elif isinstance(obj, Arrow):
-            return cast(obj, to=target_type)
-        assert obj is None
-        return obj
-
-    return tuple(typ for typ in map(_promote_target, types))
-
-
 _OPERATORS = {
     "Abs": _Abs,
     "Acos": _Acos,

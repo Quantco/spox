@@ -66,8 +66,8 @@ class Extras:
         def bracket_matcher_step(
             i: Arrow, _cond: Arrow, stack: Arrow, result: Arrow, _: Arrow
         ) -> Tuple[Arrow, Arrow, Arrow, Arrow]:
-            closing = op.less(*op.promote(ext.at(xs, i), 0))
-            ignore = op.equal(*op.promote(ext.at(xs, i), 0))
+            closing = op.less(ext.at(xs, i), op.const(0))
+            ignore = op.equal(ext.at(xs, i), op.const(0))
             pair = op.concat([ext.top(stack), i], axis=-1)
             ok = op.not_(op.and_(closing, ext.empty(stack)))
             stack_after, result_after = op.if_(

@@ -27,7 +27,7 @@ def optional_lifting_graph(ext):
 
     # Value only present if argument a is even
     is_even = op.reshape(
-        op.not_(op.cast(op.mod(*op.promote(a, 2)), to=numpy.bool_)), op.const([1])
+        op.not_(op.cast(op.mod(a, op.const(2)), to=numpy.bool_)), op.const([1])
     )
     a_even = ext.maybe(is_even, a)
 

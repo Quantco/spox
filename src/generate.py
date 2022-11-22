@@ -459,7 +459,7 @@ if __name__ == "__main__":
     main(
         "ai.onnx",
         17,
-        extras=["const", "promote"],
+        extras=["const"],
         type_inference={},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions={
