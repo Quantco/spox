@@ -17,8 +17,6 @@ from typing import cast as typing_cast  # noqa: F401
 import numpy as np  # noqa: F401
 import numpy.typing as npt  # noqa: F401
 
-from spox._arrow import Arrow, _nil, result_type  # noqa: F401
-from spox._arrowfields import ArrowFields, NoArrows  # noqa: F401
 from spox._attributes import (
     AttrDtype,
     AttrFloat32,
@@ -37,6 +35,8 @@ from spox._node import OpType  # noqa: F401
 from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
 from spox._type_system import Tensor, Type
+from spox._var import Var, _nil, result_type  # noqa: F401
+from spox._varfields import NoVars, VarFields  # noqa: F401
 
 
 class _Abs(StandardNode):
@@ -44,11 +44,11 @@ class _Abs(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Abs", "", 13)
 
@@ -62,11 +62,11 @@ class _Acos(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Acos", "", 7)
 
@@ -80,11 +80,11 @@ class _Acosh(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Acosh", "", 9)
 
@@ -98,12 +98,12 @@ class _Add(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Add", "", 14)
 
@@ -117,12 +117,12 @@ class _And(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("And", "", 7)
 
@@ -138,11 +138,11 @@ class _ArgMax(StandardNode):
         keepdims: AttrInt64
         select_last_index: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ArgMax", "", 13)
 
@@ -158,11 +158,11 @@ class _ArgMin(StandardNode):
         keepdims: AttrInt64
         select_last_index: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ArgMin", "", 13)
 
@@ -176,11 +176,11 @@ class _Asin(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Asin", "", 7)
 
@@ -194,11 +194,11 @@ class _Asinh(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Asinh", "", 9)
 
@@ -212,11 +212,11 @@ class _Atan(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Atan", "", 7)
 
@@ -230,11 +230,11 @@ class _Atanh(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Atanh", "", 9)
 
@@ -253,11 +253,11 @@ class _AveragePool(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("AveragePool", "", 11)
 
@@ -273,17 +273,17 @@ class _BatchNormalization(StandardNode):
         momentum: AttrFloat32
         training_mode: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        scale: Arrow
-        B: Arrow
-        input_mean: Arrow
-        input_var: Arrow
+    class Inputs(VarFields):
+        X: Var
+        scale: Var
+        B: Var
+        input_mean: Var
+        input_var: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
-        running_mean: Optional[Arrow]
-        running_var: Optional[Arrow]
+    class Outputs(VarFields):
+        Y: Var
+        running_mean: Optional[Var]
+        running_var: Optional[Var]
 
     op_type = OpType("BatchNormalization", "", 15)
 
@@ -298,11 +298,11 @@ class _Bernoulli(StandardNode):
         dtype: Optional[AttrDtype]
         seed: Optional[AttrFloat32]
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Bernoulli", "", 15)
 
@@ -316,12 +316,12 @@ class _BitShift(StandardNode):
     class Attributes:
         direction: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        Y: Arrow
+    class Inputs(VarFields):
+        X: Var
+        Y: Var
 
-    class Outputs(ArrowFields):
-        Z: Arrow
+    class Outputs(VarFields):
+        Z: Var
 
     op_type = OpType("BitShift", "", 11)
 
@@ -336,11 +336,11 @@ class _BlackmanWindow(StandardNode):
         output_datatype: AttrInt64
         periodic: AttrInt64
 
-    class Inputs(ArrowFields):
-        size: Arrow
+    class Inputs(VarFields):
+        size: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("BlackmanWindow", "", 17)
 
@@ -354,11 +354,11 @@ class _Cast(StandardNode):
     class Attributes:
         to: AttrDtype
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Cast", "", 13)
 
@@ -372,12 +372,12 @@ class _CastLike(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        target_type: Arrow
+    class Inputs(VarFields):
+        input: Var
+        target_type: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("CastLike", "", 15)
 
@@ -391,11 +391,11 @@ class _Ceil(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Ceil", "", 13)
 
@@ -409,11 +409,11 @@ class _Celu(StandardNode):
     class Attributes:
         alpha: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Celu", "", 12)
 
@@ -427,13 +427,13 @@ class _Clip(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        min: Optional[Arrow]
-        max: Optional[Arrow]
+    class Inputs(VarFields):
+        input: Var
+        min: Optional[Var]
+        max: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Clip", "", 13)
 
@@ -447,12 +447,12 @@ class _Compress(StandardNode):
     class Attributes:
         axis: Optional[AttrInt64]
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        condition: Arrow
+    class Inputs(VarFields):
+        input: Var
+        condition: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Compress", "", 11)
 
@@ -466,11 +466,11 @@ class _Concat(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        inputs: Sequence[Arrow]
+    class Inputs(VarFields):
+        inputs: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        concat_result: Arrow
+    class Outputs(VarFields):
+        concat_result: Var
 
     op_type = OpType("Concat", "", 13)
 
@@ -485,11 +485,11 @@ class _ConcatFromSequence(StandardNode):
         axis: AttrInt64
         new_axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        input_sequence: Arrow
+    class Inputs(VarFields):
+        input_sequence: Var
 
-    class Outputs(ArrowFields):
-        concat_result: Arrow
+    class Outputs(VarFields):
+        concat_result: Var
 
     op_type = OpType("ConcatFromSequence", "", 11)
 
@@ -509,10 +509,10 @@ class _Constant(StandardNode):
         value_string: Optional[AttrString]
         value_strings: Optional[AttrStrings]
 
-    Inputs = NoArrows
+    Inputs = NoVars
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     def propagate_values(self) -> Dict[str, Any]:
         ((key, raw),) = (
@@ -543,7 +543,7 @@ class _Constant(StandardNode):
     op_type = OpType("Constant", "", 13)
 
     attrs: Attributes
-    inputs: NoArrows
+    inputs: NoVars
     outputs: Outputs
 
 
@@ -552,11 +552,11 @@ class _ConstantOfShape(StandardNode):
     class Attributes:
         value: Optional[AttrTensor]
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("ConstantOfShape", "", 9)
 
@@ -575,13 +575,13 @@ class _Conv(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        W: Arrow
-        B: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        W: Var
+        B: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Conv", "", 11)
 
@@ -600,14 +600,14 @@ class _ConvInteger(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        x: Arrow
-        w: Arrow
-        x_zero_point: Optional[Arrow]
-        w_zero_point: Optional[Arrow]
+    class Inputs(VarFields):
+        x: Var
+        w: Var
+        x_zero_point: Optional[Var]
+        w_zero_point: Optional[Var]
 
-    class Outputs(ArrowFields):
-        y: Arrow
+    class Outputs(VarFields):
+        y: Var
 
     op_type = OpType("ConvInteger", "", 10)
 
@@ -628,13 +628,13 @@ class _ConvTranspose(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        W: Arrow
-        B: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        W: Var
+        B: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("ConvTranspose", "", 11)
 
@@ -648,11 +648,11 @@ class _Cos(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Cos", "", 7)
 
@@ -666,11 +666,11 @@ class _Cosh(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Cosh", "", 9)
 
@@ -685,12 +685,12 @@ class _CumSum(StandardNode):
         exclusive: AttrInt64
         reverse: AttrInt64
 
-    class Inputs(ArrowFields):
-        x: Arrow
-        axis: Arrow
+    class Inputs(VarFields):
+        x: Var
+        axis: Var
 
-    class Outputs(ArrowFields):
-        y: Arrow
+    class Outputs(VarFields):
+        y: Var
 
     op_type = OpType("CumSum", "", 14)
 
@@ -706,12 +706,12 @@ class _DFT(StandardNode):
         inverse: AttrInt64
         onesided: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        dft_length: Optional[Arrow]
+    class Inputs(VarFields):
+        input: Var
+        dft_length: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("DFT", "", 17)
 
@@ -726,11 +726,11 @@ class _DepthToSpace(StandardNode):
         blocksize: AttrInt64
         mode: AttrString
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("DepthToSpace", "", 13)
 
@@ -744,13 +744,13 @@ class _DequantizeLinear(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        x: Arrow
-        x_scale: Arrow
-        x_zero_point: Optional[Arrow]
+    class Inputs(VarFields):
+        x: Var
+        x_scale: Var
+        x_zero_point: Optional[Var]
 
-    class Outputs(ArrowFields):
-        y: Arrow
+    class Outputs(VarFields):
+        y: Var
 
     op_type = OpType("DequantizeLinear", "", 13)
 
@@ -764,11 +764,11 @@ class _Det(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Det", "", 11)
 
@@ -782,12 +782,12 @@ class _Div(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Div", "", 14)
 
@@ -801,14 +801,14 @@ class _Dropout(StandardNode):
     class Attributes:
         seed: Optional[AttrInt64]
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        ratio: Optional[Arrow]
-        training_mode: Optional[Arrow]
+    class Inputs(VarFields):
+        data: Var
+        ratio: Optional[Var]
+        training_mode: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
-        mask: Optional[Arrow]
+    class Outputs(VarFields):
+        output: Var
+        mask: Optional[Var]
 
     op_type = OpType("Dropout", "", 13)
 
@@ -822,13 +822,13 @@ class _DynamicQuantizeLinear(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        x: Arrow
+    class Inputs(VarFields):
+        x: Var
 
-    class Outputs(ArrowFields):
-        y: Arrow
-        y_scale: Arrow
-        y_zero_point: Arrow
+    class Outputs(VarFields):
+        y: Var
+        y_scale: Var
+        y_zero_point: Var
 
     op_type = OpType("DynamicQuantizeLinear", "", 11)
 
@@ -842,11 +842,11 @@ class _Einsum(StandardNode):
     class Attributes:
         equation: AttrString
 
-    class Inputs(ArrowFields):
-        Inputs: Sequence[Arrow]
+    class Inputs(VarFields):
+        Inputs: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        Output: Arrow
+    class Outputs(VarFields):
+        Output: Var
 
     op_type = OpType("Einsum", "", 12)
 
@@ -860,11 +860,11 @@ class _Elu(StandardNode):
     class Attributes:
         alpha: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Elu", "", 6)
 
@@ -878,12 +878,12 @@ class _Equal(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Equal", "", 13)
 
@@ -897,11 +897,11 @@ class _Erf(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Erf", "", 13)
 
@@ -915,11 +915,11 @@ class _Exp(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Exp", "", 13)
 
@@ -933,12 +933,12 @@ class _Expand(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        shape: Arrow
+    class Inputs(VarFields):
+        input: Var
+        shape: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Expand", "", 13)
 
@@ -953,11 +953,11 @@ class _EyeLike(StandardNode):
         dtype: Optional[AttrDtype]
         k: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("EyeLike", "", 9)
 
@@ -971,11 +971,11 @@ class _Flatten(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Flatten", "", 13)
 
@@ -989,11 +989,11 @@ class _Floor(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Floor", "", 13)
 
@@ -1014,17 +1014,17 @@ class _GRU(StandardNode):
         layout: AttrInt64
         linear_before_reset: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        W: Arrow
-        R: Arrow
-        B: Optional[Arrow]
-        sequence_lens: Optional[Arrow]
-        initial_h: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        W: Var
+        R: Var
+        B: Optional[Var]
+        sequence_lens: Optional[Var]
+        initial_h: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Optional[Arrow]
-        Y_h: Optional[Arrow]
+    class Outputs(VarFields):
+        Y: Optional[Var]
+        Y_h: Optional[Var]
 
     op_type = OpType("GRU", "", 14)
 
@@ -1038,12 +1038,12 @@ class _Gather(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        indices: Arrow
+    class Inputs(VarFields):
+        data: Var
+        indices: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Gather", "", 13)
 
@@ -1057,12 +1057,12 @@ class _GatherElements(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        indices: Arrow
+    class Inputs(VarFields):
+        data: Var
+        indices: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("GatherElements", "", 13)
 
@@ -1076,12 +1076,12 @@ class _GatherND(StandardNode):
     class Attributes:
         batch_dims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        indices: Arrow
+    class Inputs(VarFields):
+        data: Var
+        indices: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("GatherND", "", 13)
 
@@ -1098,13 +1098,13 @@ class _Gemm(StandardNode):
         transA: AttrInt64
         transB: AttrInt64
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
-        C: Optional[Arrow]
+    class Inputs(VarFields):
+        A: Var
+        B: Var
+        C: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Gemm", "", 13)
 
@@ -1118,11 +1118,11 @@ class _GlobalAveragePool(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("GlobalAveragePool", "", 1)
 
@@ -1136,11 +1136,11 @@ class _GlobalLpPool(StandardNode):
     class Attributes:
         p: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("GlobalLpPool", "", 2)
 
@@ -1154,11 +1154,11 @@ class _GlobalMaxPool(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("GlobalMaxPool", "", 1)
 
@@ -1172,12 +1172,12 @@ class _Greater(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Greater", "", 13)
 
@@ -1191,12 +1191,12 @@ class _GreaterOrEqual(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("GreaterOrEqual", "", 16)
 
@@ -1212,12 +1212,12 @@ class _GridSample(StandardNode):
         mode: AttrString
         padding_mode: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        grid: Arrow
+    class Inputs(VarFields):
+        X: Var
+        grid: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("GridSample", "", 16)
 
@@ -1232,11 +1232,11 @@ class _HammingWindow(StandardNode):
         output_datatype: AttrInt64
         periodic: AttrInt64
 
-    class Inputs(ArrowFields):
-        size: Arrow
+    class Inputs(VarFields):
+        size: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("HammingWindow", "", 17)
 
@@ -1251,11 +1251,11 @@ class _HannWindow(StandardNode):
         output_datatype: AttrInt64
         periodic: AttrInt64
 
-    class Inputs(ArrowFields):
-        size: Arrow
+    class Inputs(VarFields):
+        size: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("HannWindow", "", 17)
 
@@ -1270,11 +1270,11 @@ class _HardSigmoid(StandardNode):
         alpha: AttrFloat32
         beta: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("HardSigmoid", "", 6)
 
@@ -1288,11 +1288,11 @@ class _HardSwish(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("HardSwish", "", 14)
 
@@ -1306,11 +1306,11 @@ class _Hardmax(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Hardmax", "", 13)
 
@@ -1324,11 +1324,11 @@ class _Identity(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Identity", "", 16)
 
@@ -1343,11 +1343,11 @@ class _If(StandardNode):
         else_branch: AttrGraph
         then_branch: AttrGraph
 
-    class Inputs(ArrowFields):
-        cond: Arrow
+    class Inputs(VarFields):
+        cond: Var
 
-    class Outputs(ArrowFields):
-        outputs: Sequence[Arrow]
+    class Outputs(VarFields):
+        outputs: Sequence[Var]
 
     op_type = OpType("If", "", 16)
 
@@ -1361,13 +1361,13 @@ class _InstanceNormalization(StandardNode):
     class Attributes:
         epsilon: AttrFloat32
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        scale: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        input: Var
+        scale: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("InstanceNormalization", "", 6)
 
@@ -1382,11 +1382,11 @@ class _IsInf(StandardNode):
         detect_negative: AttrInt64
         detect_positive: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("IsInf", "", 10)
 
@@ -1400,11 +1400,11 @@ class _IsNaN(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("IsNaN", "", 13)
 
@@ -1421,11 +1421,11 @@ class _LRN(StandardNode):
         bias: AttrFloat32
         size: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("LRN", "", 13)
 
@@ -1446,20 +1446,20 @@ class _LSTM(StandardNode):
         input_forget: AttrInt64
         layout: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        W: Arrow
-        R: Arrow
-        B: Optional[Arrow]
-        sequence_lens: Optional[Arrow]
-        initial_h: Optional[Arrow]
-        initial_c: Optional[Arrow]
-        P: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        W: Var
+        R: Var
+        B: Optional[Var]
+        sequence_lens: Optional[Var]
+        initial_h: Optional[Var]
+        initial_c: Optional[Var]
+        P: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Optional[Arrow]
-        Y_h: Optional[Arrow]
-        Y_c: Optional[Arrow]
+    class Outputs(VarFields):
+        Y: Optional[Var]
+        Y_h: Optional[Var]
+        Y_c: Optional[Var]
 
     op_type = OpType("LSTM", "", 14)
 
@@ -1475,15 +1475,15 @@ class _LayerNormalization(StandardNode):
         epsilon: AttrFloat32
         stash_type: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        Scale: Arrow
-        B: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        Scale: Var
+        B: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Arrow
-        Mean: Optional[Arrow]
-        InvStdDev: Optional[Arrow]
+    class Outputs(VarFields):
+        Y: Var
+        Mean: Optional[Var]
+        InvStdDev: Optional[Var]
 
     op_type = OpType("LayerNormalization", "", 17)
 
@@ -1497,11 +1497,11 @@ class _LeakyRelu(StandardNode):
     class Attributes:
         alpha: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("LeakyRelu", "", 16)
 
@@ -1515,12 +1515,12 @@ class _Less(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Less", "", 13)
 
@@ -1534,12 +1534,12 @@ class _LessOrEqual(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("LessOrEqual", "", 16)
 
@@ -1553,11 +1553,11 @@ class _Log(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Log", "", 13)
 
@@ -1571,11 +1571,11 @@ class _LogSoftmax(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("LogSoftmax", "", 13)
 
@@ -1589,13 +1589,13 @@ class _Loop(StandardNode):
     class Attributes:
         body: AttrGraph
 
-    class Inputs(ArrowFields):
-        M: Optional[Arrow]
-        cond: Optional[Arrow]
-        v_initial: Sequence[Arrow]
+    class Inputs(VarFields):
+        M: Optional[Var]
+        cond: Optional[Var]
+        v_initial: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        v_final_and_scan_outputs: Sequence[Arrow]
+    class Outputs(VarFields):
+        v_final_and_scan_outputs: Sequence[Var]
 
     op_type = OpType("Loop", "", 16)
 
@@ -1610,11 +1610,11 @@ class _LpNormalization(StandardNode):
         axis: AttrInt64
         p: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("LpNormalization", "", 1)
 
@@ -1632,11 +1632,11 @@ class _LpPool(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("LpPool", "", 11)
 
@@ -1650,12 +1650,12 @@ class _MatMul(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("MatMul", "", 13)
 
@@ -1669,14 +1669,14 @@ class _MatMulInteger(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
-        a_zero_point: Optional[Arrow]
-        b_zero_point: Optional[Arrow]
+    class Inputs(VarFields):
+        A: Var
+        B: Var
+        a_zero_point: Optional[Var]
+        b_zero_point: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("MatMulInteger", "", 10)
 
@@ -1690,11 +1690,11 @@ class _Max(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data_0: Sequence[Arrow]
+    class Inputs(VarFields):
+        data_0: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        max: Arrow
+    class Outputs(VarFields):
+        max: Var
 
     op_type = OpType("Max", "", 13)
 
@@ -1714,12 +1714,12 @@ class _MaxPool(StandardNode):
         storage_order: AttrInt64
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
-        Indices: Optional[Arrow]
+    class Outputs(VarFields):
+        Y: Var
+        Indices: Optional[Var]
 
     op_type = OpType("MaxPool", "", 12)
 
@@ -1734,12 +1734,12 @@ class _MaxRoiPool(StandardNode):
         pooled_shape: AttrInt64s
         spatial_scale: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        rois: Arrow
+    class Inputs(VarFields):
+        X: Var
+        rois: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("MaxRoiPool", "", 1)
 
@@ -1755,13 +1755,13 @@ class _MaxUnpool(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        I: Arrow
-        output_shape: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        I: Var
+        output_shape: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("MaxUnpool", "", 11)
 
@@ -1775,11 +1775,11 @@ class _Mean(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data_0: Sequence[Arrow]
+    class Inputs(VarFields):
+        data_0: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        mean: Arrow
+    class Outputs(VarFields):
+        mean: Var
 
     op_type = OpType("Mean", "", 13)
 
@@ -1793,11 +1793,11 @@ class _MeanVarianceNormalization(StandardNode):
     class Attributes:
         axes: AttrInt64s
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("MeanVarianceNormalization", "", 13)
 
@@ -1811,15 +1811,15 @@ class _MelWeightMatrix(StandardNode):
     class Attributes:
         output_datatype: AttrInt64
 
-    class Inputs(ArrowFields):
-        num_mel_bins: Arrow
-        dft_length: Arrow
-        sample_rate: Arrow
-        lower_edge_hertz: Arrow
-        upper_edge_hertz: Arrow
+    class Inputs(VarFields):
+        num_mel_bins: Var
+        dft_length: Var
+        sample_rate: Var
+        lower_edge_hertz: Var
+        upper_edge_hertz: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("MelWeightMatrix", "", 17)
 
@@ -1833,11 +1833,11 @@ class _Min(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data_0: Sequence[Arrow]
+    class Inputs(VarFields):
+        data_0: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        min: Arrow
+    class Outputs(VarFields):
+        min: Var
 
     op_type = OpType("Min", "", 13)
 
@@ -1851,12 +1851,12 @@ class _Mod(StandardNode):
     class Attributes:
         fmod: AttrInt64
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Mod", "", 13)
 
@@ -1870,12 +1870,12 @@ class _Mul(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Mul", "", 14)
 
@@ -1891,11 +1891,11 @@ class _Multinomial(StandardNode):
         sample_size: AttrInt64
         seed: Optional[AttrFloat32]
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Multinomial", "", 7)
 
@@ -1909,11 +1909,11 @@ class _Neg(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Neg", "", 13)
 
@@ -1928,13 +1928,13 @@ class _NegativeLogLikelihoodLoss(StandardNode):
         ignore_index: Optional[AttrInt64]
         reduction: AttrString
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        target: Arrow
-        weight: Optional[Arrow]
+    class Inputs(VarFields):
+        input: Var
+        target: Var
+        weight: Optional[Var]
 
-    class Outputs(ArrowFields):
-        loss: Arrow
+    class Outputs(VarFields):
+        loss: Var
 
     op_type = OpType("NegativeLogLikelihoodLoss", "", 13)
 
@@ -1948,15 +1948,15 @@ class _NonMaxSuppression(StandardNode):
     class Attributes:
         center_point_box: AttrInt64
 
-    class Inputs(ArrowFields):
-        boxes: Arrow
-        scores: Arrow
-        max_output_boxes_per_class: Optional[Arrow]
-        iou_threshold: Optional[Arrow]
-        score_threshold: Optional[Arrow]
+    class Inputs(VarFields):
+        boxes: Var
+        scores: Var
+        max_output_boxes_per_class: Optional[Var]
+        iou_threshold: Optional[Var]
+        score_threshold: Optional[Var]
 
-    class Outputs(ArrowFields):
-        selected_indices: Arrow
+    class Outputs(VarFields):
+        selected_indices: Var
 
     op_type = OpType("NonMaxSuppression", "", 11)
 
@@ -1970,11 +1970,11 @@ class _NonZero(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("NonZero", "", 13)
 
@@ -1988,11 +1988,11 @@ class _Not(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Not", "", 1)
 
@@ -2006,13 +2006,13 @@ class _OneHot(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        indices: Arrow
-        depth: Arrow
-        values: Arrow
+    class Inputs(VarFields):
+        indices: Var
+        depth: Var
+        values: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("OneHot", "", 11)
 
@@ -2026,11 +2026,11 @@ class _Optional(StandardNode):
     class Attributes:
         type: Optional[AttrType]
 
-    class Inputs(ArrowFields):
-        input: Optional[Arrow]
+    class Inputs(VarFields):
+        input: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Optional", "", 15)
 
@@ -2044,11 +2044,11 @@ class _OptionalGetElement(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("OptionalGetElement", "", 15)
 
@@ -2062,11 +2062,11 @@ class _OptionalHasElement(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("OptionalHasElement", "", 15)
 
@@ -2080,12 +2080,12 @@ class _Or(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Or", "", 7)
 
@@ -2099,12 +2099,12 @@ class _PRelu(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        slope: Arrow
+    class Inputs(VarFields):
+        X: Var
+        slope: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("PRelu", "", 16)
 
@@ -2118,13 +2118,13 @@ class _Pad(StandardNode):
     class Attributes:
         mode: AttrString
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        pads: Arrow
-        constant_value: Optional[Arrow]
+    class Inputs(VarFields):
+        data: Var
+        pads: Var
+        constant_value: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Pad", "", 13)
 
@@ -2138,12 +2138,12 @@ class _Pow(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        Y: Arrow
+    class Inputs(VarFields):
+        X: Var
+        Y: Var
 
-    class Outputs(ArrowFields):
-        Z: Arrow
+    class Outputs(VarFields):
+        Z: Var
 
     op_type = OpType("Pow", "", 15)
 
@@ -2162,19 +2162,19 @@ class _QLinearConv(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        x: Arrow
-        x_scale: Arrow
-        x_zero_point: Arrow
-        w: Arrow
-        w_scale: Arrow
-        w_zero_point: Arrow
-        y_scale: Arrow
-        y_zero_point: Arrow
-        B: Optional[Arrow]
+    class Inputs(VarFields):
+        x: Var
+        x_scale: Var
+        x_zero_point: Var
+        w: Var
+        w_scale: Var
+        w_zero_point: Var
+        y_scale: Var
+        y_zero_point: Var
+        B: Optional[Var]
 
-    class Outputs(ArrowFields):
-        y: Arrow
+    class Outputs(VarFields):
+        y: Var
 
     op_type = OpType("QLinearConv", "", 10)
 
@@ -2188,18 +2188,18 @@ class _QLinearMatMul(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        a: Arrow
-        a_scale: Arrow
-        a_zero_point: Arrow
-        b: Arrow
-        b_scale: Arrow
-        b_zero_point: Arrow
-        y_scale: Arrow
-        y_zero_point: Arrow
+    class Inputs(VarFields):
+        a: Var
+        a_scale: Var
+        a_zero_point: Var
+        b: Var
+        b_scale: Var
+        b_zero_point: Var
+        y_scale: Var
+        y_zero_point: Var
 
-    class Outputs(ArrowFields):
-        y: Arrow
+    class Outputs(VarFields):
+        y: Var
 
     op_type = OpType("QLinearMatMul", "", 10)
 
@@ -2213,13 +2213,13 @@ class _QuantizeLinear(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        x: Arrow
-        y_scale: Arrow
-        y_zero_point: Optional[Arrow]
+    class Inputs(VarFields):
+        x: Var
+        y_scale: Var
+        y_zero_point: Optional[Var]
 
-    class Outputs(ArrowFields):
-        y: Arrow
+    class Outputs(VarFields):
+        y: Var
 
     op_type = OpType("QuantizeLinear", "", 13)
 
@@ -2239,17 +2239,17 @@ class _RNN(StandardNode):
         hidden_size: Optional[AttrInt64]
         layout: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        W: Arrow
-        R: Arrow
-        B: Optional[Arrow]
-        sequence_lens: Optional[Arrow]
-        initial_h: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        W: Var
+        R: Var
+        B: Optional[Var]
+        sequence_lens: Optional[Var]
+        initial_h: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Optional[Arrow]
-        Y_h: Optional[Arrow]
+    class Outputs(VarFields):
+        Y: Optional[Var]
+        Y_h: Optional[Var]
 
     op_type = OpType("RNN", "", 14)
 
@@ -2267,15 +2267,15 @@ class _RandomNormal(StandardNode):
         seed: Optional[AttrFloat32]
         shape: AttrInt64s
 
-    Inputs = NoArrows
+    Inputs = NoVars
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("RandomNormal", "", 1)
 
     attrs: Attributes
-    inputs: NoArrows
+    inputs: NoVars
     outputs: Outputs
 
 
@@ -2287,11 +2287,11 @@ class _RandomNormalLike(StandardNode):
         scale: AttrFloat32
         seed: Optional[AttrFloat32]
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("RandomNormalLike", "", 1)
 
@@ -2309,15 +2309,15 @@ class _RandomUniform(StandardNode):
         seed: Optional[AttrFloat32]
         shape: AttrInt64s
 
-    Inputs = NoArrows
+    Inputs = NoVars
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("RandomUniform", "", 1)
 
     attrs: Attributes
-    inputs: NoArrows
+    inputs: NoVars
     outputs: Outputs
 
 
@@ -2329,11 +2329,11 @@ class _RandomUniformLike(StandardNode):
         low: AttrFloat32
         seed: Optional[AttrFloat32]
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("RandomUniformLike", "", 1)
 
@@ -2347,13 +2347,13 @@ class _Range(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        start: Arrow
-        limit: Arrow
-        delta: Arrow
+    class Inputs(VarFields):
+        start: Var
+        limit: Var
+        delta: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Range", "", 11)
 
@@ -2367,11 +2367,11 @@ class _Reciprocal(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Reciprocal", "", 13)
 
@@ -2386,11 +2386,11 @@ class _ReduceL1(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceL1", "", 13)
 
@@ -2405,11 +2405,11 @@ class _ReduceL2(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceL2", "", 13)
 
@@ -2424,11 +2424,11 @@ class _ReduceLogSum(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceLogSum", "", 13)
 
@@ -2443,11 +2443,11 @@ class _ReduceLogSumExp(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceLogSumExp", "", 13)
 
@@ -2462,11 +2462,11 @@ class _ReduceMax(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceMax", "", 13)
 
@@ -2481,11 +2481,11 @@ class _ReduceMean(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceMean", "", 13)
 
@@ -2500,11 +2500,11 @@ class _ReduceMin(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceMin", "", 13)
 
@@ -2519,11 +2519,11 @@ class _ReduceProd(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceProd", "", 13)
 
@@ -2538,12 +2538,12 @@ class _ReduceSum(StandardNode):
         keepdims: AttrInt64
         noop_with_empty_axes: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        axes: Optional[Arrow]
+    class Inputs(VarFields):
+        data: Var
+        axes: Optional[Var]
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceSum", "", 13)
 
@@ -2558,11 +2558,11 @@ class _ReduceSumSquare(StandardNode):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        reduced: Arrow
+    class Outputs(VarFields):
+        reduced: Var
 
     op_type = OpType("ReduceSumSquare", "", 13)
 
@@ -2576,11 +2576,11 @@ class _Relu(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Relu", "", 14)
 
@@ -2594,12 +2594,12 @@ class _Reshape(StandardNode):
     class Attributes:
         allowzero: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        shape: Arrow
+    class Inputs(VarFields):
+        data: Var
+        shape: Var
 
-    class Outputs(ArrowFields):
-        reshaped: Arrow
+    class Outputs(VarFields):
+        reshaped: Var
 
     op_type = OpType("Reshape", "", 14)
 
@@ -2618,14 +2618,14 @@ class _Resize(StandardNode):
         mode: AttrString
         nearest_mode: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        roi: Optional[Arrow]
-        scales: Optional[Arrow]
-        sizes: Optional[Arrow]
+    class Inputs(VarFields):
+        X: Var
+        roi: Optional[Var]
+        scales: Optional[Var]
+        sizes: Optional[Var]
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Resize", "", 13)
 
@@ -2640,12 +2640,12 @@ class _ReverseSequence(StandardNode):
         batch_axis: AttrInt64
         time_axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        sequence_lens: Arrow
+    class Inputs(VarFields):
+        input: Var
+        sequence_lens: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("ReverseSequence", "", 10)
 
@@ -2664,13 +2664,13 @@ class _RoiAlign(StandardNode):
         sampling_ratio: AttrInt64
         spatial_scale: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        rois: Arrow
-        batch_indices: Arrow
+    class Inputs(VarFields):
+        X: Var
+        rois: Var
+        batch_indices: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("RoiAlign", "", 16)
 
@@ -2684,11 +2684,11 @@ class _Round(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Round", "", 11)
 
@@ -2702,14 +2702,14 @@ class _STFT(StandardNode):
     class Attributes:
         onesided: AttrInt64
 
-    class Inputs(ArrowFields):
-        signal: Arrow
-        frame_step: Arrow
-        window: Optional[Arrow]
-        frame_length: Optional[Arrow]
+    class Inputs(VarFields):
+        signal: Var
+        frame_step: Var
+        window: Optional[Var]
+        frame_length: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("STFT", "", 17)
 
@@ -2728,11 +2728,11 @@ class _Scan(StandardNode):
         scan_output_axes: Optional[AttrInt64s]
         scan_output_directions: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        initial_state_and_scan_inputs: Sequence[Arrow]
+    class Inputs(VarFields):
+        initial_state_and_scan_inputs: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        final_state_and_scan_outputs: Sequence[Arrow]
+    class Outputs(VarFields):
+        final_state_and_scan_outputs: Sequence[Var]
 
     op_type = OpType("Scan", "", 16)
 
@@ -2746,13 +2746,13 @@ class _Scatter(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        indices: Arrow
-        updates: Arrow
+    class Inputs(VarFields):
+        data: Var
+        indices: Var
+        updates: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Scatter", "", 11)
 
@@ -2767,13 +2767,13 @@ class _ScatterElements(StandardNode):
         axis: AttrInt64
         reduction: AttrString
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        indices: Arrow
-        updates: Arrow
+    class Inputs(VarFields):
+        data: Var
+        indices: Var
+        updates: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("ScatterElements", "", 16)
 
@@ -2787,13 +2787,13 @@ class _ScatterND(StandardNode):
     class Attributes:
         reduction: AttrString
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        indices: Arrow
-        updates: Arrow
+    class Inputs(VarFields):
+        data: Var
+        indices: Var
+        updates: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("ScatterND", "", 16)
 
@@ -2808,11 +2808,11 @@ class _Selu(StandardNode):
         alpha: AttrFloat32
         gamma: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Selu", "", 6)
 
@@ -2826,12 +2826,12 @@ class _SequenceAt(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input_sequence: Arrow
-        position: Arrow
+    class Inputs(VarFields):
+        input_sequence: Var
+        position: Var
 
-    class Outputs(ArrowFields):
-        tensor: Arrow
+    class Outputs(VarFields):
+        tensor: Var
 
     op_type = OpType("SequenceAt", "", 11)
 
@@ -2845,11 +2845,11 @@ class _SequenceConstruct(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        inputs: Sequence[Arrow]
+    class Inputs(VarFields):
+        inputs: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        output_sequence: Arrow
+    class Outputs(VarFields):
+        output_sequence: Var
 
     op_type = OpType("SequenceConstruct", "", 11)
 
@@ -2863,15 +2863,15 @@ class _SequenceEmpty(StandardNode):
     class Attributes:
         dtype: Optional[AttrDtype]
 
-    Inputs = NoArrows
+    Inputs = NoVars
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("SequenceEmpty", "", 11)
 
     attrs: Attributes
-    inputs: NoArrows
+    inputs: NoVars
     outputs: Outputs
 
 
@@ -2880,12 +2880,12 @@ class _SequenceErase(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input_sequence: Arrow
-        position: Optional[Arrow]
+    class Inputs(VarFields):
+        input_sequence: Var
+        position: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output_sequence: Arrow
+    class Outputs(VarFields):
+        output_sequence: Var
 
     op_type = OpType("SequenceErase", "", 11)
 
@@ -2899,13 +2899,13 @@ class _SequenceInsert(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input_sequence: Arrow
-        tensor: Arrow
-        position: Optional[Arrow]
+    class Inputs(VarFields):
+        input_sequence: Var
+        tensor: Var
+        position: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output_sequence: Arrow
+    class Outputs(VarFields):
+        output_sequence: Var
 
     op_type = OpType("SequenceInsert", "", 11)
 
@@ -2919,11 +2919,11 @@ class _SequenceLength(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input_sequence: Arrow
+    class Inputs(VarFields):
+        input_sequence: Var
 
-    class Outputs(ArrowFields):
-        length: Arrow
+    class Outputs(VarFields):
+        length: Var
 
     op_type = OpType("SequenceLength", "", 11)
 
@@ -2937,12 +2937,12 @@ class _SequenceMap(StandardNode):
     class Attributes:
         body: AttrGraph
 
-    class Inputs(ArrowFields):
-        input_sequence: Arrow
-        additional_inputs: Sequence[Arrow]
+    class Inputs(VarFields):
+        input_sequence: Var
+        additional_inputs: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        out_sequence: Sequence[Arrow]
+    class Outputs(VarFields):
+        out_sequence: Sequence[Var]
 
     op_type = OpType("SequenceMap", "", 17)
 
@@ -2957,11 +2957,11 @@ class _Shape(StandardNode):
         end: Optional[AttrInt64]
         start: AttrInt64
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        shape: Arrow
+    class Outputs(VarFields):
+        shape: Var
 
     op_type = OpType("Shape", "", 15)
 
@@ -2976,11 +2976,11 @@ class _Shrink(StandardNode):
         bias: AttrFloat32
         lambd: AttrFloat32
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Shrink", "", 9)
 
@@ -2994,11 +2994,11 @@ class _Sigmoid(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Sigmoid", "", 13)
 
@@ -3012,11 +3012,11 @@ class _Sign(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Sign", "", 13)
 
@@ -3030,11 +3030,11 @@ class _Sin(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Sin", "", 7)
 
@@ -3048,11 +3048,11 @@ class _Sinh(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Sinh", "", 9)
 
@@ -3066,11 +3066,11 @@ class _Size(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        size: Arrow
+    class Outputs(VarFields):
+        size: Var
 
     op_type = OpType("Size", "", 13)
 
@@ -3084,15 +3084,15 @@ class _Slice(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        starts: Arrow
-        ends: Arrow
-        axes: Optional[Arrow]
-        steps: Optional[Arrow]
+    class Inputs(VarFields):
+        data: Var
+        starts: Var
+        ends: Var
+        axes: Optional[Var]
+        steps: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Slice", "", 13)
 
@@ -3106,11 +3106,11 @@ class _Softmax(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Softmax", "", 13)
 
@@ -3125,14 +3125,14 @@ class _SoftmaxCrossEntropyLoss(StandardNode):
         ignore_index: Optional[AttrInt64]
         reduction: AttrString
 
-    class Inputs(ArrowFields):
-        scores: Arrow
-        labels: Arrow
-        weights: Optional[Arrow]
+    class Inputs(VarFields):
+        scores: Var
+        labels: Var
+        weights: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
-        log_prob: Optional[Arrow]
+    class Outputs(VarFields):
+        output: Var
+        log_prob: Optional[Var]
 
     op_type = OpType("SoftmaxCrossEntropyLoss", "", 13)
 
@@ -3146,11 +3146,11 @@ class _Softplus(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Softplus", "", 1)
 
@@ -3164,11 +3164,11 @@ class _Softsign(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Softsign", "", 1)
 
@@ -3182,11 +3182,11 @@ class _SpaceToDepth(StandardNode):
     class Attributes:
         blocksize: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("SpaceToDepth", "", 13)
 
@@ -3200,12 +3200,12 @@ class _Split(StandardNode):
     class Attributes:
         axis: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        split: Optional[Arrow]
+    class Inputs(VarFields):
+        input: Var
+        split: Optional[Var]
 
-    class Outputs(ArrowFields):
-        outputs: Sequence[Arrow]
+    class Outputs(VarFields):
+        outputs: Sequence[Var]
 
     op_type = OpType("Split", "", 13)
 
@@ -3220,12 +3220,12 @@ class _SplitToSequence(StandardNode):
         axis: AttrInt64
         keepdims: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        split: Optional[Arrow]
+    class Inputs(VarFields):
+        input: Var
+        split: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output_sequence: Arrow
+    class Outputs(VarFields):
+        output_sequence: Var
 
     op_type = OpType("SplitToSequence", "", 11)
 
@@ -3239,11 +3239,11 @@ class _Sqrt(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Sqrt", "", 13)
 
@@ -3257,12 +3257,12 @@ class _Squeeze(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        axes: Optional[Arrow]
+    class Inputs(VarFields):
+        data: Var
+        axes: Optional[Var]
 
-    class Outputs(ArrowFields):
-        squeezed: Arrow
+    class Outputs(VarFields):
+        squeezed: Var
 
     op_type = OpType("Squeeze", "", 13)
 
@@ -3279,11 +3279,11 @@ class _StringNormalizer(StandardNode):
         locale: Optional[AttrString]
         stopwords: Optional[AttrStrings]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("StringNormalizer", "", 10)
 
@@ -3297,12 +3297,12 @@ class _Sub(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Sub", "", 14)
 
@@ -3316,11 +3316,11 @@ class _Sum(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data_0: Sequence[Arrow]
+    class Inputs(VarFields):
+        data_0: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        sum: Arrow
+    class Outputs(VarFields):
+        sum: Var
 
     op_type = OpType("Sum", "", 13)
 
@@ -3334,11 +3334,11 @@ class _Tan(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Tan", "", 7)
 
@@ -3352,11 +3352,11 @@ class _Tanh(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
+    class Inputs(VarFields):
+        input: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Tanh", "", 13)
 
@@ -3378,11 +3378,11 @@ class _TfIdfVectorizer(StandardNode):
         pool_strings: Optional[AttrStrings]
         weights: Optional[AttrFloat32s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("TfIdfVectorizer", "", 9)
 
@@ -3396,11 +3396,11 @@ class _ThresholdedRelu(StandardNode):
     class Attributes:
         alpha: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("ThresholdedRelu", "", 10)
 
@@ -3414,12 +3414,12 @@ class _Tile(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        repeats: Arrow
+    class Inputs(VarFields):
+        input: Var
+        repeats: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Tile", "", 13)
 
@@ -3435,13 +3435,13 @@ class _TopK(StandardNode):
         largest: AttrInt64
         sorted: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        K: Arrow
+    class Inputs(VarFields):
+        X: Var
+        K: Var
 
-    class Outputs(ArrowFields):
-        Values: Arrow
-        Indices: Arrow
+    class Outputs(VarFields):
+        Values: Var
+        Indices: Var
 
     op_type = OpType("TopK", "", 11)
 
@@ -3455,11 +3455,11 @@ class _Transpose(StandardNode):
     class Attributes:
         perm: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        data: Arrow
+    class Inputs(VarFields):
+        data: Var
 
-    class Outputs(ArrowFields):
-        transposed: Arrow
+    class Outputs(VarFields):
+        transposed: Var
 
     op_type = OpType("Transpose", "", 13)
 
@@ -3473,12 +3473,12 @@ class _Trilu(StandardNode):
     class Attributes:
         upper: AttrInt64
 
-    class Inputs(ArrowFields):
-        input: Arrow
-        k: Optional[Arrow]
+    class Inputs(VarFields):
+        input: Var
+        k: Optional[Var]
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Trilu", "", 14)
 
@@ -3493,14 +3493,14 @@ class _Unique(StandardNode):
         axis: Optional[AttrInt64]
         sorted: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
-        indices: Optional[Arrow]
-        inverse_indices: Optional[Arrow]
-        counts: Optional[Arrow]
+    class Outputs(VarFields):
+        Y: Var
+        indices: Optional[Var]
+        inverse_indices: Optional[Var]
+        counts: Optional[Var]
 
     op_type = OpType("Unique", "", 11)
 
@@ -3514,12 +3514,12 @@ class _Unsqueeze(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        data: Arrow
-        axes: Arrow
+    class Inputs(VarFields):
+        data: Var
+        axes: Var
 
-    class Outputs(ArrowFields):
-        expanded: Arrow
+    class Outputs(VarFields):
+        expanded: Var
 
     op_type = OpType("Unsqueeze", "", 13)
 
@@ -3533,12 +3533,12 @@ class _Upsample(StandardNode):
     class Attributes:
         mode: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        scales: Arrow
+    class Inputs(VarFields):
+        X: Var
+        scales: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("Upsample", "", 10)
 
@@ -3552,13 +3552,13 @@ class _Where(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        condition: Arrow
-        X: Arrow
-        Y: Arrow
+    class Inputs(VarFields):
+        condition: Var
+        X: Var
+        Y: Var
 
-    class Outputs(ArrowFields):
-        output: Arrow
+    class Outputs(VarFields):
+        output: Var
 
     op_type = OpType("Where", "", 16)
 
@@ -3572,12 +3572,12 @@ class _Xor(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        A: Arrow
-        B: Arrow
+    class Inputs(VarFields):
+        A: Var
+        B: Var
 
-    class Outputs(ArrowFields):
-        C: Arrow
+    class Outputs(VarFields):
+        C: Var
 
     op_type = OpType("Xor", "", 7)
 
@@ -3587,8 +3587,8 @@ class _Xor(StandardNode):
 
 
 def abs(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Absolute takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the absolute is, y = abs(x), is applied to
@@ -3602,7 +3602,7 @@ def abs(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -3622,8 +3622,8 @@ def abs(
 
 
 def acos(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the arccosine (inverse of cosine) of the given input tensor, element-wise.
 
@@ -3635,7 +3635,7 @@ def acos(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The arccosine of the input tensor computed element-wise
 
@@ -3655,8 +3655,8 @@ def acos(
 
 
 def acosh(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the hyperbolic arccosine of the given input tensor element-wise.
 
@@ -3668,7 +3668,7 @@ def acosh(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The hyperbolic arccosine values of the input tensor computed element-wise
 
@@ -3688,9 +3688,9 @@ def acosh(
 
 
 def add(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Performs element-wise binary addition (with Numpy-style broadcasting support).
     This operator supports **multidirectional (i.e., Numpy-style) broadcasting**; for more details please check the doc (Broadcasting.md).
@@ -3707,7 +3707,7 @@ def add(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T.
         Result, has same element type as two inputs
 
@@ -3728,9 +3728,9 @@ def add(
 
 
 def and_(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `and` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -3747,7 +3747,7 @@ def and_(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -3769,12 +3769,12 @@ def and_(
 
 
 def arg_max(
-    data: Arrow,
+    data: Var,
     *,
     axis: int = 0,
     keepdims: int = 1,
     select_last_index: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the indices of the max elements of the input tensor's element along the
     provided axis. The resulting tensor has the same rank as the input if keepdims equals 1.
@@ -3801,7 +3801,7 @@ def arg_max(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type tensor(int64).
         Reduced output tensor with integer data type.
 
@@ -3825,12 +3825,12 @@ def arg_max(
 
 
 def arg_min(
-    data: Arrow,
+    data: Var,
     *,
     axis: int = 0,
     keepdims: int = 1,
     select_last_index: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the indices of the min elements of the input tensor's element along the
     provided axis. The resulting tensor has the same rank as the input if keepdims equals 1.
@@ -3857,7 +3857,7 @@ def arg_min(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type tensor(int64).
         Reduced output tensor with integer data type.
 
@@ -3881,8 +3881,8 @@ def arg_min(
 
 
 def asin(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the arcsine (inverse of sine) of the given input tensor, element-wise.
 
@@ -3894,7 +3894,7 @@ def asin(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The arcsine of the input tensor computed element-wise
 
@@ -3914,8 +3914,8 @@ def asin(
 
 
 def asinh(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the hyperbolic arcsine of the given input tensor element-wise.
 
@@ -3927,7 +3927,7 @@ def asinh(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The hyperbolic arcsine values of the input tensor computed element-wise
 
@@ -3947,8 +3947,8 @@ def asinh(
 
 
 def atan(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the arctangent (inverse of tangent) of the given input tensor, element-wise.
 
@@ -3960,7 +3960,7 @@ def atan(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The arctangent of the input tensor computed element-wise
 
@@ -3980,8 +3980,8 @@ def atan(
 
 
 def atanh(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the hyperbolic arctangent of the given input tensor element-wise.
 
@@ -3993,7 +3993,7 @@ def atanh(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The hyperbolic arctangent values of the input tensor computed element-wise
 
@@ -4013,7 +4013,7 @@ def atanh(
 
 
 def average_pool(
-    X: Arrow,
+    X: Var,
     *,
     auto_pad: str = "NOTSET",
     ceil_mode: int = 0,
@@ -4021,7 +4021,7 @@ def average_pool(
     kernel_shape: Iterable[int],
     pads: Optional[Iterable[int]] = None,
     strides: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     AveragePool consumes an input tensor X and applies average pooling across
      the tensor according to kernel sizes, stride sizes, and pad lengths.
@@ -4076,7 +4076,7 @@ def average_pool(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor from average or max pooling across the input tensor. Dimensions will vary based on various kernel, stride, and pad sizes. Floor value of the dimension is used
 
@@ -4103,11 +4103,11 @@ def average_pool(
 
 
 def batch_normalization(
-    X: Arrow,
-    scale: Arrow,
-    B: Arrow,
-    input_mean: Arrow,
-    input_var: Arrow,
+    X: Var,
+    scale: Var,
+    B: Var,
+    input_mean: Var,
+    input_var: Var,
     *,
     epsilon: float = 9.999999747378752e-06,
     momentum: float = 0.8999999761581421,
@@ -4175,13 +4175,13 @@ def batch_normalization(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         The output tensor of the same shape as X
-    running_mean : Arrow
+    running_mean : Var
         Type T2.
         The running mean after the BatchNormalization operator.
-    running_var : Arrow
+    running_var : Var
         Type T2.
         The running variance after the BatchNormalization operator. This op uses the population size (N) for calculating variance, and not the sample size N-1.
 
@@ -4211,11 +4211,11 @@ def batch_normalization(
 
 
 def bernoulli(
-    input: Arrow,
+    input: Var,
     *,
     dtype: Optional[npt.DTypeLike] = None,
     seed: Optional[float] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Draws binary random numbers (0 or 1) from a Bernoulli distribution. The input tensor should be a tensor
     containing probabilities p (a value in the range [0,1]) to be used for drawing the binary random number,
@@ -4237,7 +4237,7 @@ def bernoulli(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         The returned output tensor only has values 0 or 1, same shape as input tensor.
 
@@ -4261,11 +4261,11 @@ def bernoulli(
 
 
 def bit_shift(
-    X: Arrow,
-    Y: Arrow,
+    X: Var,
+    Y: Var,
     *,
     direction: str,
-) -> Arrow:
+) -> Var:
     r"""
     Bitwise shift operator performs element-wise operation. For each input element, if the
      attribute "direction" is "RIGHT", this operator moves its binary representation toward
@@ -4293,7 +4293,7 @@ def bit_shift(
 
     Returns
     =======
-    Z : Arrow
+    Z : Var
         Type T.
         Output tensor
 
@@ -4316,11 +4316,11 @@ def bit_shift(
 
 
 def blackman_window(
-    size: Arrow,
+    size: Var,
     *,
     output_datatype: int = 1,
     periodic: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Generates a Blackman window as described in the paper https://ieeexplore.ieee.org/document/1455106.
 
@@ -4338,7 +4338,7 @@ def blackman_window(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         A Blackman window with length: size. The output has the shape: [size].
 
@@ -4362,10 +4362,10 @@ def blackman_window(
 
 
 def cast(
-    input: Arrow,
+    input: Var,
     *,
     to: npt.DTypeLike,
-) -> Arrow:
+) -> Var:
     r"""
     The operator casts the elements of a given input tensor to a data type
     specified by the 'to' argument and returns an output tensor of the same size in
@@ -4396,7 +4396,7 @@ def cast(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         Output tensor with the same shape as input with type specified by the 'to' argument
 
@@ -4419,9 +4419,9 @@ def cast(
 
 
 def cast_like(
-    input: Arrow,
-    target_type: Arrow,
-) -> Arrow:
+    input: Var,
+    target_type: Var,
+) -> Var:
     r"""
     The operator casts the elements of a given input tensor (the first input) to
     the same data type as the elements of the second input tensor.
@@ -4438,7 +4438,7 @@ def cast_like(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         Output tensor produced by casting the first input tensor to have the same type as the second input tensor.
 
@@ -4460,8 +4460,8 @@ def cast_like(
 
 
 def ceil(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Ceil takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the ceil is, y = ceil(x), is applied to
@@ -4475,7 +4475,7 @@ def ceil(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -4495,10 +4495,10 @@ def ceil(
 
 
 def celu(
-    X: Arrow,
+    X: Var,
     *,
     alpha: float = 1.0,
-) -> Arrow:
+) -> Var:
     r"""
     Continuously Differentiable Exponential Linear Units:
     Perform the linear unit element-wise on the input tensor X
@@ -4518,7 +4518,7 @@ def celu(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -4540,10 +4540,10 @@ def celu(
 
 
 def clip(
-    input: Arrow,
-    min: Optional[Arrow] = None,
-    max: Optional[Arrow] = None,
-) -> Arrow:
+    input: Var,
+    min: Optional[Var] = None,
+    max: Optional[Var] = None,
+) -> Var:
     r"""
     Clip operator limits the given input within an interval. The interval is
     specified by the inputs 'min' and 'max'. They default to
@@ -4563,7 +4563,7 @@ def clip(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor with clipped input elements
 
@@ -4585,11 +4585,11 @@ def clip(
 
 
 def compress(
-    input: Arrow,
-    condition: Arrow,
+    input: Var,
+    condition: Var,
     *,
     axis: Optional[int] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Selects slices from an input tensor along a given axis where condition evaluates to True for each axis index.
         In case axis is not provided, input is flattened before elements are selected.
@@ -4609,7 +4609,7 @@ def compress(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of rank r if axis is specified. Otherwise output is a Tensor of rank 1.
 
@@ -4633,10 +4633,10 @@ def compress(
 
 
 def concat(
-    inputs: Sequence[Arrow],
+    inputs: Sequence[Var],
     *,
     axis: int,
-) -> Arrow:
+) -> Var:
     r"""
     Concatenate a list of tensors into a single tensor. All input tensors must have the same shape, except for the dimension size of the axis to concatenate on.
 
@@ -4651,7 +4651,7 @@ def concat(
 
     Returns
     =======
-    concat_result : Arrow
+    concat_result : Var
         Type T.
         Concatenated tensor
 
@@ -4673,11 +4673,11 @@ def concat(
 
 
 def concat_from_sequence(
-    input_sequence: Arrow,
+    input_sequence: Var,
     *,
     axis: int,
     new_axis: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Concatenate a sequence of tensors into a single tensor.
     All input tensors must have the same shape, except for the dimension size of the axis to concatenate on.
@@ -4698,7 +4698,7 @@ def concat_from_sequence(
 
     Returns
     =======
-    concat_result : Arrow
+    concat_result : Var
         Type T.
         Concatenated tensor
 
@@ -4730,7 +4730,7 @@ def constant(
     value_ints: Optional[Iterable[int]] = None,
     value_string: Optional[str] = None,
     value_strings: Optional[Iterable[str]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     This operator produces a constant tensor. Exactly one of the provided attributes, either value, sparse_value,
     or value_* must be specified.
@@ -4764,7 +4764,7 @@ def constant(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor containing the same value of the provided tensor.
 
@@ -4790,10 +4790,10 @@ def constant(
 
 
 def constant_of_shape(
-    input: Arrow,
+    input: Var,
     *,
     value: Optional[np.ndarray] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Generate a tensor with given value and shape.
 
@@ -4808,7 +4808,7 @@ def constant_of_shape(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         Output tensor of shape specified by 'input'.If attribute 'value' is specified, the value and datatype of the output tensor is taken from 'value'.If attribute 'value' is not specified, the value in the output defaults to 0, and the datatype defaults to float32.
 
@@ -4831,9 +4831,9 @@ def constant_of_shape(
 
 
 def conv(
-    X: Arrow,
-    W: Arrow,
-    B: Optional[Arrow] = None,
+    X: Var,
+    W: Var,
+    B: Optional[Var] = None,
     *,
     auto_pad: str = "NOTSET",
     dilations: Optional[Iterable[int]] = None,
@@ -4841,7 +4841,7 @@ def conv(
     kernel_shape: Optional[Iterable[int]] = None,
     pads: Optional[Iterable[int]] = None,
     strides: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     The convolution operator consumes an input tensor and a filter, and
     computes the output.
@@ -4878,7 +4878,7 @@ def conv(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, and pad lengths.
 
@@ -4907,10 +4907,10 @@ def conv(
 
 
 def conv_integer(
-    x: Arrow,
-    w: Arrow,
-    x_zero_point: Optional[Arrow] = None,
-    w_zero_point: Optional[Arrow] = None,
+    x: Var,
+    w: Var,
+    x_zero_point: Optional[Var] = None,
+    w_zero_point: Optional[Var] = None,
     *,
     auto_pad: str = "NOTSET",
     dilations: Optional[Iterable[int]] = None,
@@ -4918,7 +4918,7 @@ def conv_integer(
     kernel_shape: Optional[Iterable[int]] = None,
     pads: Optional[Iterable[int]] = None,
     strides: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     The integer convolution operator consumes an input tensor, its zero-point, a filter, and its zero-point,
     and computes the output. The production MUST never overflow. The accumulation may overflow if and only if in 32 bits.
@@ -4958,7 +4958,7 @@ def conv_integer(
 
     Returns
     =======
-    y : Arrow
+    y : Var
         Type T3.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, and pad lengths.
 
@@ -4990,9 +4990,9 @@ def conv_integer(
 
 
 def conv_transpose(
-    X: Arrow,
-    W: Arrow,
-    B: Optional[Arrow] = None,
+    X: Var,
+    W: Var,
+    B: Optional[Var] = None,
     *,
     auto_pad: str = "NOTSET",
     dilations: Optional[Iterable[int]] = None,
@@ -5002,7 +5002,7 @@ def conv_transpose(
     output_shape: Optional[Iterable[int]] = None,
     pads: Optional[Iterable[int]] = None,
     strides: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     The convolution transpose operator consumes an input tensor and a filter,
     and computes the output.
@@ -5051,7 +5051,7 @@ def conv_transpose(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, pad lengths and group count. The number of channels in the output should be equal to W.shape[1] * group (assuming zero based indices of the shape array)
 
@@ -5084,8 +5084,8 @@ def conv_transpose(
 
 
 def cos(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the cosine of the given input tensor, element-wise.
 
@@ -5097,7 +5097,7 @@ def cos(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The cosine of the input tensor computed element-wise
 
@@ -5117,8 +5117,8 @@ def cos(
 
 
 def cosh(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the hyperbolic cosine of the given input tensor element-wise.
 
@@ -5130,7 +5130,7 @@ def cosh(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The hyperbolic cosine values of the input tensor computed element-wise
 
@@ -5150,12 +5150,12 @@ def cosh(
 
 
 def cum_sum(
-    x: Arrow,
-    axis: Arrow,
+    x: Var,
+    axis: Var,
     *,
     exclusive: int = 0,
     reverse: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Performs cumulative sum of the input elements along the given axis.
     By default, it will do the sum inclusively meaning the first element is copied as is.
@@ -5193,7 +5193,7 @@ def cum_sum(
 
     Returns
     =======
-    y : Arrow
+    y : Var
         Type T.
         Output tensor of the same type as 'x' with cumulative sums of the x's elements
 
@@ -5218,13 +5218,13 @@ def cum_sum(
 
 
 def dft(
-    input: Arrow,
-    dft_length: Optional[Arrow] = None,
+    input: Var,
+    dft_length: Optional[Var] = None,
     *,
     axis: int = 1,
     inverse: int = 0,
     onesided: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the discrete Fourier transform of input.
 
@@ -5248,7 +5248,7 @@ def dft(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T1.
         The Fourier Transform of the input vector.If onesided is 0, the following shape is expected: [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][2]. If axis=0 and onesided is 1, the following shape is expected: [batch_idx][floor(signal_dim1/2)+1][signal_dim2]...[signal_dimN][2]. If axis=1 and onesided is 1, the following shape is expected: [batch_idx][signal_dim1][floor(signal_dim2/2)+1]...[signal_dimN][2]. If axis=N-1 and onesided is 1, the following shape is expected: [batch_idx][signal_dim1][signal_dim2]...[floor(signal_dimN/2)+1][2]. The signal_dim at the specified axis is equal to the dft_length.
 
@@ -5274,11 +5274,11 @@ def dft(
 
 
 def depth_to_space(
-    input: Arrow,
+    input: Var,
     *,
     blocksize: int,
     mode: str = "DCR",
-) -> Arrow:
+) -> Var:
     r"""
     DepthToSpace rearranges (permutes) data from depth into blocks of spatial data.
     This is the reverse transformation of SpaceToDepth. More specifically, this op outputs a copy of
@@ -5311,7 +5311,7 @@ def depth_to_space(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor of [N, C/(blocksize * blocksize), H * blocksize, W * blocksize].
 
@@ -5334,12 +5334,12 @@ def depth_to_space(
 
 
 def dequantize_linear(
-    x: Arrow,
-    x_scale: Arrow,
-    x_zero_point: Optional[Arrow] = None,
+    x: Var,
+    x_scale: Var,
+    x_zero_point: Optional[Var] = None,
     *,
     axis: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     The linear dequantization operator. It consumes a quantized tensor, a scale, and a zero point to compute the full precision tensor.
     The dequantization formula is y = (x - x_zero_point) * x_scale. 'x_scale' and 'x_zero_point' must have same shape, and can be either a scalar
@@ -5364,7 +5364,7 @@ def dequantize_linear(
 
     Returns
     =======
-    y : Arrow
+    y : Var
         Type tensor(float).
         N-D full precision output tensor. It has same shape as input 'x'.
 
@@ -5388,8 +5388,8 @@ def dequantize_linear(
 
 
 def det(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Det calculates determinant of a square matrix or batches of square matrices.
     Det takes one input tensor of shape `[*, M, M]`, where `*` is zero or more batch dimensions,
@@ -5405,7 +5405,7 @@ def det(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -5425,9 +5425,9 @@ def det(
 
 
 def div(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Performs element-wise binary division (with Numpy-style broadcasting support).
     This operator supports **multidirectional (i.e., Numpy-style) broadcasting**; for more details please check the doc (Broadcasting.md).
@@ -5444,7 +5444,7 @@ def div(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T.
         Result, has same element type as two inputs
 
@@ -5465,9 +5465,9 @@ def div(
 
 
 def dropout(
-    data: Arrow,
-    ratio: Optional[Arrow] = None,
-    training_mode: Optional[Arrow] = None,
+    data: Var,
+    ratio: Optional[Var] = None,
+    training_mode: Optional[Var] = None,
     *,
     seed: Optional[int] = None,
 ) -> _Dropout.Outputs:
@@ -5502,10 +5502,10 @@ def dropout(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The output.
-    mask : Arrow
+    mask : Var
         Type T2.
         The output mask.
 
@@ -5531,7 +5531,7 @@ def dropout(
 
 
 def dynamic_quantize_linear(
-    x: Arrow,
+    x: Var,
 ) -> _DynamicQuantizeLinear.Outputs:
     r"""
     A Function to fuse calculation for Scale, Zero Point and FP32->8Bit convertion of FP32 Input data.
@@ -5565,13 +5565,13 @@ def dynamic_quantize_linear(
 
     Returns
     =======
-    y : Arrow
+    y : Var
         Type T2.
         Quantized output tensor
-    y_scale : Arrow
+    y_scale : Var
         Type tensor(float).
         Output scale. It's a scalar, which means a per-tensor/layer quantization.
-    y_zero_point : Arrow
+    y_zero_point : Var
         Type T2.
         Output zero point. It's a scalar, which means a per-tensor/layer quantization.
 
@@ -5592,10 +5592,10 @@ def dynamic_quantize_linear(
 
 
 def einsum(
-    Inputs: Sequence[Arrow],
+    Inputs: Sequence[Var],
     *,
     equation: str,
-) -> Arrow:
+) -> Var:
     r"""
     An einsum of the form ```term1, term2 -> output-term``` produces an output tensor using the following equation
     ```output[output-term] = reduce-sum( input1[term1] * input2[term] )```
@@ -5626,7 +5626,7 @@ def einsum(
 
     Returns
     =======
-    Output : Arrow
+    Output : Var
         Type T.
         Output tensor
 
@@ -5648,10 +5648,10 @@ def einsum(
 
 
 def elu(
-    X: Arrow,
+    X: Var,
     *,
     alpha: float = 1.0,
-) -> Arrow:
+) -> Var:
     r"""
     Elu takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the function `f(x) = alpha * (exp(x) - 1.) for x <
@@ -5668,7 +5668,7 @@ def elu(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         1D output tensor
 
@@ -5690,9 +5690,9 @@ def elu(
 
 
 def equal(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `equal` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -5709,7 +5709,7 @@ def equal(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -5731,8 +5731,8 @@ def equal(
 
 
 def erf(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Computes the error function of the given input tensor element-wise.
 
@@ -5744,7 +5744,7 @@ def erf(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The error function of the input tensor computed element-wise. It has the same shape and type of the input.
 
@@ -5764,8 +5764,8 @@ def erf(
 
 
 def exp(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the exponential of the given input tensor, element-wise.
 
@@ -5777,7 +5777,7 @@ def exp(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The exponential of the input tensor computed element-wise
 
@@ -5797,9 +5797,9 @@ def exp(
 
 
 def expand(
-    input: Arrow,
-    shape: Arrow,
-) -> Arrow:
+    input: Var,
+    shape: Var,
+) -> Var:
     r"""
     Broadcast the input tensor following the given shape and the broadcast rule.
     The broadcast rule is similar to numpy.array(input) * numpy.ones(shape):
@@ -5821,7 +5821,7 @@ def expand(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor
 
@@ -5842,11 +5842,11 @@ def expand(
 
 
 def eye_like(
-    input: Arrow,
+    input: Var,
     *,
     dtype: Optional[npt.DTypeLike] = None,
     k: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Generate a 2D tensor (matrix) with ones on the diagonal and zeros everywhere else. Only 2D
     tensors are supported, i.e. input T1 must be of rank 2. The shape of the output tensor is the
@@ -5870,7 +5870,7 @@ def eye_like(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         Output tensor, same shape as input tensor T1.
 
@@ -5894,10 +5894,10 @@ def eye_like(
 
 
 def flatten(
-    input: Arrow,
+    input: Var,
     *,
     axis: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Flattens the input tensor into a 2D matrix. If input tensor has shape
     (d_0, d_1, ... d_n) then the output will have shape
@@ -5914,7 +5914,7 @@ def flatten(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         A 2D tensor with the contents of the input tensor, with input dimensions up to axis flattened to the outer dimension of the output and remaining input dimensions flattened into the inner dimension of the output.
 
@@ -5936,8 +5936,8 @@ def flatten(
 
 
 def floor(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Floor takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the floor is, y = floor(x), is applied to
@@ -5951,7 +5951,7 @@ def floor(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -5971,12 +5971,12 @@ def floor(
 
 
 def gru(
-    X: Arrow,
-    W: Arrow,
-    R: Arrow,
-    B: Optional[Arrow] = None,
-    sequence_lens: Optional[Arrow] = None,
-    initial_h: Optional[Arrow] = None,
+    X: Var,
+    W: Var,
+    R: Var,
+    B: Optional[Var] = None,
+    sequence_lens: Optional[Var] = None,
+    initial_h: Optional[Var] = None,
     *,
     activation_alpha: Optional[Iterable[float]] = None,
     activation_beta: Optional[Iterable[float]] = None,
@@ -6074,10 +6074,10 @@ def gru(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         A tensor that concats all the intermediate output values of the hidden. It has shape `[seq_length, num_directions, batch_size, hidden_size]`.
-    Y_h : Arrow
+    Y_h : Var
         Type T.
         The last output value of the hidden. It has shape `[num_directions, batch_size, hidden_size]`.
 
@@ -6116,11 +6116,11 @@ def gru(
 
 
 def gather(
-    data: Arrow,
-    indices: Arrow,
+    data: Var,
+    indices: Var,
     *,
     axis: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Given `data` tensor of rank r >= 1, and `indices` tensor of rank q, gather
     entries of the axis dimension of `data` (by default outer-most one as axis=0) indexed by `indices`, and concatenates
@@ -6187,7 +6187,7 @@ def gather(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of rank q + (r - 1).
 
@@ -6211,11 +6211,11 @@ def gather(
 
 
 def gather_elements(
-    data: Arrow,
-    indices: Arrow,
+    data: Var,
+    indices: Var,
     *,
     axis: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     GatherElements takes two inputs `data` and `indices` of the same rank r >= 1
     and an optional attribute `axis` that identifies an axis of `data`
@@ -6280,7 +6280,7 @@ def gather_elements(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of the same shape as indices.
 
@@ -6304,11 +6304,11 @@ def gather_elements(
 
 
 def gather_nd(
-    data: Arrow,
-    indices: Arrow,
+    data: Var,
+    indices: Var,
     *,
     batch_dims: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Given `data` tensor of rank `r` >= 1, `indices` tensor of rank `q` >= 1, and `batch_dims` integer `b`, this operator gathers
     slices of `data` into an output tensor of rank `q + r - indices_shape[-1] - 1 - b`.
@@ -6375,7 +6375,7 @@ def gather_nd(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of rank q + r - indices_shape[-1] - 1.
 
@@ -6398,15 +6398,15 @@ def gather_nd(
 
 
 def gemm(
-    A: Arrow,
-    B: Arrow,
-    C: Optional[Arrow] = None,
+    A: Var,
+    B: Var,
+    C: Optional[Var] = None,
     *,
     alpha: float = 1.0,
     beta: float = 1.0,
     transA: int = 0,
     transB: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     General Matrix multiplication:
     https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms#Level_3
@@ -6445,7 +6445,7 @@ def gemm(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor of shape (M, N).
 
@@ -6472,8 +6472,8 @@ def gemm(
 
 
 def global_average_pool(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     GlobalAveragePool consumes an input tensor X and applies average pooling across
      the values in the same channel. This is equivalent to AveragePool with kernel size
@@ -6487,7 +6487,7 @@ def global_average_pool(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor from pooling across the input tensor. The output tensor has the same rank as the input. The first two dimensions of output shape are the same as the input (N x C), while the other dimensions are all 1.
 
@@ -6507,10 +6507,10 @@ def global_average_pool(
 
 
 def global_lp_pool(
-    X: Arrow,
+    X: Var,
     *,
     p: int = 2,
-) -> Arrow:
+) -> Var:
     r"""
     GlobalLpPool consumes an input tensor X and applies lp pool pooling across
      the values in the same channel. This is equivalent to LpPool with kernel size
@@ -6527,7 +6527,7 @@ def global_lp_pool(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor from pooling across the input tensor. The output tensor has the same rank as the input. The first two dimensions of output shape are the same as the input (N x C), while the other dimensions are all 1.
 
@@ -6549,8 +6549,8 @@ def global_lp_pool(
 
 
 def global_max_pool(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     GlobalMaxPool consumes an input tensor X and applies max pooling across
      the values in the same channel. This is equivalent to MaxPool with kernel size
@@ -6564,7 +6564,7 @@ def global_max_pool(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor from pooling across the input tensor. The output tensor has the same rank as the input. The first two dimensions of output shape are the same as the input (N x C), while the other dimensions are all 1.
 
@@ -6584,9 +6584,9 @@ def global_max_pool(
 
 
 def greater(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `greater` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -6603,7 +6603,7 @@ def greater(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -6625,9 +6625,9 @@ def greater(
 
 
 def greater_or_equal(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `greater_equal` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -6644,7 +6644,7 @@ def greater_or_equal(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -6666,13 +6666,13 @@ def greater_or_equal(
 
 
 def grid_sample(
-    X: Arrow,
-    grid: Arrow,
+    X: Var,
+    grid: Var,
     *,
     align_corners: int = 0,
     mode: str = "bilinear",
     padding_mode: str = "zeros",
-) -> Arrow:
+) -> Var:
     r"""
     Given an `input` and a flow-field `grid`, computes the `output` using `input` values and pixel locations from `grid`.
     Currently, only spatial (4-D) inputs are supported. For `input` with shape (N, C, H, W) and `grid` with shape (N, H_out, W_out, 2),
@@ -6702,7 +6702,7 @@ def grid_sample(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         4-D tensor of shape (N, C, H_out, W_out).
 
@@ -6728,11 +6728,11 @@ def grid_sample(
 
 
 def hamming_window(
-    size: Arrow,
+    size: Var,
     *,
     output_datatype: int = 1,
     periodic: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Generates a Hamming window as described in the paper https://ieeexplore.ieee.org/document/1455106.
 
@@ -6750,7 +6750,7 @@ def hamming_window(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         A Hamming window with length: size. The output has the shape: [size].
 
@@ -6774,11 +6774,11 @@ def hamming_window(
 
 
 def hann_window(
-    size: Arrow,
+    size: Var,
     *,
     output_datatype: int = 1,
     periodic: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Generates a Hann window as described in the paper https://ieeexplore.ieee.org/document/1455106.
 
@@ -6796,7 +6796,7 @@ def hann_window(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         A Hann window with length: size. The output has the shape: [size].
 
@@ -6820,11 +6820,11 @@ def hann_window(
 
 
 def hard_sigmoid(
-    X: Arrow,
+    X: Var,
     *,
     alpha: float = 0.20000000298023224,
     beta: float = 0.5,
-) -> Arrow:
+) -> Var:
     r"""
     HardSigmoid takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the HardSigmoid function, y = max(0, min(1, alpha * x + beta)),
@@ -6844,7 +6844,7 @@ def hard_sigmoid(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -6867,8 +6867,8 @@ def hard_sigmoid(
 
 
 def hard_swish(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     HardSwish takes one input data (Tensor<T>) and produces one output data (Tensor<T>) where
     the HardSwish function, y = x * max(0, min(1, alpha * x + beta)) = x * HardSigmoid<alpha, beta>(x),
@@ -6882,7 +6882,7 @@ def hard_swish(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -6902,10 +6902,10 @@ def hard_swish(
 
 
 def hardmax(
-    input: Arrow,
+    input: Var,
     *,
     axis: int = -1,
-) -> Arrow:
+) -> Var:
     r"""
     The operator computes the hardmax values for the given input:
      Hardmax(element in input, axis) = 1 if the element is the first maximum value along the specified axis, 0 otherwise
@@ -6926,7 +6926,7 @@ def hardmax(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The output values with the same shape as the input tensor.
 
@@ -6948,8 +6948,8 @@ def hardmax(
 
 
 def identity(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Identity operator
 
@@ -6961,7 +6961,7 @@ def identity(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type V.
         Tensor to copy input into.
 
@@ -6981,11 +6981,11 @@ def identity(
 
 
 def if_(
-    cond: Arrow,
+    cond: Var,
     *,
-    else_branch: Callable[[], Iterable[Arrow]],
-    then_branch: Callable[[], Iterable[Arrow]],
-) -> Sequence[Arrow]:
+    else_branch: Callable[[], Iterable[Var]],
+    then_branch: Callable[[], Iterable[Var]],
+) -> Sequence[Var]:
     r"""
     If conditional
 
@@ -7003,7 +7003,7 @@ def if_(
 
     Returns
     =======
-    outputs : Sequence[Arrow]
+    outputs : Sequence[Var]
         Type V.
         Values that are live-out to the enclosing scope. The return values in the `then_branch` and `else_branch` must be of the same data type. The `then_branch` and `else_branch` may produce tensors with the same element type and different shapes. If corresponding outputs from the then-branch and the else-branch have static shapes S1 and S2, then the shape of the corresponding output variable of the if-node (if present) must be compatible with both S1 and S2 as it represents the union of both possible shapes.For example, if in a model file, the the first output of `then_branch` is typed float tensor with shape [2] and the first output of `else_branch` is another float tensor with shape [3], If's first output should have (a) no shape set, or (b) a shape of rank 1 with neither `dim_value` nor `dim_param` set, or (c) a shape of rank 1 with a unique `dim_param`. In contrast, the first output cannot have the shape [2] since [2] and [3] are not compatible.
 
@@ -7030,12 +7030,12 @@ def if_(
 
 
 def instance_normalization(
-    input: Arrow,
-    scale: Arrow,
-    B: Arrow,
+    input: Var,
+    scale: Var,
+    B: Var,
     *,
     epsilon: float = 9.999999747378752e-06,
-) -> Arrow:
+) -> Var:
     r"""
     Carries out instance normalization as described in the paper
     https://arxiv.org/abs/1607.08022.
@@ -7059,7 +7059,7 @@ def instance_normalization(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The output tensor of the same shape as input.
 
@@ -7083,11 +7083,11 @@ def instance_normalization(
 
 
 def is_inf(
-    X: Arrow,
+    X: Var,
     *,
     detect_negative: int = 1,
     detect_positive: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Map infinity to true and other values to false.
 
@@ -7105,7 +7105,7 @@ def is_inf(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         output
 
@@ -7129,8 +7129,8 @@ def is_inf(
 
 
 def isnan(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Returns which elements of the input are NaN.
 
@@ -7142,7 +7142,7 @@ def isnan(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         output
 
@@ -7163,13 +7163,13 @@ def isnan(
 
 
 def lrn(
-    X: Arrow,
+    X: Var,
     *,
     alpha: float = 9.999999747378752e-05,
     beta: float = 0.75,
     bias: float = 1.0,
     size: int,
-) -> Arrow:
+) -> Var:
     r"""
     Local Response Normalization proposed in the AlexNet paper (https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf).
     It normalizes over local input regions.
@@ -7200,7 +7200,7 @@ def lrn(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor, which has the shape and type as input tensor
 
@@ -7225,14 +7225,14 @@ def lrn(
 
 
 def lstm(
-    X: Arrow,
-    W: Arrow,
-    R: Arrow,
-    B: Optional[Arrow] = None,
-    sequence_lens: Optional[Arrow] = None,
-    initial_h: Optional[Arrow] = None,
-    initial_c: Optional[Arrow] = None,
-    P: Optional[Arrow] = None,
+    X: Var,
+    W: Var,
+    R: Var,
+    B: Optional[Var] = None,
+    sequence_lens: Optional[Var] = None,
+    initial_h: Optional[Var] = None,
+    initial_c: Optional[Var] = None,
+    P: Optional[Var] = None,
     *,
     activation_alpha: Optional[Iterable[float]] = None,
     activation_beta: Optional[Iterable[float]] = None,
@@ -7340,13 +7340,13 @@ def lstm(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         A tensor that concats all the intermediate output values of the hidden. It has shape `[seq_length, num_directions, batch_size, hidden_size]`.
-    Y_h : Arrow
+    Y_h : Var
         Type T.
         The last output value of the hidden. It has shape `[num_directions, batch_size, hidden_size]`.
-    Y_c : Arrow
+    Y_c : Var
         Type T.
         The last output value of the cell. It has shape `[num_directions, batch_size, hidden_size]`.
 
@@ -7387,9 +7387,9 @@ def lstm(
 
 
 def layer_normalization(
-    X: Arrow,
-    Scale: Arrow,
-    B: Optional[Arrow] = None,
+    X: Var,
+    Scale: Var,
+    B: Optional[Var] = None,
     *,
     axis: int = -1,
     epsilon: float = 9.999999747378752e-06,
@@ -7459,13 +7459,13 @@ def layer_normalization(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Normalized tensor.
-    Mean : Arrow
+    Mean : Var
         Type U.
         Saved mean used during training to speed up gradient computation
-    InvStdDev : Arrow
+    InvStdDev : Var
         Type U.
         Saved inverse standard deviation used during training to speed up gradient computation.
 
@@ -7492,10 +7492,10 @@ def layer_normalization(
 
 
 def leaky_relu(
-    X: Arrow,
+    X: Var,
     *,
     alpha: float = 0.009999999776482582,
-) -> Arrow:
+) -> Var:
     r"""
     LeakyRelu takes input data (Tensor<T>) and an argument alpha, and produces one
     output data (Tensor<T>) where the function `f(x) = alpha * x for x < 0`,
@@ -7514,7 +7514,7 @@ def leaky_relu(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -7536,9 +7536,9 @@ def leaky_relu(
 
 
 def less(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `less` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -7555,7 +7555,7 @@ def less(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -7577,9 +7577,9 @@ def less(
 
 
 def less_or_equal(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `less_equal` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -7596,7 +7596,7 @@ def less_or_equal(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -7618,8 +7618,8 @@ def less_or_equal(
 
 
 def log(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the natural log of the given input tensor, element-wise.
 
@@ -7631,7 +7631,7 @@ def log(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The natural log of the input tensor computed element-wise
 
@@ -7651,10 +7651,10 @@ def log(
 
 
 def log_softmax(
-    input: Arrow,
+    input: Var,
     *,
     axis: int = -1,
-) -> Arrow:
+) -> Var:
     r"""
     The operator computes the log of softmax values for the given input:
      LogSoftmax(input, axis) = Log(Softmax(input, axis=axis))
@@ -7675,7 +7675,7 @@ def log_softmax(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The output values with the same shape as the input tensor.
 
@@ -7697,12 +7697,12 @@ def log_softmax(
 
 
 def loop(
-    M: Optional[Arrow] = None,
-    cond: Optional[Arrow] = None,
-    v_initial: Sequence[Arrow] = (),
+    M: Optional[Var] = None,
+    cond: Optional[Var] = None,
+    v_initial: Sequence[Var] = (),
     *,
-    body: Callable[..., Iterable[Arrow]],
-) -> Sequence[Arrow]:
+    body: Callable[..., Iterable[Var]],
+) -> Sequence[Var]:
     r"""
     Generic Looping construct. This loop has multiple termination conditions:
     1) Trip count. Iteration count specified at runtime. Set by
@@ -7834,7 +7834,7 @@ def loop(
 
     Returns
     =======
-    v_final_and_scan_outputs : Sequence[Arrow]
+    v_final_and_scan_outputs : Sequence[Var]
         Type V.
         Final N loop carried dependency values then K scan_outputs. Scan outputs must be Tensors.
 
@@ -7849,7 +7849,7 @@ def loop(
     """
     _body_subgraph: Graph = subgraph(
         typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
-        + [arrow.unwrap_type() for arrow in v_initial],
+        + [var.unwrap_type() for var in v_initial],
         body,
     )
     return _Loop(
@@ -7866,11 +7866,11 @@ def loop(
 
 
 def lp_normalization(
-    input: Arrow,
+    input: Var,
     *,
     axis: int = -1,
     p: int = 2,
-) -> Arrow:
+) -> Var:
     r"""
     Given a matrix, apply Lp-normalization along the provided axis.
 
@@ -7888,7 +7888,7 @@ def lp_normalization(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Matrix after normalization
 
@@ -7911,14 +7911,14 @@ def lp_normalization(
 
 
 def lp_pool(
-    X: Arrow,
+    X: Var,
     *,
     auto_pad: str = "NOTSET",
     kernel_shape: Iterable[int],
     p: int = 2,
     pads: Optional[Iterable[int]] = None,
     strides: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     LpPool consumes an input tensor X and applies Lp pooling across
      the tensor according to kernel sizes, stride sizes, and pad lengths.
@@ -7949,7 +7949,7 @@ def lp_pool(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor from Lp pooling across the input tensor. Dimensions will vary based on various kernel, stride, and pad sizes.
 
@@ -7975,9 +7975,9 @@ def lp_pool(
 
 
 def mat_mul(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html
 
@@ -7992,7 +7992,7 @@ def mat_mul(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Matrix multiply results from A * B
 
@@ -8013,11 +8013,11 @@ def mat_mul(
 
 
 def mat_mul_integer(
-    A: Arrow,
-    B: Arrow,
-    a_zero_point: Optional[Arrow] = None,
-    b_zero_point: Optional[Arrow] = None,
-) -> Arrow:
+    A: Var,
+    B: Var,
+    a_zero_point: Optional[Var] = None,
+    b_zero_point: Optional[Var] = None,
+) -> Var:
     r"""
     Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
     The production MUST never overflow. The accumulation may overflow if and only if in 32 bits.
@@ -8039,7 +8039,7 @@ def mat_mul_integer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T3.
         Matrix multiply results from A * B
 
@@ -8064,8 +8064,8 @@ def mat_mul_integer(
 
 
 def maximum(
-    data_0: Sequence[Arrow],
-) -> Arrow:
+    data_0: Sequence[Var],
+) -> Var:
     r"""
     Element-wise max of each of the input tensors (with Numpy-style broadcasting support).
     All inputs and outputs must have the same data type.
@@ -8079,7 +8079,7 @@ def maximum(
 
     Returns
     =======
-    max : Arrow
+    max : Var
         Type T.
         Output tensor.
 
@@ -8099,7 +8099,7 @@ def maximum(
 
 
 def max_pool(
-    X: Arrow,
+    X: Var,
     *,
     auto_pad: str = "NOTSET",
     ceil_mode: int = 0,
@@ -8166,10 +8166,10 @@ def max_pool(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output data tensor from average or max pooling across the input tensor. Dimensions will vary based on various kernel, stride, and pad sizes. Floor value of the dimension is used
-    Indices : Arrow
+    Indices : Var
         Type I.
         Indices tensor from max pooling across the input tensor. The dimensions of indices are the same as output tensor. The values in indices of are the indices of the selected values during pooling. The indices are computed as flatten 1-D tensor, and the indices do not consider padding. So the values in indices are in [0, N x C x D1 x ... x Dn).
 
@@ -8198,12 +8198,12 @@ def max_pool(
 
 
 def max_roi_pool(
-    X: Arrow,
-    rois: Arrow,
+    X: Var,
+    rois: Var,
     *,
     pooled_shape: Iterable[int],
     spatial_scale: float = 1.0,
-) -> Arrow:
+) -> Var:
     r"""
     ROI max pool consumes an input tensor X and region of interests (RoIs) to
      apply max pooling across each RoI, to produce output 4-D tensor of shape
@@ -8226,7 +8226,7 @@ def max_roi_pool(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         RoI pooled output 4-D tensor of shape (num_rois, channels, pooled_shape[0], pooled_shape[1]).
 
@@ -8250,14 +8250,14 @@ def max_roi_pool(
 
 
 def max_unpool(
-    X: Arrow,
-    I: Arrow,
-    output_shape: Optional[Arrow] = None,
+    X: Var,
+    I: Var,
+    output_shape: Optional[Var] = None,
     *,
     kernel_shape: Iterable[int],
     pads: Optional[Iterable[int]] = None,
     strides: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     MaxUnpool essentially computes the partial inverse of the MaxPool op.
      The input information to this op is typically the the output information from a MaxPool op. The first
@@ -8298,7 +8298,7 @@ def max_unpool(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T1.
         Output data tensor that contains the result of the unpooling.
 
@@ -8325,8 +8325,8 @@ def max_unpool(
 
 
 def mean(
-    data_0: Sequence[Arrow],
-) -> Arrow:
+    data_0: Sequence[Var],
+) -> Var:
     r"""
     Element-wise mean of each of the input tensors (with Numpy-style broadcasting support).
     All inputs and outputs must have the same data type.
@@ -8340,7 +8340,7 @@ def mean(
 
     Returns
     =======
-    mean : Arrow
+    mean : Var
         Type T.
         Output tensor.
 
@@ -8360,10 +8360,10 @@ def mean(
 
 
 def mean_variance_normalization(
-    X: Arrow,
+    X: Var,
     *,
     axes: Iterable[int] = (0, 2, 3),
-) -> Arrow:
+) -> Var:
     r"""
     A MeanVarianceNormalization Function: Perform mean variance normalization
           on the input tensor X using formula: <br/> ``` (X-EX)/sqrt(E(X-EX)^2) ```
@@ -8379,7 +8379,7 @@ def mean_variance_normalization(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -8401,14 +8401,14 @@ def mean_variance_normalization(
 
 
 def mel_weight_matrix(
-    num_mel_bins: Arrow,
-    dft_length: Arrow,
-    sample_rate: Arrow,
-    lower_edge_hertz: Arrow,
-    upper_edge_hertz: Arrow,
+    num_mel_bins: Var,
+    dft_length: Var,
+    sample_rate: Var,
+    lower_edge_hertz: Var,
+    upper_edge_hertz: Var,
     *,
     output_datatype: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Generate a MelWeightMatrix that can be used to re-weight a Tensor containing a linearly sampled frequency spectra (from DFT or STFT) into num_mel_bins frequency information based on the [lower_edge_hertz, upper_edge_hertz] range on the mel scale.
     This function defines the mel scale in terms of a frequency in hertz according to the following formula:
@@ -8439,7 +8439,7 @@ def mel_weight_matrix(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T3.
         The Mel Weight Matrix. The output has the shape: [floor(dft_length/2) + 1][num_mel_bins].
 
@@ -8467,8 +8467,8 @@ def mel_weight_matrix(
 
 
 def minimum(
-    data_0: Sequence[Arrow],
-) -> Arrow:
+    data_0: Sequence[Var],
+) -> Var:
     r"""
     Element-wise min of each of the input tensors (with Numpy-style broadcasting support).
     All inputs and outputs must have the same data type.
@@ -8482,7 +8482,7 @@ def minimum(
 
     Returns
     =======
-    min : Arrow
+    min : Var
         Type T.
         Output tensor.
 
@@ -8502,11 +8502,11 @@ def minimum(
 
 
 def mod(
-    A: Arrow,
-    B: Arrow,
+    A: Var,
+    B: Var,
     *,
     fmod: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Performs element-wise binary modulus (with Numpy-style broadcasting support).
         The sign of the remainder is the same as that of the Divisor.
@@ -8532,7 +8532,7 @@ def mod(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T.
         Remainder tensor
 
@@ -8555,9 +8555,9 @@ def mod(
 
 
 def mul(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Performs element-wise binary multiplication (with Numpy-style broadcasting support).
     This operator supports **multidirectional (i.e., Numpy-style) broadcasting**; for more details please check the doc (Broadcasting.md).
@@ -8574,7 +8574,7 @@ def mul(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T.
         Result, has same element type as two inputs
 
@@ -8595,12 +8595,12 @@ def mul(
 
 
 def multinomial(
-    input: Arrow,
+    input: Var,
     *,
     dtype: npt.DTypeLike = np.int32,
     sample_size: int = 1,
     seed: Optional[float] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Generate a tensor of samples from a multinomial distribution according to the probabilities
     of each of the possible outcomes.
@@ -8622,7 +8622,7 @@ def multinomial(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         Output tensor with shape [batch_size, sample_size], where sample_size is the number of times to sample. Each value along the axis zero represents the outcome of the corresponding sample in a batch.
 
@@ -8647,8 +8647,8 @@ def multinomial(
 
 
 def neg(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Neg takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where each element flipped sign, y = -x, is applied to
@@ -8662,7 +8662,7 @@ def neg(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -8682,13 +8682,13 @@ def neg(
 
 
 def negative_log_likelihood_loss(
-    input: Arrow,
-    target: Arrow,
-    weight: Optional[Arrow] = None,
+    input: Var,
+    target: Var,
+    weight: Optional[Var] = None,
     *,
     ignore_index: Optional[int] = None,
     reduction: str = "mean",
-) -> Arrow:
+) -> Var:
     r"""
     A NegativeLogLikelihoodLoss operator computes (weighted) negative log likelihood loss.
     Its "input" tensor has the shape of (N, C, d1, d2, ..., dk) where k >= 0.
@@ -8776,7 +8776,7 @@ def negative_log_likelihood_loss(
 
     Returns
     =======
-    loss : Arrow
+    loss : Var
         Type T.
         The negative log likelihood loss
 
@@ -8802,14 +8802,14 @@ def negative_log_likelihood_loss(
 
 
 def non_max_suppression(
-    boxes: Arrow,
-    scores: Arrow,
-    max_output_boxes_per_class: Optional[Arrow] = None,
-    iou_threshold: Optional[Arrow] = None,
-    score_threshold: Optional[Arrow] = None,
+    boxes: Var,
+    scores: Var,
+    max_output_boxes_per_class: Optional[Var] = None,
+    iou_threshold: Optional[Var] = None,
+    score_threshold: Optional[Var] = None,
     *,
     center_point_box: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Filter out boxes that have high intersection-over-union (IOU) overlap with previously selected boxes.
     Bounding boxes with score less than score_threshold are removed. Bounding box format is indicated by attribute center_point_box.
@@ -8842,7 +8842,7 @@ def non_max_suppression(
 
     Returns
     =======
-    selected_indices : Arrow
+    selected_indices : Var
         Type tensor(int64).
         selected indices from the boxes tensor. [num_selected_indices, 3], the selected index format is [batch_index, class_index, box_index].
 
@@ -8866,8 +8866,8 @@ def non_max_suppression(
 
 
 def non_zero(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Returns the indices of the elements that are non-zero
         (in row-major order - by dimension).
@@ -8883,7 +8883,7 @@ def non_zero(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(int64).
         output
 
@@ -8903,8 +8903,8 @@ def non_zero(
 
 
 def not_(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Returns the negation of the input tensor element-wise.
 
@@ -8916,7 +8916,7 @@ def not_(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -8936,12 +8936,12 @@ def not_(
 
 
 def one_hot(
-    indices: Arrow,
-    depth: Arrow,
-    values: Arrow,
+    indices: Var,
+    depth: Var,
+    values: Var,
     *,
     axis: int = -1,
-) -> Arrow:
+) -> Var:
     r"""
     Produces a one-hot tensor based on inputs.
         The locations represented by the index values in the 'indices' input tensor will have 'on_value'
@@ -8977,7 +8977,7 @@ def one_hot(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T3.
         Tensor of rank one greater than input tensor 'indices', i.e. rank(output) = rank(indices) + 1. The data type for the elements of the output tensor is the same as the type of input 'values' is used.
 
@@ -9003,10 +9003,10 @@ def one_hot(
 
 
 def optional(
-    input: Optional[Arrow] = None,
+    input: Optional[Var] = None,
     *,
     type: Optional[Type] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Constructs an optional-type value containing either an empty optional of a certain type specified by the attribute,
     or a non-empty value containing the input element.
@@ -9022,7 +9022,7 @@ def optional(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type O.
         The optional output enclosing the input element.
 
@@ -9045,8 +9045,8 @@ def optional(
 
 
 def optional_get_element(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Outputs the element in the optional-type input. It is an error if the input value does not have an element
     and the behavior is undefined in this case.
@@ -9059,7 +9059,7 @@ def optional_get_element(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type V.
         Output element in the optional input.
 
@@ -9080,8 +9080,8 @@ def optional_get_element(
 
 
 def optional_has_element(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Returns true if the optional-type input contains an element. If it is an empty optional-type, this op returns false.
 
@@ -9093,7 +9093,7 @@ def optional_has_element(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type B.
         A scalar boolean tensor. If true, it indicates that optional-type input contains an element. Otherwise, it is empty.
 
@@ -9114,9 +9114,9 @@ def optional_has_element(
 
 
 def or_(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `or` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -9133,7 +9133,7 @@ def or_(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -9155,9 +9155,9 @@ def or_(
 
 
 def prelu(
-    X: Arrow,
-    slope: Arrow,
-) -> Arrow:
+    X: Var,
+    slope: Var,
+) -> Var:
     r"""
     PRelu takes input data (Tensor<T>) and slope tensor as input, and produces one
     output data (Tensor<T>) where the function `f(x) = slope * x for x < 0`,
@@ -9177,7 +9177,7 @@ def prelu(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor (same size as X)
 
@@ -9198,12 +9198,12 @@ def prelu(
 
 
 def pad(
-    data: Arrow,
-    pads: Arrow,
-    constant_value: Optional[Arrow] = None,
+    data: Var,
+    pads: Var,
+    constant_value: Optional[Var] = None,
     *,
     mode: str = "constant",
-) -> Arrow:
+) -> Var:
     r"""
     Given a tensor containing the data to be padded (`data`), a tensor containing the number of start and end pad values for axis (`pads`), (optionally) a `mode`, and (optionally) `constant_value`,
     a padded tensor (`output`) is generated.
@@ -9276,7 +9276,7 @@ def pad(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor after padding.
 
@@ -9300,9 +9300,9 @@ def pad(
 
 
 def pow(
-    X: Arrow,
-    Y: Arrow,
-) -> Arrow:
+    X: Var,
+    Y: Var,
+) -> Var:
     r"""
     Pow takes input data (Tensor<T>) and exponent Tensor, and
     produces one output data (Tensor<T>) where the function `f(x) = x^exponent`,
@@ -9320,7 +9320,7 @@ def pow(
 
     Returns
     =======
-    Z : Arrow
+    Z : Var
         Type T.
         Output tensor
 
@@ -9342,15 +9342,15 @@ def pow(
 
 
 def qlinear_conv(
-    x: Arrow,
-    x_scale: Arrow,
-    x_zero_point: Arrow,
-    w: Arrow,
-    w_scale: Arrow,
-    w_zero_point: Arrow,
-    y_scale: Arrow,
-    y_zero_point: Arrow,
-    B: Optional[Arrow] = None,
+    x: Var,
+    x_scale: Var,
+    x_zero_point: Var,
+    w: Var,
+    w_scale: Var,
+    w_zero_point: Var,
+    y_scale: Var,
+    y_zero_point: Var,
+    B: Optional[Var] = None,
     *,
     auto_pad: str = "NOTSET",
     dilations: Optional[Iterable[int]] = None,
@@ -9358,7 +9358,7 @@ def qlinear_conv(
     kernel_shape: Optional[Iterable[int]] = None,
     pads: Optional[Iterable[int]] = None,
     strides: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     The convolution operator consumes a quantized input tensor, its scale and zero point,
     a quantized filter, its scale and zero point, and output's scale and zero point,
@@ -9418,7 +9418,7 @@ def qlinear_conv(
 
     Returns
     =======
-    y : Arrow
+    y : Var
         Type T3.
         Output data tensor that contains the result of the convolution. The output dimensions are functions of the kernel size, stride size, and pad lengths.
 
@@ -9456,15 +9456,15 @@ def qlinear_conv(
 
 
 def qlinear_mat_mul(
-    a: Arrow,
-    a_scale: Arrow,
-    a_zero_point: Arrow,
-    b: Arrow,
-    b_scale: Arrow,
-    b_zero_point: Arrow,
-    y_scale: Arrow,
-    y_zero_point: Arrow,
-) -> Arrow:
+    a: Var,
+    a_scale: Var,
+    a_zero_point: Var,
+    b: Var,
+    b_scale: Var,
+    b_zero_point: Var,
+    y_scale: Var,
+    y_zero_point: Var,
+) -> Var:
     r"""
     Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
     It consumes two quantized input tensors, their scales and zero points, scale and zero point of output,
@@ -9507,7 +9507,7 @@ def qlinear_mat_mul(
 
     Returns
     =======
-    y : Arrow
+    y : Var
         Type T3.
         Quantized matrix multiply results from a * b
 
@@ -9536,12 +9536,12 @@ def qlinear_mat_mul(
 
 
 def quantize_linear(
-    x: Arrow,
-    y_scale: Arrow,
-    y_zero_point: Optional[Arrow] = None,
+    x: Var,
+    y_scale: Var,
+    y_zero_point: Optional[Var] = None,
     *,
     axis: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     The linear quantization operator. It consumes a high precision tensor, a scale, and a zero point to compute the low precision / quantized tensor.
     The scale factor and zero point must have same shape, and can be either a scalar for per-tensor / per layer quantization, or a 1-D tensor for per-axis quantization.
@@ -9566,7 +9566,7 @@ def quantize_linear(
 
     Returns
     =======
-    y : Arrow
+    y : Var
         Type T2.
         N-D quantized output tensor. It has same shape as input 'x'.
 
@@ -9591,12 +9591,12 @@ def quantize_linear(
 
 
 def rnn(
-    X: Arrow,
-    W: Arrow,
-    R: Arrow,
-    B: Optional[Arrow] = None,
-    sequence_lens: Optional[Arrow] = None,
-    initial_h: Optional[Arrow] = None,
+    X: Var,
+    W: Var,
+    R: Var,
+    B: Optional[Var] = None,
+    sequence_lens: Optional[Var] = None,
+    initial_h: Optional[Var] = None,
     *,
     activation_alpha: Optional[Iterable[float]] = None,
     activation_beta: Optional[Iterable[float]] = None,
@@ -9684,10 +9684,10 @@ def rnn(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         A tensor that concats all the intermediate output values of the hidden. It has shape `[seq_length, num_directions, batch_size, hidden_size]`.
-    Y_h : Arrow
+    Y_h : Var
         Type T.
         The last output value of the hidden. It has shape `[num_directions, batch_size, hidden_size]`.
 
@@ -9731,7 +9731,7 @@ def random_normal(
     scale: float = 1.0,
     seed: Optional[float] = None,
     shape: Iterable[int],
-) -> Arrow:
+) -> Var:
     r"""
     Generate a tensor with random values drawn from a normal distribution. The shape
     of the tensor is specified by the `shape` argument and the parameter of the normal distribution
@@ -9760,7 +9760,7 @@ def random_normal(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor of random values drawn from normal distribution
 
@@ -9784,13 +9784,13 @@ def random_normal(
 
 
 def random_normal_like(
-    input: Arrow,
+    input: Var,
     *,
     dtype: Optional[npt.DTypeLike] = None,
     mean: float = 0.0,
     scale: float = 1.0,
     seed: Optional[float] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Generate a tensor with random values drawn from a normal distribution.
     The shape of the output tensor is copied from the shape of the input tensor,
@@ -9819,7 +9819,7 @@ def random_normal_like(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         Output tensor of random values drawn from normal distribution
 
@@ -9851,7 +9851,7 @@ def random_uniform(
     low: float = 0.0,
     seed: Optional[float] = None,
     shape: Iterable[int],
-) -> Arrow:
+) -> Var:
     r"""
     Generate a tensor with random values drawn from a uniform distribution. The shape
     of the tensor is specified by the `shape` argument and the range by `low` and `high`.
@@ -9879,7 +9879,7 @@ def random_uniform(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor of random values drawn from uniform distribution
 
@@ -9903,13 +9903,13 @@ def random_uniform(
 
 
 def random_uniform_like(
-    input: Arrow,
+    input: Var,
     *,
     dtype: Optional[npt.DTypeLike] = None,
     high: float = 1.0,
     low: float = 0.0,
     seed: Optional[float] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Generate a tensor with random values drawn from a uniform distribution.
     The shape of the output tensor is copied from the shape of the input tensor,
@@ -9938,7 +9938,7 @@ def random_uniform_like(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T2.
         Output tensor of random values drawn from uniform distribution
 
@@ -9964,10 +9964,10 @@ def random_uniform_like(
 
 
 def range(
-    start: Arrow,
-    limit: Arrow,
-    delta: Arrow,
-) -> Arrow:
+    start: Var,
+    limit: Var,
+    delta: Var,
+) -> Var:
     r"""
     Generate a tensor containing a sequence of numbers that begin at `start` and extends by increments of `delta`
     up to `limit` (exclusive).
@@ -9999,7 +9999,7 @@ def range(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         A 1-D tensor with same type as the inputs containing generated range of values.
 
@@ -10021,8 +10021,8 @@ def range(
 
 
 def reciprocal(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Reciprocal takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the reciprocal is, y = 1/x, is applied to
@@ -10036,7 +10036,7 @@ def reciprocal(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -10056,11 +10056,11 @@ def reciprocal(
 
 
 def reduce_l1(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the L1 norm of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10082,7 +10082,7 @@ def reduce_l1(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10105,11 +10105,11 @@ def reduce_l1(
 
 
 def reduce_l2(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the L2 norm of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10131,7 +10131,7 @@ def reduce_l2(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10154,11 +10154,11 @@ def reduce_l2(
 
 
 def reduce_log_sum(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the log sum of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10180,7 +10180,7 @@ def reduce_log_sum(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10203,11 +10203,11 @@ def reduce_log_sum(
 
 
 def reduce_log_sum_exp(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the log sum exponent of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10229,7 +10229,7 @@ def reduce_log_sum_exp(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10252,11 +10252,11 @@ def reduce_log_sum_exp(
 
 
 def reduce_max(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the max of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10278,7 +10278,7 @@ def reduce_max(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10301,11 +10301,11 @@ def reduce_max(
 
 
 def reduce_mean(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the mean of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10327,7 +10327,7 @@ def reduce_mean(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10350,11 +10350,11 @@ def reduce_mean(
 
 
 def reduce_min(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the min of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10376,7 +10376,7 @@ def reduce_min(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10399,11 +10399,11 @@ def reduce_min(
 
 
 def reduce_prod(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the product of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10425,7 +10425,7 @@ def reduce_prod(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10448,12 +10448,12 @@ def reduce_prod(
 
 
 def reduce_sum(
-    data: Arrow,
-    axes: Optional[Arrow] = None,
+    data: Var,
+    axes: Optional[Var] = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the sum of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10478,7 +10478,7 @@ def reduce_sum(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10502,11 +10502,11 @@ def reduce_sum(
 
 
 def reduce_sum_square(
-    data: Arrow,
+    data: Var,
     *,
     axes: Optional[Iterable[int]] = None,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the sum square of the input tensor's element along the provided axes. The resulting
     tensor has the same rank as the input if keepdims equals 1. If keepdims equals 0, then
@@ -10528,7 +10528,7 @@ def reduce_sum_square(
 
     Returns
     =======
-    reduced : Arrow
+    reduced : Var
         Type T.
         Reduced output tensor.
 
@@ -10551,8 +10551,8 @@ def reduce_sum_square(
 
 
 def relu(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Relu takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the rectified linear function, y = max(0, x), is applied to
@@ -10566,7 +10566,7 @@ def relu(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -10586,11 +10586,11 @@ def relu(
 
 
 def reshape(
-    data: Arrow,
-    shape: Arrow,
+    data: Var,
+    shape: Var,
     *,
     allowzero: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Reshape the input tensor similar to numpy.reshape.
     First input is the data tensor, second input is a shape tensor which specifies the output shape. It outputs the reshaped tensor.
@@ -10616,7 +10616,7 @@ def reshape(
 
     Returns
     =======
-    reshaped : Arrow
+    reshaped : Var
         Type T.
         Reshaped data.
 
@@ -10639,10 +10639,10 @@ def reshape(
 
 
 def resize(
-    X: Arrow,
-    roi: Optional[Arrow] = None,
-    scales: Optional[Arrow] = None,
-    sizes: Optional[Arrow] = None,
+    X: Var,
+    roi: Optional[Var] = None,
+    scales: Optional[Var] = None,
+    sizes: Optional[Var] = None,
     *,
     coordinate_transformation_mode: str = "half_pixel",
     cubic_coeff_a: float = -0.75,
@@ -10650,7 +10650,7 @@ def resize(
     extrapolation_value: float = 0.0,
     mode: str = "nearest",
     nearest_mode: str = "round_prefer_floor",
-) -> Arrow:
+) -> Var:
     r"""
     Resize the input tensor. In general, it calculates every value in the output tensor as a weighted average of neighborhood (a.k.a. sampling locations) in the input tensor.
     Each dimension value of the output tensor is:
@@ -10703,7 +10703,7 @@ def resize(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T1.
         N-D tensor after resizing
 
@@ -10734,12 +10734,12 @@ def resize(
 
 
 def reverse_sequence(
-    input: Arrow,
-    sequence_lens: Arrow,
+    input: Var,
+    sequence_lens: Var,
     *,
     batch_axis: int = 1,
     time_axis: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Reverse batch of sequences having different lengths specified by `sequence_lens`.
     For each slice i iterating on batch axis, the operator reverses the first sequence_lens[i] elements on time axis,
@@ -10787,7 +10787,7 @@ def reverse_sequence(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Tensor with same shape of input.
 
@@ -10811,9 +10811,9 @@ def reverse_sequence(
 
 
 def roi_align(
-    X: Arrow,
-    rois: Arrow,
-    batch_indices: Arrow,
+    X: Var,
+    rois: Var,
+    batch_indices: Var,
     *,
     coordinate_transformation_mode: str = "half_pixel",
     mode: str = "avg",
@@ -10821,7 +10821,7 @@ def roi_align(
     output_width: int = 1,
     sampling_ratio: int = 0,
     spatial_scale: float = 1.0,
-) -> Arrow:
+) -> Var:
     r"""
     Region of Interest (RoI) align operation described in the
     Mask R-CNN paper (https://arxiv.org/abs/1703.06870).
@@ -10866,7 +10866,7 @@ def roi_align(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T1.
         RoI pooled output, 4-D tensor of shape (num_rois, C, output_height, output_width). The r-th batch element Y[r-1] is a pooled feature map corresponding to the r-th RoI X[r-1].
 
@@ -10896,8 +10896,8 @@ def roi_align(
 
 
 def round(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Round takes one input Tensor and rounds the values, element-wise, meaning
     it finds the nearest integer for each value.
@@ -10920,7 +10920,7 @@ def round(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -10940,13 +10940,13 @@ def round(
 
 
 def stft(
-    signal: Arrow,
-    frame_step: Arrow,
-    window: Optional[Arrow] = None,
-    frame_length: Optional[Arrow] = None,
+    signal: Var,
+    frame_step: Var,
+    window: Optional[Var] = None,
+    frame_length: Optional[Var] = None,
     *,
     onesided: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Computes the Short-time Fourier Transform of the signal.
 
@@ -10970,7 +10970,7 @@ def stft(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T1.
         The Short-time Fourier Transform of the signals.If onesided is 1, the output has the shape: [batch_size][frames][dft_unique_bins][2], where dft_unique_bins is frame_length // 2 + 1 (the unique components of the DFT) If onesided is 0, the output has the shape: [batch_size][frames][frame_length][2], where frame_length is the length of the DFT.
 
@@ -10996,15 +10996,15 @@ def stft(
 
 
 def scan(
-    initial_state_and_scan_inputs: Sequence[Arrow],
+    initial_state_and_scan_inputs: Sequence[Var],
     *,
-    body: Callable[..., Iterable[Arrow]],
+    body: Callable[..., Iterable[Var]],
     num_scan_inputs: int,
     scan_input_axes: Optional[Iterable[int]] = None,
     scan_input_directions: Optional[Iterable[int]] = None,
     scan_output_axes: Optional[Iterable[int]] = None,
     scan_output_directions: Optional[Iterable[int]] = None,
-) -> Sequence[Arrow]:
+) -> Sequence[Var]:
     r"""
     Scan can be used to iterate over one or more scan_input tensors,
     constructing zero or more scan_output tensors. It combines ideas from general recurrences,
@@ -11134,7 +11134,7 @@ def scan(
 
     Returns
     =======
-    final_state_and_scan_outputs : Sequence[Arrow]
+    final_state_and_scan_outputs : Sequence[Var]
         Type V.
         Final values of the loop's N state variables followed by K scan_outputs
 
@@ -11148,16 +11148,14 @@ def scan(
     _body_subgraph: Graph = subgraph(
         [
             Tensor(
-                arrow.unwrap_tensor().dtype,
-                (lambda x: x[1:] if x is not None else None)(
-                    arrow.unwrap_tensor().shape
-                ),
+                var.unwrap_tensor().dtype,
+                (lambda x: x[1:] if x is not None else None)(var.unwrap_tensor().shape),
             )
-            for arrow in initial_state_and_scan_inputs[:num_scan_inputs]
+            for var in initial_state_and_scan_inputs[:num_scan_inputs]
         ]
         + [
-            Tensor(arrow.unwrap_tensor().dtype)
-            for arrow in initial_state_and_scan_inputs[num_scan_inputs:]
+            Tensor(var.unwrap_tensor().dtype)
+            for var in initial_state_and_scan_inputs[num_scan_inputs:]
         ],
         body,
     )
@@ -11186,12 +11184,12 @@ def scan(
 
 
 def scatter(
-    data: Arrow,
-    indices: Arrow,
-    updates: Arrow,
+    data: Var,
+    indices: Var,
+    updates: Var,
     *,
     axis: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     This operator is deprecated. Please use ScatterElements, which provides the same functionality.
     Scatter takes three inputs `data`, `updates`, and `indices` of the same
@@ -11259,7 +11257,7 @@ def scatter(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of rank r >= 1 (same rank as input).
 
@@ -11284,13 +11282,13 @@ def scatter(
 
 
 def scatter_elements(
-    data: Arrow,
-    indices: Arrow,
-    updates: Arrow,
+    data: Var,
+    indices: Var,
+    updates: Var,
     *,
     axis: int = 0,
     reduction: str = "none",
-) -> Arrow:
+) -> Var:
     r"""
     ScatterElements takes three inputs `data`, `updates`, and `indices` of the same
     rank r >= 1 and an optional attribute axis that identifies an axis of `data`
@@ -11373,7 +11371,7 @@ def scatter_elements(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of rank r >= 1 (same rank as input).
 
@@ -11399,12 +11397,12 @@ def scatter_elements(
 
 
 def scatter_nd(
-    data: Arrow,
-    indices: Arrow,
-    updates: Arrow,
+    data: Var,
+    indices: Var,
+    updates: Var,
     *,
     reduction: str = "none",
-) -> Arrow:
+) -> Var:
     r"""
     ScatterND takes three inputs `data` tensor of rank r >= 1, `indices` tensor of rank q >= 1,
     and `updates` tensor of rank q + r - indices.shape[-1] - 1. The output of the operation
@@ -11486,7 +11484,7 @@ def scatter_nd(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of rank r >= 1.
 
@@ -11510,11 +11508,11 @@ def scatter_nd(
 
 
 def selu(
-    X: Arrow,
+    X: Var,
     *,
     alpha: float = 1.6732631921768188,
     gamma: float = 1.0507010221481323,
-) -> Arrow:
+) -> Var:
     r"""
     Selu takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the scaled exponential linear unit function,
@@ -11535,7 +11533,7 @@ def selu(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -11558,9 +11556,9 @@ def selu(
 
 
 def sequence_at(
-    input_sequence: Arrow,
-    position: Arrow,
-) -> Arrow:
+    input_sequence: Var,
+    position: Var,
+) -> Var:
     r"""
     Outputs a tensor copy from the tensor at 'position' in 'input_sequence'.
     Accepted range for 'position' is in `[-n, n - 1]`, where `n` is the number of tensors in 'input_sequence'.
@@ -11577,7 +11575,7 @@ def sequence_at(
 
     Returns
     =======
-    tensor : Arrow
+    tensor : Var
         Type T.
         Output tensor at the specified position in the input sequence.
 
@@ -11600,8 +11598,8 @@ def sequence_at(
 
 
 def sequence_construct(
-    inputs: Sequence[Arrow],
-) -> Arrow:
+    inputs: Sequence[Var],
+) -> Var:
     r"""
     Construct a tensor sequence containing 'inputs' tensors.
     All tensors in 'inputs' must have the same data type.
@@ -11614,7 +11612,7 @@ def sequence_construct(
 
     Returns
     =======
-    output_sequence : Arrow
+    output_sequence : Var
         Type S.
         Sequence enclosing the input tensors.
 
@@ -11637,7 +11635,7 @@ def sequence_construct(
 def sequence_empty(
     *,
     dtype: Optional[npt.DTypeLike] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Construct an empty tensor sequence, with given data type.
 
@@ -11649,7 +11647,7 @@ def sequence_empty(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type S.
         Empty sequence.
 
@@ -11669,9 +11667,9 @@ def sequence_empty(
 
 
 def sequence_erase(
-    input_sequence: Arrow,
-    position: Optional[Arrow] = None,
-) -> Arrow:
+    input_sequence: Var,
+    position: Optional[Var] = None,
+) -> Var:
     r"""
     Outputs a tensor sequence that removes the tensor at 'position' from 'input_sequence'.
     Accepted range for 'position' is in `[-n, n - 1]`, where `n` is the number of tensors in 'input_sequence'.
@@ -11689,7 +11687,7 @@ def sequence_erase(
 
     Returns
     =======
-    output_sequence : Arrow
+    output_sequence : Var
         Type S.
         Output sequence that has the tensor at the specified position removed.
 
@@ -11711,10 +11709,10 @@ def sequence_erase(
 
 
 def sequence_insert(
-    input_sequence: Arrow,
-    tensor: Arrow,
-    position: Optional[Arrow] = None,
-) -> Arrow:
+    input_sequence: Var,
+    tensor: Var,
+    position: Optional[Var] = None,
+) -> Var:
     r"""
     Outputs a tensor sequence that inserts 'tensor' into 'input_sequence' at 'position'.
     'tensor' must have the same data type as 'input_sequence'.
@@ -11736,7 +11734,7 @@ def sequence_insert(
 
     Returns
     =======
-    output_sequence : Arrow
+    output_sequence : Var
         Type S.
         Output sequence that contains the inserted tensor at given position.
 
@@ -11760,8 +11758,8 @@ def sequence_insert(
 
 
 def sequence_length(
-    input_sequence: Arrow,
-) -> Arrow:
+    input_sequence: Var,
+) -> Var:
     r"""
     Produces a scalar(tensor of empty shape) containing the number of tensors in 'input_sequence'.
 
@@ -11773,7 +11771,7 @@ def sequence_length(
 
     Returns
     =======
-    length : Arrow
+    length : Var
         Type I.
         Length of input sequence. It must be a scalar(tensor of empty shape).
 
@@ -11794,11 +11792,11 @@ def sequence_length(
 
 
 def sequence_map(
-    input_sequence: Arrow,
-    additional_inputs: Sequence[Arrow] = (),
+    input_sequence: Var,
+    additional_inputs: Sequence[Var] = (),
     *,
-    body: Callable[..., Iterable[Arrow]],
-) -> Sequence[Arrow]:
+    body: Callable[..., Iterable[Var]],
+) -> Sequence[Var]:
     r"""
     Applies a sub-graph to each sample in the input sequence(s).
     Inputs can be either tensors or sequences, with the exception of the first input which must
@@ -11826,7 +11824,7 @@ def sequence_map(
 
     Returns
     =======
-    out_sequence : Sequence[Arrow]
+    out_sequence : Sequence[Var]
         Type S.
         Output sequence(s)
 
@@ -11841,8 +11839,8 @@ def sequence_map(
     _body_subgraph: Graph = subgraph(
         [typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type]
         + [
-            typing_cast(SpoxSequence, arrow.unwrap_type()).elem_type
-            for arrow in additional_inputs
+            typing_cast(SpoxSequence, var.unwrap_type()).elem_type
+            for var in additional_inputs
         ],
         body,
     )
@@ -11859,11 +11857,11 @@ def sequence_map(
 
 
 def shape(
-    data: Arrow,
+    data: Var,
     *,
     end: Optional[int] = None,
     start: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Takes a tensor as input and outputs an 1D int64 tensor containing the shape of the input tensor.
     Optional attributes start and end can be used to compute a slice of the input tensor's shape.
@@ -11905,7 +11903,7 @@ def shape(
 
     Returns
     =======
-    shape : Arrow
+    shape : Var
         Type T1.
         Shape of the input tensor
 
@@ -11929,11 +11927,11 @@ def shape(
 
 
 def shrink(
-    input: Arrow,
+    input: Var,
     *,
     bias: float = 0.0,
     lambd: float = 0.5,
-) -> Arrow:
+) -> Var:
     r"""
     Shrink takes one input data (Tensor<numeric>) and produces one Tensor output,
     having same datatype and shape with input. It has two attributes, lambd and
@@ -11954,7 +11952,7 @@ def shrink(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The output.
 
@@ -11977,8 +11975,8 @@ def shrink(
 
 
 def sigmoid(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Sigmoid takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the sigmoid function, y = 1 / (1 + exp(-x)), is applied to the
@@ -11992,7 +11990,7 @@ def sigmoid(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -12012,8 +12010,8 @@ def sigmoid(
 
 
 def sign(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculate the sign of the given input tensor element-wise.
     If input > 0, output 1. if input < 0, output -1. if input == 0, output 0.
@@ -12026,7 +12024,7 @@ def sign(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The sign of the input tensor computed element-wise. It has the same shape and type of the input.
 
@@ -12046,8 +12044,8 @@ def sign(
 
 
 def sin(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the sine of the given input tensor, element-wise.
 
@@ -12059,7 +12057,7 @@ def sin(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The sine of the input tensor computed element-wise
 
@@ -12079,8 +12077,8 @@ def sin(
 
 
 def sinh(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the hyperbolic sine of the given input tensor element-wise.
 
@@ -12092,7 +12090,7 @@ def sinh(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The hyperbolic sine values of the input tensor computed element-wise
 
@@ -12112,8 +12110,8 @@ def sinh(
 
 
 def size(
-    data: Arrow,
-) -> Arrow:
+    data: Var,
+) -> Var:
     r"""
     Takes a tensor as input and outputs a int64 scalar that equals to the total number of elements of the input tensor.
 
@@ -12125,7 +12123,7 @@ def size(
 
     Returns
     =======
-    size : Arrow
+    size : Var
         Type T1.
         Total number of elements of the input tensor
 
@@ -12146,12 +12144,12 @@ def size(
 
 
 def slice(
-    data: Arrow,
-    starts: Arrow,
-    ends: Arrow,
-    axes: Optional[Arrow] = None,
-    steps: Optional[Arrow] = None,
-) -> Arrow:
+    data: Var,
+    starts: Var,
+    ends: Var,
+    axes: Optional[Var] = None,
+    steps: Optional[Var] = None,
+) -> Var:
     r"""
     Produces a slice of the input tensor along multiple axes. Similar to numpy:
     https://numpy.org/doc/stable/user/basics.indexing.html?highlight=slice#slicing-and-striding
@@ -12219,7 +12217,7 @@ def slice(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Sliced data tensor.
 
@@ -12244,10 +12242,10 @@ def slice(
 
 
 def softmax(
-    input: Arrow,
+    input: Var,
     *,
     axis: int = -1,
-) -> Arrow:
+) -> Var:
     r"""
     The operator computes the normalized exponential values for the given input:
      Softmax(input, axis) = Exp(input) / ReduceSum(Exp(input), axis=axis, keepdims=1)
@@ -12268,7 +12266,7 @@ def softmax(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The output values with the same shape as the input tensor.
 
@@ -12290,9 +12288,9 @@ def softmax(
 
 
 def softmax_cross_entropy_loss(
-    scores: Arrow,
-    labels: Arrow,
-    weights: Optional[Arrow] = None,
+    scores: Var,
+    labels: Var,
+    weights: Optional[Var] = None,
     *,
     ignore_index: Optional[int] = None,
     reduction: str = "mean",
@@ -12345,10 +12343,10 @@ def softmax_cross_entropy_loss(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Weighted loss float Tensor. If reduction is 'none', this has the shape of [batch_size], or [batch_size, D1, D2, ..., Dk] in case of K-dimensional loss. Otherwise, it is a scalar.
-    log_prob : Arrow
+    log_prob : Var
         Type T.
         Log probability tensor. If the output of softmax is prob, its value is log(prob).
 
@@ -12374,8 +12372,8 @@ def softmax_cross_entropy_loss(
 
 
 def softplus(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Softplus takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the softplus function, y = ln(exp(x) + 1), is applied to
@@ -12389,7 +12387,7 @@ def softplus(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         1D input tensor
 
@@ -12409,8 +12407,8 @@ def softplus(
 
 
 def softsign(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the softsign (x/(1+|x|)) of the given input tensor element-wise.
 
@@ -12422,7 +12420,7 @@ def softsign(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The softsign (x/(1+|x|)) values of the input tensor computed element-wise
 
@@ -12442,10 +12440,10 @@ def softsign(
 
 
 def space_to_depth(
-    input: Arrow,
+    input: Var,
     *,
     blocksize: int,
-) -> Arrow:
+) -> Var:
     r"""
     SpaceToDepth rearranges blocks of spatial data into depth. More specifically,
     this op outputs a copy of the input tensor where values from the height and width dimensions
@@ -12462,7 +12460,7 @@ def space_to_depth(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor of [N, C * blocksize * blocksize, H/blocksize, W/blocksize].
 
@@ -12484,12 +12482,12 @@ def space_to_depth(
 
 
 def split(
-    input: Arrow,
-    split: Optional[Arrow] = None,
+    input: Var,
+    split: Optional[Var] = None,
     *,
     outputs_count: int,
     axis: int = 0,
-) -> Sequence[Arrow]:
+) -> Sequence[Var]:
     r"""
     Split a tensor into a list of tensors, along the specified
     'axis'. Lengths of the parts can be specified using input 'split'.
@@ -12512,7 +12510,7 @@ def split(
 
     Returns
     =======
-    outputs : Sequence[Arrow]
+    outputs : Sequence[Var]
         Type T.
         One or more outputs forming list of tensors after splitting
 
@@ -12536,12 +12534,12 @@ def split(
 
 
 def split_to_sequence(
-    input: Arrow,
-    split: Optional[Arrow] = None,
+    input: Var,
+    split: Optional[Var] = None,
     *,
     axis: int = 0,
     keepdims: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Split a tensor into a sequence of tensors, along the specified
     'axis'. Lengths of the parts can be specified using argument 'split'.
@@ -12571,7 +12569,7 @@ def split_to_sequence(
 
     Returns
     =======
-    output_sequence : Arrow
+    output_sequence : Var
         Type S.
         One or more outputs forming a sequence of tensors after splitting
 
@@ -12597,8 +12595,8 @@ def split_to_sequence(
 
 
 def sqrt(
-    X: Arrow,
-) -> Arrow:
+    X: Var,
+) -> Var:
     r"""
     Square root takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the square root is, y = x^0.5, is applied to
@@ -12612,7 +12610,7 @@ def sqrt(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -12632,9 +12630,9 @@ def sqrt(
 
 
 def squeeze(
-    data: Arrow,
-    axes: Optional[Arrow] = None,
-) -> Arrow:
+    data: Var,
+    axes: Optional[Var] = None,
+) -> Var:
     r"""
     Remove single-dimensional entries from the shape of a tensor.
     Takes an input `axes` with a list of axes to squeeze.
@@ -12652,7 +12650,7 @@ def squeeze(
 
     Returns
     =======
-    squeezed : Arrow
+    squeezed : Var
         Type T.
         Reshaped tensor with same data as input.
 
@@ -12673,13 +12671,13 @@ def squeeze(
 
 
 def string_normalizer(
-    X: Arrow,
+    X: Var,
     *,
     case_change_action: str = "NONE",
     is_case_sensitive: int = 0,
     locale: Optional[str] = None,
     stopwords: Optional[Iterable[str]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     StringNormalization performs string operations for basic cleaning.
     This operator has only one input (denoted by X) and only one output
@@ -12711,7 +12709,7 @@ def string_normalizer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(string).
         UTF-8 Normalized strings
 
@@ -12734,9 +12732,9 @@ def string_normalizer(
 
 
 def sub(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Performs element-wise binary subtraction (with Numpy-style broadcasting support).
     This operator supports **multidirectional (i.e., Numpy-style) broadcasting**; for more details please check the doc (Broadcasting.md).
@@ -12753,7 +12751,7 @@ def sub(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T.
         Result, has same element type as two inputs
 
@@ -12774,8 +12772,8 @@ def sub(
 
 
 def sum(
-    data_0: Sequence[Arrow],
-) -> Arrow:
+    data_0: Sequence[Var],
+) -> Var:
     r"""
     Element-wise sum of each of the input tensors (with Numpy-style broadcasting support).
     All inputs and outputs must have the same data type.
@@ -12789,7 +12787,7 @@ def sum(
 
     Returns
     =======
-    sum : Arrow
+    sum : Var
         Type T.
         Output tensor.
 
@@ -12809,8 +12807,8 @@ def sum(
 
 
 def tan(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the tangent of the given input tensor, element-wise.
 
@@ -12822,7 +12820,7 @@ def tan(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The tangent of the input tensor computed element-wise
 
@@ -12842,8 +12840,8 @@ def tan(
 
 
 def tanh(
-    input: Arrow,
-) -> Arrow:
+    input: Var,
+) -> Var:
     r"""
     Calculates the hyperbolic tangent of the given input tensor element-wise.
 
@@ -12855,7 +12853,7 @@ def tanh(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         The hyperbolic tangent values of the input tensor computed element-wise
 
@@ -12875,7 +12873,7 @@ def tanh(
 
 
 def tf_idf_vectorizer(
-    X: Arrow,
+    X: Var,
     *,
     max_gram_length: int,
     max_skip_count: int,
@@ -12886,7 +12884,7 @@ def tf_idf_vectorizer(
     pool_int64s: Optional[Iterable[int]] = None,
     pool_strings: Optional[Iterable[str]] = None,
     weights: Optional[Iterable[float]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     This transform extracts n-grams from the input sequence and save them as a vector. Input can
     be either a 1-D or 2-D tensor. For 1-D input, output is the n-gram representation of that input.
@@ -12947,7 +12945,7 @@ def tf_idf_vectorizer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T1.
         Ngram results
 
@@ -12978,10 +12976,10 @@ def tf_idf_vectorizer(
 
 
 def thresholded_relu(
-    X: Arrow,
+    X: Var,
     *,
     alpha: float = 1.0,
-) -> Arrow:
+) -> Var:
     r"""
     ThresholdedRelu takes one input data (Tensor<T>) and produces one output data
     (Tensor<T>) where the rectified linear function, y = x for x > alpha, y = 0 otherwise,
@@ -12998,7 +12996,7 @@ def thresholded_relu(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Output tensor
 
@@ -13020,9 +13018,9 @@ def thresholded_relu(
 
 
 def tile(
-    input: Arrow,
-    repeats: Arrow,
-) -> Arrow:
+    input: Var,
+    repeats: Var,
+) -> Var:
     r"""
     Constructs a tensor by tiling a given tensor.
     This is the same as function `tile` in Numpy, but no broadcast.
@@ -13039,7 +13037,7 @@ def tile(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor of the same dimensions and type as tensor input. output_dim[i] = input_dim[i] * repeats[i]
 
@@ -13061,8 +13059,8 @@ def tile(
 
 
 def top_k(
-    X: Arrow,
-    K: Arrow,
+    X: Var,
+    K: Var,
     *,
     axis: int = -1,
     largest: int = 1,
@@ -13102,10 +13100,10 @@ def top_k(
 
     Returns
     =======
-    Values : Arrow
+    Values : Var
         Type T.
         Tensor of shape [a_1, a_2, ..., a_{axis-1}, k, a_{axis+1}, ... a_n] containing top K values from the input tensor
-    Indices : Arrow
+    Indices : Var
         Type I.
         Tensor of shape [a_1, a_2, ..., a_{axis-1}, k, a_{axis+1}, ... a_n] containing the corresponding input tensor indices for the top K values.
 
@@ -13131,10 +13129,10 @@ def top_k(
 
 
 def transpose(
-    data: Arrow,
+    data: Var,
     *,
     perm: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Transpose the input tensor similar to numpy.transpose. For example, when
     perm=(1, 0, 2), given an input tensor of shape (1, 2, 3), the output shape
@@ -13151,7 +13149,7 @@ def transpose(
 
     Returns
     =======
-    transposed : Arrow
+    transposed : Var
         Type T.
         Transposed output.
 
@@ -13173,11 +13171,11 @@ def transpose(
 
 
 def trilu(
-    input: Arrow,
-    k: Optional[Arrow] = None,
+    input: Var,
+    k: Optional[Var] = None,
     *,
     upper: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Given a 2-D matrix or batches of 2-D matrices, returns the upper or lower triangular part of the tensor(s).
     The attribute "upper" determines whether the upper or lower part is retained. If set to true,
@@ -13206,7 +13204,7 @@ def trilu(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Output tensor of the same type and shape as the input tensor.
 
@@ -13229,7 +13227,7 @@ def trilu(
 
 
 def unique(
-    X: Arrow,
+    X: Var,
     *,
     axis: Optional[int] = None,
     sorted: int = 1,
@@ -13310,16 +13308,16 @@ def unique(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         A tensor of the same type as 'X' containing all the unique values or subtensors sliced along a provided 'axis' in 'X', either sorted or maintained in the same order they occur in input 'X'
-    indices : Arrow
+    indices : Var
         Type tensor(int64).
         A 1-D INT64 tensor containing indices of 'Y' elements' first occurance in 'X'. When 'axis' is provided, it contains indices to subtensors in input 'X' on the 'axis'. When 'axis' is not provided, it contains indices to values in the flattened input tensor.
-    inverse_indices : Arrow
+    inverse_indices : Var
         Type tensor(int64).
         A 1-D INT64 tensor containing, for elements of 'X', its corresponding indices in 'Y'. When 'axis' is provided, it contains indices to subtensors in output 'Y' on the 'axis'. When 'axis' is not provided, it contains indices to values in output 'Y'.
-    counts : Arrow
+    counts : Var
         Type tensor(int64).
         A 1-D INT64 tensor containing the count of each element of 'Y' in input 'X'
 
@@ -13342,9 +13340,9 @@ def unique(
 
 
 def unsqueeze(
-    data: Arrow,
-    axes: Arrow,
-) -> Arrow:
+    data: Var,
+    axes: Var,
+) -> Var:
     r"""
     Insert single-dimensional entries to the shape of an input tensor (`data`).
     Takes one required input `axes` - which contains a list of dimension indices and this operator will insert a dimension of value `1` into the corresponding index of the output tensor (`expanded`).
@@ -13367,7 +13365,7 @@ def unsqueeze(
 
     Returns
     =======
-    expanded : Arrow
+    expanded : Var
         Type T.
         Reshaped tensor with same data as input.
 
@@ -13388,11 +13386,11 @@ def unsqueeze(
 
 
 def upsample(
-    X: Arrow,
-    scales: Arrow,
+    X: Var,
+    scales: Var,
     *,
     mode: str = "nearest",
-) -> Arrow:
+) -> Var:
     r"""
     Upsample the input tensor.
     Each dimension value of the output tensor is:
@@ -13412,7 +13410,7 @@ def upsample(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         N-D tensor after resizing
 
@@ -13435,10 +13433,10 @@ def upsample(
 
 
 def where(
-    condition: Arrow,
-    X: Arrow,
-    Y: Arrow,
-) -> Arrow:
+    condition: Var,
+    X: Var,
+    Y: Var,
+) -> Var:
     r"""
     Return elements, either from X or Y, depending on condition.
     Where behaves like
@@ -13462,7 +13460,7 @@ def where(
 
     Returns
     =======
-    output : Arrow
+    output : Var
         Type T.
         Tensor of shape equal to the broadcasted shape of condition, X, and Y.
 
@@ -13485,9 +13483,9 @@ def where(
 
 
 def xor(
-    A: Arrow,
-    B: Arrow,
-) -> Arrow:
+    A: Var,
+    B: Var,
+) -> Var:
     r"""
     Returns the tensor resulted from performing the `xor` logical operation
     elementwise on the input tensors `A` and `B` (with Numpy-style broadcasting support).
@@ -13504,7 +13502,7 @@ def xor(
 
     Returns
     =======
-    C : Arrow
+    C : Var
         Type T1.
         Result tensor.
 
@@ -13537,9 +13535,9 @@ def const(
         Iterable[int],
         Iterable[str],
     ]
-) -> Arrow:
+) -> Var:
     """
-    Convenience Spox function for creating Arrows for constants.
+    Convenience Spox function for creating Vars for constants.
     Calls the right overload of Constant (setting the right attribute) depending on the type.
     """
 

@@ -18,9 +18,7 @@ def _warn_unknown_types(
 ) -> bool:
     if value_type is None:
         warnings.warn(
-            InferenceWarning(
-                f"Unknown Arrow I/O type for {name} in operator {op_name}."
-            ),
+            InferenceWarning(f"Unknown type for {name} in operator {op_name}."),
             stacklevel=init_stack_level,
         )
         return True
@@ -29,7 +27,7 @@ def _warn_unknown_types(
     except Exception as e:
         warnings.warn(
             InferenceWarning(
-                f"Arrow I/O type for {name} in {op_name} was not concrete, failing with - "
+                f"Var I/O type for {name} in {op_name} was not concrete, failing with - "
                 f"{type(e).__name__}: {str(e)}"
             ),
             stacklevel=init_stack_level,

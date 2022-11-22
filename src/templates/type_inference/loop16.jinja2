@@ -40,8 +40,8 @@ carried_names, scan_names = output_names[:n], output_names[n:]
 
 for name, typ in zip(carried_names, carried_types):
     output_types[name] = typ
-for name, arrow in zip(scan_names, scan_outputs):
-    tensor = arrow.unwrap_tensor()
+for name, var in zip(scan_names, scan_outputs):
+    tensor = var.unwrap_tensor()
     assert tensor.shape is not None
     scan_shape = (None,) + tensor.shape  # type: ignore
     output_types[name] = Tensor(tensor.dtype, scan_shape)

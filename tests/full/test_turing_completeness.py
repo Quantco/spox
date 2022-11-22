@@ -2,10 +2,10 @@ import numpy
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
-from spox._arrow import Arrow
 from spox._graph import arguments, results
 from spox._internal_op import unsafe_reshape
 from spox._type_system import Tensor
+from spox._var import Var
 
 HELLO_WORLD_IMPL = """
 ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>."     Comments work!
@@ -37,21 +37,21 @@ def bf_interpreter_graph(ext):
         ),
     )
     lefts, rights = (
-        op.squeeze(arrow, axes=op.const([-1]))
-        for arrow in op.split(matches, op.const([1, 1]), outputs_count=2, axis=1)
+        op.squeeze(var, axes=op.const([-1]))
+        for var in op.split(matches, op.const([1, 1]), outputs_count=2, axis=1)
     )
 
     TAPE = 2**10
     TERM = 2**16
 
     def step(
-        _i: Arrow,
-        _cond: Arrow,
-        ip: Arrow,
-        ptr: Arrow,
-        iptr: Arrow,
-        tape: Arrow,
-        output_seq: Arrow,
+        _i: Var,
+        _cond: Var,
+        ip: Var,
+        ptr: Var,
+        iptr: Var,
+        tape: Var,
+        output_seq: Var,
     ):
         at_tape = op.unsqueeze(ext.at(tape, ptr), op.const([0]))
         cmd = ext.at(prog, ip)

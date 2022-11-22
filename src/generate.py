@@ -28,7 +28,7 @@ ATTRIBUTE_PROTO_TO_INPUT_TYPE = {
     onnx.AttributeProto.INT: "int",
     onnx.AttributeProto.STRING: "str",
     onnx.AttributeProto.TENSOR: "np.ndarray",
-    onnx.AttributeProto.GRAPH: "Callable[..., Iterable[Arrow]]",
+    onnx.AttributeProto.GRAPH: "Callable[..., Iterable[Var]]",
     onnx.AttributeProto.TYPE_PROTO: "Type",
     onnx.AttributeProto.FLOATS: "Iterable[float]",
     onnx.AttributeProto.INTS: "Iterable[int]",
@@ -190,8 +190,8 @@ def get_constructor_return(schema: onnx.defs.OpSchema) -> str:
         return f"_{schema.name}.Outputs"
     (out,) = schema.outputs
     if is_variadic(out):
-        return "Sequence[Arrow]"
-    return "Arrow"
+        return "Sequence[Var]"
+    return "Var"
 
 
 def format_github_markdown(doc: str) -> str:
@@ -501,25 +501,25 @@ if __name__ == "__main__":
             "If": {"else_branch": "()", "then_branch": "()"},
             "Loop": {
                 "body": "typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])"
-                "+ [arrow.unwrap_type() for arrow in v_initial]"
+                "+ [var.unwrap_type() for var in v_initial]"
             },
             "Scan": {
-                "body": "[Tensor(arrow.unwrap_tensor().dtype, "
-                "   (lambda x: x[1:] if x is not None else None)(arrow.unwrap_tensor().shape)) "
-                "for arrow in initial_state_and_scan_inputs[:num_scan_inputs]] + "
-                "[Tensor(arrow.unwrap_tensor().dtype) "
-                "for arrow in initial_state_and_scan_inputs[num_scan_inputs:]]"
+                "body": "[Tensor(var.unwrap_tensor().dtype, "
+                "   (lambda x: x[1:] if x is not None else None)(var.unwrap_tensor().shape)) "
+                "for var in initial_state_and_scan_inputs[:num_scan_inputs]] + "
+                "[Tensor(var.unwrap_tensor().dtype) "
+                "for var in initial_state_and_scan_inputs[num_scan_inputs:]]"
             },
             "SequenceMap": {
                 "body": "[typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type] + "
-                "[typing_cast(SpoxSequence, arrow.unwrap_type()).elem_type for arrow in additional_inputs]"
+                "[typing_cast(SpoxSequence, var.unwrap_type()).elem_type for var in additional_inputs]"
             },
         },
         attr_type_overrides=[
             (None, "dtype", ("npt.DTypeLike", "AttrDtype")),
             ("Cast", "to", ("npt.DTypeLike", "AttrDtype")),
-            ("If", "then_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
-            ("If", "else_branch", ("Callable[[], Iterable[Arrow]]", "AttrGraph")),
+            ("If", "then_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
+            ("If", "else_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
         ],
         allow_extra_constructor_arguments=["Split"],
     )

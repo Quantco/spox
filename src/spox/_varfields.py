@@ -1,28 +1,28 @@
 import typing
 from typing import Dict, Iterable, Optional, Sequence, Union
 
-from ._arrow import Arrow, _nil
 from ._fields import Fields
+from ._var import Var, _nil
 
 
-class ArrowFields(Fields[Arrow]):
+class VarFields(Fields[Var]):
     """
-    Fields subclass used for storing inputs & outputs of Nodes - which are Arrows.
+    Fields subclass used for storing inputs & outputs of Nodes - which are Vars.
     Overrides parent methods to support variadics. Example definitions:
 
     ``
-    class MyFieldsOpt(ArrowFields, Generic[T1, T2]):
+    class MyFieldsOpt(VarFields, Generic[T1, T2]):
         # Generics are interpreted by the type_inference system
-        A: Arrow[T1]
-        B: Optional[Arrow[T1]]  # marks an optional field of T1
+        A: Var[T1]
+        B: Optional[Var[T1]]  # marks an optional field of T1
 
-    class MyFieldsVar(ArrowFields, Generic[T1, T2]):
-        A: Arrow[T1]
-        B: Arrow[T2]
-        C: Sequence[Arrow[T2]]  # marks a variadic field of T2
+    class MyFieldsVar(VarFields, Generic[T1, T2]):
+        A: Var[T1]
+        B: Var[T2]
+        C: Sequence[Var[T2]]  # marks a variadic field of T2
     ``
 
-    Note that, especially for ArrowFields, the order has significance.
+    Note that, especially for VarFields, the order has significance.
     Return values follow the order in which the fields are defined.
 
     For a variadic field ``var``, the keyword argument of the same name is expected to be a list.
@@ -33,9 +33,9 @@ class ArrowFields(Fields[Arrow]):
     Only the last field may be variadic, same as in ONNX.
     """
 
-    def __init__(self, *_args: Union[Optional[Arrow], Iterable[Arrow]], **_kwargs):
+    def __init__(self, *_args: Union[Optional[Var], Iterable[Var]], **_kwargs):
         var = self.get_variadic_name()
-        # Typecheck for Arrows (variadic is a list of Arrows)
+        # Typecheck for Vars (variadic is a list of Vars)
         kwargs = self.move_args_into_kwargs(*_args, **_kwargs)
 
         for name in kwargs:
@@ -46,14 +46,14 @@ class ArrowFields(Fields[Arrow]):
                     )
             elif name == var:
                 kwargs[var] = tuple(kwargs[var])
-                if not all(isinstance(a, Arrow) for a in kwargs[var]):
+                if not all(isinstance(a, Var) for a in kwargs[var]):
                     raise TypeError(
-                        f"Variadic field '{var}' must be an iterable of Arrows."
+                        f"Variadic field '{var}' must be an iterable of Vars."
                     )
             else:
-                if not isinstance(kwargs[name], Arrow):
+                if not isinstance(kwargs[name], Var):
                     raise TypeError(
-                        f"Expected field '{name}' to be an Arrow, not {kwargs[name]}."
+                        f"Expected field '{name}' to be a `Var`, not {kwargs[name]}."
                     )
 
         super().__init__(**kwargs)
@@ -77,7 +77,7 @@ class ArrowFields(Fields[Arrow]):
         return bool(
             hint
             and (wrap == origin if args is None else wrap[args] == hint)
-            and (args is Arrow or typing.get_origin(args) is Arrow)
+            and (args is Var or typing.get_origin(args) is Var)
         )
 
     @classmethod
@@ -97,19 +97,19 @@ class ArrowFields(Fields[Arrow]):
             raise RuntimeError("Only the last field may be marked variadic.")
         return kwargs[-1] if kwargs and cls.is_variadic(kwargs[-1]) else None
 
-    def get_variadic_values(self) -> Dict[str, Arrow]:
+    def get_variadic_values(self) -> Dict[str, Var]:
         """Get the dictionary of field names and their values for the variadic (``var_0, var_1, ...``)."""
-        var = self.get_variadic_name()
+        field_name = self.get_variadic_name()
         return (
             {
-                f"{var}_{i}": arrow if var else None
-                for i, arrow in enumerate(getattr(self, var))
+                f"{field_name}_{i}": var if var else None
+                for i, var in enumerate(getattr(self, field_name))
             }
-            if var is not None
+            if field_name is not None
             else {}
         )
 
-    def get_types(self) -> Dict[str, typing.Type[Arrow]]:
+    def get_types(self) -> Dict[str, typing.Type[Var]]:
         """
         Overrides the default type list, replacing the variadic field with the sequenced fields.
         The field ``var`` is replaced in the dictionary with ``var_0, var_1, ...`` set to the same type.
@@ -121,26 +121,24 @@ class ArrowFields(Fields[Arrow]):
             del result[var]
         return result
 
-    def as_dict(self) -> Dict[str, Arrow]:
+    def as_dict(self) -> Dict[str, Var]:
         """Returns all the fields and their values in flat form (variadic sequence in separate fields)."""
         var = self.get_variadic_name()
         dt = super().as_dict()
         if var:
             dt.update(self.get_variadic_values())
             del dt[var]
-        return {
-            key: (arrow if arrow is not None else _nil) for key, arrow in dt.items()
-        }
+        return {key: (var if var is not None else _nil) for key, var in dt.items()}
 
     @property
     def fully_typed(self) -> bool:
         return all(
-            arrow.type is not None and arrow.type._is_concrete
-            for arrow in self.as_dict().values()
-            if arrow
+            var.type is not None and var.type._is_concrete
+            for var in self.as_dict().values()
+            if var
         )
 
 
 @typing.final
-class NoArrows(ArrowFields):
+class NoVars(VarFields):
     pass

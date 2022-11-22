@@ -4,17 +4,17 @@ import numpy
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
-from spox._arrow import Arrow
 from spox._graph import arguments, results
 from spox._type_system import Tensor
+from spox._var import Var
 
 
 @pytest.fixture(scope="session")
 def optional_lifting_graph(ext):
-    def liftA(f: Callable[[Arrow], Arrow], x: Arrow) -> Arrow:
+    def liftA(f: Callable[[Var], Var], x: Var) -> Var:
         return ext.maybe(op.optional_has_element(x), f(op.optional_get_element(x)))
 
-    def liftA2(f: Callable[[Arrow, Arrow], Arrow], x: Arrow, y: Arrow) -> Arrow:
+    def liftA2(f: Callable[[Var, Var], Var], x: Var, y: Var) -> Var:
         if x.type != y.type:
             raise TypeError(f"{x.type} != {y.type}")
         return ext.maybe(

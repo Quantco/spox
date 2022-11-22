@@ -5,7 +5,7 @@ Policy: when a new opset version is deemed stable enough, Spox will bump the def
 This choice may be affected with ``config.set_default_opset(op)`` with an opset module as the parameter.
 
 Note that Spox internal may use the default opset - often to use the Identity operator for renaming.
-Additionally, Arrow uses it for operator overloading.
+Additionally, Var uses it for operator overloading.
 """
 
 import sys

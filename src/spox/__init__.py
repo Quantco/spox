@@ -10,11 +10,11 @@ try:
 except ModuleNotFoundError:
     pass
 
-from spox._arrow import Arrow
 from spox._type_system import Optional, Sequence, Tensor
+from spox._var import Var
 
 __all__ = [
-    "Arrow",
+    "Var",
     "Tensor",
     "Sequence",
     "Optional",

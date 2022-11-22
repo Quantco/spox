@@ -7,18 +7,18 @@ import onnx
 from typing_extensions import TypeAlias
 
 from . import _attributes
-from ._arrow import Arrow
-from ._arrowfields import ArrowFields
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
+from ._var import Var
+from ._varfields import VarFields
 
 if TYPE_CHECKING:
     from . import _graph
 
 DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
-Constructor: TypeAlias = Callable[..., Iterable[Arrow]]
+Constructor: TypeAlias = Callable[..., Iterable[Var]]
 ConstructorT = TypeVar("ConstructorT", bound=Constructor)
 
 
@@ -40,10 +40,10 @@ class Function(_InternalNode):
     via the ``to_onnx_function`` method.
     """
 
-    func_args: Dict[str, Arrow]
+    func_args: Dict[str, Var]
     func_attrs: Dict[str, _attributes._Ref]
-    func_inputs: ArrowFields
-    func_outputs: ArrowFields
+    func_inputs: VarFields
+    func_outputs: VarFields
     func_graph: "_graph.Graph"
 
     def constructor(self, attrs, inputs):
@@ -63,7 +63,7 @@ class Function(_InternalNode):
         from . import _graph
 
         self.func_args = _graph.arguments_dict(
-            **{name: arrow.type for name, arrow in self.inputs.as_dict().items()}
+            **{name: var.type for name, var in self.inputs.as_dict().items()}
         )
 
         func_attrs = {}
@@ -78,9 +78,9 @@ class Function(_InternalNode):
         )
 
         return {
-            name: arrow.type
-            for name, arrow in self.func_outputs.as_dict().items()
-            if arrow.type
+            name: var.type
+            for name, var in self.func_outputs.as_dict().items()
+            if var.type
         }
 
     @property
@@ -118,14 +118,14 @@ class Function(_InternalNode):
 
 
 def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
-    class _FuncInputs(ArrowFields):
+    class _FuncInputs(VarFields):
         ...
 
-    class _FuncOutputs(ArrowFields):
+    class _FuncOutputs(VarFields):
         ...
 
-    _FuncInputs.__annotations__ = {f"in{i}": "Arrow" for i in range(num_inputs)}
-    _FuncOutputs.__annotations__ = {f"out{i}": "Arrow" for i in range(num_outputs)}
+    _FuncInputs.__annotations__ = {f"in{i}": "Var" for i in range(num_inputs)}
+    _FuncOutputs.__annotations__ = {f"out{i}": "Var" for i in range(num_outputs)}
 
     class _Func(Function):
         @dataclass
@@ -149,7 +149,7 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
     The function must be deterministic in the performed operations, as otherwise an error will be raised at build
     due to inconsistent function bodies.
 
-    ``fun`` is assumed to take only Arrow arguments and return an iterable of them. These will be used to generate the
+    ``fun`` is assumed to take only Var arguments and return an iterable of them. These will be used to generate the
     function class signature.
 
     Keep in mind that functions with the same name & domain will be merged together.
@@ -165,13 +165,13 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
         _num_outputs = None
         _cls = None
 
-        def get_num_outputs(*args: Arrow) -> int:
+        def get_num_outputs(*args: Var) -> int:
             nonlocal _num_outputs
             if _num_outputs is None:
                 _num_outputs = sum(1 for _ in fun(*args))
             return _num_outputs
 
-        def init(*args: Arrow):
+        def init(*args: Var):
             nonlocal _cls
             if _cls is not None:
                 return _cls
@@ -181,7 +181,7 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
             )
             return _cls
 
-        def alt_fun(*args: Arrow) -> Iterable[Arrow]:
+        def alt_fun(*args: Var) -> Iterable[Var]:
             cls = init(*args)
             return cls(cls.Attributes(), cls.Inputs(*args)).outputs.unpack()
 

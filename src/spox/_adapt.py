@@ -5,12 +5,12 @@ import numpy
 import onnx
 import onnx.version_converter
 
-from ._arrow import Arrow
 from ._internal_op import _Embedded, _InternalNode
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._utils import from_array
+from ._var import Var
 
 
 def adapt_node(
@@ -18,30 +18,30 @@ def adapt_node(
     proto: onnx.NodeProto,
     source_version: int,
     target_version: int,
-    arrow_names: Dict[Arrow, str],
+    var_names: Dict[Var, str],
 ) -> Optional[List[onnx.NodeProto]]:
     if source_version == target_version:
         return None
 
     try:
         input_info = [
-            arrow.unwrap_type()._to_onnx_value_info(
-                arrow_names[arrow], _traceback_name=f"adapt-input {key}"
+            var.unwrap_type()._to_onnx_value_info(
+                var_names[var], _traceback_name=f"adapt-input {key}"
             )
-            for key, arrow in node.inputs.as_dict().items()
-            if arrow
+            for key, var in node.inputs.as_dict().items()
+            if var
         ]
         output_info = [
-            arrow.unwrap_type()._to_onnx_value_info(
-                arrow_names[arrow], _traceback_name=f"adapt-output {key}"
+            var.unwrap_type()._to_onnx_value_info(
+                var_names[var], _traceback_name=f"adapt-output {key}"
             )
-            for key, arrow in node.outputs.as_dict().items()
-            if arrow
+            for key, var in node.outputs.as_dict().items()
+            if var
         ]
         initializers = [
-            from_array(arrow._value, name)
-            for name, arrow in node.inputs.as_dict().items()
-            if isinstance(arrow._value, numpy.ndarray)
+            from_array(var._value, name)
+            for name, var in node.inputs.as_dict().items()
+            if isinstance(var._value, numpy.ndarray)
         ]
     except ValueError:
         return None
@@ -66,7 +66,7 @@ def adapt_embedded(
     node: _Embedded,
     protos: List[onnx.NodeProto],
     target_opsets: Dict[str, int],
-    arrow_names: Dict[Arrow, str],
+    var_names: Dict[Var, str],
     node_name: str,
 ) -> List[onnx.NodeProto]:
     source_version = max({v for d, v in node.opset_req if d in ("", "ai.onnx")})
@@ -79,7 +79,7 @@ def adapt_embedded(
         base_model = node.model
         try:
             node.model = target_model
-            target_nodes = node.to_onnx(Scope.of(*arrow_names.items()), node_name)
+            target_nodes = node.to_onnx(Scope.of(*var_names.items()), node_name)
         finally:
             node.model = base_model
         return target_nodes
@@ -90,7 +90,7 @@ def adapt_best_effort(
     node: Node,
     protos: List[onnx.NodeProto],
     opsets: Dict[str, int],
-    arrow_names: Dict[Arrow, str],
+    var_names: Dict[Var, str],
     node_names: Dict[Node, str],
 ) -> Optional[List[onnx.NodeProto]]:
     if isinstance(node, _Embedded):
@@ -98,7 +98,7 @@ def adapt_best_effort(
             node,
             protos,
             opsets,
-            arrow_names,
+            var_names,
             node_names[node],
         )
     if isinstance(node, _InternalNode) or len(protos) != 1:
@@ -138,6 +138,6 @@ def adapt_best_effort(
         proto,
         source_version,
         target_version,
-        arrow_names,
+        var_names,
     )
     return adapted

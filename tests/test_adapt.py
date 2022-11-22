@@ -6,14 +6,14 @@ import onnx
 import onnx.parser
 import pytest
 
-from spox._arrow import Arrow
-from spox._arrowfields import ArrowFields
 from spox._attributes import AttrInt64s
 from spox._graph import arguments, results
 from spox._internal_op import embedded
 from spox._node import OpType
 from spox._standard import StandardNode
 from spox._type_system import Tensor
+from spox._var import Var
+from spox._varfields import VarFields
 
 
 @pytest.fixture
@@ -54,11 +54,11 @@ def old_squeeze_graph(op, old_squeeze):
         class Attributes:
             axes: AttrInt64s
 
-        class Inputs(ArrowFields):
-            data: Arrow
+        class Inputs(VarFields):
+            data: Var
 
-        class Outputs(ArrowFields):
-            squeezed: Arrow
+        class Outputs(VarFields):
+            squeezed: Var
 
         op_type = OpType("Squeeze", "", 11)
 
@@ -66,7 +66,7 @@ def old_squeeze_graph(op, old_squeeze):
         inputs: Inputs
         outputs: Outputs
 
-    def squeeze11(_data: Arrow, _axes: Iterable[int]):
+    def squeeze11(_data: Var, _axes: Iterable[int]):
         return Squeeze11(
             Squeeze11.Attributes(AttrInt64s(_axes)), Squeeze11.Inputs(_data)
         ).outputs.squeezed

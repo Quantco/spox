@@ -20,12 +20,12 @@ from typing import (
 
 import onnx
 
-from ._arrow import Arrow
-from ._arrowfields import ArrowFields
 from ._attributes import AttrGraph
 from ._fields import Fields
 from ._type_inference import _warn_unknown_types
 from ._type_system import Type
+from ._var import Var
+from ._varfields import VarFields
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
@@ -55,7 +55,7 @@ class Node(ABC):
     Abstract base class for representing operators in the Spox graph, both standard ONNX and some internal.
     Should not be created directly - proper instances are created by various operator constructors internally.
 
-    When subclassing, ``ArrowFields`` subtypes must be hinted in
+    When subclassing, ``VarFields`` subtypes must be hinted in
     ``inputs``, ``outputs``. These hints by default specify results of
     ``in_type``, ``out_type``. ``Attributes`` must be a ``dataclass``
     where its members are subclasses of :class:`spox._attributes.Attr`.
@@ -75,8 +75,8 @@ class Node(ABC):
     Outputs: ClassVar[typing.Type]
 
     attrs: Dataclass
-    inputs: ArrowFields
-    outputs: ArrowFields
+    inputs: VarFields
+    outputs: VarFields
 
     out_variadic: Optional[int]
     _traceback: List[str]
@@ -84,8 +84,8 @@ class Node(ABC):
     def __init__(
         self,
         attrs: Optional[Any] = None,
-        inputs: Optional[ArrowFields] = None,
-        outputs: Optional[ArrowFields] = None,
+        inputs: Optional[VarFields] = None,
+        outputs: Optional[VarFields] = None,
         *,
         out_variadic: Optional[int] = None,
         infer_types: bool = True,
@@ -100,17 +100,17 @@ class Node(ABC):
         attrs
             Attributes to set for this Node. If None, initializes Attributes with no parameters.
         inputs
-            Inputs (arrows) to set for this Node. If None, initializes Inputs with no parameters.
+            Inputs (vars) to set for this Node. If None, initializes Inputs with no parameters.
         outputs
-            Outputs (arrows) to set for this Node, usually left as None. If None, outputs are initialized
-            (via _init_output_arrows) with no types but set operator to this node.
+            Outputs (vars) to set for this Node, usually left as None. If None, outputs are initialized
+            (via _init_output_vars) with no types but set operator to this node.
         out_variadic
             Number of variadic outputs to generate for this node's outputs field in the respective member list.
         infer_types
-            Whether to run type inference - setting types for output arrows if previously None. Should always succeed
+            Whether to run type inference - setting types for output vars if previously None. Should always succeed
             if possible, possibly raising type errors if inputs/attributes are not correctly typed.
         propagate_values
-            Whether to run value propagation - setting values for output arrows if previously None. Should only succeed
+            Whether to run value propagation - setting values for output vars if previously None. Should only succeed
             if all inputs are constant (attributes always are).
         validate
             Whether to run some extra validation. The default validation only warns against unknown types.
@@ -124,15 +124,15 @@ class Node(ABC):
         self.attrs = attrs if attrs is not None else self.Attributes()
         self.inputs = inputs if inputs is not None else self.Inputs()
         self.out_variadic = out_variadic
-        # Initialize output arrows - run type inference and value propagation routines
+        # Initialize output vars - run type inference and value propagation routines
         if not outputs:
-            # As inference functions may access which output arrows we initialized (e.g. variadics)
-            # we inject uninitialized arrows first
-            self.outputs = self._init_output_arrows({}, {})
+            # As inference functions may access which output vars we initialized (e.g. variadics)
+            # we inject uninitialized vars first
+            self.outputs = self._init_output_vars({}, {})
             output_types = self.infer_output_types() if infer_types else {}
-            self.outputs = self._init_output_arrows(output_types, {})
+            self.outputs = self._init_output_vars(output_types, {})
             output_values = self.propagate_values() if propagate_values else {}
-            self.outputs = self._init_output_arrows(output_types, output_values)
+            self.outputs = self._init_output_vars(output_types, output_values)
         else:
             self.outputs = outputs
         self._traceback = traceback.format_stack()
@@ -156,7 +156,7 @@ class Node(ABC):
         Sets the minimum number of inputs in the ONNX representation.
         Sometimes needed due to issues with interpretation of NodeProto in type inference by ONNX.
 
-        Some operator schemas may allow not specifying trailing optional inputs with "" (represented as _nil/NilArrow),
+        Some operator schemas may allow not specifying trailing optional inputs with "" (represented as _nil/NilVar),
         while also requiring you to pass them in anyhow. On the other hand, some operators do not support optional
         inputs via "", so in that case trailing optionals should be removed.
 
@@ -182,13 +182,13 @@ class Node(ABC):
     def signature(self) -> str:
         """Get a signature of this Node, including its inputs and attributes (but not outputs)."""
 
-        def fmt_input(key, arrow):
-            return f"{key}: {arrow.type}" + (
-                f" = {arrow._value}" if arrow._value is not None else ""
+        def fmt_input(key, var):
+            return f"{key}: {var.type}" + (
+                f" = {var._value}" if var._value is not None else ""
             )
 
         sign = ", ".join(
-            fmt_input(key, arrow) for key, arrow in self.inputs.as_dict().items()
+            fmt_input(key, var) for key, var in self.inputs.as_dict().items()
         )
         sign = f"inputs [{sign}]"
         shown_attrs = {
@@ -223,7 +223,7 @@ class Node(ABC):
         """
         Inference routine for output types. Often overriden by inheriting Node types.
 
-        Returns a dictionary of output field names into Types for the respective Arrows.
+        Returns a dictionary of output field names into Types for the respective Vars.
         """
         return {}
 
@@ -236,17 +236,17 @@ class Node(ABC):
         out_names = set(self.outputs.get_types())
 
         for name in out_names:
-            arrow = getattr(self.outputs, name)
-            if arrow.type is None:  # If no existing type from init_output_arrows
+            var = getattr(self.outputs, name)
+            if var.type is None:  # If no existing type from init_output_vars
                 # Attempt to use the ones from kwargs, if none then what type inference gave
-                arrow.type = kwargs.get(name, out_types.get(name))
+                var.type = kwargs.get(name, out_types.get(name))
 
         # After typing everything, try to get values for outputs
         out_values = self.propagate_values() if propagate_values else {}
         for name in out_names:
-            arrow = getattr(self.outputs, name)
-            if arrow.value is None:
-                arrow.value = out_values.get(name)
+            var = getattr(self.outputs, name)
+            if var.value is None:
+                var.value = out_values.get(name)
 
     def validate_types(self, warn_unknown: bool = True) -> None:
         """Validation of types, ran at the end of Node creation."""
@@ -258,26 +258,26 @@ class Node(ABC):
     def _type_checks(self):
         for source in (self.inputs, self.outputs):
             for name, typ in source.get_types().items():
-                arrow = getattr(source, name)
-                if not arrow:
+                var = getattr(source, name)
+                if not var:
                     continue
-                value_type = arrow.type
+                value_type = var.type
                 yield name, value_type
 
-    def _init_output_arrows(
+    def _init_output_vars(
         self, types: Dict[str, Type], values: Dict[str, Any]
-    ) -> ArrowFields:
+    ) -> VarFields:
         """
-        Initialize empty output arrows bound to this Node and return the respective Fields object.
+        Initialize empty output vars bound to this Node and return the respective Fields object.
         Their type is bound in the create method.
         Note: called in ``__init__`` while the state may be partially initialized.
         """
 
         def arr(name):
-            return Arrow(self, types.get(name), values.get(name))
+            return Var(self, types.get(name), values.get(name))
 
         var = self.Outputs.get_variadic_name()
-        outputs: Dict[str, Union[Arrow, Sequence[Arrow]]] = {
+        outputs: Dict[str, Union[Var, Sequence[Var]]] = {
             name: arr(name) for name in self.Outputs.get_kwargs() if name != var
         }
         if var is not None:
@@ -286,18 +286,18 @@ class Node(ABC):
         return self.Outputs(**outputs)
 
     @property
-    def dependencies(self) -> Iterable[Arrow]:
-        """List of input Arrows into this Node."""
-        return (arrow for arrow in self.inputs.as_dict().values() if arrow)
+    def dependencies(self) -> Iterable[Var]:
+        """List of input Vars into this Node."""
+        return (var for var in self.inputs.as_dict().values() if var)
 
     @property
-    def dependents(self) -> Iterable[Arrow]:
-        """List of output Arrows from this Node."""
-        return (arrow for arrow in self.outputs.as_dict().values() if arrow)
+    def dependents(self) -> Iterable[Var]:
+        """List of output Vars from this Node."""
+        return (var for var in self.outputs.as_dict().values() if var)
 
     @property
-    def incident(self) -> Iterable[Arrow]:
-        """List of both input and output Arrows for this Node."""
+    def incident(self) -> Iterable[Var]:
+        """List of both input and output Vars for this Node."""
         return itertools.chain(self.dependencies, self.dependents)
 
     @property
@@ -317,8 +317,8 @@ class Node(ABC):
     ) -> List[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""
         assert self.op_type.identifier
-        input_names = [scope.arrow[arrow] for arrow in self.inputs.as_dict().values()]
-        output_names = [scope.arrow[arrow] for arrow in self.outputs.as_dict().values()]
+        input_names = [scope.var[var] for var in self.inputs.as_dict().values()]
+        output_names = [scope.var[var] for var in self.outputs.as_dict().values()]
         while len(input_names) > self.min_input and not input_names[-1]:
             input_names.pop()
         while len(output_names) > self.min_output and not output_names[-1]:

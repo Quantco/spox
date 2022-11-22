@@ -4,8 +4,8 @@ import numpy
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
-from spox._arrow import Arrow
 from spox._internal_op import unsafe_reshape
+from spox._var import Var
 
 
 # noinspection PyMethodParameters
@@ -30,28 +30,28 @@ class Extras:
         return self._empty_i64
 
     @staticmethod
-    def maybe(cond: Arrow, arrow: Arrow) -> Arrow:
+    def maybe(cond: Var, var: Var) -> Var:
         (i,) = op.if_(
             cond,
-            else_branch=lambda: [op.optional(type=arrow.type)],
-            then_branch=lambda: [op.optional(arrow)],
+            else_branch=lambda: [op.optional(type=var.type)],
+            then_branch=lambda: [op.optional(var)],
         )
         return i
 
     @staticmethod
-    def push(arrow: Arrow, what: Arrow) -> Arrow:
-        return op.sequence_insert(arrow, what)
+    def push(var: Var, what: Var) -> Var:
+        return op.sequence_insert(var, what)
 
     @staticmethod
-    def top(arrow: Arrow) -> Arrow:
-        return op.sequence_at(arrow, op.const(-1))
+    def top(var: Var) -> Var:
+        return op.sequence_at(var, op.const(-1))
 
     @staticmethod
-    def pop(arrow: Arrow) -> Arrow:
-        return op.sequence_erase(arrow, op.const(-1))
+    def pop(var: Var) -> Var:
+        return op.sequence_erase(var, op.const(-1))
 
     @staticmethod
-    def at(t: Arrow, j: Arrow) -> Arrow:
+    def at(t: Var, j: Var) -> Var:
         j = op.reshape(j, op.const(numpy.array([1], dtype=numpy.int64)))
         return op.reshape(
             op.slice(t, j, op.add(j, op.const(1))),
@@ -59,13 +59,13 @@ class Extras:
         )
 
     @staticmethod
-    def empty(s: Arrow) -> Arrow:
+    def empty(s: Var) -> Var:
         return op.equal(op.sequence_length(s), op.const(0))
 
-    def match_brackets(ext, xs: Arrow) -> Arrow:
+    def match_brackets(ext, xs: Var) -> Var:
         def bracket_matcher_step(
-            i: Arrow, _cond: Arrow, stack: Arrow, result: Arrow, _: Arrow
-        ) -> Tuple[Arrow, Arrow, Arrow, Arrow]:
+            i: Var, _cond: Var, stack: Var, result: Var, _: Var
+        ) -> Tuple[Var, Var, Var, Var]:
             closing = op.less(ext.at(xs, i), op.const(0))
             ignore = op.equal(ext.at(xs, i), op.const(0))
             pair = op.concat([ext.top(stack), i], axis=-1)
@@ -97,23 +97,23 @@ class Extras:
         )
         return ext.maybe(op.and_(all_ok, ext.empty(unpaired)), pairs)
 
-    def scalars(ext, *args: Arrow) -> Arrow:
+    def scalars(ext, *args: Var) -> Var:
         return op.concat([op.unsqueeze(arg, op.const([0])) for arg in args], axis=-1)
 
-    def onehot(ext, n: Arrow, i: Arrow) -> Arrow:
+    def onehot(ext, n: Var, i: Var) -> Var:
         return op.pad(op.const([1]), ext.scalars(i, op.sub(op.sub(n, i), op.const(1))))
 
-    def set_to(ext, t: Arrow, j: Arrow, x: Arrow) -> Arrow:
+    def set_to(ext, t: Var, j: Var, x: Var) -> Var:
         return op.where(op.cast(ext.onehot(op.size(t), j), to=numpy.bool_), x, t)
 
     @staticmethod
-    def is_token(arrow: Arrow, token: str) -> Arrow:
+    def is_token(var: Var, token: str) -> Var:
         return op.equal(
-            op.cast(arrow, to=numpy.int32),
+            op.cast(var, to=numpy.int32),
             op.cast(op.const(numpy.uint8(ord(token))), to=numpy.int32),
         )
 
-    def flat_concat(ext, s: Arrow) -> Arrow:
+    def flat_concat(ext, s: Var) -> Var:
         return op.if_(
             ext.empty(s),
             then_branch=lambda: (ext.empty_i64(),),
@@ -122,10 +122,10 @@ class Extras:
             ),
         )[0]
 
-    def remap(ext, s: Arrow, t: Arrow, x: Arrow) -> Arrow:
+    def remap(ext, s: Var, t: Var, x: Var) -> Var:
         return op.reshape(op.compress(t, op.equal(s, x)), ext.empty_i64())
 
-    def find(ext, t: Arrow, x: Arrow) -> Arrow:
+    def find(ext, t: Var, x: Var) -> Var:
         x = op.reshape(op.identity(x), ext.empty_i64())
         (ret,) = op.loop(
             op.size(t),

@@ -1,8 +1,8 @@
 import sys
 from contextlib import contextmanager
 
-from spox._arrow import Arrow
 from spox._node import Node
+from spox._var import Var
 
 
 @contextmanager
@@ -28,7 +28,7 @@ def show_construction_tracebacks(debug_index):
         if -1 in found:
             del found[-1]
         for name, obj in reversed(found.values()):
-            if isinstance(obj, Arrow):
+            if isinstance(obj, Var):
                 if not obj:
                     continue
                 node = obj._op

@@ -10,7 +10,7 @@ import spox._graph
 import spox.opset.ai.onnx.v17 as op
 
 
-def uniform_of_shape(shape: spox.Arrow) -> spox.Arrow:
+def uniform_of_shape(shape: spox.Var) -> spox.Var:
     # Not providing the seed for randomness yields an undefined one - ONNX runtime seems to use the same one twice,
     # so we use a Python seed.
     return op.cast(

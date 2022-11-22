@@ -2,7 +2,7 @@ import numpy
 import onnxruntime.capi.onnxruntime_pybind11_state
 import pytest
 
-from spox import Arrow, _arrow, _standard, _type_system
+from spox import Var, _standard, _type_system, _var
 from spox._graph import arguments, results
 from spox._shape import Shape
 
@@ -16,21 +16,21 @@ def enable_onnx_value_propagation():
     _standard._USE_ONNXRUNTIME_VALUE_PROP = prev
 
 
-def dummy_arrow(typ=None, value=None):
-    """Function for creating an arrow without an operator but with a type and value."""
-    return Arrow(None, typ, value)  # type: ignore
+def dummy_var(typ=None, value=None):
+    """Function for creating a ``var`` without an operator but with a type and value."""
+    return Var(None, typ, value)  # type: ignore
 
 
 def assert_equal_value(arr, expected):
     """
-    Convenience function for comparing an arrow's propagated value and an expected one.
+    Convenience function for comparing a ``var``'s propagated value and an expected one.
     Expected Types vs value types:
 
     - Tensor - numpy.ndarray
-    - Optional - spox.arrow.Nothing or the underlying type
+    - Optional - spox.var.Nothing or the underlying type
     - Sequence - list of underlying type
     """
-    assert arr._value is not None, "arrow.value expected to be known"
+    assert arr._value is not None, "var.value expected to be known"
     if isinstance(arr.type, _type_system.Tensor):
         expected = numpy.array(expected)
         assert arr.type.dtype.type == expected.dtype.type, "element type must match"
@@ -39,15 +39,15 @@ def assert_equal_value(arr, expected):
     elif isinstance(arr.type, _type_system.Optional):
         if expected is None:
             assert (
-                arr._value is _arrow.Nothing
+                arr._value is _var.Nothing
             ), "value must be Nothing when optional is empty"
         else:
-            assert_equal_value(dummy_arrow(arr.type.elem_type, arr._value), expected)
+            assert_equal_value(dummy_var(arr.type.elem_type, arr._value), expected)
     elif isinstance(arr.type, _type_system.Sequence):
         assert isinstance(arr._value, list), "value must be list when it is a Sequence"
         assert len(arr._value) == len(expected), "sequence length must match"
         for a, b in zip(arr._value, expected):
-            assert_equal_value(dummy_arrow(arr.type.elem_type, a), b)
+            assert_equal_value(dummy_var(arr.type.elem_type, a), b)
     else:
         raise NotImplementedError(f"Datatype {arr.type}")
 

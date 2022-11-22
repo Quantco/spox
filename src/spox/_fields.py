@@ -22,7 +22,7 @@ def get_type_hints_cached(obj) -> dict:
 
 class Fields(Generic[T_co]):
     """
-    Base class for ArrowFields.
+    Base class for VarFields.
     Fields classes are based on the notion of conveniently defining a signature (like a dataclass),
     but in a way that is closer to ONNX.
     The type hints of only the target class is used (inheritance is not considered).
@@ -53,7 +53,7 @@ class Fields(Generic[T_co]):
     def get_types(self) -> Dict[str, typing.Type[T_co]]:
         """
         Get types for fields which are defined in this instance.
-        For example, ArrowFields defines new fields (`var_0, var_1, ...`) for variadic fields,
+        For example, VarFields defines new fields (`var_0, var_1, ...`) for variadic fields,
         even though a different keyword argument is passed in (`var`).
         """
         return typing.cast(Dict[str, typing.Type[T_co]], self.get_kwargs_types())
@@ -85,14 +85,14 @@ class Fields(Generic[T_co]):
         """Map over all fields with a function like `(index, key, value) -> new_value`."""
         return type(self)(
             **{
-                key: fun(i, key, arrow)
-                for i, (key, arrow) in enumerate(self.as_dict().items())
+                key: fun(i, key, var)
+                for i, (key, var) in enumerate(self.as_dict().items())
             }
         )
 
     def map(self: FieldsT, fun: Callable[[str, Any], Any]) -> FieldsT:
         """Map over all fields with a function like `(key, value) -> new_value`."""
-        return self.imap(lambda _, name, arrow: fun(name, arrow))
+        return self.imap(lambda _, name, var: fun(name, var))
 
     def unpack(self) -> Tuple:
         """Convenience function for unpacking fields into a tuple of all the base fields."""

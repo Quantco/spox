@@ -9,13 +9,13 @@ import onnx.shape_inference
 import onnxruntime
 import pytest
 
-from spox._arrow import Arrow
-from spox._arrowfields import ArrowFields
 from spox._attributes import AttrFloat32, _Ref
 from spox._function import Function, to_function
 from spox._graph import arguments, results
 from spox._node import OpType
 from spox._type_system import Tensor
+from spox._var import Var
+from spox._varfields import VarFields
 
 
 @pytest.fixture
@@ -26,11 +26,11 @@ def linear(op):
             slope: AttrFloat32
             shift: AttrFloat32
 
-        class Inputs(ArrowFields):
-            X: Arrow
+        class Inputs(VarFields):
+            X: Var
 
-        class Outputs(ArrowFields):
-            Y: Arrow
+        class Outputs(VarFields):
+            Y: Var
 
         op_type = OpType("LinearFunction", "spox.test", 0)
 
@@ -44,7 +44,7 @@ def linear(op):
             x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b))
 
-    def linear_inner(x: Arrow, a: float, b: float) -> Arrow:
+    def linear_inner(x: Var, a: float, b: float) -> Var:
         return LinearFunction(
             LinearFunction.Attributes(AttrFloat32(a), AttrFloat32(b)),
             LinearFunction.Inputs(x),
@@ -61,11 +61,11 @@ def linear2(op, linear):
             slope1: AttrFloat32
             shift1: AttrFloat32
 
-        class Inputs(ArrowFields):
-            X: Arrow
+        class Inputs(VarFields):
+            X: Var
 
-        class Outputs(ArrowFields):
-            Y: Arrow
+        class Outputs(VarFields):
+            Y: Var
 
         op_type = OpType("LinearFunction2", "spox.test", 0)
 
@@ -76,7 +76,7 @@ def linear2(op, linear):
         def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
             return self.Outputs(linear(inputs.X, attrs["slope1"], attrs["shift1"]))
 
-    def linear_inner(x: Arrow, a: float, b: float) -> Arrow:
+    def linear_inner(x: Var, a: float, b: float) -> Var:
         return LinearFunction2(
             LinearFunction2.Attributes(AttrFloat32(a), AttrFloat32(b)),
             LinearFunction2.Inputs(x),
@@ -95,11 +95,11 @@ def cubic(op, linear):
             a1: AttrFloat32
             a0: AttrFloat32
 
-        class Inputs(ArrowFields):
-            X: Arrow
+        class Inputs(VarFields):
+            X: Var
 
-        class Outputs(ArrowFields):
-            Y: Arrow
+        class Outputs(VarFields):
+            Y: Var
 
         op_type = OpType("CubicFunction", "spox.test.extra", 0)
 
@@ -117,7 +117,7 @@ def cubic(op, linear):
             y = op.add(a, b)
             return self.Outputs(y)
 
-    def cubic_inner(x: Arrow, a3: float, a2: float, a1: float, a0: float) -> Arrow:
+    def cubic_inner(x: Var, a3: float, a2: float, a1: float, a0: float) -> Var:
         return CubicFunction(
             CubicFunction.Attributes(
                 a3=AttrFloat32(a3),
@@ -184,7 +184,7 @@ def isnan_graph(op):
     )
 
     @to_function("IsNaN", "spox.test")
-    def isnan(v: Arrow) -> List[Arrow]:
+    def isnan(v: Var) -> List[Var]:
         return [op.not_(op.equal(v, v))]
 
     return results(

@@ -9,17 +9,17 @@ import onnx.shape_inference
 
 from . import _build
 from ._adapt import adapt_best_effort
-from ._arrow import Arrow
-from ._arrowfields import NoArrows
 from ._attributes import AttrString, AttrTensor, AttrType
 from ._internal_op import Argument, _Initializer
 from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
 from ._utils import from_array
+from ._var import Var
+from ._varfields import NoVars
 
 
-def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, Arrow]:
+def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, Var]:
     """
     Parameters
     ----------
@@ -30,8 +30,8 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
         and its type is used to create a respective Tensor.
     Returns
     -------
-    Dict[str, Arrow]
-        Argument Arrows of given Types, named the same as kwargs.
+    Dict[str, Var]
+        Argument Vars of given Types, named the same as kwargs.
     """
     result = {}
     for name, info in kwargs.items():
@@ -39,7 +39,7 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
         if isinstance(info, Type):
             result[name] = Argument(
                 Argument.Attributes(name=attr_name, type=AttrType(info), default=None),
-                NoArrows(),
+                NoVars(),
             ).outputs.arg
         elif isinstance(info, numpy.ndarray):
             ty = Tensor(info.dtype, info.shape)
@@ -47,21 +47,21 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
                 Argument.Attributes(
                     name=attr_name, type=AttrType(ty), default=AttrTensor(info)
                 ),
-                NoArrows(),
+                NoVars(),
             ).outputs.arg
         else:
             raise TypeError(f"Cannot construct argument from {type(info)}.")
     return result
 
 
-def arguments(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Tuple[Arrow, ...]:
-    """This function is a shorthand for a respective call to ``arguments_dict``, unpacking the Arrows from the dict."""
+def arguments(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Tuple[Var, ...]:
+    """This function is a shorthand for a respective call to ``arguments_dict``, unpacking the Vars from the dict."""
     return tuple(arguments_dict(**kwargs).values())
 
 
 def enum_arguments(
     *infos: Union[Type, numpy.ndarray], prefix: str = "in"
-) -> Tuple[Arrow, ...]:
+) -> Tuple[Var, ...]:
     """
     Convenience function for creating an enumeration of arguments, prefixed with ``prefix``.
     Calls ``arguments`` internally.
@@ -77,13 +77,13 @@ def enum_arguments(
         String to prefix the names of created arguments with.
     Returns
     -------
-    Tuple[Arrow, ...]
-        Argument Arrows as specified, in the same order as information ``infos``.
+    Tuple[Var, ...]
+        Argument Vars as specified, in the same order as information ``infos``.
     """
     return arguments(**{f"{prefix}{i}": info for i, info in enumerate(infos)})
 
 
-def initializer(arr: numpy.ndarray) -> Arrow:
+def initializer(arr: numpy.ndarray) -> Var:
     """
     Create a single initializer (frozen argument) with a given array value.
 
@@ -96,12 +96,12 @@ def initializer(arr: numpy.ndarray) -> Arrow:
         Value of the initializer.
     Returns
     -------
-        Arrow which is always equal to the respective value provided by `arr`.
+        Var which is always equal to the respective value provided by `arr`.
     """
     ty = Tensor(arr.dtype, arr.shape)
     return _Initializer(
         _Initializer.Attributes(type=AttrType(ty), default=AttrTensor(arr)),
-        NoArrows(),
+        NoVars(),
     ).outputs.arg
 
 
@@ -122,12 +122,12 @@ class Graph:
     Note: building a Graph is cached, so changing it in-place without the setters will invalidate the build.
     """
 
-    _results: Dict[str, Arrow]
+    _results: Dict[str, Var]
     _name: Optional[str] = None
     _doc_string: Optional[str] = None
-    _arguments: Optional[Tuple[Arrow, ...]] = None
+    _arguments: Optional[Tuple[Var, ...]] = None
     _extra_opset_req: Optional[Set[Tuple[str, int]]] = None
-    _constructor: Optional[Callable[..., Iterable[Arrow]]] = None
+    _constructor: Optional[Callable[..., Iterable[Var]]] = None
     _build_result: "_build.Cached[_build.BuildResult]" = dataclasses.field(
         default_factory=_build.Cached
     )
@@ -148,15 +148,15 @@ class Graph:
         return f"<Graph '{name_repr}' ({args_repr}) -> ({res_repr}){': ' if comments else ''}{', '.join(comments)}>"
 
     def __post_init__(self):
-        if any(not isinstance(arrow, Arrow) for arrow in self._results.values()):
+        if any(not isinstance(var, Var) for var in self._results.values()):
             raise TypeError(
-                f"Graph results must be Arrows, not {set(type(obj) for obj in self._results.values()) - {Arrow}}."
+                f"Graph results must be Vars, not {set(type(obj) for obj in self._results.values()) - {Var}}."
             )
         if self._arguments is not None and any(
-            not isinstance(arrow, Arrow) for arrow in self._arguments
+            not isinstance(var, Var) for var in self._arguments
         ):
             raise TypeError(
-                f"Graph results must be Arrows, not {set(type(obj) for obj in self._arguments) - {Arrow}}."
+                f"Graph results must be Vars, not {set(type(obj) for obj in self._arguments) - {Var}}."
             )
 
     def with_name(self, name: str) -> "Graph":
@@ -167,9 +167,9 @@ class Graph:
         """Return a Graph with its doc string set to ``doc``."""
         return replace(self, _doc_string=doc_string)
 
-    def with_arguments(self, *args: Arrow) -> "Graph":
+    def with_arguments(self, *args: Var) -> "Graph":
         """
-        Return a Graph with given Arrows marked as exactly its arguments.
+        Return a Graph with given Vars marked as exactly its arguments.
         A useful idiom is ``results(...).with_arguments(...)`` when you want to specify both results and arguments.
         """
         return replace(self, _arguments=args)
@@ -184,11 +184,11 @@ class Graph:
             extra_opset_req |= self._extra_opset_req
         return replace(self, _extra_opset_req=extra_opset_req)
 
-    def _with_constructor(self, fun: Callable[..., Iterable[Arrow]]) -> "Graph":
+    def _with_constructor(self, fun: Callable[..., Iterable[Var]]) -> "Graph":
         """Assign a constructor that constructed this Graph given ``self.requested_arguments``."""
         return replace(self, _constructor=fun)
 
-    def _reconstruct(self, *args: Arrow) -> "Graph":
+    def _reconstruct(self, *args: Var) -> "Graph":
         assert self._constructor is not None
         return (
             results(**dict(zip(self._results, self._constructor(*args))))
@@ -204,35 +204,35 @@ class Graph:
         return replace(self, _build_result=_build.Cached(what))
 
     @property
-    def requested_arguments(self) -> Optional[Iterable[Arrow]]:
+    def requested_arguments(self) -> Optional[Iterable[Var]]:
         """Arguments requested by this Graph (for building) - ``None`` if unspecified."""
         return self._arguments
 
     @property
-    def requested_results(self) -> Dict[str, Arrow]:
+    def requested_results(self) -> Dict[str, Var]:
         """Results (named) requested by this Graph (for building)."""
         return self._results
 
-    def get_arguments(self) -> Dict[str, Arrow]:
+    def get_arguments(self) -> Dict[str, Var]:
         """
         Get the effective named arguments (after build) of this Graph.
 
         May be expensive, as it has to build Use ``requested_arguments`` for a cheaper variant that may be sufficient.
         """
         return {
-            self._get_build_result().scope.arrow[arrow]: arrow
-            for arrow in self._get_build_result().arguments
+            self._get_build_result().scope.var[var]: var
+            for var in self._get_build_result().arguments
         }
 
-    def get_results(self) -> Dict[str, Arrow]:
+    def get_results(self) -> Dict[str, Var]:
         """
         Get the effective named results (after build) of this Graph.
 
         May be expensive, as it has to build. Use ``requested_results`` for a cheaper variant that may be sufficient.
         """
         return {
-            self._get_build_result().scope.arrow[arrow]: arrow
-            for arrow in self._get_build_result().results
+            self._get_build_result().scope.var[var]: var
+            for var in self._get_build_result().results
         }
 
     def get_opsets(self) -> Dict[str, int]:
@@ -258,8 +258,8 @@ class Graph:
     def _get_initializers_by_name(self) -> Dict[str, numpy.ndarray]:
         """Internal function for accessing the initializers by name in the build."""
         return {
-            self._get_build_result().scope.arrow[arrow]: init
-            for arrow, init in self._get_build_result().initializers.items()
+            self._get_build_result().scope.var[var]: init
+            for var, init in self._get_build_result().initializers.items()
         }
 
     def get_adapted_nodes(self) -> Dict[Node, Tuple[onnx.NodeProto, ...]]:
@@ -277,7 +277,7 @@ class Graph:
                 node,
                 list(protos),
                 self.get_opsets(),
-                self._get_build_result().scope.arrow.name_of,
+                self._get_build_result().scope.var.name_of,
                 self._get_build_result().scope.node.name_of,
             )
             consistent_nodes[node] = (
@@ -314,16 +314,16 @@ class Graph:
             raise ValueError("Attempt to build graph without results.")
 
         argument_info = [
-            arrow.unwrap_type()._to_onnx_value_info(
-                name, concrete=concrete, _traceback_name=f"argument {name} ({arrow})"
+            var.unwrap_type()._to_onnx_value_info(
+                name, concrete=concrete, _traceback_name=f"argument {name} ({var})"
             )
-            for name, arrow in self.get_arguments().items()
+            for name, var in self.get_arguments().items()
         ]
         result_info = [
-            arrow.unwrap_type()._to_onnx_value_info(
-                name, concrete=concrete, _traceback_name=f"result {name} ({arrow})"
+            var.unwrap_type()._to_onnx_value_info(
+                name, concrete=concrete, _traceback_name=f"result {name} ({var})"
             )
-            for name, arrow in self.get_results().items()
+            for name, var in self.get_results().items()
         ]
 
         if self._name:
@@ -418,14 +418,14 @@ class Graph:
         return model
 
 
-def results(**kwargs: Arrow) -> Graph:
+def results(**kwargs: Var) -> Graph:
     """
     Use this function to construct a ``Graph`` object.
 
     Parameters
     ----------
     kwargs
-        Arrows to be marked as results in the created Graph.
+        Vars to be marked as results in the created Graph.
     Returns
     -------
     Graph
@@ -434,26 +434,26 @@ def results(**kwargs: Arrow) -> Graph:
     return Graph(kwargs)
 
 
-def enum_results(*arrows: Arrow, prefix="out") -> Graph:
+def enum_results(*vars: Var, prefix="out") -> Graph:
     """
     Use this function to construct a ``Graph`` object, whenever the exact names are not important.
     Useful when creating subgraphs.
 
     Parameters
     ----------
-    arrows
-        Arrows to be marked as results.
+    vars
+        Vars to be marked as results.
     prefix
         String to prefix the names of created results with.
     Returns
     -------
-        Graph with the results given in `arrows`, in the same order.
+        Graph with the results given in `vars`, in the same order.
         Names are the `prefix` with an enumeration index at the end.
     """
-    return results(**{f"{prefix}{i}": arrow for i, arrow in enumerate(arrows)})
+    return results(**{f"{prefix}{i}": var for i, var in enumerate(vars)})
 
 
-def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Arrow]]) -> Graph:
+def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Var]]) -> Graph:
     """
     Convenience function for creating a subgraph, for use in an operator like If or Loop.
     However, for those operators one may prefer to use alternative constructors like ``xif`` or ``xloop``
@@ -464,14 +464,14 @@ def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Arrow]]) -> Grap
     types
         A list of argument types for the subgraph.
     fun
-        A function taking as many Arrow arguments as the length of `types`, and returning the results of the subgraph.
+        A function taking as many Var arguments as the length of `types`, and returning the results of the subgraph.
     Returns
     -------
     Graph
         Graph with results based on the return value of `fun`.
     """
     ins = enum_arguments(*types)
-    for arrow in ins:
-        arrow._rename(None)
+    for var in ins:
+        var._rename(None)
     outs = fun(*ins)
     return enum_results(*outs).with_arguments(*ins)._with_constructor(fun)

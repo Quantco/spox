@@ -9,13 +9,13 @@ from typing import Dict, List, Optional, Sequence, Set, Tuple
 
 import onnx
 
-from ._arrow import Arrow
-from ._arrowfields import ArrowFields, NoArrows
 from ._attributes import AttrString, AttrTensor, AttrType
 from ._node import Node, OpType
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
+from ._var import Var
+from ._varfields import NoVars, VarFields
 
 
 class _InternalNode(Node, ABC):
@@ -42,11 +42,11 @@ class Argument(_InternalNode):
         name: Optional[AttrString] = None
         default: Optional[AttrTensor] = None
 
-    class Outputs(ArrowFields):
-        arg: Arrow
+    class Outputs(VarFields):
+        arg: Var
 
     attrs: Attributes
-    inputs: NoArrows
+    inputs: NoVars
     outputs: Outputs
 
     def post_init(self, **kwargs):
@@ -59,9 +59,9 @@ class Argument(_InternalNode):
 
     def update_metadata(self, opset_req, initializers, functions):
         super().update_metadata(opset_req, initializers, functions)
-        arrow = self.outputs.arg
+        var = self.outputs.arg
         if self.attrs.default is not None:
-            initializers[arrow] = self.attrs.default.value
+            initializers[var] = self.attrs.default.value
 
     def to_onnx(
         self, scope: "Scope", doc_string: Optional[str] = None, build_subgraph=None
@@ -79,11 +79,11 @@ class _Initializer(_InternalNode):
         type: AttrType
         default: AttrTensor
 
-    class Outputs(ArrowFields):
-        arg: Arrow
+    class Outputs(VarFields):
+        arg: Var
 
     attrs: Attributes
-    inputs: NoArrows
+    inputs: NoVars
     outputs: Outputs
 
     def infer_output_types(self) -> Dict[str, Type]:
@@ -109,11 +109,11 @@ class _Embedded(_InternalNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        inputs: Sequence[Arrow]
+    class Inputs(VarFields):
+        inputs: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        outputs: Sequence[Arrow]
+    class Outputs(VarFields):
+        outputs: Sequence[Var]
 
     op_type = OpType("Embedded", "spox.internal", 0)
 
@@ -134,10 +134,10 @@ class _Embedded(_InternalNode):
 
     def infer_output_types(self) -> Dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
-        for i, arrow in zip(self.graph.input, self.inputs.inputs):
-            if arrow.type is not None and not (arrow.type <= Type._from_onnx(i.type)):
+        for i, var in zip(self.graph.input, self.inputs.inputs):
+            if var.type is not None and not (var.type <= Type._from_onnx(i.type)):
                 raise TypeError(
-                    f"Embedded model input {i.name} type {arrow.type} "
+                    f"Embedded model input {i.name} type {var.type} "
                     f"does not match expected {Type._from_onnx(i.type)}."
                 )
         # If we do, take the types as declared in the model
@@ -158,11 +158,11 @@ class _Embedded(_InternalNode):
         )
         # Apply a trivial renaming of inputs
         nodes = []
-        for i, arrow in zip(graph.input, self.inputs.inputs):
+        for i, var in zip(graph.input, self.inputs.inputs):
             nodes.append(
                 onnx.helper.make_node(
                     "Identity",
-                    [scope.arrow[arrow]],
+                    [scope.var[var]],
                     [i.name],
                     f"{i.name}__Identity_rename",
                 )
@@ -170,12 +170,12 @@ class _Embedded(_InternalNode):
         # Then graph body
         nodes.extend(graph.node)
         # Finish with output renaming
-        for o, arrow in zip(graph.output, self.outputs.outputs):
+        for o, var in zip(graph.output, self.outputs.outputs):
             nodes.append(
                 onnx.helper.make_node(
                     "Identity",
                     [o.name],
-                    [scope.arrow[arrow]],
+                    [scope.var[var]],
                     f"{o.name}__Identity_rename",
                 )
             )
@@ -193,11 +193,11 @@ def embedded(model: onnx.ModelProto):
     Returns
     -------
     Callable
-        When called with keyword arguments (model input names into arrows), applies the
-        embedded model and returns a dictionary of the outputs (model output names into arrows).
+        When called with keyword arguments (model input names into vars), applies the
+        embedded model and returns a dictionary of the outputs (model output names into vars).
     """
 
-    def embed(**inputs: Arrow) -> Dict[str, Arrow]:
+    def embed(**inputs: Var) -> Dict[str, Var]:
         """Local function created by ``embedded``. Call with expected embedded model inputs to get model outputs."""
         assert set(inputs) == {i.name for i in model.graph.input}
         node = _Embedded(
@@ -206,9 +206,7 @@ def embedded(model: onnx.ModelProto):
             out_variadic=len(model.graph.output),
             model=model,
         )
-        return {
-            o.name: arrow for o, arrow in zip(model.graph.output, node.outputs.outputs)
-        }
+        return {o.name: var for o, var in zip(model.graph.output, node.outputs.outputs)}
 
     return embed
 
@@ -220,11 +218,11 @@ class _Introduce(_InternalNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        inputs: Sequence[Arrow]
+    class Inputs(VarFields):
+        inputs: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        outputs: Sequence[Arrow]
+    class Outputs(VarFields):
+        outputs: Sequence[Var]
 
     op_type = OpType("Introduce", "spox.internal", 0)
 
@@ -256,8 +254,8 @@ class _Introduce(_InternalNode):
             protos.append(
                 onnx.helper.make_node(
                     "Identity",
-                    [scope.arrow[self.inputs.inputs[i]]],
-                    [scope.arrow[self.outputs.outputs[i]]],
+                    [scope.var[self.inputs.inputs[i]]],
+                    [scope.var[self.outputs.outputs[i]]],
                     name + f"_id{i}" if name is not None else None,
                     doc_string,
                 )
@@ -265,9 +263,9 @@ class _Introduce(_InternalNode):
         return protos
 
 
-def intro(*args: Arrow) -> Arrow:
+def intro(*args: Var) -> Var:
     """
-    Evaluates all the argument Arrows in the current scope, and returns the last.
+    Evaluates all the argument Vars in the current scope, and returns the last.
 
     Useful when a temporary value is reused in multiple subgraphs, but it should be defined in the outer scope.
     Otherwise, every subgraph will expand its definition inside it.
@@ -285,34 +283,34 @@ def intro(*args: Arrow) -> Arrow:
     return intros(*args)[-1]
 
 
-def intros(*args: Arrow) -> Sequence[Arrow]:
+def intros(*args: Var) -> Sequence[Var]:
     """Same as intro, but all the arguments are returned & made dependent on each other, and not only the last."""
     return _Introduce(
         None, _Introduce.Inputs(args), out_variadic=len(args)
     ).outputs.outputs
 
 
-def unsafe_cast(x: Arrow, typ: Type) -> Arrow:
+def unsafe_cast(x: Var, typ: Type) -> Var:
     """
-    Creates a new arrow with the type forcefully set to ``typ``.
+    Creates a new var with the type forcefully set to ``typ``.
 
-    Assumes that the real type of the Arrow is indeed compatible with ``shape`` (for example it was unknown).
+    Assumes that the real type of the Var is indeed compatible with ``shape`` (for example it was unknown).
 
     The function is meant for use when type inference failed, and it has to be overriden to avoid further failures.
 
-    If you want to properly change an Arrow's type, use an operator like Cast, CastLike, Optional, etc.
+    If you want to properly change a ``Var``'s type, use an operator like Cast, CastLike, Optional, etc.
 
     Parameters
     ----------
     x
-        Arrow to retype.
+        Var to retype.
     typ
         Target type - must be a constant.
 
     Returns
     -------
-    Arrow
-        Arrow with the type reset to whatever was given.
+    Var
+        Var with the type reset to whatever was given.
     """
     y = intro(x)
     y.type = typ
@@ -320,25 +318,25 @@ def unsafe_cast(x: Arrow, typ: Type) -> Arrow:
     return y
 
 
-def unsafe_reshape(x: Arrow, shape: SimpleShape) -> Arrow:
+def unsafe_reshape(x: Var, shape: SimpleShape) -> Var:
     """
-    Creates a new arrow with the shape forcefully set to ``shape`` (like an unsafe cast).
+    Creates a new var with the shape forcefully set to ``shape`` (like an unsafe cast).
 
-    Assumes that the real shape of the Arrow is indeed compatible with ``shape`` (for example it was unknown).
+    Assumes that the real shape of the Var is indeed compatible with ``shape`` (for example it was unknown).
 
     The function is meant for use when shape inference failed, and it has to be overriden to avoid failures.
 
-    If you want to reshape to the shape of another arrow, use a Reshape operator.
+    If you want to reshape to the shape of another var, use a Reshape operator.
 
     Parameters
     ----------
     x
-        Arrow to reshape.
+        Var to reshape.
     shape
         Target shape - must be a constant.
     Returns
     -------
-    Arrow
-        Arrow with the same Tensor element type, but different shape.
+    Var
+        Var with the same Tensor element type, but different shape.
     """
     return unsafe_cast(x, Tensor(x.unwrap_tensor().dtype, shape))

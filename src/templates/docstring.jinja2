@@ -44,9 +44,9 @@ Returns
     {% endif %}
 {{ param.name }} : {%
        if is_variadic(param) %}
-Sequence[Arrow]
+Sequence[Var]
     {% else %}
-Arrow
+Var
     {% endif %}
 {% filter indent(width=4) %}
     Type {{ param.typeStr }}.

@@ -1,8 +1,8 @@
 def xif(
-    cond: Arrow, /, *,
-    else_branch: Iterable[Arrow], then_branch: Iterable[Arrow],
+    cond: Var, /, *,
+    else_branch: Iterable[Var], then_branch: Iterable[Var],
     to_outer_scope: bool = False
-) -> Sequence[Arrow]:
+) -> Sequence[Var]:
     """
     Simplified constructor for the If operator.
 

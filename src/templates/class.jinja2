@@ -9,39 +9,39 @@ class _{{ schema.name }}(StandardNode):
     {% endif %}  
 
 {% if schema.inputs %}
-    class Inputs(ArrowFields):
+    class Inputs(VarFields):
     {% for input in schema.inputs %}
         {{ input.name }}: {%
             if is_optional(input)
-                %}Optional[Arrow]{%
+                %}Optional[Var]{%
             elif is_variadic(input)
-                %}Sequence[Arrow]{%
+                %}Sequence[Var]{%
             else
-                %}Arrow{%
+                %}Var{%
             endif %}
 
     {% endfor %}
 
 {% else %}
-    Inputs = NoArrows
+    Inputs = NoVars
 
 {% endif %}
 {% if schema.outputs %}
-    class Outputs(ArrowFields):
+    class Outputs(VarFields):
     {% for output in schema.outputs %}
         {{ output.name }}: {%
             if is_optional(output)
-                %}Optional[Arrow]{%
+                %}Optional[Var]{%
             elif is_variadic(output)
-                %}Sequence[Arrow]{%
+                %}Sequence[Var]{%
             else
-                %}Arrow{%
+                %}Var{%
             endif %}
 
     {% endfor %}
 
 {% else %}
-    Outputs = NoArrows
+    Outputs = NoVars
 
 {% endif %}
 {% if type_inference %}
@@ -61,7 +61,7 @@ class _{{ schema.name }}(StandardNode):
     op_type = OpType("{{ schema.name }}", "{{ schema.domain }}", {{ schema.since_version }})
 
     attrs: Attributes
-    inputs: {% if schema.inputs %}Inputs{% else %}NoArrows{% endif %}
+    inputs: {% if schema.inputs %}Inputs{% else %}NoVars{% endif %}
 
-    outputs: {% if schema.outputs %}Outputs{% else %}NoArrows{% endif %}
+    outputs: {% if schema.outputs %}Outputs{% else %}NoVars{% endif %}
 

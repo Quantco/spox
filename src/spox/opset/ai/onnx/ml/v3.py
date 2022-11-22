@@ -17,8 +17,6 @@ from typing import cast as typing_cast  # noqa: F401
 import numpy as np  # noqa: F401
 import numpy.typing as npt  # noqa: F401
 
-from spox._arrow import Arrow, _nil, result_type  # noqa: F401
-from spox._arrowfields import ArrowFields, NoArrows  # noqa: F401
 from spox._attributes import (
     AttrDtype,
     AttrFloat32,
@@ -37,6 +35,8 @@ from spox._node import OpType  # noqa: F401
 from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
 from spox._type_system import Tensor, Type
+from spox._var import Var, _nil, result_type  # noqa: F401
+from spox._varfields import NoVars, VarFields  # noqa: F401
 
 
 class _ArrayFeatureExtractor(StandardNode):
@@ -44,12 +44,12 @@ class _ArrayFeatureExtractor(StandardNode):
     class Attributes:
         pass
 
-    class Inputs(ArrowFields):
-        X: Arrow
-        Y: Arrow
+    class Inputs(VarFields):
+        X: Var
+        Y: Var
 
-    class Outputs(ArrowFields):
-        Z: Arrow
+    class Outputs(VarFields):
+        Z: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -78,11 +78,11 @@ class _Binarizer(StandardNode):
     class Attributes:
         threshold: AttrFloat32
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
@@ -101,11 +101,11 @@ class _CastMap(StandardNode):
         map_form: AttrString
         max_map: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("CastMap", "ai.onnx.ml", 1)
 
@@ -122,11 +122,11 @@ class _CategoryMapper(StandardNode):
         default_int64: AttrInt64
         default_string: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -153,11 +153,11 @@ class _DictVectorizer(StandardNode):
         int64_vocabulary: Optional[AttrInt64s]
         string_vocabulary: Optional[AttrStrings]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("DictVectorizer", "ai.onnx.ml", 1)
 
@@ -171,11 +171,11 @@ class _FeatureVectorizer(StandardNode):
     class Attributes:
         inputdimensions: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Sequence[Arrow]
+    class Inputs(VarFields):
+        X: Sequence[Var]
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("FeatureVectorizer", "ai.onnx.ml", 1)
 
@@ -192,11 +192,11 @@ class _Imputer(StandardNode):
         replaced_value_float: AttrFloat32
         replaced_value_int64: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -253,11 +253,11 @@ class _LabelEncoder(StandardNode):
         values_int64s: Optional[AttrInt64s]
         values_strings: Optional[AttrStrings]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("LabelEncoder", "ai.onnx.ml", 2)
 
@@ -276,12 +276,12 @@ class _LinearClassifier(StandardNode):
         multi_class: AttrInt64
         post_transform: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
-        Z: Arrow
+    class Outputs(VarFields):
+        Y: Var
+        Z: Var
 
     op_type = OpType("LinearClassifier", "ai.onnx.ml", 1)
 
@@ -298,11 +298,11 @@ class _LinearRegressor(StandardNode):
         post_transform: AttrString
         targets: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -330,11 +330,11 @@ class _Normalizer(StandardNode):
     class Attributes:
         norm: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if self.attrs.norm.value not in ("MAX", "L1", "L2"):
@@ -357,11 +357,11 @@ class _OneHotEncoder(StandardNode):
         cats_strings: Optional[AttrStrings]
         zeros: AttrInt64
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -399,12 +399,12 @@ class _SVMClassifier(StandardNode):
         support_vectors: Optional[AttrFloat32s]
         vectors_per_class: Optional[AttrInt64s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
-        Z: Arrow
+    class Outputs(VarFields):
+        Y: Var
+        Z: Var
 
     op_type = OpType("SVMClassifier", "ai.onnx.ml", 1)
 
@@ -425,11 +425,11 @@ class _SVMRegressor(StandardNode):
         rho: Optional[AttrFloat32s]
         support_vectors: Optional[AttrFloat32s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     op_type = OpType("SVMRegressor", "ai.onnx.ml", 1)
 
@@ -444,11 +444,11 @@ class _Scaler(StandardNode):
         offset: Optional[AttrFloat32s]
         scale: Optional[AttrFloat32s]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if self.inputs.X.type is None:
@@ -501,12 +501,12 @@ class _TreeEnsembleClassifier(StandardNode):
         nodes_values_as_tensor: Optional[AttrTensor]
         post_transform: AttrString
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
-        Z: Arrow
+    class Outputs(VarFields):
+        Y: Var
+        Z: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         e = (
@@ -564,11 +564,11 @@ class _TreeEnsembleRegressor(StandardNode):
         target_weights: Optional[AttrFloat32s]
         target_weights_as_tensor: Optional[AttrTensor]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Y: Arrow
+    class Outputs(VarFields):
+        Y: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
         if self.inputs.fully_typed:
@@ -596,11 +596,11 @@ class _ZipMap(StandardNode):
         classlabels_int64s: Optional[AttrInt64s]
         classlabels_strings: Optional[AttrStrings]
 
-    class Inputs(ArrowFields):
-        X: Arrow
+    class Inputs(VarFields):
+        X: Var
 
-    class Outputs(ArrowFields):
-        Z: Arrow
+    class Outputs(VarFields):
+        Z: Var
 
     op_type = OpType("ZipMap", "ai.onnx.ml", 1)
 
@@ -610,9 +610,9 @@ class _ZipMap(StandardNode):
 
 
 def array_feature_extractor(
-    X: Arrow,
-    Y: Arrow,
-) -> Arrow:
+    X: Var,
+    Y: Var,
+) -> Var:
     r"""
     Select elements of the input tensor based on the indices passed.
 
@@ -630,7 +630,7 @@ def array_feature_extractor(
 
     Returns
     =======
-    Z : Arrow
+    Z : Var
         Type T.
         Selected output data as an array
 
@@ -651,10 +651,10 @@ def array_feature_extractor(
 
 
 def binarizer(
-    X: Arrow,
+    X: Var,
     *,
     threshold: float = 0.0,
-) -> Arrow:
+) -> Var:
     r"""
     Maps the values of the input tensor to either 0 or 1, element-wise, based on the outcome of a comparison against a threshold value.
 
@@ -669,7 +669,7 @@ def binarizer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Binarized output data
 
@@ -691,12 +691,12 @@ def binarizer(
 
 
 def cast_map(
-    X: Arrow,
+    X: Var,
     *,
     cast_to: str = "TO_FLOAT",
     map_form: str = "DENSE",
     max_map: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Converts a map to a tensor.
 
@@ -725,7 +725,7 @@ def cast_map(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         A tensor representing the same data as the input map, ordered by their keys
 
@@ -750,13 +750,13 @@ def cast_map(
 
 
 def category_mapper(
-    X: Arrow,
+    X: Var,
     *,
     cats_int64s: Optional[Iterable[int]] = None,
     cats_strings: Optional[Iterable[str]] = None,
     default_int64: int = -1,
     default_string: str = "_Unused",
-) -> Arrow:
+) -> Var:
     r"""
     Converts strings to integers and vice versa.
 
@@ -797,7 +797,7 @@ def category_mapper(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         Output data. If strings are input, the output values are integers, and vice versa.
 
@@ -823,11 +823,11 @@ def category_mapper(
 
 
 def dict_vectorizer(
-    X: Arrow,
+    X: Var,
     *,
     int64_vocabulary: Optional[Iterable[int]] = None,
     string_vocabulary: Optional[Iterable[str]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Uses an index mapping to convert a dictionary to an array.
 
@@ -865,7 +865,7 @@ def dict_vectorizer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         A 1-D tensor holding values from the input dictionary.
 
@@ -893,10 +893,10 @@ def dict_vectorizer(
 
 
 def feature_vectorizer(
-    X: Sequence[Arrow],
+    X: Sequence[Var],
     *,
     inputdimensions: Optional[Iterable[int]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Concatenates input tensors into one continuous output.
 
@@ -918,7 +918,7 @@ def feature_vectorizer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(float).
         The output array, elements ordered as the inputs.
 
@@ -942,13 +942,13 @@ def feature_vectorizer(
 
 
 def imputer(
-    X: Arrow,
+    X: Var,
     *,
     imputed_value_floats: Optional[Iterable[float]] = None,
     imputed_value_int64s: Optional[Iterable[int]] = None,
     replaced_value_float: float = 0.0,
     replaced_value_int64: int = 0,
-) -> Arrow:
+) -> Var:
     r"""
     Replaces inputs that equal one value with another, leaving all other elements alone.
 
@@ -987,7 +987,7 @@ def imputer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T.
         Imputed output data
 
@@ -1016,7 +1016,7 @@ def imputer(
 
 
 def label_encoder(
-    X: Arrow,
+    X: Var,
     *,
     default_float: float = -0.0,
     default_int64: int = -1,
@@ -1027,7 +1027,7 @@ def label_encoder(
     values_floats: Optional[Iterable[float]] = None,
     values_int64s: Optional[Iterable[int]] = None,
     values_strings: Optional[Iterable[str]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Maps each element in the input tensor to another value.
 
@@ -1092,7 +1092,7 @@ def label_encoder(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         Output data.
 
@@ -1127,7 +1127,7 @@ def label_encoder(
 
 
 def linear_classifier(
-    X: Arrow,
+    X: Var,
     *,
     classlabels_ints: Optional[Iterable[int]] = None,
     classlabels_strings: Optional[Iterable[str]] = None,
@@ -1167,10 +1167,10 @@ def linear_classifier(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         Classification outputs (one class per example).
-    Z : Arrow
+    Z : Var
         Type tensor(float).
         Classification scores ([N,E] - one score for each class and example
 
@@ -1202,13 +1202,13 @@ def linear_classifier(
 
 
 def linear_regressor(
-    X: Arrow,
+    X: Var,
     *,
     coefficients: Optional[Iterable[float]] = None,
     intercepts: Optional[Iterable[float]] = None,
     post_transform: str = "NONE",
     targets: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Generalized linear regression evaluation.
 
@@ -1245,7 +1245,7 @@ def linear_regressor(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(float).
         Regression outputs (one per target, per example).
 
@@ -1270,10 +1270,10 @@ def linear_regressor(
 
 
 def normalizer(
-    X: Arrow,
+    X: Var,
     *,
     norm: str = "MAX",
-) -> Arrow:
+) -> Var:
     r"""
     Normalize the input.  There are three normalization modes, which have the corresponding formulas,
         defined using element-wise infix operators '/' and '^' and tensor-wide functions 'max' and 'sum':
@@ -1309,7 +1309,7 @@ def normalizer(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(float).
         Encoded output data
 
@@ -1331,12 +1331,12 @@ def normalizer(
 
 
 def one_hot_encoder(
-    X: Arrow,
+    X: Var,
     *,
     cats_int64s: Optional[Iterable[int]] = None,
     cats_strings: Optional[Iterable[str]] = None,
     zeros: int = 1,
-) -> Arrow:
+) -> Var:
     r"""
     Replace each input element with an array of ones and zeros, where a single
         one is placed at the index of the category that was passed in. The total category count
@@ -1374,7 +1374,7 @@ def one_hot_encoder(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(float).
         Encoded output data, having one more dimension than X.
 
@@ -1398,7 +1398,7 @@ def one_hot_encoder(
 
 
 def svmclassifier(
-    X: Arrow,
+    X: Var,
     *,
     classlabels_ints: Optional[Iterable[int]] = None,
     classlabels_strings: Optional[Iterable[str]] = None,
@@ -1464,10 +1464,10 @@ def svmclassifier(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         Classification outputs (one class per example).
-    Z : Arrow
+    Z : Var
         Type tensor(float).
         Class scores (one per class per example), if prob_a and prob_b are provided they are probabilities for each class, otherwise they are raw scores.
 
@@ -1510,7 +1510,7 @@ def svmclassifier(
 
 
 def svmregressor(
-    X: Arrow,
+    X: Var,
     *,
     coefficients: Optional[Iterable[float]] = None,
     kernel_params: Optional[Iterable[float]] = None,
@@ -1520,7 +1520,7 @@ def svmregressor(
     post_transform: str = "NONE",
     rho: Optional[Iterable[float]] = None,
     support_vectors: Optional[Iterable[float]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Support Vector Machine regression prediction and one-class SVM anomaly detection.
 
@@ -1558,7 +1558,7 @@ def svmregressor(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(float).
         Regression outputs (one score per target per example).
 
@@ -1591,11 +1591,11 @@ def svmregressor(
 
 
 def scaler(
-    X: Arrow,
+    X: Var,
     *,
     offset: Optional[Iterable[float]] = None,
     scale: Optional[Iterable[float]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Rescale input data, for example to standardize features by removing the mean and scaling to unit variance.
 
@@ -1619,7 +1619,7 @@ def scaler(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(float).
         Scaled output data.
 
@@ -1642,7 +1642,7 @@ def scaler(
 
 
 def tree_ensemble_classifier(
-    X: Arrow,
+    X: Var,
     *,
     base_values: Optional[Iterable[float]] = None,
     base_values_as_tensor: Optional[np.ndarray] = None,
@@ -1766,10 +1766,10 @@ def tree_ensemble_classifier(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type T2.
         N, Top class for each point
-    Z : Arrow
+    Z : Var
         Type tensor(float).
         The class score for each class, for each point, a tensor of shape [N,E].
 
@@ -1836,7 +1836,7 @@ def tree_ensemble_classifier(
 
 
 def tree_ensemble_regressor(
-    X: Arrow,
+    X: Var,
     *,
     aggregate_function: str = "SUM",
     base_values: Optional[Iterable[float]] = None,
@@ -1859,7 +1859,7 @@ def tree_ensemble_regressor(
     target_treeids: Optional[Iterable[int]] = None,
     target_weights: Optional[Iterable[float]] = None,
     target_weights_as_tensor: Optional[np.ndarray] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Tree Ensemble regressor.  Returns the regressed values for each input in N.
 
@@ -1963,7 +1963,7 @@ def tree_ensemble_regressor(
 
     Returns
     =======
-    Y : Arrow
+    Y : Var
         Type tensor(float).
         N classes
 
@@ -2029,11 +2029,11 @@ def tree_ensemble_regressor(
 
 
 def zip_map(
-    X: Arrow,
+    X: Var,
     *,
     classlabels_int64s: Optional[Iterable[int]] = None,
     classlabels_strings: Optional[Iterable[str]] = None,
-) -> Arrow:
+) -> Var:
     r"""
     Creates a map from the input and the attributes.
 
@@ -2064,7 +2064,7 @@ def zip_map(
 
     Returns
     =======
-    Z : Arrow
+    Z : Var
         Type T.
         The output map
 

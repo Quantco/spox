@@ -1,15 +1,15 @@
 def xloop(
-    max_iter: Optional[Arrow] = None,
-    start_loop: Optional[Arrow] = None,
-    initial: Sequence[Arrow] = (),
+    max_iter: Optional[Var] = None,
+    start_loop: Optional[Var] = None,
+    initial: Sequence[Var] = (),
     *,
-    fun: Callable[..., Iterable[Arrow]],
-) -> Sequence[Arrow]:
+    fun: Callable[..., Iterable[Var]],
+) -> Sequence[Var]:
     """
     Simplified constructor for the Loop operator.
 
     Instead of a Graph this constructor takes ``fun``, which should
-    take 2+N Arrow arguments and 1+N+K Arrow results.
+    take 2+N Var arguments and 1+N+K Var results.
 
     - The first two arguments are 1-vectors for (int64) iteration and (boolean) stop condition.
     - The first result is a 1-vector (boolean) for the next stop condition.
@@ -28,6 +28,6 @@ def xloop(
         start_loop = reshape(start_loop, const([1]))
     return loop(max_iter, start_loop, initial, body=subgraph(
         typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
-        + [arrow.unwrap_type() for arrow in initial],
+        + [var.unwrap_type() for var in initial],
         fun
     ))

@@ -8,7 +8,6 @@ import onnx
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
-from ._arrow import Nothing, _nil
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
@@ -16,6 +15,7 @@ from ._shape import SimpleShape
 from ._type_inference import InferenceError
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
+from ._var import Nothing, _nil
 
 if typing.TYPE_CHECKING:
     from .graph import Graph
@@ -59,13 +59,13 @@ class StandardNode(Node):
         # Prepare names for the values in scope of the node
         scope = Scope()
         scope.node[self] = "_this_"
-        scope.arrow[_nil] = ""
-        for key, arrow in self.inputs.as_dict().items():
-            if arrow not in scope.arrow:
-                scope.arrow[arrow] = key
-        for key, arrow in self.outputs.as_dict().items():
-            if arrow not in scope.arrow:
-                scope.arrow[arrow] = key
+        scope.var[_nil] = ""
+        for key, var in self.inputs.as_dict().items():
+            if var not in scope.var:
+                scope.var[var] = key
+        for key, var in self.outputs.as_dict().items():
+            if var not in scope.var:
+                scope.var[var] = key
         # We inject the evaluated attribute values here and then substitute back
         self_attrs = self.attrs
         try:
@@ -88,32 +88,28 @@ class StandardNode(Node):
         # Create a singleton graph for type inference with our node
         # Input types
         input_info = [
-            arrow.unwrap_type()._to_onnx_value_info(key)
-            for key, arrow in self.inputs.as_dict().items()
-            if arrow
+            var.unwrap_type()._to_onnx_value_info(key)
+            for key, var in self.inputs.as_dict().items()
+            if var
         ]
 
         # Output types with placeholder empty TypeProto (or actual type if not using dummies)
-        def out_value_info(curr_key, curr_arrow):
-            if (
-                dummy_outputs
-                or curr_arrow.type is None
-                or not curr_arrow.type._is_concrete
-            ):
+        def out_value_info(curr_key, curr_var):
+            if dummy_outputs or curr_var.type is None or not curr_var.type._is_concrete:
                 return onnx.helper.make_value_info(curr_key, onnx.TypeProto())
-            return curr_arrow.unwrap_type()._to_onnx_value_info(curr_key)
+            return curr_var.unwrap_type()._to_onnx_value_info(curr_key)
 
         output_info = [
-            out_value_info(key, arrow)
-            for key, arrow in self.outputs.as_dict().items()
-            if arrow
+            out_value_info(key, var)
+            for key, var in self.outputs.as_dict().items()
+            if var
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
         initializers = [
-            from_array(arrow._value, key)
-            for key, arrow in self.inputs.as_dict().items()
-            if isinstance(arrow._value, numpy.ndarray)
+            from_array(var._value, key)
+            for key, var in self.inputs.as_dict().items()
+            if isinstance(var._value, numpy.ndarray)
         ]
         #  Graph and model
         graph = onnx.helper.make_graph(
@@ -137,7 +133,7 @@ class StandardNode(Node):
     def infer_output_types_onnx(self) -> Dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
-        if any(arrow.type is None for arrow in self.inputs.as_dict().values() if arrow):
+        if any(var.type is None for var in self.inputs.as_dict().values() if var):
             return {}
 
         model, _ = self.to_singleton_onnx_model()
@@ -167,9 +163,7 @@ class StandardNode(Node):
 
         Assumes onnxruntime was imported successfully. Does not support subgraphs.
         """
-        if any(
-            arrow and arrow._value is None for arrow in self.inputs.as_dict().values()
-        ):
+        if any(var and var._value is None for var in self.inputs.as_dict().values()):
             # Cannot do propagation when some inputs were not propagated
             return {}
         if next(iter(self.subgraphs), None) is not None:
@@ -182,13 +176,13 @@ class StandardNode(Node):
         model, scope = self.to_singleton_onnx_model(with_subgraphs=False)
         session = onnxruntime.InferenceSession(model.SerializeToString(), options)
         input_feed = {
-            scope.arrow[arrow]: _value_prop_to_ort(arrow._value)
-            for arrow in self.inputs.as_dict().values()
+            scope.var[var]: _value_prop_to_ort(var._value)
+            for var in self.inputs.as_dict().values()
         }
         # Get outputs and give a map from output field names
         output_feed = dict(zip(session.get_outputs(), session.run(None, input_feed)))
         return {
-            scope.arrow[output.name]._which_output: _value_prop_from_ort(result)
+            scope.var[output.name]._which_output: _value_prop_from_ort(result)
             for output, result in output_feed.items()
         }
 
@@ -271,7 +265,7 @@ def _value_prop_from_ort(value: Union[numpy.ndarray, list, None]):
         return [_value_prop_from_ort(elem) for elem in value]
     elif isinstance(value, numpy.ndarray):
         # This looks ridiculous, but is required to normalise numpy.longlong back into a fixed size type.
-        # ORT sometimes returns non-sized types (like longlong) and Arrow's value typecheck will fail because of it.
+        # ORT sometimes returns non-sized types (like longlong) and Var's value typecheck will fail because of it.
         # - numpy.dtype(longlong).type is longlong, but
         # - numpy.dtype(longlong) == numpy.dtype(int64), while
         # - longlong != int64

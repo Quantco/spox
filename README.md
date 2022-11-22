@@ -17,26 +17,26 @@ mamba install spox
 
 ## Introduction
 
-### Arrows
+### Vars
 
-The `Arrow` object is Spox's most prominent abstraction.
+The `Var` object is Spox's most prominent abstraction.
 It represents a lazy value (most commonly a `tensor`, but it also covers `map`, `optional` and `sequence` types) in the computational graph.
-It can be visualised as an edge outgoing from a node whereas the node represents a function with `Arrow`s as inputs and outputs.
+It can be visualised as an edge outgoing from a node whereas the node represents a function with `Var`s as inputs and outputs.
 
-Given its lazy nature, an `Arrow` object does not have a concrete value, but it does have an explicit type and an optional shape which are propagated through operations.
-For example, given `a: Arrow` and `b: Arrow`, `c: Arrow = add(a, b)` is the Arrow representing the sum of `a` and `b`.
-The type and shape information of `c` is automatically derived from the input arrows following the ONNX specifications.
-The `add` function is an _operator constructor_, which internally constructs an ONNX `Add` node and returns an Arrow representing its output.
+Given its lazy nature, a `Var` object does not have a concrete value, but it does have an explicit type and an optional shape which are propagated through operations.
+For example, given `a: Var` and `b: Var`, `c: Var = add(a, b)` is the Var representing the sum of `a` and `b`.
+The type and shape information of `c` is automatically derived from the input vars following the ONNX specifications.
+The `add` function is an _operator constructor_, which internally constructs an ONNX `Add` node and returns a Var representing its output.
 
-`Arrow`s maintain the information about their ancestry and therefore contain all the information needed to later construct the computational graph.
+`Var`s maintain the information about their ancestry and therefore contain all the information needed to later construct the computational graph.
 
 #### Operator constructors
 
 The ONNX specification differentiates between `inputs` and `attributes` which are provided to any given operation.
 The former are lazy inputs to the operation while the latter are statically known parameters (e.g. weights).
 Spox's operator constructors make the same distinction.
-Operator constructors expect `Arrow`s as `inputs` and eagerly computed values as `attributes`.
-Constructor functions always output `Arrow`s.
+Operator constructors expect `Var`s as `inputs` and eagerly computed values as `attributes`.
+Constructor functions always output `Var`s.
 
 Spox provides constructor functions for all operations defined by the ONNX specification.
 This includes the [`ai.onnx`](https://github.com/onnx/onnx/blob/main/docs/Operators.md) as well as the [`ai.onnx.ml`](https://github.com/onnx/onnx/blob/main/docs/Operators-ml.md) domain.
@@ -47,14 +47,14 @@ If a computational graph contains operations from different versions of the stan
 
 ### Graphs
 
-The starting point to construction a computational graph are the source input arrows.
-Since source inputs must be named in ONNX, it is strongly recommended to use the `spox.arguments` or `spox.arguments_dict` functions to construct these initial `Arrow`s.
-For example, `arguments(**kwargs: Type) -> Tuple[Arrow, ...]` returns source `Arrow`s of the given `Type`s and of names the same as the keys.
+The starting point to construction a computational graph are the source input vars.
+Since source inputs must be named in ONNX, it is strongly recommended to use the `spox.arguments` or `spox.arguments_dict` functions to construct these initial `Var`s.
+For example, `arguments(**kwargs: Type) -> Tuple[Var, ...]` returns source `Var`s of the given `Type`s and of names the same as the keys.
 
-To finish constructing an ONNX graph, one must also explicitly specify which `Arrow`s should be outputs of the graph.
-To this end, use the `spox.results` function. For example, `results(**kwargs: Arrow) -> Graph` returns a graph where results are the given Arrows, with the result names as in the keys.
+To finish constructing an ONNX graph, one must also explicitly specify which `Var`s should be outputs of the graph.
+To this end, use the `spox.results` function. For example, `results(**kwargs: Var) -> Graph` returns a graph where results are the given Vars, with the result names as in the keys.
 
-Importantly, all names used as `argument` and `result` names must be unique. However, the same `Arrow` may be associated to more than one output name.
+Importantly, all names used as `argument` and `result` names must be unique. However, the same `Var` may be associated to more than one output name.
 
 An `onnx.ModelProto` object may finally be build from a Spox `Graph` using the `Graph.to_onnx_model` function.
 
@@ -81,7 +81,7 @@ Vectorf32 = Tensor(numpy.float32, ('N',))
 # a, b, c are all vectors and named the same in the graph
 a, b, c = arguments(a=Vectorf32, b=Vectorf32, c=Vectorf32)
 
-# p represents the Arrow equivalent to a * b
+# p represents the Var equivalent to a * b
 p = op.mul(a, b)
 q = op.add(p, c)
 # q = op.add(op.mul(a, b), c) works exactly the same

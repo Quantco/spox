@@ -1,7 +1,7 @@
 from typing import Dict, Generic, Hashable, Optional, TypeVar, Union, overload
 
-from ._arrow import Arrow
 from ._node import Node
+from ._var import Var
 
 H = TypeVar("H", bound=Hashable)
 
@@ -14,7 +14,7 @@ class ScopeError(Exception):
 
 class ScopeSpace(Generic[H]):
     """
-    Represents the namespace of a scope for some type H, like Node or Arrow.
+    Represents the namespace of a scope for some type H, like Node or Var.
 
     Methods (and operators) on the namespace work both ways: both with names (str) and the named type (H).
     So ``__getitem__`` (``ScopeSpace[item]``) may be used for both the name of an object and the object of a name.
@@ -130,24 +130,22 @@ class Scope:
     """
     Class representing the state of an ONNX-rules scope.
 
-    Has namespaces (represented by a ScopeSpace) for Arrows and Nodes.
+    Has namespaces (represented by a ScopeSpace) for Vars and Nodes.
     """
 
-    arrow: ScopeSpace[Arrow]
+    var: ScopeSpace[Var]
     node: ScopeSpace[Node]
 
     def __init__(
         self,
-        sub_arrow: Optional[ScopeSpace[Arrow]] = None,
+        sub_var: Optional[ScopeSpace[Var]] = None,
         sub_node: Optional[ScopeSpace[Node]] = None,
         parent: Optional["Scope"] = None,
     ):
-        self.arrow = sub_arrow if sub_arrow is not None else ScopeSpace()
+        self.var = sub_var if sub_var is not None else ScopeSpace()
         self.node = sub_node if sub_node is not None else ScopeSpace()
         if parent is not None:
-            self.arrow = ScopeSpace(
-                self.arrow.name_of, self.arrow.of_name, parent=parent.arrow
-            )
+            self.var = ScopeSpace(self.var.name_of, self.var.of_name, parent=parent.var)
             self.node = ScopeSpace(
                 self.node.name_of, self.node.of_name, parent=parent.node
             )
@@ -160,8 +158,8 @@ class Scope:
             if not isinstance(key, str):
                 key, value = value, key
             assert isinstance(key, str)
-            if isinstance(value, Arrow):
-                scope.arrow[key] = value
+            if isinstance(value, Var):
+                scope.var[key] = value
             elif isinstance(value, Node):
                 scope.node[key] = value
             else:
@@ -174,7 +172,7 @@ class Scope:
 
         The node is named by the pattern ``{node.op_type.identifier}_{i}``, where ``i` is a generated index.
 
-        The arrow is named by the pattern ``{node_name}_{output_field_name}``, unless it has a ``._name`` field set.
+        The var is named by the pattern ``{node_name}_{output_field_name}``, unless it has a ``._name`` field set.
         (as arguments and results of the main graph do, for example).
 
         Parameters
@@ -182,7 +180,7 @@ class Scope:
         node
             Node to introduce in the scope.
         prefix
-            What value to prefix the node name with. If the Arrow has a predeclared name, it does not get the prefix.
+            What value to prefix the node name with. If the Var has a predeclared name, it does not get the prefix.
         force
             Whether to attempt to overwrite existing names (possibly raising a ScopeError if they were different).
             By default, this is set to True to be more strict, so we see if the scoping algorithm failed to only
@@ -193,8 +191,8 @@ class Scope:
         for field, arr in node.outputs.as_dict().items():
             if arr._name is None:
                 base = f"{self.node[node]}_{field}"
-                name = self.arrow.maybe_enum(base)
+                name = self.var.maybe_enum(base)
             else:
                 name = arr._name
-            if force or arr not in self.arrow:
-                self.arrow[arr] = name
+            if force or arr not in self.var:
+                self.var[arr] = name

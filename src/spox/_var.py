@@ -13,20 +13,20 @@ if typing.TYPE_CHECKING:
 T = TypeVar("T")
 
 
-class Arrow(Generic[T]):
+class Var(Generic[T]):
     """
     Abstraction for a single ONNX value, like a tensor, that can be passed around.
     It depends on a given output (``which``) of an operator ``op`` (represented in a ``Node``).
 
     The ``type`` is inferred and checked. If it is ``None``, it is unknown and should pass all type checks.
 
-    The ``value`` field may be propagated in case an Arrow always has a constant value.
+    The ``value`` field may be propagated in case a ``Var`` always has a constant value.
     This is useful for type & shape inference.
 
-    The state of an Arrow should not be modified, and only the ``type`` and ``value`` fields should be accessed.
+    The state of a ``Var`` should not be modified, and only the ``type`` and ``value`` fields should be accessed.
     (as ``_op`` and ``_which`` are primarily stored for building a Graph).
 
-    Should not be constructed directly - the main source of Arrows is operator constructors & ``arguments``-like.
+    Should not be constructed directly - the main source of Vars is operator constructors & ``arguments``-like.
     """
 
     type: Optional[_type_system.Type]
@@ -50,7 +50,7 @@ class Arrow(Generic[T]):
             )
 
     def _rename(self, name: Optional[str]):
-        """Mutates the internal state of the Arrow, overriding its name as given."""
+        """Mutates the internal state of the Var, overriding its name as given."""
         self._name = name
 
     @staticmethod
@@ -66,18 +66,18 @@ class Arrow(Generic[T]):
                 and Shape.from_simple(value.shape) <= type_._shape
             )
         elif isinstance(type_, _type_system.Optional):
-            return value is Nothing or Arrow._value_matches_type(value, type_.elem_type)
+            return value is Nothing or Var._value_matches_type(value, type_.elem_type)
         elif isinstance(type_, _type_system.Sequence):
             return isinstance(value, list) and all(
-                Arrow._value_matches_type(elem, type_.elem_type) for elem in value
+                Var._value_matches_type(elem, type_.elem_type) for elem in value
             )
         return True
 
     @property
     def _which_output(self) -> Optional[str]:
-        """Return the name of the output field that this arrow is stored in under ``self._op``."""
+        """Return the name of the output field that this var is stored in under ``self._op``."""
         op_outs = self._op.outputs.as_dict()
-        candidates = [key for key, arrow in op_outs.items() if arrow is self]
+        candidates = [key for key, var in op_outs.items() if var is self]
         return candidates[0] if candidates else None
 
     def __repr__(self) -> str:
@@ -87,7 +87,7 @@ class Arrow(Generic[T]):
         is_unary = len(self._op.outputs.as_dict()) <= 1
         which_repr = "->??" if which is None else (f"->{which}" if is_unary else "")
         return (
-            f"<Arrow {nm}from {op_repr}{which_repr} of {self.type}"
+            f"<Var {nm}from {op_repr}{which_repr} of {self.type}"
             f"{'' if self._value is None else ' = ' + str(self._value)}>"
         )
 
@@ -101,7 +101,7 @@ class Arrow(Generic[T]):
             If ``type`` is None.
         """
         if self.type is None:
-            raise TypeError("Cannot unwrap requested type for Arrow, as it is unknown.")
+            raise TypeError("Cannot unwrap requested type for Var, as it is unknown.")
         return self.type
 
     def unwrap_tensor(self) -> _type_system.Tensor:
@@ -115,54 +115,54 @@ class Arrow(Generic[T]):
         """
         return self.unwrap_type().unwrap_tensor()
 
-    def __add__(self, other) -> "Arrow":
-        if isinstance(other, Arrow):
+    def __add__(self, other) -> "Var":
+        if isinstance(other, Var):
             return get_default_opset().add(self, other)
         return NotImplemented
 
-    def __sub__(self, other) -> "Arrow":
-        if isinstance(other, Arrow):
+    def __sub__(self, other) -> "Var":
+        if isinstance(other, Var):
             return get_default_opset().sub(self, other)
         return NotImplemented
 
-    def __mul__(self, other) -> "Arrow":
-        if isinstance(other, Arrow):
+    def __mul__(self, other) -> "Var":
+        if isinstance(other, Var):
             return get_default_opset().mul(self, other)
         return NotImplemented
 
-    def __truediv__(self, other) -> "Arrow":
-        if isinstance(other, Arrow):
+    def __truediv__(self, other) -> "Var":
+        if isinstance(other, Var):
             return get_default_opset().div(self, other)
         return NotImplemented
 
-    def __and__(self, other) -> "Arrow":
-        if isinstance(other, Arrow):
+    def __and__(self, other) -> "Var":
+        if isinstance(other, Var):
             return get_default_opset().and_(self, other)
         return NotImplemented
 
-    def __or__(self, other) -> "Arrow":
-        if isinstance(other, Arrow):
+    def __or__(self, other) -> "Var":
+        if isinstance(other, Var):
             return get_default_opset().or_(self, other)
         return NotImplemented
 
-    def __xor__(self, other) -> "Arrow":
-        if isinstance(other, Arrow):
+    def __xor__(self, other) -> "Var":
+        if isinstance(other, Var):
             return get_default_opset().xor(self, other)
         return NotImplemented
 
-    def __invert__(self) -> "Arrow":
+    def __invert__(self) -> "Var":
         return get_default_opset().not_(self)
 
 
-class _NilArrow(Arrow):
+class _NilVar(Var):
     """
-    Singleton Arrow which indicates lack of a value.
+    Singleton Var which indicates lack of a value.
 
     This is used as internally some operator inputs may be None, and it is convenient for the rest of the code
-    to actually access Arrows instead of special-casing None in every instance.
+    to actually access Vars instead of special-casing None in every instance.
 
     Operator inputs/outputs that are unspecified in the ONNX representation receive an empty string as the name of the
-    value. This is what a NilArrow gets converted to.
+    value. This is what a NilVar gets converted to.
     """
 
     def __init__(self):  # noqa
@@ -174,7 +174,7 @@ class _NilArrow(Arrow):
         return hash(repr(self))
 
     def __eq__(self, other) -> bool:
-        return isinstance(other, _NilArrow)
+        return isinstance(other, _NilVar)
 
     def __repr__(self) -> str:
         return "<nil>"
@@ -183,19 +183,19 @@ class _NilArrow(Arrow):
         return False
 
 
-# Singleton instance for _NilArrow.
-_nil = _NilArrow()
-del _NilArrow.__init__
+# Singleton instance for _NilVar.
+_nil = _NilVar()
+del _NilVar.__init__
 
 
 def result_type(
-    *types: Union[Arrow, numpy.generic, int, float]
+    *types: Union[Var, numpy.generic, int, float]
 ) -> typing.Type[numpy.generic]:
     """Promote type for all given element types/values using ``np.result_type``."""
     return numpy.dtype(
         numpy.result_type(
             *(
-                typ.unwrap_tensor().dtype if isinstance(typ, Arrow) else typ
+                typ.unwrap_tensor().dtype if isinstance(typ, Var) else typ
                 for typ in types
             )
         )
@@ -203,7 +203,7 @@ def result_type(
 
 
 class _NothingType:
-    """Singleton class representing an Arrow's value which is optional and missing - rather than lack of value."""
+    """Singleton class representing a ``Var``'s value which is optional and missing - rather than lack of value."""
 
     def __repr__(self) -> str:
         return "Nothing"
