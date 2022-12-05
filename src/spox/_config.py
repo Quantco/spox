@@ -19,14 +19,14 @@ def get_default_opset():
     global _default_opset
     if _default_opset is MISSING:
         try:
-            import spox.opset.ai.onnx.v17 as op
+            import spox.opset.ai.onnx.v17 as op  # type: ignore
         except ImportError as e:
             print(
                 f"Failed to import default_opset (ai.onnx@17): {str(e)}\nIs there a cyclic dependency?",
                 file=sys.stderr,
             )
-            op = None
-        _default_opset = op
+            op = None  # type: ignore
+        _default_opset = op  # type: ignore
     return _default_opset
 
 

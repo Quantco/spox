@@ -7,7 +7,7 @@ repos:
           - --safe
           - --target-version=py38
   - repo: https://github.com/Quantco/pre-commit-mirrors-flake8
-    rev: 5.0.4
+    rev: 6.0.0
     hooks:
       - id: flake8-conda
   - repo: https://github.com/Quantco/pre-commit-mirrors-isort
@@ -16,12 +16,12 @@ repos:
       - id: isort-conda
         additional_dependencies: [-c, conda-forge, toml=0.10.2]
   - repo: https://github.com/Quantco/pre-commit-mirrors-mypy
-    rev: "0.982"
+    rev: "0.991"
     hooks:
       - id: mypy-conda
         additional_dependencies: [-c, conda-forge, types-setuptools]
   - repo: https://github.com/Quantco/pre-commit-mirrors-pyupgrade
-    rev: 3.2.0
+    rev: 3.2.3
     hooks:
       - id: pyupgrade-conda
         args:

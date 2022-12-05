@@ -47,7 +47,7 @@ class OpType:
 
 
 class Dataclass(Protocol):
-    __dataclass_fields__: Dict
+    __dataclass_fields__: ClassVar[Dict]
 
 
 class Node(ABC):
