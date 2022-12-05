@@ -24,7 +24,7 @@ from ._traverse import iterative_dfs
 from ._var import Var, _nil
 
 if TYPE_CHECKING:
-    from .graph import Graph
+    from ._graph import Graph
 
 T = TypeVar("T")
 

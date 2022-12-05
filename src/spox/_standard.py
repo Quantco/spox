@@ -18,7 +18,7 @@ from ._utils import from_array
 from ._var import Nothing, _nil
 
 if typing.TYPE_CHECKING:
-    from .graph import Graph
+    from ._graph import Graph
 
 try:
     import onnxruntime
