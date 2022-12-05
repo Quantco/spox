@@ -1,5 +1,5 @@
 import typing
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Optional, Union
 
 import numpy
 
@@ -10,10 +10,8 @@ from ._shape import Shape
 if typing.TYPE_CHECKING:
     from ._node import Node
 
-T = TypeVar("T")
 
-
-class Var(Generic[T]):
+class Var:
     """
     Abstraction for a single ONNX value, like a tensor, that can be passed around.
     It depends on a given output (``which``) of an operator ``op`` (represented in a ``Node``).

@@ -11,15 +11,14 @@ class VarFields(Fields[Var]):
     Overrides parent methods to support variadics. Example definitions:
 
     ``
-    class MyFieldsOpt(VarFields, Generic[T1, T2]):
-        # Generics are interpreted by the type_inference system
-        A: Var[T1]
-        B: Optional[Var[T1]]  # marks an optional field of T1
+    class MyFieldsOpt(VarFields):
+        A: Var
+        B: Optional[Var]
 
-    class MyFieldsVar(VarFields, Generic[T1, T2]):
-        A: Var[T1]
-        B: Var[T2]
-        C: Sequence[Var[T2]]  # marks a variadic field of T2
+    class MyFieldsVar(VarFields):
+        A: Var
+        B: Var
+        C: Sequence[Var]
     ``
 
     Note that, especially for VarFields, the order has significance.
