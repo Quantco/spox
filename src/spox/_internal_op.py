@@ -239,9 +239,10 @@ class _Introduce(_InternalNode):
 
     @property
     def opset_req(self) -> Set[Tuple[str, int]]:
-        from ._config import get_default_opset
-
-        return {("", get_default_opset()._OPERATORS["Identity"].op_type.version)}
+        # This is a questionable default (this operator is used in every graph),
+        # but there's not much else to do that doesn't lower-bound the version in an implicit way.
+        # The assumption here is that no-one will need graphs which only have Introduce nodes.
+        return {("", 1)}
 
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
