@@ -1,5 +1,5 @@
 import typing
-from typing import Any, Callable, Dict, Generic, List, Tuple, TypeVar, get_type_hints
+from typing import Any, Dict, Generic, List, Tuple, TypeVar, get_type_hints
 
 T_co = TypeVar("T_co", covariant=True)
 FieldsT = TypeVar("FieldsT", bound="Fields")
@@ -66,6 +66,10 @@ class Fields(Generic[T_co]):
         """
         return {name: getattr(self, name) for name in self.get_kwargs()}
 
+    def unpack(self) -> Tuple:
+        """Convenience function for unpacking fields into a tuple of all the base fields."""
+        return tuple(getattr(self, name) for name in self.get_kwargs())
+
     def __init__(self, *args, **kwargs):
         kwargs = self.move_args_into_kwargs(*args, **kwargs)
         if set(kwargs) > set(self.get_kwargs()):
@@ -80,20 +84,3 @@ class Fields(Generic[T_co]):
             )
         for name, value in list(kwargs.items()):
             setattr(self, name, value)
-
-    def imap(self: FieldsT, fun: Callable[[int, str, Any], Any]) -> FieldsT:
-        """Map over all fields with a function like `(index, key, value) -> new_value`."""
-        return type(self)(
-            **{
-                key: fun(i, key, var)
-                for i, (key, var) in enumerate(self.as_dict().items())
-            }
-        )
-
-    def map(self: FieldsT, fun: Callable[[str, Any], Any]) -> FieldsT:
-        """Map over all fields with a function like `(key, value) -> new_value`."""
-        return self.imap(lambda _, name, var: fun(name, var))
-
-    def unpack(self) -> Tuple:
-        """Convenience function for unpacking fields into a tuple of all the base fields."""
-        return tuple(getattr(self, name) for name in self.get_kwargs())
