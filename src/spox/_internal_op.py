@@ -263,31 +263,35 @@ class _Introduce(_InternalNode):
         return protos
 
 
-def intro(*args: Var) -> Var:
-    """
-    Evaluates all the argument Vars in the current scope, and returns the last.
-
-    Useful when a temporary value is reused in multiple subgraphs, but it should be defined in the outer scope.
-    Otherwise, every subgraph will expand its definition inside it.
-
-    The basis of this introduction is that we introduce a dependency of the returned output on all inputs.
-    Hence, if we use this in a context like ``intro(x, ..., operator(..., subgraph(...x...)))``
-    then ``operator`` explicitly depends on ``x``, bringing it into ``operator``'s scope. Then ``subgraph``
-    is built afterwards and may access ``x``. Without this, it is not guaranteed that ``x`` does not only
-    end up in the inner scope of the ``subgraph``. This may be desirable to prevent a behaviour where ``x``
-    is a complicated done that is reused (and hence inlined) in many subgraphs, but never in the main scope.
-
-    This is often also used as a variadic Identity, which is sometimes needed for ONNX IR or to simplify behaviour.
-    As such, it brings in ``config.default_opset``.
-    """
-    return intros(*args)[-1]
-
-
 def intros(*args: Var) -> Sequence[Var]:
-    """Same as intro, but all the arguments are returned & made dependent on each other, and not only the last."""
+    """
+    Internal identity operator with variadic arguments.
+
+    As the underlying node is dependent on all passed arguments, this can be used to enforce specific evaluation order
+    for values used in a subgraph - but otherwise ignored.
+
+    For example, in a Loop whose body uses some ``x``, ``x`` may only be built within the subgraph and hence
+    reevaluated on every iteration. If the Loop is wrapped with ``intro(x, loop(...))`` it is guaranteed that ``x``
+    will be built outside of Loop's subgraph. It can be said that ``x`` was `introduced` in the outer scope.
+
+    Parameters
+    ----------
+    args
+        Vars to introduce in current scope.
+
+    Returns
+    -------
+    Sequence[Var]
+        Vars of the same value as ``args``, but with a shared dependency.
+    """
     return _Introduce(
         None, _Introduce.Inputs(args), out_variadic=len(args)
     ).outputs.outputs
+
+
+def intro(*args: Var) -> Var:
+    """Introduces arguments like ``intros``, but only returns the last."""
+    return intros(*args)[-1]
 
 
 def unsafe_cast(x: Var, typ: Type) -> Var:
