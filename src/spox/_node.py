@@ -14,14 +14,12 @@ from typing import (
     Sequence,
     Set,
     Tuple,
-    TypeVar,
     Union,
 )
 
 import onnx
 
 from ._attributes import AttrGraph
-from ._fields import Fields
 from ._type_inference import _warn_unknown_types
 from ._type_system import Type
 from ._var import Var
@@ -30,11 +28,6 @@ from ._varfields import VarFields
 if typing.TYPE_CHECKING:
     from ._graph import Graph
     from ._scope import Scope
-
-
-FieldsT = TypeVar("FieldsT", bound=Fields)
-NodeT = TypeVar("NodeT", bound="Node")
-T = TypeVar("T")
 
 
 @dataclass(frozen=True)
