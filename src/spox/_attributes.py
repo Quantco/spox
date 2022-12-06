@@ -34,7 +34,7 @@ class Attr(ABC, Generic[T]):
         return self._value
 
     def _validate(self):
-        if not self._to_onnx("dummy").type == self._attribute_proto_type_int:
+        if self._to_onnx("dummy").type != self._attribute_proto_type_int:
             raise TypeError(
                 f"Unable to instantiate `{type(self).__name__}` with value of type `{type(self.value).__name__}`."
             )
