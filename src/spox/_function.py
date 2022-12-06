@@ -1,7 +1,7 @@
 import inspect
 import itertools
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, TypeVar
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, Tuple, TypeVar
 
 import onnx
 from typing_extensions import TypeAlias
@@ -93,16 +93,17 @@ class Function(_InternalNode):
         functions.append(self)
         functions.extend(self.func_graph._get_build_result().functions)
 
-    def to_onnx_function(self) -> onnx.FunctionProto:
+    def to_onnx_function(
+        self, *, extra_opset_req: Iterable[Tuple[str, int]] = ()
+    ) -> onnx.FunctionProto:
         """
         Translate self into an ONNX FunctionProto, based on the ``func_*`` attributes set when this operator
         was constructed. It is later assumed that all functions sharing the ``op_type`` have the same body.
 
         Functions do not attempt to adapt nodes into homogenous versions.
         """
-        node_protos = itertools.chain.from_iterable(
-            self.func_graph._get_build_result().nodes.values()
-        )
+        graph = self.func_graph.with_opset(*extra_opset_req)
+        node_protos = itertools.chain.from_iterable(graph.get_adapted_nodes().values())
         return onnx.helper.make_function(
             self.op_type.domain,
             self.op_type.identifier,
@@ -111,7 +112,7 @@ class Function(_InternalNode):
             list(node_protos),
             [
                 onnx.helper.make_operatorsetid(domain, version)
-                for domain, version in self.func_graph.get_opsets().items()
+                for domain, version in graph.get_opsets().items()
             ],
             self.Attributes.__dataclass_fields__.keys(),
         )

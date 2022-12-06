@@ -380,9 +380,19 @@ class Graph:
         -------
             Translation of this Graph into an ONNX ModelProto object.
         """
+
+        opsets = self.get_opsets()
+        if not opsets:
+            raise RuntimeError(
+                "ONNX often does not properly handle graphs which are empty, "
+                "and this one seems to contain no opset imports (only internal nodes?). "
+                "Consider adding an Identity operator if you are just copying arguments."
+            )
+
+        opset_req: list[tuple[str, int]] = list(opsets.items())  # type: ignore
         function_protos: Dict[Tuple[str, str], onnx.FunctionProto] = {}
         for fun in self._get_build_result().functions:
-            proto = fun.to_onnx_function()
+            proto = fun.to_onnx_function(extra_opset_req=opset_req)
             if proto is None:
                 continue
             key = (proto.domain, proto.name)
@@ -393,13 +403,6 @@ class Graph:
                 )
             function_protos[key] = proto
 
-        if not self.get_opsets():
-            raise RuntimeError(
-                "ONNX often does not properly handle graphs which are empty, "
-                "and this one seems to contain no opset imports (only internal nodes?). "
-                "Consider adding an Identity operator if you are just copying arguments."
-            )
-
         model = onnx.helper.make_model(
             self.to_onnx(concrete=concrete),
             producer_name=producer_name,
@@ -407,7 +410,7 @@ class Graph:
             functions=list(function_protos.values()),
             opset_imports=[
                 onnx.helper.make_operatorsetid(domain, version)
-                for domain, version in self.get_opsets().items()
+                for domain, version in opsets.items()
             ],
         )
 
