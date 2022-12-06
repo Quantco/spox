@@ -1,7 +1,7 @@
 import inspect
 import itertools
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, Optional, TypeVar
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, TypeVar
 
 import onnx
 from typing_extensions import TypeAlias
@@ -93,7 +93,7 @@ class Function(_InternalNode):
         functions.append(self)
         functions.extend(self.func_graph._get_build_result().functions)
 
-    def to_onnx_function(self, name: Optional[str] = None) -> onnx.FunctionProto:
+    def to_onnx_function(self) -> onnx.FunctionProto:
         """
         Translate self into an ONNX FunctionProto, based on the ``func_*`` attributes set when this operator
         was constructed. It is later assumed that all functions sharing the ``op_type`` have the same body.
@@ -155,7 +155,6 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
     Keep in mind that functions with the same name & domain will be merged together.
     Versions should only be specified when it's necessary for the output to have this information
     (e.g. providing functions for existing operators).
-
     """
 
     def inner(fun: ConstructorT) -> ConstructorT:
