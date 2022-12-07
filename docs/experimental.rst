@@ -17,7 +17,7 @@ As Spox makes rich usage of operator schemas, not every protobuf node is allowed
     - An ``op_type`` class attribute should be defined as ``OpType(operator_name, operator_domain, domain_version)``.
     - Optionally, ``attrs``, ``inputs``, and ``outputs`` members should be typed as the defined classes.
     - May override ``Node.infer_output_types`` and ``Node.propagate_values`` that may use ``attrs`` and ``inputs`` and return a dictionary from output names into types/values.
-        - Lack of a type inference routine may prove detrimental, as no graph without a declared output type may be constructed.
+        - Lack of a type inference routine may prove detrimental, as no graph without a declared output type may be built.
         - Value propagation is a routine helper to type inference which essentially performs constant folding – if all input values are known, then the output values should be computed.
 - Operator constructor
     - Though an operator constructor is essentially a convenience function, it is recommended that it creates *(and does not return)* an instance of the operator class, unwrapping the required ``outputs`` member.
@@ -41,7 +41,7 @@ More advanced functions (for example including attributes) are implemented like 
 Eager execution
 ===============
 
-The ``spox._standard._USE_ONNXRUNTIME_VALUE_PROP`` flag when set to ``True`` enables using the ONNX runtime to run value propagation.
+The ``spox._standard._USE_ONNXRUNTIME_VALUE_PROP`` flag when set to ``True`` enables using the ONNX Runtime to run value propagation.
 
 This essentially means that all expressions which are constant (there are no arguments/runtime-dependent values) may be computed. For example, ``op.add(op.const(2), op.const(2))._value == numpy.array(2)``.
 
