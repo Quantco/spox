@@ -9,8 +9,9 @@ Spox:
 
 - Follows the ONNX standard while also allowing Pythonic code.
 - Enforces the strong type system of ONNX, by raising errors as early possible and with Python tracebacks, performing type checking eagerly.
-- Exposes standard operators that all have typed Python signatures and docstrings.
-- Supports most features of ONNX: subgraphs (control flow), other types than tensors,
+- Supports the entirety of modern opsets, including features like subgraphs (control flow) and types other than tensors (like sequences and optionals).
+  - Standard operators all have typed Python signatures and docstrings!
+- Is designed for predictability allowing simple composition, so no mutable types are passed around. If it's legal Python, it should be legal ONNX.
 
 ## Installation
 
