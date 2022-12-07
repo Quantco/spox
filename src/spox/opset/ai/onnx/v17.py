@@ -7082,7 +7082,7 @@ def instance_normalization(
     ).outputs.output
 
 
-def is_inf(
+def isinf(
     X: Var,
     *,
     detect_negative: int = 1,
@@ -8063,7 +8063,7 @@ def mat_mul_integer(
     ).outputs.Y
 
 
-def maximum(
+def max(
     data_0: Sequence[Var],
 ) -> Var:
     r"""
@@ -8466,7 +8466,7 @@ def mel_weight_matrix(
     ).outputs.output
 
 
-def minimum(
+def min(
     data_0: Sequence[Var],
 ) -> Var:
     r"""
@@ -13815,7 +13815,7 @@ _CONSTRUCTORS = {
     "Identity": identity,
     "If": if_,
     "InstanceNormalization": instance_normalization,
-    "IsInf": is_inf,
+    "IsInf": isinf,
     "IsNaN": isnan,
     "LRN": lrn,
     "LSTM": lstm,
@@ -13830,14 +13830,14 @@ _CONSTRUCTORS = {
     "LpPool": lp_pool,
     "MatMul": mat_mul,
     "MatMulInteger": mat_mul_integer,
-    "Max": maximum,
+    "Max": max,
     "MaxPool": max_pool,
     "MaxRoiPool": max_roi_pool,
     "MaxUnpool": max_unpool,
     "Mean": mean,
     "MeanVarianceNormalization": mean_variance_normalization,
     "MelWeightMatrix": mel_weight_matrix,
-    "Min": minimum,
+    "Min": min,
     "Mod": mod,
     "Mul": mul,
     "Multinomial": multinomial,

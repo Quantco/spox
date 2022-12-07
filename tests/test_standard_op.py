@@ -14,7 +14,7 @@ def test_basic_inference(op):
 def test_variadic_input_inference(op):
     typ = Tensor(numpy.float32, ("N",))
     a, b, c = arguments(a=typ, b=typ, c=typ)
-    assert op.maximum([a, b, c]).type == typ
+    assert op.max([a, b, c]).type == typ
 
 
 def test_variadic_output_inference(op):

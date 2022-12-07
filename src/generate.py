@@ -17,9 +17,8 @@ CONSTRUCTOR_RENAMES = {
     "or": "or_",
     "and": "and_",
     "not": "not_",
-    "max": "maximum",
-    "min": "minimum",
     "is_na_n": "isnan",
+    "is_inf": "isinf",
 }
 
 # Mapping from attribute proto type integers to Python types.
