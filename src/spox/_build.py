@@ -305,8 +305,8 @@ class Builder:
         - We may recursively descend into subgraphs found by traversing this graph. This will serve to update the scope
           tree and satisfy that subgraph's constraints.
 
-        The worst-case complexity is O(ns^2) = O(n^3), as pessimistically an LCA constraint update may be O(s), and
-        all n nodes may be visited in all s scopes.
+        Pessimistically an LCA constraint update may be O(s), and all n nodes may be visited in all s scopes.
+        However, a node may be pushed up in the scope tree at most O(s) time, so the complexity is amortised to O(ns).
         """
 
         def satisfy_constraints(node):
@@ -373,21 +373,25 @@ class Builder:
                 graph_scope_set[graph], key=lambda nd: topo_index[nd]
             )
 
-    def get_build_subgraph_callback(self, scope: Scope) -> Callable:
+    def get_build_subgraph_callback(
+        self, scope: Scope
+    ) -> Tuple[Callable, Set[Tuple[str, int]]]:
         """Create a callback for building subgraphs for ``Node.to_onnx``."""
 
-        def build_subgraph(subgraph_of: Node, key: str, subgraph: "Graph"):
-            subgraph_name = scope.node[subgraph_of] + f"_{key}"
-            proto = (
-                subgraph.with_name(subgraph_name)
-                ._inject_build_result(
-                    self.compile_graph(subgraph, scope, subgraph_name + "__")
-                )
-                .to_onnx()
-            )
-            return proto
+        subgraph_opset_req = set()  # Keeps track of all opset imports in subgraphs
 
-        return build_subgraph
+        def build_subgraph(
+            subgraph_of: Node, key: str, subgraph: "Graph"
+        ) -> onnx.GraphProto:
+            nonlocal subgraph_opset_req
+            subgraph_name = scope.node[subgraph_of] + f"_{key}"
+            subgraph = subgraph.with_name(subgraph_name)._inject_build_result(
+                self.compile_graph(subgraph, scope, subgraph_name + "__")
+            )
+            subgraph_opset_req |= subgraph._get_build_result().opset_req
+            return subgraph.to_onnx()
+
+        return build_subgraph, subgraph_opset_req
 
     def compile_graph(
         self, graph: "Graph", scope: Scope, prefix: str = ""
@@ -426,7 +430,7 @@ class Builder:
             )  # Throws a ScopeError if we attempt to redeclare an argument
 
         # Build all nodes for this Graph. Also builds subgraph with a recursive call to compile_graph
-        build_subgraph = self.get_build_subgraph_callback(scope)
+        build_subgraph, subgraph_opset_req = self.get_build_subgraph_callback(scope)
         for node in self.scope_own[graph]:
             if isinstance(node, Argument):
                 continue
@@ -436,6 +440,7 @@ class Builder:
             )  # Throws a ScopeError if we attempt to redeclare a node
             # to_onnx throws ScopeErrors if it uses nodes that were not found to be in this scope (or outer)
             nodes[node] = tuple(node.to_onnx(scope, build_subgraph=build_subgraph))
+        opset_req |= subgraph_opset_req
 
         # Return results typed to what we want.
         # We use tuples here to avoid modifying this stuff by mistake down the line.

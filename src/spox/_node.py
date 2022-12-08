@@ -306,7 +306,9 @@ class Node(ABC):
         self,
         scope: "Scope",
         doc_string: Optional[str] = None,
-        build_subgraph: Optional[typing.Callable] = None,
+        build_subgraph: Optional[
+            typing.Callable[["Node", str, "Graph"], onnx.GraphProto]
+        ] = None,
     ) -> List[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""
         assert self.op_type.identifier

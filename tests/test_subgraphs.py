@@ -303,3 +303,29 @@ def test_sequence_map_for_zip_mul(op, onnx_helper):
         ),
         [numpy.array([-1]), numpy.array([0]), numpy.array([3])],
     )
+
+
+def test_graph_inherits_subgraph_opset_req(op, onnx_helper):
+    import spox.opset.ai.onnx.ml.v3 as ml
+
+    xs, ys = arguments(
+        xs=Sequence(Tensor(numpy.int64)), ys=Sequence(Tensor(numpy.int64))
+    )
+    (zs,) = op.sequence_map(
+        xs,
+        [ys],
+        body=lambda x, y: (
+            op.mul(
+                ml.label_encoder(x, keys_int64s=[1, 2, 3], values_int64s=[2, 4, 6]), y
+            ),
+        ),
+    )
+    onnx_helper.assert_close(
+        onnx_helper.run(
+            results(zs=zs),
+            "zs",
+            xs=[numpy.array([1]), numpy.array([2]), numpy.array([3])],
+            ys=[numpy.array([-1]), numpy.array([0]), numpy.array([1])],
+        ),
+        [numpy.array([-2]), numpy.array([0]), numpy.array([6])],
+    )
