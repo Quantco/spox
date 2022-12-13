@@ -1,8 +1,8 @@
-=====================
-Experimental features
-=====================
+=================
+Unstable features
+=================
 
-.. warning:: This part of Spox is experimental and the mentioned features are subject to change. However, they may prove useful when performing more advanced programming with ONNX and their capability should not change significantly in the future.
+.. warning:: This part of Spox is unstable and the mentioned features are subject to change. However, they may prove useful when performing more advanced programming with ONNX and their capability should not change significantly in the future.
 
 Custom operators
 ================
