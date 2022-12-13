@@ -3,17 +3,13 @@ Welcome to Spox's documentation!
 
 Spox is a Python framework for constructing `ONNX <https://github.com/onnx/onnx/>`_ computational graphs.
 
-If you would like to learn more in-depth about how Spox works and how you use it, refer to the guides:
-
 .. toctree::
    :maxdepth: 2
-   :caption: Guide
+   :caption: Guides
 
    overview
    operators
    unstable
-
-Additionally, you may find the listings for public functions and classes below:
 
 .. toctree::
    :maxdepth: 1

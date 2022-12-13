@@ -1,6 +1,6 @@
-=================
-Operators in Spox
-=================
+=========
+Operators
+=========
 
 Introduction
 ============
