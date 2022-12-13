@@ -28,15 +28,12 @@ def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
     Raises
     ------
     TypeError:
-        If ``dtype_like`` has no corresponding tensor type in the ONNX
-        standard.
+        If ``dtype_like`` has no corresponding tensor type in the ONNX standard.
     """
-    err_msg = f"{dtype_like} has no corresponding tensor type in the ONNX standard."
-    if dtype_like is None:
-        # Numpy defaults implicitly to float64. I don't think we want
-        # to do the same?
+    err_msg = f"{dtype_like} is not a valid ONNX tensor element type."
+    if dtype_like is None:  # numpy would default to float64
         raise TypeError(err_msg)
-    # normalize string data types
+    # normalize in the case of aliases like ``long`` which are missing in the lookup
     dtype = np.dtype(np.dtype(dtype_like).type)
     try:
         return _DTYPE_TO_TENSOR_TYPE[dtype]
@@ -45,7 +42,7 @@ def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
 
 
 def from_array(arr: np.ndarray, name: Optional[str] = None) -> TensorProto:
-    """Convert the given ``numpy.array`` into a ``onnx.TensorProto``.
+    """Convert the given ``numpy.array`` into an ``onnx.TensorProto``.
 
     As it may be useful to name the TensorProto (e.g. in
     initializers), there is a ``name`` parameter.

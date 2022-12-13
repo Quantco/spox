@@ -91,27 +91,40 @@ class Var:
 
     def unwrap_type(self) -> _type_system.Type:
         """
-        Convenience function that raises if the type is unknown and returns it otherwise.
-
+        Returns
+        -------
+        _type_system.Type
+            The type of the Var.
         Raises
         -------
         TypeError
-            If ``type`` is None.
+            If ``type is None`` (the type of this ``Var`` is unknown).
         """
         if self.type is None:
             raise TypeError("Cannot unwrap requested type for Var, as it is unknown.")
         return self.type
 
     def unwrap_tensor(self) -> _type_system.Tensor:
-        """
-        Convenience function that raises if the type is not a Tensor and returns one otherwise.
-
-        Raises
-        -------
-        TypeError
-            If ``type`` is not a Tensor.
-        """
+        """Equivalent to ``self.unwrap_type().unwrap_tensor()``."""
         return self.unwrap_type().unwrap_tensor()
+
+    def unwrap_sequence(self) -> _type_system.Sequence:
+        """Equivalent to ``self.unwrap_type().unwrap_sequence()``."""
+        return self.unwrap_type().unwrap_sequence()
+
+    def unwrap_optional(self) -> _type_system.Optional:
+        """Equivalent to ``self.unwrap_type().unwrap_optional()``."""
+        return self.unwrap_type().unwrap_optional()
+
+    @property
+    def shape(self) -> _type_system.SimpleShape:
+        """Equivalent to ``self.unwrap_tensor().shape``."""
+        return self.unwrap_tensor().shape
+
+    @property
+    def dtype(self) -> _type_system.SimpleShape:
+        """Equivalent to ``self.unwrap_tensor().dtype``."""
+        return self.unwrap_tensor().shape
 
     def __add__(self, other) -> "Var":
         if isinstance(other, Var):

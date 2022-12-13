@@ -21,13 +21,13 @@ class Type:
     Additionally, ``Types`` support membership testing (with <= and >=).
     One ``Type`` is a subset of another ``Type`` if both of the
     following is true:
-    - They have identical ``dtype``s
-    - The former's shape is equal or less specific (but compatible)
-      with the shape of the latter
 
-    >>> Tensor(numpy.int64, (1, 2, 3)) <= Tensor(numpy.int64)
+    - They have identical ``dtype``s
+    - The former's shape is equal to or less specific than (but compatible) the shape of the latter
+
+    >>> Tensor(np.int64, (1, 2, 3)) <= Tensor(np.int64)
     True
-    >>> Tensor(numpy.int64, (1, 2, 3)) <= Tensor(numpy.int32)
+    >>> Tensor(np.int64, (1, 2, 3)) <= Tensor(np.int32)
     False
     """
 
@@ -83,16 +83,44 @@ class Type:
         Returns
         -------
         Tensor
-            If this Type is a Tensor, this function returns `self`.
+            ``self``, unless this Type is not a Tensor.
         Raises
         ------
         TypeError
             If the type isn't a Tensor.
         """
         if not isinstance(self, Tensor):
-            raise TypeError(
-                f"Cannot unwrap requested Tensor type, as it is not a Tensor: {self}"
-            )
+            raise TypeError(f"Cannot unwrap requested Tensor type from {self}")
+        return self
+
+    def unwrap_sequence(self) -> "Sequence":
+        """
+        Returns
+        -------
+        Sequence
+            ``self``, unless this Type is not a Sequence.
+        Raises
+        ------
+        TypeError
+            If the type isn't a Sequence.
+        """
+        if not isinstance(self, Sequence):
+            raise TypeError(f"Cannot unwrap requested Sequence type from {self}")
+        return self
+
+    def unwrap_optional(self) -> "Optional":
+        """
+        Returns
+        -------
+        Optional
+            ``self``, unless this Type is not an Optional.
+        Raises
+        ------
+        TypeError
+            If the type isn't an Optional.
+        """
+        if not isinstance(self, Optional):
+            raise TypeError(f"Cannot unwrap requested Optional type from {self}")
         return self
 
     def _to_onnx(self) -> onnx.TypeProto:
@@ -133,10 +161,17 @@ class Tensor(Type):
     """
     Represents a ``Tensor`` of given ``dtype`` and ``shape``.
 
-    Numpy scalar types (``numpy.generic``) are used to store the element types.
+    The ``dtype`` describes the element type of the ``Tensor``.
+    It must correspond to an allowed ONNX tensor element type.
 
-    The ``shape`` may be passed in as a simple tuple of integers
-    (constants), strings (parameters) and Nones (unknown values).
+    A shape is denoted with a tuple (simplified) format, where each element describes the respective axis.
+    The types used may be:
+
+    - An ``int`` denoting a statically known length
+    - A ``str`` denoting a named runtime-dependent length
+    - ``None`` representing any length.
+
+    The ``shape`` may also be ``None`` if the rank of the ``Tensor`` is unknown.
 
     If you want to specify that dimensions will be equal, you can use the same parameter strings.
     However, this is not very strictly enforced.
@@ -176,17 +211,15 @@ class Tensor(Type):
 
     @property
     def shape(self) -> SimpleShape:
-        """Return the shape of this tensor if it is known.
+        """
+        Return the shape of this tensor in a simplified/tuple format (as used by the ``onnx`` module).
+        Each element of the ``SimpleShape`` tuple denotes information about the respective axis.
 
-        If the rank of the tensor is unknown ``None`` is returned,
-        otherwise a tuple is returned. Each element of the tuple
-        denotes information about the length of that dimension and may
-        be:
-
-            - An ``int`` denoting a statically known length
-            - A ``str`` denoting a named, runtime dependent length
-            - ``None`` representing an unknown dynamic length.
-
+        Returns
+        -------
+        SimpleShape
+            The shape of this Tensor. If it is unknown, ``None`` is returned,
+            otherwise it is a tuple describing each dimension.
         """
         return self._shape.to_simple()
 
@@ -203,7 +236,7 @@ class Tensor(Type):
         return self
 
     def __repr__(self):
-        return f"{type(self).__name__}(elem_type={self._elem_type.__name__}, shape={self.shape})"
+        return f"{type(self).__name__}(dtype={self._elem_type.__name__}, shape={self.shape})"
 
     def __str__(self):
         dims = self.shape
