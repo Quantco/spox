@@ -186,7 +186,7 @@ def get_constructor_return(schema: onnx.defs.OpSchema) -> str:
     if not schema.outputs:
         return "None"
     if len(schema.outputs) > 1:
-        return f"_{schema.name}.Outputs"
+        return f"Tuple[{', '.join('Sequence[Var]' if is_variadic(out) else 'Var' for out in schema.outputs)}]"
     (out,) = schema.outputs
     if is_variadic(out):
         return "Sequence[Var]"

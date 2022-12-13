@@ -90,6 +90,9 @@ class Fields(Generic[T_co]):
         """Convenience function for unpacking fields into a tuple of all the base fields."""
         return tuple(getattr(self, name) for name in self.get_kwargs())
 
+    def _unpack_to_any(self) -> Any:
+        return self.unpack()
+
     def __init__(self, *args, **kwargs):
         kwargs = self.move_args_into_kwargs(*args, **kwargs)
         if set(kwargs) > set(self.get_kwargs()):

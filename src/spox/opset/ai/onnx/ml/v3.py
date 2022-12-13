@@ -1135,7 +1135,7 @@ def linear_classifier(
     intercepts: Optional[Iterable[float]] = None,
     multi_class: int = 0,
     post_transform: str = "NONE",
-) -> _LinearClassifier.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Linear classifier
 
@@ -1198,7 +1198,7 @@ def linear_classifier(
         _LinearClassifier.Inputs(
             X=X,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def linear_regressor(
@@ -1411,7 +1411,7 @@ def svmclassifier(
     rho: Optional[Iterable[float]] = None,
     support_vectors: Optional[Iterable[float]] = None,
     vectors_per_class: Optional[Iterable[int]] = None,
-) -> _SVMClassifier.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Support Vector Machine classifier
 
@@ -1506,7 +1506,7 @@ def svmclassifier(
         _SVMClassifier.Inputs(
             X=X,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def svmregressor(
@@ -1665,7 +1665,7 @@ def tree_ensemble_classifier(
     nodes_values: Optional[Iterable[float]] = None,
     nodes_values_as_tensor: Optional[np.ndarray] = None,
     post_transform: str = "NONE",
-) -> _TreeEnsembleClassifier.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Tree Ensemble classifier. Returns the top class for each of N inputs.
 
@@ -1832,7 +1832,7 @@ def tree_ensemble_classifier(
         _TreeEnsembleClassifier.Inputs(
             X=X,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def tree_ensemble_regressor(

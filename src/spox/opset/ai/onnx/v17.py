@@ -4112,7 +4112,7 @@ def batch_normalization(
     epsilon: float = 9.999999747378752e-06,
     momentum: float = 0.8999999761581421,
     training_mode: int = 0,
-) -> _BatchNormalization.Outputs:
+) -> Tuple[Var, Var, Var]:
     r"""
     Carries out batch normalization as described in the paper
     https://arxiv.org/abs/1502.03167. Depending on the mode it is being run,
@@ -4207,7 +4207,7 @@ def batch_normalization(
             input_mean=input_mean,
             input_var=input_var,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def bernoulli(
@@ -5470,7 +5470,7 @@ def dropout(
     training_mode: Optional[Var] = None,
     *,
     seed: Optional[int] = None,
-) -> _Dropout.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Dropout takes an input floating-point tensor, an optional input ratio (floating-point scalar) and an optional input training_mode (boolean scalar). It produces two tensor outputs,
     output (floating-point tensor) and mask (optional `Tensor<bool>`). If `training_mode` is true then the output Y will be a random dropout;
@@ -5527,12 +5527,12 @@ def dropout(
             ratio=ratio,
             training_mode=training_mode,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def dynamic_quantize_linear(
     x: Var,
-) -> _DynamicQuantizeLinear.Outputs:
+) -> Tuple[Var, Var, Var]:
     r"""
     A Function to fuse calculation for Scale, Zero Point and FP32->8Bit convertion of FP32 Input data.
     Outputs Scale, ZeroPoint and Quantized Input for a given FP32 Input.
@@ -5588,7 +5588,7 @@ def dynamic_quantize_linear(
         _DynamicQuantizeLinear.Inputs(
             x=x,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def einsum(
@@ -5986,7 +5986,7 @@ def gru(
     hidden_size: Optional[int] = None,
     layout: int = 0,
     linear_before_reset: int = 0,
-) -> _GRU.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Computes an one-layer GRU. This operator is usually supported via some custom
     implementation such as CuDNN.
@@ -6112,7 +6112,7 @@ def gru(
             sequence_lens=sequence_lens,
             initial_h=initial_h,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def gather(
@@ -7242,7 +7242,7 @@ def lstm(
     hidden_size: Optional[int] = None,
     input_forget: int = 0,
     layout: int = 0,
-) -> _LSTM.Outputs:
+) -> Tuple[Var, Var, Var]:
     r"""
     Computes an one-layer LSTM. This operator is usually supported via some
     custom implementation such as CuDNN.
@@ -7383,7 +7383,7 @@ def lstm(
             initial_c=initial_c,
             P=P,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def layer_normalization(
@@ -7394,7 +7394,7 @@ def layer_normalization(
     axis: int = -1,
     epsilon: float = 9.999999747378752e-06,
     stash_type: int = 1,
-) -> _LayerNormalization.Outputs:
+) -> Tuple[Var, Var, Var]:
     r"""
     This is layer normalization defined in ONNX as function.
           The overall computation can be split into two stages.
@@ -7488,7 +7488,7 @@ def layer_normalization(
             Scale=Scale,
             B=B,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def leaky_relu(
@@ -8108,7 +8108,7 @@ def max_pool(
     pads: Optional[Iterable[int]] = None,
     storage_order: int = 0,
     strides: Optional[Iterable[int]] = None,
-) -> _MaxPool.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     MaxPool consumes an input tensor X and applies max pooling across
      the tensor according to kernel sizes, stride sizes, and pad lengths.
@@ -8194,7 +8194,7 @@ def max_pool(
         _MaxPool.Inputs(
             X=X,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def max_roi_pool(
@@ -9605,7 +9605,7 @@ def rnn(
     direction: str = "forward",
     hidden_size: Optional[int] = None,
     layout: int = 0,
-) -> _RNN.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Computes an one-layer simple RNN. This operator is usually supported
     via some custom implementation such as CuDNN.
@@ -9721,7 +9721,7 @@ def rnn(
             sequence_lens=sequence_lens,
             initial_h=initial_h,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def random_normal(
@@ -12294,7 +12294,7 @@ def softmax_cross_entropy_loss(
     *,
     ignore_index: Optional[int] = None,
     reduction: str = "mean",
-) -> _SoftmaxCrossEntropyLoss.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Loss function that measures the softmax cross entropy
     between 'scores' and 'labels'.
@@ -12368,7 +12368,7 @@ def softmax_cross_entropy_loss(
             labels=labels,
             weights=weights,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def softplus(
@@ -13065,7 +13065,7 @@ def top_k(
     axis: int = -1,
     largest: int = 1,
     sorted: int = 1,
-) -> _TopK.Outputs:
+) -> Tuple[Var, Var]:
     r"""
     Retrieve the top-K largest or smallest elements along a specified axis. Given an input tensor of
     shape [a_1, a_2, ..., a_n, r] and integer argument k, return two outputs:
@@ -13125,7 +13125,7 @@ def top_k(
             X=X,
             K=K,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def transpose(
@@ -13231,7 +13231,7 @@ def unique(
     *,
     axis: Optional[int] = None,
     sorted: int = 1,
-) -> _Unique.Outputs:
+) -> Tuple[Var, Var, Var, Var]:
     r"""
     Find the unique elements of a tensor. When an optional attribute 'axis' is provided, unique subtensors sliced along the 'axis' are returned.
     Otherwise the input tensor is flattened and unique values of the flattened tensor are returned.
@@ -13336,7 +13336,7 @@ def unique(
         _Unique.Inputs(
             X=X,
         ),
-    ).outputs
+    ).outputs._unpack_to_any()
 
 
 def unsqueeze(

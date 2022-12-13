@@ -47,3 +47,12 @@ def test_inference_validation_fails(op):
     a, b = arguments(a=Tensor(numpy.float32, (2,)), b=Tensor(numpy.float64, (2,)))
     with pytest.raises(InferenceError):
         op.add(a, b)
+
+
+def test_multiple_outputs(op):
+    x, k = arguments(
+        a=Tensor(numpy.float32, ("N", "M", "K")), b=Tensor(numpy.int64, (1,))
+    )
+    values, indices = op.top_k(x, k)
+    assert values.type <= Tensor(numpy.float32, ("N", "M", None))
+    assert indices.type <= Tensor(numpy.int64, ("N", "M", None))

@@ -29,4 +29,5 @@ if schema.outputs and is_variadic(schema.outputs[-1])
 endif %}).outputs{%
 if schema.outputs | length <= 1
     %}.{{ schema.outputs[0].name }}{%
+else %}._unpack_to_any(){%
 endif %}
