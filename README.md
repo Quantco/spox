@@ -28,13 +28,13 @@ conda install spox
 
 ## Getting started
 
-In Spox, most of the time you'll be working with `Var` objects - variables. You either create them yourself as arguments for a model, or received from another source - for example when you're writing a converter in another library.
+In Spox, most of the time you'll be working with `Var` objects - **variables**. You either create them yourself as arguments for a model, or receive them from another source, for example when you're writing a converter in another library.
 
-You may print out the `Var` to learn a bit more about it, for example to see its `Var.type`.
+You may print out the `Var` or check its `Var.type` to learn a bit more about it.
 
-To perform operations on a `Var`, use an opset module like `spox.opset.ai.onnx.v17` or `spox.opset.ai.onnx.ml.v3` - which correspond to `ai.onnx@3` and `ai.onnx.ml@17`, the standard opsets. These are generated for you in Spox to import as required.
+To perform operations on a `Var`, use an _opset_ (operator set) module like `spox.opset.ai.onnx.v17` or `spox.opset.ai.onnx.ml.v3` - which correspond to `ai.onnx@3` and `ai.onnx.ml@17`, the standard opsets. These are pre-generated for you and you may import them as required.
 
-For instance, you could write a function that given two variables returns their [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean):
+For instance, using the default opset you could write a function that given two variables returns their [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean):
 
 ```python
 from spox import Var
@@ -46,8 +46,10 @@ def geometric_mean(x: Var, y: Var) -> Var:
     )
 ```
 
-Since ONNX is tensor-oriented, this code assumes that `x` and `y` are floating point tensors with matching (broadcastable) shapes, and the geometric mean is computed elementwise for non-scalars. You may learn more about what types are acceptable for given operators by checking their docstring.
+Since ONNX is tensor-oriented, this code assumes that `x` and `y` are floating point tensors with matching (broadcastable) shapes, and the geometric mean is computed elementwise. You may learn more about what types and shapes are acceptable for given operators by checking their docstring.
 
-Performing operations on Variables creates further Variables which keep track of what computation has been performed. If an operation is determined to be illegal (for example due to mismatching types/shapes), an exception will be immediately raised by Spox.
+Performing operations on Variables creates further Variables, all of which keep track of what computation has been performed so far. If an operation is determined to be illegal (for example due to mismatching types/shapes), an exception will be immediately raised by Spox.
 
 When you're done you may build an `onnx.ModelProto` - the model protobuf, which is the ONNX program representation. This may also already be done for you if you're writing a component of a library using Spox. Afterwards you may use an ONNX runtime/backend to execute the model with some inputs, for example the mainline [ONNX Runtime](https://github.com/microsoft/onnxruntime).
+
+You can learn more about Spox in the documentation linked at the top of the readme.
