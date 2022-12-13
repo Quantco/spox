@@ -25,3 +25,29 @@ Spox is published on conda-forge and can be installed as expected:
 ```bash
 conda install spox
 ```
+
+## Getting started
+
+In Spox, most of the time you'll be working with `Var` objects - variables. You either create them yourself as arguments for a model, or received from another source - for example when you're writing a converter in another library.
+
+You may print out the `Var` to learn a bit more about it, for example to see its `Var.type`.
+
+To perform operations on a `Var`, use an opset module like `spox.opset.ai.onnx.v17` or `spox.opset.ai.onnx.ml.v3` - which correspond to `ai.onnx@3` and `ai.onnx.ml@17`, the standard opsets. These are generated for you in Spox to import as required.
+
+For instance, you could write a function that given two variables returns their [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean):
+
+```python
+from spox import Var
+from spox.opset.ai.onnx import v17 as op
+
+def geometric_mean(x: Var, y: Var) -> Var:
+    return op.sqrt(
+      op.mul(x, y)
+    )
+```
+
+Since ONNX is tensor-oriented, this code assumes that `x` and `y` are floating point tensors with matching (broadcastable) shapes, and the geometric mean is computed elementwise for non-scalars. You may learn more about what types are acceptable for given operators by checking their docstring.
+
+Performing operations on Variables creates further Variables which keep track of what computation has been performed. If an operation is determined to be illegal (for example due to mismatching types/shapes), an exception will be immediately raised by Spox.
+
+When you're done you may build an `onnx.ModelProto` - the model protobuf, which is the ONNX program representation. This may also already be done for you if you're writing a component of a library using Spox. Afterwards you may use an ONNX runtime/backend to execute the model with some inputs, for example the mainline [ONNX Runtime](https://github.com/microsoft/onnxruntime).
