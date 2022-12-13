@@ -8,11 +8,11 @@ import onnx
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
+from ._exceptions import InferenceError
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._shape import SimpleShape
-from ._type_inference import InferenceError
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._var import Nothing, _nil

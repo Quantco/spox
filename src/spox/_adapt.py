@@ -126,10 +126,11 @@ def adapt_best_effort(
 
     if proto.domain not in ("", "ai.onnx"):
         warnings.warn(
-            "Node adapters are only supported for the default domain (ai.onnx), "
-            f"but {proto.domain!r} is at {target_version} versus requested "
-            f"{source_version} of {node_names[node]}.",
-            RuntimeWarning,
+            RuntimeWarning(
+                "Node adapters are only supported for the default domain (ai.onnx), "
+                f"but {proto.domain!r} is at {target_version} versus requested "
+                f"{source_version} of {node_names[node]}.",
+            )
         )
         return None
 

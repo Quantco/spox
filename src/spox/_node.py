@@ -1,6 +1,8 @@
+import enum
 import itertools
 import traceback
 import typing
+import warnings
 from abc import ABC
 from dataclasses import dataclass
 from typing import (
@@ -20,7 +22,7 @@ from typing import (
 import onnx
 
 from ._attributes import AttrGraph
-from ._type_inference import _warn_unknown_types
+from ._exceptions import InferenceWarning
 from ._type_system import Type
 from ._var import Var
 from ._varfields import VarFields
@@ -28,6 +30,28 @@ from ._varfields import VarFields
 if typing.TYPE_CHECKING:
     from ._graph import Graph
     from ._scope import Scope
+
+
+class TypeWarningLevel(enum.IntEnum):
+    """
+    None - no type check warnings at all
+    Critical - warn on missing types (type is None)
+    Initial - warn on incomplete types, but only when all the input types were known
+    Outputs - warn on all output types that are incomplete (or missing)
+    """
+
+    NONE = 0
+    CRITICAL = 1
+    INITIAL = 2
+    OUTPUTS = 3
+
+
+_TYPE_WARNING_LEVEL: TypeWarningLevel = TypeWarningLevel.INITIAL
+
+
+def set_type_warning_level(level: TypeWarningLevel):
+    global _TYPE_WARNING_LEVEL
+    _TYPE_WARNING_LEVEL = level
 
 
 @dataclass(frozen=True)
@@ -84,7 +108,6 @@ class Node(ABC):
         infer_types: bool = True,
         propagate_values: bool = True,
         validate: bool = True,
-        warn_unknown: bool = True,
         **kwargs,
     ):
         """
@@ -107,9 +130,6 @@ class Node(ABC):
             if all inputs are constant (attributes always are).
         validate
             Whether to run some extra validation. The default validation only warns against unknown types.
-        warn_unknown
-            Whether to raise wiarnings when inputs/outputs have unknown (or non-concrete, like without shapes) types.
-            Only has an effect when ``validate`` is true.
         kwargs
             Extra arguments to pass into ``pre_init`` and ``post_init`` hooks, which may be overriden by child classes.
         """
@@ -132,7 +152,7 @@ class Node(ABC):
         # Performs type checking using known flags (like type_members)
         # and warns if type inference failed (some types are None).
         if validate:
-            self.validate_types(warn_unknown)
+            self.validate_types()
         self.post_init(**kwargs)
 
     @property
@@ -241,21 +261,51 @@ class Node(ABC):
             if var.value is None:
                 var.value = out_values.get(name)
 
-    def validate_types(self, warn_unknown: bool = True) -> None:
+    def validate_types(self) -> None:
         """Validation of types, ran at the end of Node creation."""
-        if warn_unknown:
-            for name, value_type in self._type_checks:
-                _warn_unknown_types(value_type, name, self.get_op_repr())
+        if _TYPE_WARNING_LEVEL <= TypeWarningLevel.NONE:
+            return
+        for name, value_type in self._list_types(self.outputs):
+            if value_type is None:
+                warnings.warn(
+                    InferenceWarning(
+                        f"Output type for variable {name} of {self.get_op_repr()} is missing."
+                    )
+                )
+        if _TYPE_WARNING_LEVEL <= TypeWarningLevel.CRITICAL:
+            return
+        all_inputs_concrete = True
+        for name, value_type in self._list_types(self.inputs):
+            if self._check_concrete_type(value_type) is not None:
+                all_inputs_concrete = False
+        if not all_inputs_concrete and _TYPE_WARNING_LEVEL <= TypeWarningLevel.INITIAL:
+            return
+        for name, value_type in self._list_types(self.outputs):
+            msg = self._check_concrete_type(value_type)
+            if value_type is not None and msg:
+                warnings.warn(
+                    InferenceWarning(
+                        f"Output type for variable {name} of {self.get_op_repr()} was not concrete - {msg}"
+                    ),
+                    stacklevel=4,
+                )
 
-    @property
-    def _type_checks(self):
-        for source in (self.inputs, self.outputs):
-            for name, typ in source.get_types().items():
-                var = getattr(source, name)
-                if not var:
-                    continue
-                value_type = var.type
-                yield name, value_type
+    def _check_concrete_type(self, value_type: Type) -> Optional[str]:
+        if value_type is None:
+            return "type is None"
+        try:
+            value_type._assert_concrete()
+        except Exception as e:
+            return f"{type(e).__name__}: {str(e)}"
+        return None
+
+    def _list_types(self, source):
+        for name, _ in source.get_types().items():
+            var = getattr(source, name)
+            if not var:
+                continue
+            value_type = var.type
+            yield name, value_type
 
     def _init_output_vars(
         self, types: Dict[str, Type], values: Dict[str, Any]

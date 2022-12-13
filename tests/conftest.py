@@ -8,6 +8,9 @@ import pytest
 import spox.opset.ai.onnx.v17
 from spox._debug import show_construction_tracebacks
 from spox._graph import Graph
+from spox._node import TypeWarningLevel, set_type_warning_level
+
+set_type_warning_level(TypeWarningLevel.CRITICAL)
 
 
 class ONNXRuntimeHelper:

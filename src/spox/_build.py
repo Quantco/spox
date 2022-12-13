@@ -17,6 +17,7 @@ import numpy
 import onnx
 
 from . import _function
+from ._exceptions import BuildError
 from ._internal_op import Argument, intros
 from ._node import Node
 from ._scope import Scope
@@ -46,15 +47,6 @@ class Cached(Generic[T]):
     @value.setter
     def value(self, to: T):
         self._value = to
-
-
-class BuildError(Exception):
-    """
-    Indicates an error within the build, usually meaning that Spox failed to resolve the graph structure
-    due to an internal error - for example if the implicit Node graph was tampered with or the algorithm had a fault.
-    """
-
-    pass
 
 
 @dataclass(frozen=True)

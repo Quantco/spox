@@ -1,8 +1,8 @@
 import numpy
 import pytest
 
+from spox._exceptions import InferenceError
 from spox._graph import arguments
-from spox._type_inference import InferenceError
 from spox._type_system import Tensor
 
 
