@@ -49,7 +49,8 @@ Example usage
 
 This example constructs a graph, taking floating point vectors ``a``, ``b``, ``c``, and returning ``r = a*b + c``.
 
-..  code-block:: python
+..  code:: python
+
     import numpy
     import onnxruntime
 
