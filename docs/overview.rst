@@ -1,8 +1,8 @@
 Overview
 ========
 
-Variables (``Var``)
--------------------
+Variables
+---------
 
 The ``Var`` – variable – is the most prominent abstraction in Spox.
 
