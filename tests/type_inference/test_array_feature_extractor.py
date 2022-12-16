@@ -25,10 +25,3 @@ def test_array_feature_extractor_1d_special_case():
     (x, y) = arguments(x=Tensor(np.str_, (5,)), y=Tensor(np.int64, (7,)))
     r = op_ml.array_feature_extractor(x, y)
     assert r.type == Tensor(np.str_, (1, 7))
-
-
-def test_array_feature_extractor_inference_untyped():
-    # We are not trying to do more complicated guessing in type inference for now.
-    (x, y) = arguments(x=Tensor(np.str_, None), y=Tensor(np.int64, (None, 5)))
-    r = op_ml.array_feature_extractor(x, y)
-    assert r.type is None
