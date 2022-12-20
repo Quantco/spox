@@ -314,7 +314,6 @@ def test_onnxruntime_nested_function_attr_support():
     assert (session.run(None, {"x": x})[0] == y).all()
 
 
-@pytest.mark.skip("ONNXRuntime does not fully support local functions")
 def test_minimal_wrapped(onnx_helper, wrapped_linear_graph):
     a = numpy.random.rand(8).astype(numpy.float32)
     onnx_helper.assert_close(
@@ -322,22 +321,24 @@ def test_minimal_wrapped(onnx_helper, wrapped_linear_graph):
     )
 
 
-@pytest.mark.skip("ONNXRuntime does not fully support local functions")
 def test_simple_nested_calls_session(onnx_helper, cubic_graph):
     model = cubic_graph.to_onnx_model()
     onnxruntime.InferenceSession(model.SerializeToString())
 
 
-@pytest.mark.skip("ONNXRuntime does not fully support local functions")
 def test_simple_nested_calls(onnx_helper, cubic_graph):
     a = numpy.random.rand(8).astype(numpy.float32)
+    # increase rtol due to small *non-deterministic* discrepancies
     onnx_helper.assert_close(
         onnx_helper.run(cubic_graph, "y", x=a),
         (1 + a * (2 + a * (3 + a * 5))),
+        rtol=1e-6,
     )
 
 
-@pytest.mark.skip("ONNXRuntime does not fully support local functions")
+@pytest.mark.skip(
+    "ONNX Runtime generates colliding internal identifiers for nested function nodes."
+)
 def test_nested_calls(onnx_helper, cubic_rational_graph):
     a = numpy.random.rand(8).astype(numpy.float32)
     onnx_helper.assert_close(
@@ -346,7 +347,9 @@ def test_nested_calls(onnx_helper, cubic_rational_graph):
     )
 
 
-@pytest.mark.skip("ONNXRuntime does not fully support local functions")
+@pytest.mark.skip(
+    "ONNX Runtime generates colliding internal identifiers for function nodes."
+)
 def test_complex_nested_calls(onnx_helper, cubic_rational_graph_2x3):
     a = numpy.random.rand(8).astype(numpy.float32)
     onnx_helper.assert_close(

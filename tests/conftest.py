@@ -6,11 +6,13 @@ import onnxruntime
 import pytest
 
 import spox.opset.ai.onnx.v17
+from spox import _value_prop
 from spox._debug import show_construction_tracebacks
 from spox._graph import Graph
 from spox._node import TypeWarningLevel, set_type_warning_level
 
 set_type_warning_level(TypeWarningLevel.CRITICAL)
+_value_prop.VALUE_PROP_STRICT_CHECK = True
 
 
 class ONNXRuntimeHelper:
@@ -52,18 +54,18 @@ class ONNXRuntimeHelper:
         return result
 
     @staticmethod
-    def assert_close(given, expected):
+    def assert_close(given, expected, rtol=1e-7):
         if given is None:
             assert expected is None
         else:
             if isinstance(given, list):
                 for subarray in given:
                     numpy.testing.assert_allclose(
-                        given, numpy.array(expected, dtype=subarray.dtype)
+                        given, numpy.array(expected, dtype=subarray.dtype), rtol=rtol
                     )
             else:
                 numpy.testing.assert_allclose(
-                    given, numpy.array(expected, dtype=given.dtype)
+                    given, numpy.array(expected, dtype=given.dtype), rtol=rtol
                 )
 
 

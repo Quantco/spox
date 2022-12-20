@@ -6,7 +6,7 @@ for the respective fields ``attrs/inputs/outputs`` and ``infer_output_types`` wi
 Of these, ``propagate_values`` is probably least common.
 """
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Dict
 
 import numpy
 
@@ -48,7 +48,7 @@ class Inverse(Node):
             )
         return {"Y": t}
 
-    def propagate_values(self) -> Dict[str, Any]:
+    def propagate_values(self) -> Dict[str, numpy.ndarray]:
         # This is optional and implements value propagation ('partial data propagation' in ONNX).
         # In essence constant folding carried through for purposes of type inference.
         return (

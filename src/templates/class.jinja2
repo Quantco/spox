@@ -52,7 +52,7 @@ class _{{ schema.name }}(StandardNode):
 
 {% endif %}
 {% if value_propagation %}
-    def propagate_values(self) -> Dict[str, Any]:
+    def propagate_values(self) -> Dict[str, PropValueType]:
 {% filter indent(width=8) %}
         {%+ include value_propagation %}
 {% endfilter %}

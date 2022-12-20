@@ -1,13 +1,16 @@
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
+import enum
 import typing
-from typing import Any, Dict, Tuple, Union
+from typing import Dict, Tuple
 
 import numpy
 import onnx
+import onnx.reference
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
+from . import _value_prop
 from ._exceptions import InferenceError
 from ._node import Node
 from ._schemas import SCHEMAS
@@ -15,17 +18,20 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
-from ._var import Nothing, _nil
+from ._value_prop import PropValue, PropValueType
+from ._var import _nil
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
 
-try:
-    import onnxruntime
-except ImportError:
-    onnxruntime = None  # type: ignore
 
-_USE_ONNXRUNTIME_VALUE_PROP = False
+class ValuePropBackend(enum.Enum):
+    NONE = 0
+    REFERENCE = 1
+    ONNXRUNTIME = 2
+
+
+_VALUE_PROP_BACKEND: ValuePropBackend = ValuePropBackend.REFERENCE
 
 
 class StandardNode(Node):
@@ -53,9 +59,13 @@ class StandardNode(Node):
         return self.schema.min_output
 
     def to_singleton_onnx_model(
-        self, *, dummy_outputs: bool = True, with_subgraphs: bool = True
+        self, *, dummy_outputs: bool = True, with_dummy_subgraphs: bool = True
     ) -> Tuple[onnx.ModelProto, Scope]:
-        """Build a singleton model consisting of just this StandardNode. Used for type inference."""
+        """
+        Build a singleton model consisting of just this StandardNode. Used for type inference.
+        Dummy subgraphs are typed, but have no graph body, so that we can avoid the build cost.
+        They refer to non-existent nodes, but ONNX does not raise an error (for now?).
+        """
         # Prepare names for the values in scope of the node
         scope = Scope()
         scope.node[self] = "_this_"
@@ -81,7 +91,7 @@ class StandardNode(Node):
             # Subgraphs are not fully built for possibly significant performance gains.
             # However, this uses a trick so that they type correctly.
             # This may throw if we are building ``not with_subgraphs``.
-            build_subgraph = _make_dummy_subgraph if with_subgraphs else None
+            build_subgraph = _make_dummy_subgraph if with_dummy_subgraphs else None
             (node_proto,) = self.to_onnx(scope, build_subgraph=build_subgraph)
         finally:
             self.attrs = self_attrs
@@ -107,9 +117,9 @@ class StandardNode(Node):
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
         initializers = [
-            from_array(var._value, key)
+            from_array(var._value.value, key)
             for key, var in self.inputs.as_dict().items()
-            if isinstance(var._value, numpy.ndarray)
+            if var._value and isinstance(var._value.value, numpy.ndarray)
         ]
         #  Graph and model
         graph = onnx.helper.make_graph(
@@ -157,45 +167,52 @@ class StandardNode(Node):
         # Strips some unuseful type data (unknown dimensions become global-scoped dimension parameters).
         return {key: _strip_unk_param(type_) for key, type_ in results.items()}
 
-    def propagate_values_onnx(self) -> Dict[str, Any]:
-        """
-        Perform value propagation by evaluating singleton models with ONNX Runtime.
+    def propagate_values_onnx(self) -> Dict[str, PropValueType]:
+        """Perform value propagation by evaluating singleton model.
 
-        Assumes onnxruntime was imported successfully. Does not support subgraphs.
+        The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
         """
-        if any(var and var._value is None for var in self.inputs.as_dict().values()):
-            # Cannot do propagation when some inputs were not propagated
+        # Cannot do propagation when some inputs were not propagated/inferred
+        if any(
+            var and (var.type is None or var._value is None)
+            for var in self.inputs.as_dict().values()
+        ):
             return {}
         if next(iter(self.subgraphs), None) is not None:
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
-        # Silence possible warnings during execution (especially constant folding)
-        options = onnxruntime.SessionOptions()
-        options.log_severity_level = 3
-        # Set everything up for evaluation
-        model, scope = self.to_singleton_onnx_model(with_subgraphs=False)
-        session = onnxruntime.InferenceSession(model.SerializeToString(), options)
+        if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
+            wrap_feed = PropValue.to_ref_value
+            run = _value_prop._run_reference_implementation
+            unwrap_feed = PropValue.from_ref_value
+        elif _VALUE_PROP_BACKEND == ValuePropBackend.ONNXRUNTIME:
+            wrap_feed = PropValue.to_ort_value
+            run = _value_prop._run_onnxruntime
+            unwrap_feed = PropValue.from_ort_value
+        else:
+            raise RuntimeError(
+                f"Not a valid value propagation backend: {_VALUE_PROP_BACKEND}."
+            )
+        model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False)
         input_feed = {
-            scope.var[var]: _value_prop_to_ort(var._value)
+            scope.var[var]: wrap_feed(var._value)
             for var in self.inputs.as_dict().values()
+            if var and var._value
         }
-        # Get outputs and give a map from output field names
-        output_feed = dict(zip(session.get_outputs(), session.run(None, input_feed)))
-        return {
-            scope.var[output.name]._which_output: _value_prop_from_ort(result)
-            for output, result in output_feed.items()
+        output_feed = run(model, input_feed)
+        results = {
+            scope.var[str(name)]
+            ._which_output: unwrap_feed(scope.var[str(name)].unwrap_type(), result)
+            .value
+            for name, result in output_feed.items()
         }
+        return {k: v for k, v in results.items() if k is not None}
 
     def infer_output_types(self) -> Dict[str, Type]:
         return self.infer_output_types_onnx()
 
-    def propagate_values(self) -> Dict[str, Any]:
-        if _USE_ONNXRUNTIME_VALUE_PROP:
-            if onnxruntime is None:
-                raise RuntimeError(
-                    "Cannot use ONNX Runtime value prop when ONNX Runtime isn't available "
-                    "(ImportError was raised)."
-                )
+    def propagate_values(self) -> Dict[str, PropValueType]:
+        if _VALUE_PROP_BACKEND != ValuePropBackend.NONE:
             return self.propagate_values_onnx()
         return {}
 
@@ -250,24 +267,3 @@ def _make_dummy_subgraph(_node: Node, key: str, graph: "Graph") -> onnx.GraphPro
         nodes.append(onnx.helper.make_node("Identity", [outer], [out]))
 
     return onnx.helper.make_graph(nodes, f"__dummy_{key}", inputs, outputs)
-
-
-def _value_prop_to_ort(value) -> Union[numpy.ndarray, list, None]:
-    if value is Nothing:
-        return None
-    return value
-
-
-def _value_prop_from_ort(value: Union[numpy.ndarray, list, None]):
-    if value is None:
-        return Nothing
-    elif isinstance(value, list):
-        return [_value_prop_from_ort(elem) for elem in value]
-    elif isinstance(value, numpy.ndarray):
-        # This looks ridiculous, but is required to normalise numpy.longlong back into a fixed size type.
-        # ORT sometimes returns non-sized types (like longlong) and Var's value typecheck will fail because of it.
-        # - numpy.dtype(longlong).type is longlong, but
-        # - numpy.dtype(longlong) == numpy.dtype(int64), while
-        # - longlong != int64
-        return value.astype(numpy.dtype(value.dtype.name))
-    raise TypeError(f"Cannot handle ORT value: {value}")

@@ -35,6 +35,7 @@ from spox._node import OpType  # noqa: F401
 from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
 from spox._type_system import Tensor, Type
+from spox._value_prop import PropValueType
 from spox._var import Var, _nil, result_type  # noqa: F401
 from spox._varfields import NoVars, VarFields  # noqa: F401
 
@@ -514,7 +515,7 @@ class _Constant(StandardNode):
     class Outputs(VarFields):
         output: Var
 
-    def propagate_values(self) -> Dict[str, Any]:
+    def propagate_values(self) -> Dict[str, PropValueType]:
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.__dict__.items() if v is not None
         )
@@ -4384,6 +4385,20 @@ def cast(
     User must be aware of precision loss and value change caused by range difference between two types.
     For example, a 64-bit float 3.1415926459 may be round to a 32-bit float 3.141592. Similarly, converting
     an integer 36 to Boolean may produce 1 because we truncate bits which can't be stored in the targeted type.
+    In more detail, the conversion among numerical types should follow these rules:
+    * Casting from floating point to:
+      * floating point: +/- infinity if OOR (out of range).
+      * fixed point: undefined if OOR.
+      * bool: +/- 0.0 to False; all else to True.
+    * Casting from fixed point to:
+      * floating point: +/- infinity if OOR. (+ infinity in the case of uint)
+      * fixed point: when OOR, discard higher bits and reinterpret (with respect to two's complement representation for
+    signed types). For example, 200 (int16) -> -56 (int8).
+      * bool: zero to False; nonzero to True.
+    * Casting from bool to:
+      * floating point: `{1.0, 0.0}`.
+      * fixed point: `{1, 0}`.
+      * bool: no change.
 
     Parameters
     ==========
@@ -6674,11 +6689,14 @@ def grid_sample(
     padding_mode: str = "zeros",
 ) -> Var:
     r"""
-    Given an `input` and a flow-field `grid`, computes the `output` using `input` values and pixel locations from `grid`.
-    Currently, only spatial (4-D) inputs are supported. For `input` with shape (N, C, H, W) and `grid` with shape (N, H_out, W_out, 2),
-    the `output` will have shape (N, C, H_out, W_out).
-    For each output location `output[N, C, H_out, W_out]`, the size-2 vector `grid[N, H_out, W_out]` specifies `input` pixel locations `x` and `y`,
-    which are used to interpolate the output value `output[N, C, H_out, W_out]`.
+    Given an input `X` and a flow-field `grid`, computes the output `Y` using `X` values and pixel locations from `grid`.
+    Currently, only spatial (4-D) inputs are supported. For input `X` with shape (N, C, H, W) and `grid` with shape (N, H_out, W_out, 2),
+    the output `Y` will have shape (N, C, H_out, W_out).
+    The tensor `X` contains values at centers of square pixels in a H by W 2-dimensional image.
+    The tensor `grid` describes normalized positions where the output `Y` is to be computed
+    using a specified interpolation method (the mode) and a padding mode (for grid positions falling outside the 2-dimensional image).
+    Elements in `grid[N, H_out, W_out]` are size-2 vectors specifying positions in the 2-dimensional space of `X`.
+    They are used to interpolate output values of `Y[N, C, H_out, W_out]`.
     The GridSample operator is often used in doing grid generator and sampler in the Spatial Transformer Networks (https://arxiv.org/abs/1506.02025).
     See also in torch.nn.functional.grid_sample (https://pytorch.org/docs/master/generated/torch.nn.functional.grid_sample.html#torch-nn-functional-grid-sample).
 
@@ -6688,7 +6706,7 @@ def grid_sample(
         Type T1.
         4-D tensor of shape (N, C, H, W), where N is the batch size, C is the numbers of channels, H and W are the height and width of the input data.
     grid
-        Type T1.
+        Type T2.
         Input offset, 4-D tensor of shape (N, H_out, W_out, 2), where H_out and W_out are the height and width of grid and output, Grid specifies the sampling pixel locations normalized by the input spatial dimensions. Therefore, it should have most values in the range of [-1, 1]. If grid has values outside the range of [-1, 1], the corresponding outputs will be handled as defined by padding_mode.
     align_corners
         Attribute.
@@ -6703,8 +6721,8 @@ def grid_sample(
     Returns
     =======
     Y : Var
-        Type T2.
-        4-D tensor of shape (N, C, H_out, W_out).
+        Type T1.
+        4-D tensor of shape (N, C, H_out, W_out) of sampled values. For integer input types, intermediate values are computed as floating point and cast to integer at the end.
 
     Notes
     =====
@@ -7005,7 +7023,7 @@ def if_(
     =======
     outputs : Sequence[Var]
         Type V.
-        Values that are live-out to the enclosing scope. The return values in the `then_branch` and `else_branch` must be of the same data type. The `then_branch` and `else_branch` may produce tensors with the same element type and different shapes. If corresponding outputs from the then-branch and the else-branch have static shapes S1 and S2, then the shape of the corresponding output variable of the if-node (if present) must be compatible with both S1 and S2 as it represents the union of both possible shapes.For example, if in a model file, the the first output of `then_branch` is typed float tensor with shape [2] and the first output of `else_branch` is another float tensor with shape [3], If's first output should have (a) no shape set, or (b) a shape of rank 1 with neither `dim_value` nor `dim_param` set, or (c) a shape of rank 1 with a unique `dim_param`. In contrast, the first output cannot have the shape [2] since [2] and [3] are not compatible.
+        Values that are live-out to the enclosing scope. The return values in the `then_branch` and `else_branch` must be of the same data type. The `then_branch` and `else_branch` may produce tensors with the same element type and different shapes. If corresponding outputs from the then-branch and the else-branch have static shapes S1 and S2, then the shape of the corresponding output variable of the if-node (if present) must be compatible with both S1 and S2 as it represents the union of both possible shapes.For example, if in a model file, the first output of `then_branch` is typed float tensor with shape [2] and the first output of `else_branch` is another float tensor with shape [3], If's first output should have (a) no shape set, or (b) a shape of rank 1 with neither `dim_value` nor `dim_param` set, or (c) a shape of rank 1 with a unique `dim_param`. In contrast, the first output cannot have the shape [2] since [2] and [3] are not compatible.
 
     Notes
     =====
@@ -7405,7 +7423,7 @@ def layer_normalization(
           ```
           Mean = ReduceMean<axes=normalized_axes>(X)
           D = Sub(X, Mean)
-          DD = Mul(Diff, Diff)
+          DD = Mul(D, D)
           Var = ReduceMean<axes=normalized_axes>(DD)
           VarEps = Add(Var, epsilon)
           StdDev = Sqrt(VarEps)
@@ -8159,7 +8177,7 @@ def max_pool(
         Padding for the beginning and ending along each spatial axis, it can take any value greater than or equal to 0. The value represent the number of pixels added to the beginning and end part of the corresponding axis. `pads` format should be as follow [x1_begin, x2_begin...x1_end, x2_end,...], where xi_begin the number of pixels added at the beginning of axis `i` and xi_end, the number of pixels added at the end of axis `i`. This attribute cannot be used simultaneously with auto_pad attribute. If not present, the padding defaults to 0 along start and end of each spatial axis.
     storage_order
         Attribute.
-        The storage order of the tensor. 0 is row major, and 1 is column major.
+        The storage order of the tensor. 0 is row major, and 1 is column major. This attribute is used only to convert an n-tuple index value into a single integer value for producing the second output.
     strides
         Attribute.
         Stride along each spatial axis. If not present, the stride defaults to 1 along each spatial axis.
@@ -8260,7 +8278,7 @@ def max_unpool(
 ) -> Var:
     r"""
     MaxUnpool essentially computes the partial inverse of the MaxPool op.
-     The input information to this op is typically the the output information from a MaxPool op. The first
+     The input information to this op is typically the output information from a MaxPool op. The first
      input tensor X is the tensor that needs to be unpooled, which is typically the pooled tensor (first output)
      from MaxPool. The second input tensor, I, contains the indices to the (locally maximal) elements corrsponding
      to the elements in the first input tensor X. Input tensor I is typically the second output of the MaxPool op.
@@ -10474,7 +10492,7 @@ def reduce_sum(
         Keep the reduced dimension or not, default 1 means keep reduced dimension.
     noop_with_empty_axes
         Attribute.
-        Defines behaviour if 'axes' is empty. Default behaviour with 'false' is to reduce all axes. When axes is empty and this attribute is set to true, input tensor will not be reduced,and the output tensor would be equivalent to input tensor.
+        Defines behavior if 'axes' is empty. Default behavior with 'false' is to reduce all axes. When axes is empty and this attribute is set to true, input tensor will not be reduced,and the output tensor would be equivalent to input tensor.
 
     Returns
     =======
@@ -10601,6 +10619,9 @@ def reshape(
     dimension will be set explicitly to zero (i.e. not taken from input tensor).
     Shape (second input) could be an empty shape, which means converting to a scalar.
     The input tensor's shape and the output tensor's shape are required to have the same number of elements.
+    If the attribute 'allowzero' is set, it is invalid for the specified shape to
+    contain both a zero value and -1, as the value of the dimension corresponding
+    to -1 cannot be determined uniquely.
 
     Parameters
     ==========
@@ -11408,13 +11429,13 @@ def scatter_nd(
     and `updates` tensor of rank q + r - indices.shape[-1] - 1. The output of the operation
     is produced by creating a copy of the input `data`, and then updating its value to values
     specified by `updates` at specific index positions specified by `indices`. Its output shape
-    is the same as the shape of `data`. Note that `indices` should not have duplicate entries.
-    That is, two or more `updates` for the same index-location is not supported.
+    is the same as the shape of `data`.
     `indices` is an integer tensor. Let k denote indices.shape[-1], the last dimension in the shape of `indices`.
      `indices` is treated as a (q-1)-dimensional tensor of k-tuples, where each k-tuple is a partial-index into `data`.
     Hence, k can be a value at most the rank of `data`. When k equals rank(data), each update entry specifies an
     update to a single element of the tensor. When k is less than rank(data) each update entry specifies an
-    update to a slice of the tensor.
+    update to a slice of the tensor. Index values are allowed to be negative, as per the usual
+    convention for counting backwards from the end, but are expected in the valid range.
     `updates` is treated as a (q-1)-dimensional tensor of replacement-slice-values. Thus, the
     first (q-1) dimensions of updates.shape must match the first (q-1) dimensions of indices.shape.
     The remaining dimensions of `updates` correspond to the dimensions of the

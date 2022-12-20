@@ -24,6 +24,7 @@ import onnx
 from ._attributes import AttrGraph
 from ._exceptions import InferenceWarning
 from ._type_system import Type
+from ._value_prop import PropValue, PropValueType
 from ._var import Var
 from ._varfields import VarFields
 
@@ -224,7 +225,7 @@ class Node(ABC):
     def post_init(self, **kwargs):
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
-    def propagate_values(self) -> Dict[str, Any]:
+    def propagate_values(self) -> Dict[str, PropValueType]:
         """
         Propagate values from inputs, and, if possible, compute values for outputs as well.
         This method is used to implement ONNX partial data propagation - for example so that
@@ -308,7 +309,7 @@ class Node(ABC):
             yield name, value_type
 
     def _init_output_vars(
-        self, types: Dict[str, Type], values: Dict[str, Any]
+        self, types: Dict[str, Type], values: Dict[str, PropValueType]
     ) -> VarFields:
         """
         Initialize empty output vars bound to this Node and return the respective Fields object.
@@ -317,7 +318,20 @@ class Node(ABC):
         """
 
         def arr(name):
-            return Var(self, types.get(name), values.get(name))
+            typ: Optional[Type] = types.get(name)
+            val: Optional[PropValue]
+            if typ is not None and name in values:
+                val = PropValue(typ, values.get(name))
+                if not val.check():
+                    warnings.warn(
+                        InferenceWarning(
+                            f"PropValue of {val.value} does not match the expected type {val.type}, dropping."
+                        )
+                    )
+                    val = None
+            else:
+                val = None
+            return Var(self, typ, val)
 
         var = self.Outputs.get_variadic_name()
         outputs: Dict[str, Union[Var, Sequence[Var]]] = {

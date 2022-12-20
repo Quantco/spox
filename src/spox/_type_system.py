@@ -153,7 +153,7 @@ class Type:
         """
         if not isinstance(other, Type):
             return NotImplemented
-        return self == Type() or other == Type() or self == other
+        return other == Type() or self == other
 
 
 @dataclass(frozen=True)

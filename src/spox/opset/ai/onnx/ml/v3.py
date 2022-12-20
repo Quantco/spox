@@ -35,6 +35,7 @@ from spox._node import OpType  # noqa: F401
 from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
 from spox._type_system import Tensor, Type
+from spox._value_prop import PropValueType
 from spox._var import Var, _nil, result_type  # noqa: F401
 from spox._varfields import NoVars, VarFields  # noqa: F401
 

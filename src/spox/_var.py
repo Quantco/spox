@@ -1,11 +1,10 @@
 import typing
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 import numpy
 
-from . import _type_system
+from . import _type_system, _value_prop
 from ._config import get_default_opset
-from ._shape import Shape
 
 if typing.TYPE_CHECKING:
     from ._node import Node
@@ -28,7 +27,7 @@ class Var:
     """
 
     type: Optional[_type_system.Type]
-    _value: Optional[Any]
+    _value: Optional[_value_prop.PropValue]
     _op: "Node"
     _name: Optional[str]
 
@@ -36,44 +35,31 @@ class Var:
         self,
         op: "Node",
         type_: Optional[_type_system.Type],
-        value: Optional[Any] = None,
+        value: Optional[_value_prop.PropValue] = None,
     ):
+        if type_ is not None and not isinstance(type_, _type_system.Type):
+            raise TypeError("The type field of a Var must be a Spox Type.")
+        if value is not None and not isinstance(value, _value_prop.PropValue):
+            raise TypeError("The propagated value field of a Var must be a PropValue.")
+        if value is not None and value.type != type_:
+            raise ValueError(
+                f"The propagated value type ({value.type}) and actual Var type ({type_}) must be the same."
+            )
+
         self.type = type_
         self._value = value
         self._op = op
         self._name = None
-        if not self._value_matches_type(value, type_):
-            raise TypeError(
-                f"Propagated value {value} of type {type(value)} does not match expected type {type_}."
-            )
 
     def _rename(self, name: Optional[str]):
         """Mutates the internal state of the Var, overriding its name as given."""
         self._name = name
 
-    @staticmethod
-    def _value_matches_type(
-        value: Optional[Any], type_: Optional[_type_system.Type]
-    ) -> bool:
-        if value is None or type_ is None:
-            return True
-        if isinstance(type_, _type_system.Tensor):
-            return (
-                isinstance(value, numpy.ndarray)
-                and value.dtype.type is type_.dtype.type
-                and Shape.from_simple(value.shape) <= type_._shape
-            )
-        elif isinstance(type_, _type_system.Optional):
-            return value is Nothing or Var._value_matches_type(value, type_.elem_type)
-        elif isinstance(type_, _type_system.Sequence):
-            return isinstance(value, list) and all(
-                Var._value_matches_type(elem, type_.elem_type) for elem in value
-            )
-        return True
-
     @property
     def _which_output(self) -> Optional[str]:
         """Return the name of the output field that this var is stored in under ``self._op``."""
+        if self._op is None:
+            return None
         op_outs = self._op.outputs.as_dict()
         candidates = [key for key, var in op_outs.items() if var is self]
         return candidates[0] if candidates else None
@@ -86,7 +72,7 @@ class Var:
         which_repr = "->??" if which is None else (f"->{which}" if is_unary else "")
         return (
             f"<Var {nm}from {op_repr}{which_repr} of {self.type}"
-            f"{'' if self._value is None else ' = ' + str(self._value)}>"
+            f"{'' if self._value is None else ' = ' + str(self._value.to_ort_value())}>"
         )
 
     def unwrap_type(self) -> _type_system.Type:
@@ -211,13 +197,3 @@ def result_type(
             )
         )
     ).type
-
-
-class _NothingType:
-    """Singleton class representing a ``Var``'s value which is optional and missing - rather than lack of value."""
-
-    def __repr__(self) -> str:
-        return "Nothing"
-
-
-Nothing = _NothingType()

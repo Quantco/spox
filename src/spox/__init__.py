@@ -10,9 +10,13 @@ try:
 except ModuleNotFoundError:
     pass
 
+from spox import _patch_ref_impl
+
 # Public interface
 from spox._type_system import Optional, Sequence, Tensor, Type
 from spox._var import Var
+
+_patch_ref_impl.patch_reference_implementations()
 
 __all__ = [
     "Var",

@@ -50,7 +50,8 @@ ATTRIBUTE_PROTO_TO_MEMBER_TYPE = {
     onnx.AttributeProto.TYPE_PROTOS: "AttrTypes",
 }
 
-_TEMPLATE_DIR = Path(str(importlib.resources.path("spox", "."))).parent / "templates"
+with importlib.resources.path("spox", ".") as path:
+    _TEMPLATE_DIR = path.parent / "templates"
 
 
 @dataclass
@@ -153,7 +154,7 @@ def _get_default_value(attr, attr_type_overrides) -> Optional[str]:
         attr.name in attr_type_overrides
         and attr_type_overrides[attr.name][0] == "npt.DTypeLike"
     ):
-        return f"np.{onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[default].name}"
+        return f"np.{onnx.helper.tensor_dtype_to_np_dtype(default).name}"
 
     # Strings are bytes at this point and they
     # need to be wrapped in quotes.

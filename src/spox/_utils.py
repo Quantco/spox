@@ -1,25 +1,16 @@
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
+import onnx
 from onnx import TensorProto
-from onnx.helper import make_tensor, mapping
-
-_DTYPE_TO_TENSOR_TYPE: Dict[np.dtype, int] = {
-    **{
-        dtype: ttype
-        for dtype, ttype in mapping.NP_TYPE_TO_TENSOR_TYPE.items()
-        if dtype != np.object_
-    },
-    np.dtype(str): TensorProto.STRING,
-}
-
-_TENSOR_TYPE_TO_DTYPE = {ttype: dtype for dtype, ttype in _DTYPE_TO_TENSOR_TYPE.items()}
 
 
 def tensor_type_to_dtype(ttype: int) -> np.dtype:
     """Convert integer tensor types to ``numpy.dtype`` objects."""
-    return _TENSOR_TYPE_TO_DTYPE[ttype]
+    if ttype == onnx.TensorProto.STRING:
+        return np.dtype(str)  # Spox uses the str datatype for strings, not object
+    return onnx.helper.tensor_dtype_to_np_dtype(ttype)
 
 
 def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
@@ -35,8 +26,15 @@ def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
         raise TypeError(err_msg)
     # normalize in the case of aliases like ``long`` which are missing in the lookup
     dtype = np.dtype(np.dtype(dtype_like).type)
+    if dtype == np.dtype(object):
+        raise TypeError(
+            "`np.dtype('object')` is not supported as a tensor element type. "
+            "Hint: Spox uses `np.dtype('str')` for the string datatype."
+        )
+    elif dtype == np.dtype(str):
+        return onnx.TensorProto.STRING
     try:
-        return _DTYPE_TO_TENSOR_TYPE[dtype]
+        return onnx.helper.np_dtype_to_tensor_dtype(dtype)
     except KeyError:
         raise TypeError(err_msg)
 
@@ -53,7 +51,7 @@ def from_array(arr: np.ndarray, name: Optional[str] = None) -> TensorProto:
     cast_to_bytes = False
     if arr.dtype.type in [np.str_, np.object_]:
         cast_to_bytes = True
-    return make_tensor(
+    return onnx.helper.make_tensor(
         name=name or "",
         data_type=dtype_to_tensor_type(arr.dtype),
         dims=arr.shape,
