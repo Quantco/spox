@@ -102,16 +102,6 @@ class Var:
         """Equivalent to ``self.unwrap_type().unwrap_optional()``."""
         return self.unwrap_type().unwrap_optional()
 
-    @property
-    def shape(self) -> _type_system.SimpleShape:
-        """Equivalent to ``self.unwrap_tensor().shape``."""
-        return self.unwrap_tensor().shape
-
-    @property
-    def dtype(self) -> _type_system.SimpleShape:
-        """Equivalent to ``self.unwrap_tensor().dtype``."""
-        return self.unwrap_tensor().shape
-
     def __add__(self, other) -> "Var":
         if isinstance(other, Var):
             return get_default_opset().add(self, other)
