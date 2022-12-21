@@ -50,6 +50,47 @@ ATTRIBUTE_PROTO_TO_MEMBER_TYPE = {
     onnx.AttributeProto.TYPE_PROTOS: "AttrTypes",
 }
 
+IF16_OUT_VARIADIC_SOLUTION = "len(_else_branch_subgraph.requested_results)"
+LOOP16_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results) - 1"
+SCAN16_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results)"
+SEQUENCEMAP17_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results)"
+
+IF16_SUBGRAPH_SOLUTION = {"else_branch": "()", "then_branch": "()"}
+LOOP16_SUBGRAPH_SOLUTION = {
+    "body": "typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])"
+    "+ [var.unwrap_type() for var in v_initial]"
+}
+SCAN16_SUBGRAPH_SOLUTION = {
+    "body": "[Tensor(var.unwrap_tensor().dtype, "
+    "   (lambda x: x[1:] if x is not None else None)(var.unwrap_tensor().shape)) "
+    "for var in initial_state_and_scan_inputs[:num_scan_inputs]] + "
+    "[Tensor(var.unwrap_tensor().dtype) "
+    "for var in initial_state_and_scan_inputs[num_scan_inputs:]]"
+}
+SEQUENCEMAP17_SUBGRAPH_SOLUTION = {
+    "body": "[typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type] + "
+    "[typing_cast(SpoxSequence, var.unwrap_type()).elem_type for var in additional_inputs]"
+}
+
+V16_OUT_VARIADIC_SOLUTIONS = {
+    "If": IF16_OUT_VARIADIC_SOLUTION,
+    "Loop": LOOP16_OUT_VARIADIC_SOLUTION,
+    "Scan": SCAN16_OUT_VARIADIC_SOLUTION,
+    "SequenceMap": SEQUENCEMAP17_OUT_VARIADIC_SOLUTION,
+}
+V16_SUBGRAPH_SOLUTIONS = {
+    "If": IF16_SUBGRAPH_SOLUTION,
+    "Loop": LOOP16_SUBGRAPH_SOLUTION,
+    "Scan": SCAN16_SUBGRAPH_SOLUTION,
+    "SequenceMap": SEQUENCEMAP17_SUBGRAPH_SOLUTION,
+}
+DEFAULT_ATTR_TYPE_OVERRIDES = [
+    (None, "dtype", ("npt.DTypeLike", "AttrDtype")),
+    ("Cast", "to", ("npt.DTypeLike", "AttrDtype")),
+    ("If", "then_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
+    ("If", "else_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
+]
+
 with importlib.resources.path("spox", ".") as path:
     _TEMPLATE_DIR = path.parent / "templates"
 
@@ -249,15 +290,16 @@ def write_schemas_code(
     subgraphs_solutions: Dict[str, Dict[str, str]],
     attr_type_overrides: List[Tuple[Optional[str], str, Tuple[str, str]]],
     allow_extra_constructor_arguments: Set[str],
+    inherited_schemas: Dict[onnx.defs.OpSchema, str],
     extras: Sequence[str],
     gen_docstrings: bool,
-) -> None:
+):
     """Write code for all of ``schemas`` to ``file``. Uses parameters as documented in ``main``."""
     env = get_env()
 
-    preamble, class_, constructor = (
+    preamble, class_, constructor, inherit = (
         env.get_template(f"{key}.jinja2")
-        for key in ("preamble", "class", "constructor")
+        for key in ("preamble", "class", "constructor", "inherit")
     )
 
     schemas = [s for s in schemas]
@@ -265,10 +307,21 @@ def write_schemas_code(
     # Preamble
     print(preamble.render(), file=file, end="\n\n\n")
 
-    built_names = set()
+    for schema in sorted(schemas, key=lambda s: s.name):
+        if schema in inherited_schemas:
+            print(
+                inherit.render(schema=schema, module=inherited_schemas[schema]),
+                file=file,
+                end="\n",
+            )
+
+    built_schemas: Set[onnx.defs.OpSchema] = set()
 
     # Operator classes
     for schema in sorted(schemas, key=lambda s: s.name):
+        if schema in inherited_schemas:
+            continue
+        built_schemas.add(schema)
         # Override for attribute type
         attr_over = {
             name: target
@@ -307,11 +360,10 @@ def write_schemas_code(
             file=file,
             end="\n\n",
         )
-        built_names.add(schema.name)
 
     # Operator constructors
     for schema in sorted(schemas, key=lambda s: s.name):
-        if schema.name not in built_names:
+        if schema not in built_schemas or schema in inherited_schemas:
             continue
         allow_extra = schema.name in allow_extra_constructor_arguments
         # Output variadic solution
@@ -352,7 +404,9 @@ def write_schemas_code(
         print(extra.render(), file=file, end="\n\n\n")
 
     print(
-        env.get_template("summary.jinja2").render(built_names=sorted(built_names)),
+        env.get_template("summary.jinja2").render(
+            built_names=sorted({schema.name for schema in schemas})
+        ),
         file=file,
         end="\n",
     )
@@ -381,12 +435,13 @@ def main(
     attr_type_overrides: Optional[
         List[Tuple[Optional[str], str, Tuple[str, str]]]
     ] = None,
-    allow_extra_constructor_arguments: Optional[Iterable[str]] = None,
+    allow_extra_constructor_arguments: Iterable[str] = (),
+    inherited_schemas: Optional[Dict[onnx.defs.OpSchema, str]] = None,
     extras: Sequence[str] = (),
     target: str = "src/spox/opset/",
     pre_commit_hooks: bool = True,
     gen_docstrings: bool = True,
-):
+) -> Tuple[List[onnx.defs.OpSchema], str]:
     """
     Generate opset module code and save it in a `.py` source code file.
 
@@ -421,6 +476,9 @@ def main(
     allow_extra_constructor_arguments
         List of operators for which creating an extra constructor argument should not raise.
         This happens in the case of missing solutions for output variadic count or subgraph input types.
+    inherited_schemas
+        Dictionary of schemas into source modules that may be inherited.
+        This means there exists an implementation of its class and constructor in the module.
     extras
         List of template names under ``jinja_templates/extras/`` to add at the end of the code.
         This includes convenience functions that may use the rest of the operator set.
@@ -443,6 +501,8 @@ def main(
         attr_type_overrides = []
     if allow_extra_constructor_arguments is None:
         allow_extra_constructor_arguments = ()
+    if inherited_schemas is None:
+        inherited_schemas = {}
     allow_extra_constructor_arguments = set(allow_extra_constructor_arguments)
 
     onnx_domain = domain if domain != DEFAULT_DOMAIN else ""
@@ -467,6 +527,7 @@ def main(
             subgraphs_solutions,
             attr_type_overrides,
             allow_extra_constructor_arguments,
+            inherited_schemas,
             extras,
             gen_docstrings,
         )
@@ -483,47 +544,22 @@ def main(
                 )
         print("Done!")
 
+    return schemas, f"spox.opset.{domain}.v{version}"
+
 
 if __name__ == "__main__":
-    main(
+    ai_onnx_v17_schemas, ai_onnx_v17_module = main(
         "ai.onnx",
         17,
         extras=["const"],
         type_inference={},
         value_propagation={"Constant": "constant13"},
-        out_variadic_solutions={
-            "If": "len(_else_branch_subgraph.requested_results)",
-            "Loop": "len(_body_subgraph.requested_results) - 1",
-            "Scan": "len(_body_subgraph.requested_results)",
-            "SequenceMap": "len(_body_subgraph.requested_results)",
-        },
-        subgraphs_solutions={
-            "If": {"else_branch": "()", "then_branch": "()"},
-            "Loop": {
-                "body": "typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])"
-                "+ [var.unwrap_type() for var in v_initial]"
-            },
-            "Scan": {
-                "body": "[Tensor(var.unwrap_tensor().dtype, "
-                "   (lambda x: x[1:] if x is not None else None)(var.unwrap_tensor().shape)) "
-                "for var in initial_state_and_scan_inputs[:num_scan_inputs]] + "
-                "[Tensor(var.unwrap_tensor().dtype) "
-                "for var in initial_state_and_scan_inputs[num_scan_inputs:]]"
-            },
-            "SequenceMap": {
-                "body": "[typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type] + "
-                "[typing_cast(SpoxSequence, var.unwrap_type()).elem_type for var in additional_inputs]"
-            },
-        },
-        attr_type_overrides=[
-            (None, "dtype", ("npt.DTypeLike", "AttrDtype")),
-            ("Cast", "to", ("npt.DTypeLike", "AttrDtype")),
-            ("If", "then_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
-            ("If", "else_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
-        ],
+        out_variadic_solutions=V16_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
         allow_extra_constructor_arguments=["Split"],
     )
-    main(
+    ai_onnx_ml_v3_schemas, ai_onnx_ml_v3_module = main(
         "ai.onnx.ml",
         3,
         attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
