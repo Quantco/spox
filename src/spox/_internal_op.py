@@ -130,7 +130,16 @@ class _Embedded(_InternalNode):
 
     @property
     def opset_req(self) -> Set[Tuple[str, int]]:
-        return {(imp.domain, imp.version) for imp in self.model.opset_import}
+        constant_req = (
+            {("", 11)}
+            if self.graph.sparse_initializer
+            else {("", 9)}
+            if self.graph.initializer
+            else set()
+        )
+        return {
+            (imp.domain, imp.version) for imp in self.model.opset_import
+        } | constant_req
 
     def infer_output_types(self) -> Dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
@@ -156,8 +165,17 @@ class _Embedded(_InternalNode):
             if name is not None
             else self.graph
         )
+        nodes: List[onnx.NodeProto] = []
+        # Move initializers to Constant nodes
+        nodes.extend(
+            onnx.helper.make_node("Constant", [], [i.name], value=i)
+            for i in graph.initializer
+        )
+        nodes.extend(
+            onnx.helper.make_node("Constant", [], [i.values.name], sparse_value=i)
+            for i in graph.sparse_initializer
+        )
         # Apply a trivial renaming of inputs
-        nodes = []
         for i, var in zip(graph.input, self.inputs.inputs):
             nodes.append(
                 onnx.helper.make_node(
