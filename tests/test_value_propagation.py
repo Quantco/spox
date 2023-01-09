@@ -1,6 +1,7 @@
 import numpy
 import pytest
 
+import spox.opset.ai.onnx.ml.v3 as ml
 from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
@@ -131,3 +132,13 @@ def test_bad_reshape_raises(op):
     op.reshape(op.const([1, 2]), op.const([2]))  # sanity
     with pytest.raises(Exception):
         op.reshape(op.const([1, 2, 3]), op.const([2]))
+
+
+def test_give_up_silently(op):
+    # The LabelEncoder currently has no reference implementation.
+    ml.label_encoder(
+        op.const(numpy.array(["foo"])),
+        keys_strings=["foo"],
+        values_int64s=[42],
+        default_int64=-1,
+    )

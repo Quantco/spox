@@ -132,8 +132,12 @@ class PropValue:
 def _run_reference_implementation(
     model: onnx.ModelProto, input_feed: Dict[str, RefValue]
 ) -> Dict[str, RefValue]:
-    session = onnx.reference.ReferenceEvaluator(model)
-    output_feed = dict(zip(session.output_names, session.run(None, input_feed)))
+    try:
+        session = onnx.reference.ReferenceEvaluator(model)
+        output_feed = dict(zip(session.output_names, session.run(None, input_feed)))
+    except NotImplementedError:
+        # Give up on value propagation if an implementation is missing.
+        return {}
     return output_feed
 
 
