@@ -1,13 +1,21 @@
 import typing
-from typing import Optional, Union
+from typing import Any, Callable, ClassVar, Optional, TypeVar, Union
 
 import numpy
 
 from . import _type_system, _value_prop
-from ._config import get_default_opset
 
 if typing.TYPE_CHECKING:
     from ._node import Node
+
+F = TypeVar("F", bound=Callable)
+
+
+class NotImplementedOperatorDispatcher:
+    def _not_impl(self, *_):
+        return NotImplemented
+
+    add = sub = mul = truediv = floordiv = neg = and_ = or_ = xor = not_ = _not_impl
 
 
 class Var:
@@ -30,6 +38,8 @@ class Var:
     _value: Optional[_value_prop.PropValue]
     _op: "Node"
     _name: Optional[str]
+
+    _operator_dispatcher: ClassVar[Any] = NotImplementedOperatorDispatcher()
 
     def __init__(
         self,
@@ -63,6 +73,11 @@ class Var:
         op_outs = self._op.outputs.as_dict()
         candidates = [key for key, var in op_outs.items() if var is self]
         return candidates[0] if candidates else None
+
+    def _get_value(self) -> "_value_prop.ORTValue":
+        if self._value is None:
+            raise ValueError("No propagated value associated with this Var.")
+        return self._value.to_ort_value()
 
     def __repr__(self) -> str:
         nm = repr(self._name) + " " if self._name is not None else ""
@@ -103,42 +118,58 @@ class Var:
         return self.unwrap_type().unwrap_optional()
 
     def __add__(self, other) -> "Var":
-        if isinstance(other, Var):
-            return get_default_opset().add(self, other)
-        return NotImplemented
+        return Var._operator_dispatcher.add(self, other)
 
     def __sub__(self, other) -> "Var":
-        if isinstance(other, Var):
-            return get_default_opset().sub(self, other)
-        return NotImplemented
+        return Var._operator_dispatcher.sub(self, other)
 
     def __mul__(self, other) -> "Var":
-        if isinstance(other, Var):
-            return get_default_opset().mul(self, other)
-        return NotImplemented
+        return Var._operator_dispatcher.mul(self, other)
 
     def __truediv__(self, other) -> "Var":
-        if isinstance(other, Var):
-            return get_default_opset().div(self, other)
-        return NotImplemented
+        return Var._operator_dispatcher.truediv(self, other)
+
+    def __floordiv__(self, other) -> "Var":
+        return Var._operator_dispatcher.floordiv(self, other)
+
+    def __neg__(self) -> "Var":
+        return Var._operator_dispatcher.neg(self)
 
     def __and__(self, other) -> "Var":
-        if isinstance(other, Var):
-            return get_default_opset().and_(self, other)
-        return NotImplemented
+        return Var._operator_dispatcher.and_(self, other)
 
     def __or__(self, other) -> "Var":
-        if isinstance(other, Var):
-            return get_default_opset().or_(self, other)
-        return NotImplemented
+        return Var._operator_dispatcher.or_(self, other)
 
     def __xor__(self, other) -> "Var":
-        if isinstance(other, Var):
-            return get_default_opset().xor(self, other)
-        return NotImplemented
+        return Var._operator_dispatcher.xor(self, other)
 
     def __invert__(self) -> "Var":
-        return get_default_opset().not_(self)
+        return Var._operator_dispatcher.not_(self)
+
+    def __radd__(self, other) -> "Var":
+        return Var._operator_dispatcher.add(other, self)
+
+    def __rsub__(self, other) -> "Var":
+        return Var._operator_dispatcher.sub(other, self)
+
+    def __rmul__(self, other) -> "Var":
+        return Var._operator_dispatcher.mul(other, self)
+
+    def __rtruediv__(self, other) -> "Var":
+        return Var._operator_dispatcher.truediv(other, self)
+
+    def __rfloordiv__(self, other) -> "Var":
+        return Var._operator_dispatcher.floordiv(other, self)
+
+    def __rand__(self, other) -> "Var":
+        return Var._operator_dispatcher.and_(other, self)
+
+    def __ror__(self, other) -> "Var":
+        return Var._operator_dispatcher.or_(other, self)
+
+    def __rxor__(self, other) -> "Var":
+        return Var._operator_dispatcher.xor(other, self)
 
 
 class _NilVar(Var):
