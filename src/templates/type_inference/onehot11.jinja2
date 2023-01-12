@@ -1,0 +1,21 @@
+self.infer_output_types_onnx()
+if not (self.inputs.indices.type and self.inputs.depth.type and self.inputs.values.type):
+    return {}
+indices = self.inputs.indices.unwrap_tensor()
+depth = self.inputs.depth.unwrap_tensor()
+values = self.inputs.values.unwrap_tensor()
+if depth.shape is not None and len(depth.shape) != 0:
+    raise InferenceError("Number of classes must be a scalar.")
+if values.shape is not None and len(values.shape) != 1:
+    raise InferenceError("Number of values must be a vector (of length 2).")
+if indices.shape is not None:
+    axis = self.attrs.axis.value
+    if not (-len(indices.shape) - 1 <= axis <= len(indices.shape)):
+        raise InferenceError(f"Attribute axis={axis} out of range [-r-1, r] for indices rank r={len(indices.shape)}.")
+    if axis < 0:
+        # + 1 because slices on negatives are still right-open
+        axis += len(indices.shape) + 1
+    shape = indices.shape[:axis] + (None,) + indices.shape[axis:]
+else:
+    shape = None
+return {'output': Tensor(values.dtype, shape)}
