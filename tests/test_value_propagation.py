@@ -142,3 +142,7 @@ def test_give_up_silently(op):
         values_int64s=[42],
         default_int64=-1,
     )
+
+
+def test_non_ascii_characters_in_string_tensor(op):
+    op.cast(op.constant(value_string="FööBär"), to=str)

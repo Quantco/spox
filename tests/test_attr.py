@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spox._attributes import AttrTensor
+from spox._attributes import AttrString, AttrStrings, AttrTensor
 
 
 def test_bad_attribute_type_cast_fails(op):
@@ -35,3 +35,8 @@ def test_tensor_does_not_use_raw_data(vals, field, expected):
     assert pb.t.raw_data == b""
     assert getattr(pb.t, field) == expected
     assert pb.t.dims == list(np.array(vals).shape)
+
+
+def test_non_ascii_string_attr():
+    AttrString("🐍")._to_onnx(key="foo")
+    AttrStrings(["🐍"])._to_onnx(key="foo")

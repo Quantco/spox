@@ -56,6 +56,8 @@ def from_array(arr: np.ndarray, name: Optional[str] = None) -> TensorProto:
         data_type=dtype_to_tensor_type(arr.dtype),
         dims=arr.shape,
         # make_tensor fails on scalars. We fix it by calling flatten
-        vals=(arr.astype(bytes) if cast_to_bytes else arr).flatten(),
+        vals=(
+            np.char.encode(arr, encoding="utf-8") if cast_to_bytes else arr
+        ).flatten(),
         raw=False,
     )
