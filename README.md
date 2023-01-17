@@ -32,7 +32,7 @@ In Spox, most of the time you'll be working with `Var` objects - **variables**. 
 
 You may print out the `Var` or check its `Var.type` to learn a bit more about it.
 
-To perform operations on a `Var`, use an _opset_ (operator set) module like `spox.opset.ai.onnx.v17` or `spox.opset.ai.onnx.ml.v3` - which correspond to `ai.onnx@3` and `ai.onnx.ml@17`, the standard opsets. These are pre-generated for you and you may import them as required.
+To perform operations on a `Var`, use an _opset_ (operator set) module like `spox.opset.ai.onnx.v17` or `spox.opset.ai.onnx.ml.v3` - which correspond to `ai.onnx@17` and `ai.onnx.ml@3`, the standard opsets. These are pre-generated for you and you may import them as required.
 
 For instance, using the default opset you could write a function that given two variables returns their [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean):
 
