@@ -1,3 +1,5 @@
+"""Internal module implementing the low-level Graph object and functions for creating arguments and Graphs."""
+
 import dataclasses
 import itertools
 from dataclasses import dataclass, replace

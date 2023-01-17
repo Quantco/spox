@@ -11,11 +11,12 @@ except ModuleNotFoundError:
     pass
 
 from spox import _patch_ref_impl
-
-# Public interface
+from spox._build_api import argument, build
 from spox._type_system import Optional, Sequence, Tensor, Type
 from spox._var import Var
 
+# The onnx reference implementation has some known limitations which
+# we patch globally.
 _patch_ref_impl.patch_reference_implementations()
 
 __all__ = [
@@ -24,6 +25,8 @@ __all__ = [
     "Tensor",
     "Sequence",
     "Optional",
+    "argument",
+    "build",
 ]
 
 try:
