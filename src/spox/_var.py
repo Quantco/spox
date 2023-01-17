@@ -20,18 +20,28 @@ class NotImplementedOperatorDispatcher:
 
 class Var:
     """
-    Abstraction for a single ONNX value, like a tensor, that can be passed around.
-    It depends on a given output (``which``) of an operator ``op`` (represented in a ``Node``).
+    Abstraction for a single ONNX value - like a tensor - that can be passed around in Python code.
 
-    The ``type`` is inferred and checked. If it is ``None``, it is unknown and should pass all type checks.
+    A ``Var`` represents some output of an operator.
+    This operator is stored internally to allow reproducing the graph.
 
-    The ``value`` field may be propagated in case a ``Var`` always has a constant value.
-    This is useful for type & shape inference.
+    The ``type`` field is inferred and checked by operators.
+    It may be ``None`` if type inference failed, in which case it is unknown and should pass all type checks.
+    However, untyped ``Var`` objects may not be used in some contexts.
+    Keep in mind that the types themselves may have some information missing.
+    For instance, tensors allow missing rank and shape information.
 
-    The state of a ``Var`` should not be modified, and only the ``type`` and ``value`` fields should be accessed.
-    (as ``_op`` and ``_which`` are primarily stored for building a Graph).
+    There is an implicit value propagation mechanism, powered by the ONNX reference implementation.
+    Values may be propagated if a ``Var`` always has a known and constant value at runtime.
+    This is used for type & shape inference. For instance, Reshape to a constant shape can have the shape inferred.
 
-    Should not be constructed directly - the main source of Vars is operator constructors & ``arguments``-like.
+    ``Var`` should be treated as strictly immutable.
+    If a ``Var`` or any of its fields are modified, the behaviour is undefined and the produced graph may be invalid.
+
+    Protected fields are to be treated as internal.
+    Useful data is also shown by the string representation, but it should be treated as debug information.
+
+    Should not be constructed directly - the main source of ``Var`` objects are operator constructors.
     """
 
     type: Optional[_type_system.Type]
@@ -47,6 +57,7 @@ class Var:
         type_: Optional[_type_system.Type],
         value: Optional[_value_prop.PropValue] = None,
     ):
+        """The initializer of ``Var`` is protected. Use operator constructors to construct them instead."""
         if type_ is not None and not isinstance(type_, _type_system.Type):
             raise TypeError("The type field of a Var must be a Spox Type.")
         if value is not None and not isinstance(value, _value_prop.PropValue):
@@ -75,6 +86,7 @@ class Var:
         return candidates[0] if candidates else None
 
     def _get_value(self) -> "_value_prop.ORTValue":
+        """Get the propagated value in this Var and convert it to the ORT format. Raises if value is missing."""
         if self._value is None:
             raise ValueError("No propagated value associated with this Var.")
         return self._value.to_ort_value()
