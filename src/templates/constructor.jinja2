@@ -20,11 +20,11 @@ endfor %}
     %}{{ attr.name }}_input_types: Iterable[Type], {% endif %}
 {% endfor %}
 ) -> {{ get_constructor_return(schema) }}:
-{% filter indent(width=4) %}
 {% if gen_docstrings %}
     r"""
 {%+ include "docstring.jinja2" %}
     """
 {% endif %}
-{%+ include "construct.jinja2" %}
+{% filter indent(width=4) %}
+    {%+ include "construct.jinja2" %}
 {% endfilter %}

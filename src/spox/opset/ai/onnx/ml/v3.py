@@ -615,10 +615,8 @@ def array_feature_extractor(
     Y: Var,
 ) -> Var:
     r"""
-    Select elements of the input tensor based on the indices passed.
-
-
-        The indices are applied to the last axes of the tensor.
+    Select elements of the input tensor based on the indices passed. The
+    indices are applied to the last axes of the tensor.
 
     Parameters
     ==========
@@ -657,7 +655,8 @@ def binarizer(
     threshold: float = 0.0,
 ) -> Var:
     r"""
-    Maps the values of the input tensor to either 0 or 1, element-wise, based on the outcome of a comparison against a threshold value.
+    Maps the values of the input tensor to either 0 or 1, element-wise,
+    based on the outcome of a comparison against a threshold value.
 
     Parameters
     ==========
@@ -699,13 +698,10 @@ def cast_map(
     max_map: int = 1,
 ) -> Var:
     r"""
-    Converts a map to a tensor.
-
-    The map key must be an int64 and the values will be ordered
-        in ascending order based on this key.
-
-    The operator supports dense packing or sparse packing.
-        If using sparse packing, the key cannot exceed the max_map-1 value.
+    Converts a map to a tensor.The map key must be an int64 and the values
+    will be ordered in ascending order based on this key.The operator
+    supports dense packing or sparse packing. If using sparse packing, the
+    key cannot exceed the max_map-1 value.
 
     Parameters
     ==========
@@ -714,21 +710,24 @@ def cast_map(
         The input map that is to be cast to a tensor
     cast_to
         Attribute.
-        A string indicating the desired element type of the output tensor, one of 'TO_FLOAT', 'TO_STRING', 'TO_INT64'.
+        A string indicating the desired element type of the output tensor, one
+        of 'TO_FLOAT', 'TO_STRING', 'TO_INT64'.
     map_form
         Attribute.
-        Indicates whether to only output as many values as are in the input (dense), or position the input based on using the key of the map as the index of the output (sparse).
-
-        One of 'DENSE', 'SPARSE'.
+        Indicates whether to only output as many values as are in the input
+        (dense), or position the input based on using the key of the map as the
+        index of the output (sparse).One of 'DENSE', 'SPARSE'.
     max_map
         Attribute.
-        If the value of map_form is 'SPARSE,' this attribute indicates the total length of the output tensor.
+        If the value of map_form is 'SPARSE,' this attribute indicates the total
+        length of the output tensor.
 
     Returns
     =======
     Y : Var
         Type T2.
-        A tensor representing the same data as the input map, ordered by their keys
+        A tensor representing the same data as the input map, ordered by their
+        keys
 
     Notes
     =====
@@ -759,20 +758,14 @@ def category_mapper(
     default_string: str = "_Unused",
 ) -> Var:
     r"""
-    Converts strings to integers and vice versa.
-
-
-        Two sequences of equal length are used to map between integers and strings,
-        with strings and integers at the same index detailing the mapping.
-
-
-        Each operator converts either integers to strings or strings to integers, depending
-        on which default value attribute is provided. Only one default value attribute
-        should be defined.
-
-
-        If the string default value is set, it will convert integers to strings.
-        If the int default value is set, it will convert strings to integers.
+    Converts strings to integers and vice versa. Two sequences of equal
+    length are used to map between integers and strings, with strings and
+    integers at the same index detailing the mapping. Each operator converts
+    either integers to strings or strings to integers, depending on which
+    default value attribute is provided. Only one default value attribute
+    should be defined. If the string default value is set, it will convert
+    integers to strings. If the int default value is set, it will convert
+    strings to integers.
 
     Parameters
     ==========
@@ -781,26 +774,27 @@ def category_mapper(
         Input data
     cats_int64s
         Attribute.
-        The integers of the map. This sequence must be the same length as the 'cats_strings' sequence.
+        The integers of the map. This sequence must be the same length as the
+        'cats_strings' sequence.
     cats_strings
         Attribute.
-        The strings of the map. This sequence must be the same length as the 'cats_int64s' sequence
+        The strings of the map. This sequence must be the same length as the
+        'cats_int64s' sequence
     default_int64
         Attribute.
-        An integer to use when an input string value is not found in the map.
-
-        One and only one of the 'default_*' attributes must be defined.
+        An integer to use when an input string value is not found in the map.One
+        and only one of the 'default_*' attributes must be defined.
     default_string
         Attribute.
-        A string to use when an input integer value is not found in the map.
-
-        One and only one of the 'default_*' attributes must be defined.
+        A string to use when an input integer value is not found in the map.One
+        and only one of the 'default_*' attributes must be defined.
 
     Returns
     =======
     Y : Var
         Type T2.
-        Output data. If strings are input, the output values are integers, and vice versa.
+        Output data. If strings are input, the output values are integers, and
+        vice versa.
 
     Notes
     =====
@@ -830,23 +824,20 @@ def dict_vectorizer(
     string_vocabulary: Optional[Iterable[str]] = None,
 ) -> Var:
     r"""
-    Uses an index mapping to convert a dictionary to an array.
-
-
-        Given a dictionary, each key is looked up in the vocabulary attribute corresponding to
-        the key type. The index into the vocabulary array at which the key is found is then
-        used to index the output 1-D tensor 'Y' and insert into it the value found in the dictionary 'X'.
-
-
-        The key type of the input map must correspond to the element type of the defined vocabulary attribute.
-        Therefore, the output array will be equal in length to the index mapping vector parameter.
-        All keys in the input dictionary must be present in the index mapping vector.
-        For each item in the input dictionary, insert its value in the output array.
-        Any keys not present in the input dictionary, will be zero in the output array.
-
-
-        For example: if the ``string_vocabulary`` parameter is set to ``["a", "c", "b", "z"]``,
-        then an input of ``{"a": 4, "c": 8}`` will produce an output of ``[4, 8, 0, 0]``.
+    Uses an index mapping to convert a dictionary to an array. Given a
+    dictionary, each key is looked up in the vocabulary attribute
+    corresponding to the key type. The index into the vocabulary array at
+    which the key is found is then used to index the output 1-D tensor 'Y'
+    and insert into it the value found in the dictionary 'X'. The key type
+    of the input map must correspond to the element type of the defined
+    vocabulary attribute. Therefore, the output array will be equal in
+    length to the index mapping vector parameter. All keys in the input
+    dictionary must be present in the index mapping vector. For each item in
+    the input dictionary, insert its value in the output array. Any keys not
+    present in the input dictionary, will be zero in the output array. For
+    example: if the ``string_vocabulary`` parameter is set to
+    ``["a", "c", "b", "z"]``, then an input of ``{"a": 4, "c": 8}`` will
+    produce an output of ``[4, 8, 0, 0]``.
 
     Parameters
     ==========
@@ -855,14 +846,12 @@ def dict_vectorizer(
         A dictionary.
     int64_vocabulary
         Attribute.
-        An integer vocabulary array.
-
-        One and only one of the vocabularies must be defined.
+        An integer vocabulary array.One and only one of the vocabularies must be
+        defined.
     string_vocabulary
         Attribute.
-        A string vocabulary array.
-
-        One and only one of the vocabularies must be defined.
+        A string vocabulary array.One and only one of the vocabularies must be
+        defined.
 
     Returns
     =======
@@ -899,14 +888,11 @@ def feature_vectorizer(
     inputdimensions: Optional[Iterable[int]] = None,
 ) -> Var:
     r"""
-    Concatenates input tensors into one continuous output.
-
-
-        All input shapes are 2-D and are concatenated along the second dimention. 1-D tensors are treated as [1,C].
-        Inputs are copied to the output maintaining the order of the input arguments.
-
-
-        All inputs must be integers or floats, while the output will be all floating point values.
+    Concatenates input tensors into one continuous output. All input shapes
+    are 2-D and are concatenated along the second dimention. 1-D tensors are
+    treated as [1,C]. Inputs are copied to the output maintaining the order
+    of the input arguments. All inputs must be integers or floats, while the
+    output will be all floating point values.
 
     Parameters
     ==========
@@ -951,22 +937,20 @@ def imputer(
     replaced_value_int64: int = 0,
 ) -> Var:
     r"""
-    Replaces inputs that equal one value with another, leaving all other elements alone.
-
-
-        This operator is typically used to replace missing values in situations where they have a canonical
-        representation, such as -1, 0, NaN, or some extreme value.
-
-
-        One and only one of imputed_value_floats or imputed_value_int64s should be defined -- floats if the input tensor
-        holds floats, integers if the input tensor holds integers. The imputed values must all fit within the
-        width of the tensor element type. One and only one of the replaced_value_float or replaced_value_int64 should be defined,
-        which one depends on whether floats or integers are being processed.
-
-
-        The imputed_value attribute length can be 1 element, or it can have one element per input feature.
-
-    In other words, if the input tensor has the shape [*,F], then the length of the attribute array may be 1 or F. If it is 1, then it is broadcast along the last dimension and applied to each feature.
+    Replaces inputs that equal one value with another, leaving all other
+    elements alone. This operator is typically used to replace missing
+    values in situations where they have a canonical representation, such as
+    -1, 0, NaN, or some extreme value. One and only one of
+    imputed_value_floats or imputed_value_int64s should be defined -- floats
+    if the input tensor holds floats, integers if the input tensor holds
+    integers. The imputed values must all fit within the width of the tensor
+    element type. One and only one of the replaced_value_float or
+    replaced_value_int64 should be defined, which one depends on whether
+    floats or integers are being processed. The imputed_value attribute
+    length can be 1 element, or it can have one element per input feature.In
+    other words, if the input tensor has the shape [*,F], then the length of
+    the attribute array may be 1 or F. If it is 1, then it is broadcast
+    along the last dimension and applied to each feature.
 
     Parameters
     ==========
@@ -1030,33 +1014,24 @@ def label_encoder(
     values_strings: Optional[Iterable[str]] = None,
 ) -> Var:
     r"""
-    Maps each element in the input tensor to another value.
-
-
-        The mapping is determined by the two parallel attributes, 'keys_*' and
-        'values_*' attribute. The i-th value in the specified 'keys_*' attribute
-        would be mapped to the i-th value in the specified 'values_*' attribute. It
-        implies that input's element type and the element type of the specified
-        'keys_*' should be identical while the output type is identical to the
-        specified 'values_*' attribute. If an input element can not be found in the
-        specified 'keys_*' attribute, the 'default_*' that matches the specified
-        'values_*' attribute may be used as its output value.
-
-
-        Let's consider an example which maps a string tensor to an integer tensor.
-        Assume and 'keys_strings' is ["Amy", "Sally"], 'values_int64s' is [5, 6],
-        and 'default_int64' is '-1'.  The input ["Dori", "Amy", "Amy", "Sally",
-        "Sally"] would be mapped to [-1, 5, 5, 6, 6].
-
-
-        Since this operator is an one-to-one mapping, its input and output shapes
-        are the same. Notice that only one of 'keys_*'/'values_*' can be set.
-
-
-        For key look-up, bit-wise comparison is used so even a float NaN can be
-        mapped to a value in 'values_*' attribute.
-
-
+    Maps each element in the input tensor to another value. The mapping is
+    determined by the two parallel attributes, 'keys\_\ *' and 'values\_*'
+    attribute. The i-th value in the specified 'keys\_\ *' attribute would
+    be mapped to the i-th value in the specified 'values\_*' attribute. It
+    implies that input's element type and the element type of the specified
+    'keys\_\ *' should be identical while the output type is identical to
+    the specified 'values\_*' attribute. If an input element can not be
+    found in the specified 'keys\_\ *' attribute, the 'default\_*' that
+    matches the specified 'values\_\ *' attribute may be used as its output
+    value. Let's consider an example which maps a string tensor to an
+    integer tensor. Assume and 'keys_strings' is ["Amy", "Sally"],
+    'values_int64s' is [5, 6], and 'default_int64' is '-1'. The input
+    ["Dori", "Amy", "Amy", "Sally", "Sally"] would be mapped to [-1, 5, 5,
+    6, 6]. Since this operator is an one-to-one mapping, its input and
+    output shapes are the same. Notice that only one of
+    'keys\_*'/'values\_\ *' can be set. For key look-up, bit-wise comparison
+    is used so even a float NaN can be mapped to a value in 'values\_*'
+    attribute.
 
     Parameters
     ==========
@@ -1147,10 +1122,12 @@ def linear_classifier(
         Data to be classified.
     classlabels_ints
         Attribute.
-        Class labels when using integer labels. One and only one 'classlabels' attribute must be defined.
+        Class labels when using integer labels. One and only one 'classlabels'
+        attribute must be defined.
     classlabels_strings
         Attribute.
-        Class labels when using string labels. One and only one 'classlabels' attribute must be defined.
+        Class labels when using string labels. One and only one 'classlabels'
+        attribute must be defined.
     coefficients
         Attribute.
         A collection of weights of the model(s).
@@ -1162,9 +1139,8 @@ def linear_classifier(
         Indicates whether to do OvR or multinomial (0=OvR is the default).
     post_transform
         Attribute.
-        Indicates the transform to apply to the scores vector.
-
-        One of 'NONE,' 'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
+        Indicates the transform to apply to the scores vector.One of 'NONE,'
+        'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
 
     Returns
     =======
@@ -1211,18 +1187,13 @@ def linear_regressor(
     targets: int = 1,
 ) -> Var:
     r"""
-    Generalized linear regression evaluation.
-
-
-        If targets is set to 1 (default) then univariate regression is performed.
-
-
-        If targets is set to M then M sets of coefficients must be passed in as a sequence
-        and M results will be output for each input n in N.
-
-
-        The coefficients array is of length n, and the coefficients for each target are contiguous.
-        Intercepts are optional but if provided must match the number of targets.
+    Generalized linear regression evaluation. If targets is set to 1
+    (default) then univariate regression is performed. If targets is set to
+    M then M sets of coefficients must be passed in as a sequence and M
+    results will be output for each input n in N. The coefficients array is
+    of length n, and the coefficients for each target are contiguous.
+    Intercepts are optional but if provided must match the number of
+    targets.
 
     Parameters
     ==========
@@ -1237,9 +1208,8 @@ def linear_regressor(
         Weights of the intercepts, if used.
     post_transform
         Attribute.
-        Indicates the transform to apply to the regression output vector.
-
-        One of 'NONE,' 'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
+        Indicates the transform to apply to the regression output vector.One of
+        'NONE,' 'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
     targets
         Attribute.
         The total number of regression targets, 1 if not defined.
@@ -1276,28 +1246,13 @@ def normalizer(
     norm: str = "MAX",
 ) -> Var:
     r"""
-    Normalize the input.  There are three normalization modes, which have the corresponding formulas,
-        defined using element-wise infix operators '/' and '^' and tensor-wide functions 'max' and 'sum':
-
-
-
-
-
-        Max: Y = X / max(X)
-
-
-        L1:  Y = X / sum(X)
-
-
-        L2:  Y = sqrt(X^2 / sum(X^2)}
-
-
-        In all modes, if the divisor is zero, Y == X.
-
-
-
-        For batches, that is, [N,C] tensors, normalization is done along the C axis. In other words, each row
-        of the batch is normalized independently.
+    Normalize the input. There are three normalization modes, which have the
+    corresponding formulas, defined using element-wise infix operators '/'
+    and '^' and tensor-wide functions 'max' and 'sum': Max: Y = X / max(X)
+    L1: Y = X / sum(X) L2: Y = sqrt(X^2 / sum(X^2)} In all modes, if the
+    divisor is zero, Y == X. For batches, that is, [N,C] tensors,
+    normalization is done along the C axis. In other words, each row of the
+    batch is normalized independently.
 
     Parameters
     ==========
@@ -1339,20 +1294,15 @@ def one_hot_encoder(
     zeros: int = 1,
 ) -> Var:
     r"""
-    Replace each input element with an array of ones and zeros, where a single
-        one is placed at the index of the category that was passed in. The total category count
-        will determine the size of the extra dimension of the output array Y.
-
-
-        For example, if we pass a tensor with a single value of 4, and a category count of 8,
-        the output will be a tensor with ``[0,0,0,0,1,0,0,0]``.
-
-
-        This operator assumes every input feature is from the same set of categories.
-
-
-        If the input is a tensor of float, int32, or double, the data will be cast
-        to integers and the cats_int64s category list will be used for the lookups.
+    Replace each input element with an array of ones and zeros, where a
+    single one is placed at the index of the category that was passed in.
+    The total category count will determine the size of the extra dimension
+    of the output array Y. For example, if we pass a tensor with a single
+    value of 4, and a category count of 8, the output will be a tensor with
+    ``[0,0,0,0,1,0,0,0]``. This operator assumes every input feature is from
+    the same set of categories. If the input is a tensor of float, int32, or
+    double, the data will be cast to integers and the cats_int64s category
+    list will be used for the lookups.
 
     Parameters
     ==========
@@ -1361,17 +1311,16 @@ def one_hot_encoder(
         Data to be encoded.
     cats_int64s
         Attribute.
-        List of categories, ints.
-
-        One and only one of the 'cats_*' attributes must be defined.
+        List of categories, ints.One and only one of the 'cats_*' attributes
+        must be defined.
     cats_strings
         Attribute.
-        List of categories, strings.
-
-        One and only one of the 'cats_*' attributes must be defined.
+        List of categories, strings.One and only one of the 'cats_*' attributes
+        must be defined.
     zeros
         Attribute.
-        If true and category is not present, will return all zeros; if false and a category if not found, the operator will fail.
+        If true and category is not present, will return all zeros; if false and
+        a category if not found, the operator will fail.
 
     Returns
     =======
@@ -1423,36 +1372,34 @@ def svmclassifier(
         Data to be classified.
     classlabels_ints
         Attribute.
-        Class labels if using integer labels.
-
-        One and only one of the 'classlabels_*' attributes must be defined.
+        Class labels if using integer labels.One and only one of the
+        'classlabels_*' attributes must be defined.
     classlabels_strings
         Attribute.
-        Class labels if using string labels.
-
-        One and only one of the 'classlabels_*' attributes must be defined.
+        Class labels if using string labels.One and only one of the
+        'classlabels_*' attributes must be defined.
     coefficients
         Attribute.
 
     kernel_params
         Attribute.
-        List of 3 elements containing gamma, coef0, and degree, in that order. Zero if unused for the kernel.
+        List of 3 elements containing gamma, coef0, and degree, in that order.
+        Zero if unused for the kernel.
     kernel_type
         Attribute.
         The kernel type, one of 'LINEAR,' 'POLY,' 'RBF,' 'SIGMOID'.
     post_transform
         Attribute.
-        Indicates the transform to apply to the score.
-
-        One of 'NONE,' 'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
+        Indicates the transform to apply to the score. One of 'NONE,' 'SOFTMAX,'
+        'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
     prob_a
         Attribute.
         First set of probability coefficients.
     prob_b
         Attribute.
-        Second set of probability coefficients. This array must be same size as prob_a.
-
-        If these are provided then output Z are probability estimates, otherwise they are raw scores.
+        Second set of probability coefficients. This array must be same size as
+        prob_a.If these are provided then output Z are probability estimates,
+        otherwise they are raw scores.
     rho
         Attribute.
 
@@ -1470,7 +1417,9 @@ def svmclassifier(
         Classification outputs (one class per example).
     Z : Var
         Type tensor(float).
-        Class scores (one per class per example), if prob_a and prob_b are provided they are probabilities for each class, otherwise they are raw scores.
+        Class scores (one per class per example), if prob_a and prob_b are
+        provided they are probabilities for each class, otherwise they are raw
+        scores.
 
     Notes
     =====
@@ -1523,7 +1472,8 @@ def svmregressor(
     support_vectors: Optional[Iterable[float]] = None,
 ) -> Var:
     r"""
-    Support Vector Machine regression prediction and one-class SVM anomaly detection.
+    Support Vector Machine regression prediction and one-class SVM anomaly
+    detection.
 
     Parameters
     ==========
@@ -1535,7 +1485,8 @@ def svmregressor(
         Support vector coefficients.
     kernel_params
         Attribute.
-        List of 3 elements containing gamma, coef0, and degree, in that order. Zero if unused for the kernel.
+        List of 3 elements containing gamma, coef0, and degree, in that order.
+        Zero if unused for the kernel.
     kernel_type
         Attribute.
         The kernel type, one of 'LINEAR,' 'POLY,' 'RBF,' 'SIGMOID'.
@@ -1547,9 +1498,8 @@ def svmregressor(
         Flag indicating whether the regression is a one-class SVM or not.
     post_transform
         Attribute.
-        Indicates the transform to apply to the score.
-
-        One of 'NONE,' 'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT.'
+        Indicates the transform to apply to the score. One of 'NONE,' 'SOFTMAX,'
+        'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT.'
     rho
         Attribute.
 
@@ -1598,7 +1548,8 @@ def scaler(
     scale: Optional[Iterable[float]] = None,
 ) -> Var:
     r"""
-    Rescale input data, for example to standardize features by removing the mean and scaling to unit variance.
+    Rescale input data, for example to standardize features by removing the
+    mean and scaling to unit variance.
 
     Parameters
     ==========
@@ -1607,16 +1558,14 @@ def scaler(
         Data to be scaled.
     offset
         Attribute.
-        First, offset by this.
-
-        Can be length of features in an [N,F] tensor or length 1, in which case it applies to all features, regardless of dimension count.
+        First, offset by this.Can be length of features in an [N,F] tensor or
+        length 1, in which case it applies to all features, regardless of
+        dimension count.
     scale
         Attribute.
-        Second, multiply by this.
-
-        Can be length of features in an [N,F] tensor or length 1, in which case it applies to all features, regardless of dimension count.
-
-        Must be same length as 'offset'
+        Second, multiply by this.Can be length of features in an [N,F] tensor or
+        length 1, in which case it applies to all features, regardless of
+        dimension count.Must be same length as 'offset'
 
     Returns
     =======
@@ -1669,22 +1618,15 @@ def tree_ensemble_classifier(
 ) -> Tuple[Var, Var]:
     r"""
     Tree Ensemble classifier. Returns the top class for each of N inputs.
-
-
-        The attributes named 'nodes_X' form a sequence of tuples, associated by
-        index into the sequences, which must all be of equal length. These tuples
-        define the nodes.
-
-
-        Similarly, all fields prefixed with 'class_' are tuples of votes at the leaves.
-        A leaf may have multiple votes, where each vote is weighted by
-        the associated class_weights index.
-
-
-        One and only one of classlabels_strings or classlabels_int64s
-        will be defined. The class_ids are indices into this list.
-        All fields ending with `_as_tensor` can be used instead of the
-        same parameter without the suffix if the element type is double and not float.
+    The attributes named 'nodes_X' form a sequence of tuples, associated by
+    index into the sequences, which must all be of equal length. These
+    tuples define the nodes. Similarly, all fields prefixed with 'class_'
+    are tuples of votes at the leaves. A leaf may have multiple votes, where
+    each vote is weighted by the associated class_weights index. One and
+    only one of classlabels_strings or classlabels_int64s will be defined.
+    The class_ids are indices into this list. All fields ending with
+    \_as_tensor can be used instead of the same parameter without the suffix
+    if the element type is double and not float.
 
     Parameters
     ==========
@@ -1693,10 +1635,12 @@ def tree_ensemble_classifier(
         Input of shape [N,F]
     base_values
         Attribute.
-        Base values for classification, added to final class score; the size must be the same as the classes or can be left unassigned (assumed 0)
+        Base values for classification, added to final class score; the size
+        must be the same as the classes or can be left unassigned (assumed 0)
     base_values_as_tensor
         Attribute.
-        Base values for classification, added to final class score; the size must be the same as the classes or can be left unassigned (assumed 0)
+        Base values for classification, added to final class score; the size
+        must be the same as the classes or can be left unassigned (assumed 0)
     class_ids
         Attribute.
         The index of the class list that each weight is for.
@@ -1714,14 +1658,12 @@ def tree_ensemble_classifier(
         The weight for the class in class_id.
     classlabels_int64s
         Attribute.
-        Class labels if using integer labels.
-
-        One and only one of the 'classlabels_*' attributes must be defined.
+        Class labels if using integer labels.One and only one of the
+        'classlabels_*' attributes must be defined.
     classlabels_strings
         Attribute.
-        Class labels if using string labels.
-
-        One and only one of the 'classlabels_*' attributes must be defined.
+        Class labels if using string labels.One and only one of the
+        'classlabels_*' attributes must be defined.
     nodes_falsenodeids
         Attribute.
         Child node if expression is false.
@@ -1736,17 +1678,19 @@ def tree_ensemble_classifier(
         Popularity of each node, used for performance and may be omitted.
     nodes_missing_value_tracks_true
         Attribute.
-        For each node, define what to do in the presence of a missing value: if a value is missing (NaN), use the 'true' or 'false' branch based on the value in this array.
-
-        This attribute may be left undefined, and the defalt value is false (0) for all nodes.
+        For each node, define what to do in the presence of a missing value: if
+        a value is missing (NaN), use the 'true' or 'false' branch based on the
+        value in this array.This attribute may be left undefined, and the defalt
+        value is false (0) for all nodes.
     nodes_modes
         Attribute.
-        The node kind, that is, the comparison to make at the node. There is no comparison to make at a leaf node.
-
-        One of 'BRANCH_LEQ', 'BRANCH_LT', 'BRANCH_GTE', 'BRANCH_GT', 'BRANCH_EQ', 'BRANCH_NEQ', 'LEAF'
+        The node kind, that is, the comparison to make at the node. There is no
+        comparison to make at a leaf node.One of 'BRANCH_LEQ', 'BRANCH_LT',
+        'BRANCH_GTE', 'BRANCH_GT', 'BRANCH_EQ', 'BRANCH_NEQ', 'LEAF'
     nodes_nodeids
         Attribute.
-        Node id for each node. Ids may restart at zero for each tree, but it not required to.
+        Node id for each node. Ids may restart at zero for each tree, but it not
+        required to.
     nodes_treeids
         Attribute.
         Tree id for each node.
@@ -1761,9 +1705,8 @@ def tree_ensemble_classifier(
         Thresholds to do the splitting on for each node.
     post_transform
         Attribute.
-        Indicates the transform to apply to the score.
-
-         One of 'NONE,' 'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT.'
+        Indicates the transform to apply to the score. One of 'NONE,' 'SOFTMAX,'
+        'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT.'
 
     Returns
     =======
@@ -1862,28 +1805,17 @@ def tree_ensemble_regressor(
     target_weights_as_tensor: Optional[np.ndarray] = None,
 ) -> Var:
     r"""
-    Tree Ensemble regressor.  Returns the regressed values for each input in N.
-
-
-        All args with nodes_ are fields of a tuple of tree nodes, and
-        it is assumed they are the same length, and an index i will decode the
-        tuple across these inputs.  Each node id can appear only once
-        for each tree id.
-
-
-        All fields prefixed with target_ are tuples of votes at the leaves.
-
-
-        A leaf may have multiple votes, where each vote is weighted by
-        the associated target_weights index.
-
-
-        All fields ending with `_as_tensor` can be used instead of the
-        same parameter without the suffix if the element type is double and not float.
-        All trees must have their node ids start at 0 and increment by 1.
-
-
-        Mode enum is BRANCH_LEQ, BRANCH_LT, BRANCH_GTE, BRANCH_GT, BRANCH_EQ, BRANCH_NEQ, LEAF
+    Tree Ensemble regressor. Returns the regressed values for each input in
+    N. All args with nodes\_ are fields of a tuple of tree nodes, and it is
+    assumed they are the same length, and an index i will decode the tuple
+    across these inputs. Each node id can appear only once for each tree id.
+    All fields prefixed with target\_ are tuples of votes at the leaves. A
+    leaf may have multiple votes, where each vote is weighted by the
+    associated target_weights index. All fields ending with \_as_tensor can
+    be used instead of the same parameter without the suffix if the element
+    type is double and not float. All trees must have their node ids start
+    at 0 and increment by 1. Mode enum is BRANCH_LEQ, BRANCH_LT, BRANCH_GTE,
+    BRANCH_GT, BRANCH_EQ, BRANCH_NEQ, LEAF
 
     Parameters
     ==========
@@ -1892,15 +1824,16 @@ def tree_ensemble_regressor(
         Input of shape [N,F]
     aggregate_function
         Attribute.
-        Defines how to aggregate leaf values within a target.
-
-        One of 'AVERAGE,' 'SUM,' 'MIN,' 'MAX.'
+        Defines how to aggregate leaf values within a target. One of 'AVERAGE,'
+        'SUM,' 'MIN,' 'MAX.'
     base_values
         Attribute.
-        Base values for classification, added to final class score; the size must be the same as the classes or can be left unassigned (assumed 0)
+        Base values for classification, added to final class score; the size
+        must be the same as the classes or can be left unassigned (assumed 0)
     base_values_as_tensor
         Attribute.
-        Base values for classification, added to final class score; the size must be the same as the classes or can be left unassigned (assumed 0)
+        Base values for classification, added to final class score; the size
+        must be the same as the classes or can be left unassigned (assumed 0)
     n_targets
         Attribute.
         The total number of targets.
@@ -1918,17 +1851,19 @@ def tree_ensemble_regressor(
         Popularity of each node, used for performance and may be omitted.
     nodes_missing_value_tracks_true
         Attribute.
-        For each node, define what to do in the presence of a NaN: use the 'true' (if the attribute value is 1) or 'false' (if the attribute value is 0) branch based on the value in this array.
-
-        This attribute may be left undefined and the defalt value is false (0) for all nodes.
+        For each node, define what to do in the presence of a NaN: use the
+        'true' (if the attribute value is 1) or 'false' (if the attribute value
+        is 0) branch based on the value in this array.This attribute may be left
+        undefined and the defalt value is false (0) for all nodes.
     nodes_modes
         Attribute.
-        The node kind, that is, the comparison to make at the node. There is no comparison to make at a leaf node.
-
-        One of 'BRANCH_LEQ', 'BRANCH_LT', 'BRANCH_GTE', 'BRANCH_GT', 'BRANCH_EQ', 'BRANCH_NEQ', 'LEAF'
+        The node kind, that is, the comparison to make at the node. There is no
+        comparison to make at a leaf node.One of 'BRANCH_LEQ', 'BRANCH_LT',
+        'BRANCH_GTE', 'BRANCH_GT', 'BRANCH_EQ', 'BRANCH_NEQ', 'LEAF'
     nodes_nodeids
         Attribute.
-        Node id for each node. Node ids must restart at zero for each tree and increase sequentially.
+        Node id for each node. Node ids must restart at zero for each tree and
+        increase sequentially.
     nodes_treeids
         Attribute.
         Tree id for each node.
@@ -1943,9 +1878,8 @@ def tree_ensemble_regressor(
         Thresholds to do the splitting on for each node.
     post_transform
         Attribute.
-        Indicates the transform to apply to the score.
-
-        One of 'NONE,' 'SOFTMAX,' 'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
+        Indicates the transform to apply to the score. One of 'NONE,' 'SOFTMAX,'
+        'LOGISTIC,' 'SOFTMAX_ZERO,' or 'PROBIT'
     target_ids
         Attribute.
         The index of the target that each weight is for
@@ -2036,16 +1970,11 @@ def zip_map(
     classlabels_strings: Optional[Iterable[str]] = None,
 ) -> Var:
     r"""
-    Creates a map from the input and the attributes.
-
-
-        The values are provided by the input tensor, while the keys are specified by the attributes.
-        Must provide keys in either classlabels_strings or classlabels_int64s (but not both).
-
-
-        The columns of the tensor correspond one-by-one to the keys specified by the attributes. There must be as many columns as keys.
-
-
+    Creates a map from the input and the attributes. The values are provided
+    by the input tensor, while the keys are specified by the attributes.
+    Must provide keys in either classlabels_strings or classlabels_int64s
+    (but not both). The columns of the tensor correspond one-by-one to the
+    keys specified by the attributes. There must be as many columns as keys.
 
     Parameters
     ==========
@@ -2054,14 +1983,12 @@ def zip_map(
         The input values
     classlabels_int64s
         Attribute.
-        The keys when using int keys.
-
-        One and only one of the 'classlabels_*' attributes must be defined.
+        The keys when using int keys.One and only one of the 'classlabels_*'
+        attributes must be defined.
     classlabels_strings
         Attribute.
-        The keys when using string keys.
-
-        One and only one of the 'classlabels_*' attributes must be defined.
+        The keys when using string keys.One and only one of the 'classlabels_*'
+        attributes must be defined.
 
     Returns
     =======
