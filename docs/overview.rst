@@ -54,27 +54,26 @@ This example constructs a graph, taking floating point vectors ``a``, ``b``, ``c
     import numpy
     import onnxruntime
 
-    from spox import Tensor
-    from spox._graph import arguments, results  # FIXME: Unstable API!
+    from spox import argument, build, Tensor
     import spox.opset.ai.onnx.v17 as op
 
     # Construct a Tensor type representing a (1D) vector of float32, of size N.
     VectorFloat32 = Tensor(numpy.float32, ('N',))
 
     # a, b, c are all vectors and named the same in the graph
-    a, b, c = arguments(a=VectorFloat32, b=VectorFloat32, c=VectorFloat32)
+    a, b, c = [argument(VectorFloat32) for _ in range(3)]
 
     # p represents the Var equivalent to a * b
     p = op.mul(a, b)
     q = op.add(p, c)
     # q = op.add(op.mul(a, b), c) works exactly the same
 
-    # Construct a Spox graph with the result
-    graph = results(r=q)
+    # Build an ONNX model in Spox
+    model = build({'a': a, 'b': b, 'c': c}, {'r': q})
 
     # - * -
     # We leave Spox-land and use ONNX Runtime to execute
-    session = onnxruntime.InferenceSession(graph.to_onnx_model().SerializeToString())
+    session = onnxruntime.InferenceSession(model.SerializeToString())
     (result,) = session.run(None, {
         'a': numpy.array([1, 2, 3], dtype=numpy.float32),
         'b': numpy.array([2, 4, 1], dtype=numpy.float32),
