@@ -50,6 +50,31 @@ Since ONNX is tensor-oriented, this code assumes that `x` and `y` are floating p
 
 Performing operations on Variables creates further Variables, all of which keep track of what computation has been performed so far. If an operation is determined to be illegal (for example due to mismatching types/shapes), an exception will be immediately raised by Spox.
 
-When you're done you may build an `onnx.ModelProto` - the model protobuf, which is the ONNX program representation. This may also already be done for you if you're writing a component of a library using Spox. Afterwards you may use an ONNX runtime/backend to execute the model with some inputs, for example the mainline [ONNX Runtime](https://github.com/microsoft/onnxruntime).
+To introduce _argument_ variables (which are placeholders for runtime values - graph/model inputs in ONNX nomenclature), you may use the `argument(typ: Type) -> Var` function with the required type, like `Tensor`.
 
-You can learn more about Spox in the documentation linked at the top of the readme.
+```python
+from spox import argument, Tensor
+
+a = argument(Tensor(float, (1, 'N')))
+b = argument(Tensor(float, ('M', 1)))
+
+# Do what you want, e.g. c = geometric_mean(a, b)
+```
+
+When you're done you may build an `onnx.ModelProto` - the model protobuf, which is the ONNX program representation. You may do this with the public `build` function:
+
+```py
+import onnx
+from spox import Var
+
+def build(inputs: dict[str, Var], outputs: dict[str, Var]) -> onnx.ModelProto:
+    ...
+```
+
+The keys of passed dictionaries are used to _name_ the arguments and results you would like the model to have. Keep in mind that `inputs` may only contain `Var` returned by `argument`.
+
+Building the model may also already be done for you if you're writing a component of a library using Spox.
+
+Afterwards, you may use an ONNX runtime/backend to execute the model with some inputs, for example the mainline [ONNX Runtime](https://github.com/microsoft/onnxruntime).
+
+You can learn more about Spox in the [documentation](https://docs.dev.quantco.cloud/qc-github-artifacts/Quantco/spox/latest/index.html).
