@@ -1,6 +1,5 @@
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
-import enum
 import typing
 from typing import Dict, Tuple
 
@@ -23,15 +22,6 @@ from ._var import _nil
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
-
-
-class ValuePropBackend(enum.Enum):
-    NONE = 0
-    REFERENCE = 1
-    ONNXRUNTIME = 2
-
-
-_VALUE_PROP_BACKEND: ValuePropBackend = ValuePropBackend.REFERENCE
 
 
 class StandardNode(Node):
@@ -181,17 +171,19 @@ class StandardNode(Node):
         if next(iter(self.subgraphs), None) is not None:
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
-        if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
+        if _value_prop._VALUE_PROP_BACKEND == _value_prop.ValuePropBackend.REFERENCE:
             wrap_feed = PropValue.to_ref_value
             run = _value_prop._run_reference_implementation
             unwrap_feed = PropValue.from_ref_value
-        elif _VALUE_PROP_BACKEND == ValuePropBackend.ONNXRUNTIME:
+        elif (
+            _value_prop._VALUE_PROP_BACKEND == _value_prop.ValuePropBackend.ONNXRUNTIME
+        ):
             wrap_feed = PropValue.to_ort_value
             run = _value_prop._run_onnxruntime
             unwrap_feed = PropValue.from_ort_value
         else:
             raise RuntimeError(
-                f"Not a valid value propagation backend: {_VALUE_PROP_BACKEND}."
+                f"Not a valid value propagation backend: {_value_prop._VALUE_PROP_BACKEND}."
             )
         model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False)
         input_feed = {
@@ -212,7 +204,7 @@ class StandardNode(Node):
         return self.infer_output_types_onnx()
 
     def propagate_values(self) -> Dict[str, PropValueType]:
-        if _VALUE_PROP_BACKEND != ValuePropBackend.NONE:
+        if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
             return self.propagate_values_onnx()
         return {}
 

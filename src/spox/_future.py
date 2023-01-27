@@ -6,18 +6,18 @@ from typing import Iterable, List, Optional, Union
 import numpy as np
 
 import spox._node
-import spox._standard
+import spox._value_prop
 from spox._type_system import Tensor
 from spox._var import Var
 
 TypeWarningLevel = spox._node.TypeWarningLevel
 set_type_warning_level = spox._node.set_type_warning_level
 
-ValuePropBackend = spox._standard.ValuePropBackend
+ValuePropBackend = spox._value_prop.ValuePropBackend
 
 
 def set_value_prop_backend(backend: ValuePropBackend) -> None:
-    spox._standard._VALUE_PROP_BACKEND = backend
+    spox._value_prop._VALUE_PROP_BACKEND = backend
 
 
 class _NumpyLikeOperatorDispatcher:

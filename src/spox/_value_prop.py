@@ -1,3 +1,4 @@
+import enum
 import warnings
 from dataclasses import dataclass
 from typing import Dict, List, Union
@@ -23,6 +24,15 @@ ORTValue = Union[numpy.ndarray, list, None]
 RefValue = Union[numpy.ndarray, list, float]
 
 VALUE_PROP_STRICT_CHECK: bool = False
+
+
+class ValuePropBackend(enum.Enum):
+    NONE = 0
+    REFERENCE = 1
+    ONNXRUNTIME = 2
+
+
+_VALUE_PROP_BACKEND: ValuePropBackend = ValuePropBackend.REFERENCE
 
 
 @dataclass(frozen=True)
