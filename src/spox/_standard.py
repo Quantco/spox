@@ -17,7 +17,7 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
-from ._value_prop import PropValue, PropValueType
+from ._value_prop import PropValueType
 from ._var import _nil
 
 if typing.TYPE_CHECKING:
@@ -171,21 +171,8 @@ class StandardNode(Node):
         if next(iter(self.subgraphs), None) is not None:
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
-        if _value_prop._VALUE_PROP_BACKEND == _value_prop.ValuePropBackend.REFERENCE:
-            wrap_feed = PropValue.to_ref_value
-            run = _value_prop._run_reference_implementation
-            unwrap_feed = PropValue.from_ref_value
-        elif (
-            _value_prop._VALUE_PROP_BACKEND == _value_prop.ValuePropBackend.ONNXRUNTIME
-        ):
-            wrap_feed = PropValue.to_ort_value
-            run = _value_prop._run_onnxruntime
-            unwrap_feed = PropValue.from_ort_value
-        else:
-            raise RuntimeError(
-                f"Not a valid value propagation backend: {_value_prop._VALUE_PROP_BACKEND}."
-            )
         model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False)
+        wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
             scope.var[var]: wrap_feed(var._value)
             for var in self.inputs.as_dict().values()

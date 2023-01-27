@@ -163,3 +163,19 @@ def _run_onnxruntime(
     output_names = [output.name for output in session.get_outputs()]
     output_feed = dict(zip(output_names, session.run(None, input_feed)))
     return output_feed
+
+
+def get_backend_calls():
+    if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
+        wrap_feed = PropValue.to_ref_value
+        run = _run_reference_implementation
+        unwrap_feed = PropValue.from_ref_value
+    elif _VALUE_PROP_BACKEND == ValuePropBackend.ONNXRUNTIME:
+        wrap_feed = PropValue.to_ort_value
+        run = _run_onnxruntime
+        unwrap_feed = PropValue.from_ort_value
+    else:
+        raise RuntimeError(
+            f"Not a valid value propagation backend: {_VALUE_PROP_BACKEND}."
+        )
+    return wrap_feed, run, unwrap_feed
