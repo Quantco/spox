@@ -102,7 +102,6 @@ class PropValue:
 
     @classmethod
     def from_ort_value(cls, typ: Type, value: ORTValue) -> "PropValue":
-        print(f"{typ!r} {value!r} {type(value)!r}")
         if value is None:  # Optional, Nothing
             return cls(typ, None)
         elif isinstance(typ, Optional):  # Optional, Some
