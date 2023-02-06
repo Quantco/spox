@@ -330,9 +330,7 @@ def test_simple_nested_calls(onnx_helper, cubic_graph):
     a = numpy.random.rand(8).astype(numpy.float32)
     # increase rtol due to small *non-deterministic* discrepancies
     onnx_helper.assert_close(
-        onnx_helper.run(cubic_graph, "y", x=a),
-        (1 + a * (2 + a * (3 + a * 5))),
-        rtol=1e-6,
+        onnx_helper.run(cubic_graph, "y", x=a), (1 + 2 * a) + a * a * (3 + a * 5)
     )
 
 
