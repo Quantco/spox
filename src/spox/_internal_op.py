@@ -7,13 +7,17 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple
 
+import numpy
 import onnx
 
+from . import _value_prop
 from ._attributes import AttrString, AttrTensor, AttrType
 from ._node import Node, OpType
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
+from ._utils import from_array
+from ._value_prop import PropValueType
 from ._var import Var
 from ._varfields import NoVars, VarFields
 
@@ -100,6 +104,64 @@ class _Initializer(_InternalNode):
         return []
 
 
+class _Constant(_InternalNode):
+    """Internal operator allowing usage of a universal-versioned Constant operator."""
+
+    op_type = OpType("Constant", "spox.internal", 0)
+    version: Optional[int]
+
+    @dataclass
+    class Attributes:
+        value: AttrTensor
+
+    class Inputs(VarFields):
+        pass
+
+    class Outputs(VarFields):
+        output: Var
+
+    attrs: Attributes
+    inputs: Inputs
+    outputs: Outputs
+
+    def post_init(self, **kwargs):
+        self.version = kwargs.get("version")
+
+    def infer_output_types(self) -> Dict[str, Type]:
+        # Output type is based on the value of the type attribute
+        value = self.attrs.value.value
+        return {"output": Tensor(value.dtype, value.shape)}
+
+    def propagate_values(self) -> Dict[str, PropValueType]:
+        return {"output": self.attrs.value.value}
+
+    @property
+    def opset_req(self) -> Set[Tuple[str, int]]:
+        return {("", self.version)} if self.version is not None else set()
+
+    def to_onnx(
+        self,
+        scope: "Scope",
+        doc_string=None,
+        build_subgraph=None,
+    ) -> List[onnx.NodeProto]:
+        return [
+            onnx.helper.make_node(
+                "Constant",
+                [],
+                [scope.var[self.outputs.output]],
+                scope.node[self],
+                value=from_array(self.attrs.value.value),
+            )
+        ]
+
+
+def constant(value: numpy.ndarray, version: Optional[int]) -> Var:
+    return _Constant(
+        _Constant.Attributes(AttrTensor(value)), version=version
+    ).outputs.output
+
+
 class _Embedded(_InternalNode):
     """Internal operator used for embedding an existing ONNX ModelProto inside a Spox graph."""
 
@@ -155,6 +217,23 @@ class _Embedded(_InternalNode):
             for k, o in enumerate(self.graph.output)
         }
 
+    def propagate_values(self) -> Dict[str, _value_prop.PropValueType]:
+        if any(
+            var and (var.type is None or var._value is None)
+            for var in self.inputs.as_dict().values()
+        ):
+            return {}
+        wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
+        input_feed = {
+            i.name: wrap_feed(var._value)
+            for i, var in zip(self.model.graph.input, self.inputs.inputs)
+        }
+        output_feed = run(self.model, input_feed)
+        return {
+            f"outputs_{k}": unwrap_feed(var.unwrap_type(), output_feed[o.name]).value
+            for k, (o, var) in enumerate(zip(self.graph.output, self.outputs.outputs))
+        }
+
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
     ) -> List[onnx.NodeProto]:
@@ -167,13 +246,16 @@ class _Embedded(_InternalNode):
         )
         nodes: List[onnx.NodeProto] = []
         # Move initializers to Constant nodes
+        input_names = {i.name for i in graph.input}
         nodes.extend(
             onnx.helper.make_node("Constant", [], [i.name], value=i)
             for i in graph.initializer
+            if i.name not in input_names
         )
         nodes.extend(
             onnx.helper.make_node("Constant", [], [i.values.name], sparse_value=i)
             for i in graph.sparse_initializer
+            if i.values.name not in input_names
         )
         # Apply a trivial renaming of inputs
         for i, var in zip(graph.input, self.inputs.inputs):

@@ -166,3 +166,12 @@ def inc3_graph_sparse_init(op, inc_proto_sparse_one):
 def test_inc3_with_sparse_initializer(onnx_helper, inc3_graph_sparse_init):
     x = numpy.array([1.5, 0.75], numpy.float32)
     onnx_helper.assert_close(onnx_helper.run(inc3_graph_sparse_init, "y", x=x), x + 3)
+
+
+def test_inc3_value_prop(op, inc_proto):
+    def inc(s):
+        return embedded(inc_proto)(X=s)["Y"]
+
+    assert inc(inc(inc(op.const([0.0]))))._get_value() == numpy.array(
+        [3.0], numpy.float32
+    )
