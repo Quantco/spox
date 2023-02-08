@@ -11,10 +11,10 @@ from typing import Dict
 import numpy
 
 from spox import Var
+from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
 from spox._node import Node, OpType
 from spox._type_system import Tensor, Type
-from spox._varfields import VarFields
 
 
 # Define the Node for this operator - need to know the attributes, inputs and outputs statically
@@ -23,13 +23,15 @@ class Inverse(Node):
 
     # Define types for attributes, inputs & outputs
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     # This is optional, but is useful when defining the inference functions below.

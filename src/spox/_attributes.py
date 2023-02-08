@@ -1,5 +1,15 @@
 from abc import ABC
-from typing import Any, ClassVar, Generic, Iterable, Tuple, TypeVar, Union
+from typing import (
+    Any,
+    ClassVar,
+    Generic,
+    Iterable,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 import numpy.typing as npt
@@ -16,6 +26,8 @@ from spox._utils import dtype_to_tensor_type, from_array
 
 S = TypeVar("S")
 T = TypeVar("T")
+AttrT = TypeVar("AttrT", bound="Attr")
+AttrIterableT = TypeVar("AttrIterableT", bound="_AttrIterable")
 
 
 class Attr(ABC, Generic[T]):
@@ -25,6 +37,10 @@ class Attr(ABC, Generic[T]):
     def __init__(self, value: Union[T, "_Ref[T]"]):
         self._value = value
         self._validate()
+
+    @classmethod
+    def maybe(cls: Type[AttrT], value: Optional[T]) -> Optional[AttrT]:
+        return cls(value) if value is not None else None
 
     @property
     def value(self) -> T:
@@ -152,6 +168,12 @@ class AttrGraph(Attr[Any]):
 class _AttrIterable(Attr[Tuple[S, ...]], ABC):
     def __init__(self, value: Union[Iterable[S], _Ref[Tuple[S, ...]]]):
         super().__init__(value if isinstance(value, _Ref) else tuple(value))
+
+    @classmethod
+    def maybe(
+        cls: Type[AttrIterableT], value: Optional[Iterable[S]]
+    ) -> Optional[AttrIterableT]:
+        return cls(tuple(value)) if value is not None else None
 
 
 class AttrFloat32s(_AttrIterable[float]):

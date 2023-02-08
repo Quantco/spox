@@ -1,3 +1,4 @@
+import dataclasses
 import enum
 import itertools
 import traceback
@@ -5,28 +6,16 @@ import typing
 import warnings
 from abc import ABC
 from dataclasses import dataclass
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Protocol,
-    Sequence,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import ClassVar, Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union
 
 import onnx
 
 from ._attributes import AttrGraph
 from ._exceptions import InferenceWarning
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
 from ._type_system import Type
 from ._value_prop import PropValue, PropValueType
 from ._var import Var
-from ._varfields import VarFields
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
@@ -64,46 +53,44 @@ class OpType:
     version: int
 
 
-class Dataclass(Protocol):
-    __dataclass_fields__: ClassVar[Dict]
-
-
 class Node(ABC):
     """
     Abstract base class for representing operators in the Spox graph, both standard ONNX and some internal.
     Should not be created directly - proper instances are created by various operator constructors internally.
 
-    When subclassing, ``VarFields`` subtypes must be hinted in
-    ``inputs``, ``outputs``. These hints by default specify results of
-    ``in_type``, ``out_type``. ``Attributes`` must be a ``dataclass``
-    where its members are subclasses of :class:`spox._attributes.Attr`.
+    Subclasses may specify ``Attributes``, ``Inputs`` and ``Outputs``,
+    which must be marked as ``@dataclass`` and inherit from
+    ``BaseAttributes``, ``BaseInputs`` and ``BaseOutputs``, respectively.
 
-    Names of fields in ``attrs`` and order of fields in ``inputs``, ``outputs`` are interpreted during building (ONNX).
+    Additionally, a subclass may hint that its definitions of the
+    above classes are types of ``attrs``, ``inputs`` and ``outputs``.
+    This is convenient when accessing these objects in inference routines.
 
-    Note that type hints in the Fields types have significance and are introspected to run the type inference system,
-    and for attributes to perform the right checks and casts.
+    Names of fields in ``attrs``, order of fields in ``inputs``, ``outputs``,
+    as well as all hints are significant during construction and building ONNX.
+    Names of fields in ``inputs`` and ``outputs`` impact the ONNX naming.
 
     ``out_variadic`` is used for the number of outputs of the possible variadic fields, as its length must be explicit.
     """
 
     op_type: ClassVar[OpType] = OpType("", "", 0)
 
-    Attributes: ClassVar[typing.Type]
-    Inputs: ClassVar[typing.Type]
-    Outputs: ClassVar[typing.Type]
+    Attributes: ClassVar[typing.Type[BaseAttributes]]
+    Inputs: ClassVar[typing.Type[BaseInputs]]
+    Outputs: ClassVar[typing.Type[BaseOutputs]]
 
-    attrs: Dataclass
-    inputs: VarFields
-    outputs: VarFields
+    attrs: BaseAttributes
+    inputs: BaseInputs
+    outputs: BaseOutputs
 
     out_variadic: Optional[int]
     _traceback: List[str]
 
     def __init__(
         self,
-        attrs: Optional[Any] = None,
-        inputs: Optional[VarFields] = None,
-        outputs: Optional[VarFields] = None,
+        attrs: Optional[BaseAttributes] = None,
+        inputs: Optional[BaseInputs] = None,
+        outputs: Optional[BaseOutputs] = None,
         *,
         out_variadic: Optional[int] = None,
         infer_types: bool = True,
@@ -142,11 +129,8 @@ class Node(ABC):
         if not outputs:
             # As inference functions may access which output vars we initialized (e.g. variadics)
             # we inject uninitialized vars first
-            self.outputs = self._init_output_vars({}, {})
-            output_types = self.infer_output_types() if infer_types else {}
-            self.outputs = self._init_output_vars(output_types, {})
-            output_values = self.propagate_values() if propagate_values else {}
-            self.outputs = self._init_output_vars(output_types, output_values)
+            self.outputs = self._init_output_vars()
+            self.inference(infer_types, propagate_values)
         else:
             self.outputs = outputs
         self._traceback = traceback.format_stack()
@@ -170,7 +154,7 @@ class Node(ABC):
         Sets the minimum number of inputs in the ONNX representation.
         Sometimes needed due to issues with interpretation of NodeProto in type inference by ONNX.
 
-        Some operator schemas may allow not specifying trailing optional inputs with "" (represented as _nil/NilVar),
+        Some operator schemas may allow not specifying trailing optional inputs with "" (usually represented as None),
         while also requiring you to pass them in anyhow. On the other hand, some operators do not support optional
         inputs via "", so in that case trailing optionals should be removed.
 
@@ -181,7 +165,7 @@ class Node(ABC):
         from the tail (minimum inputs is exactly the number of inputs).
 
         """
-        return len(self.inputs.as_dict())
+        return len(self.inputs)
 
     @property
     def min_output(self) -> int:
@@ -190,7 +174,7 @@ class Node(ABC):
 
         See the docstring for ``min_input`` for a rationale.
         """
-        return len(self.outputs.as_dict())
+        return len(self.outputs)
 
     @property
     def signature(self) -> str:
@@ -202,11 +186,11 @@ class Node(ABC):
             )
 
         sign = ", ".join(
-            fmt_input(key, var) for key, var in self.inputs.as_dict().items()
+            fmt_input(key, var) for key, var in self.inputs.get_vars().items()
         )
         sign = f"inputs [{sign}]"
         shown_attrs = {
-            k: v.value for k, v in self.attrs.__dict__.items() if v is not None
+            k: v.value for k, v in self.attrs.get_fields().items() if v is not None
         }
         if shown_attrs:
             sign_attrs = ", ".join(f"{k} = {v}" for k, v in shown_attrs.items())
@@ -241,26 +225,29 @@ class Node(ABC):
         """
         return {}
 
-    def inference(
-        self, infer_types: bool = True, propagate_values: bool = True, **kwargs
-    ):
+    def inference(self, infer_types: bool = True, propagate_values: bool = True):
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
         out_types = self.infer_output_types() if infer_types else {}
-        out_names = set(self.outputs.get_types())
 
-        for name in out_names:
-            var = getattr(self.outputs, name)
+        for key, var in self.outputs.get_vars().items():
             if var.type is None:  # If no existing type from init_output_vars
                 # Attempt to use the ones from kwargs, if none then what type inference gave
-                var.type = kwargs.get(name, out_types.get(name))
+                var.type = out_types.get(key)
 
         # After typing everything, try to get values for outputs
         out_values = self.propagate_values() if propagate_values else {}
-        for name in out_names:
-            var = getattr(self.outputs, name)
-            if var.value is None:
-                var.value = out_values.get(name)
+        for key, var in self.outputs.get_vars().items():
+            if var.type is not None and var._value is None and key in out_values:
+                prop = PropValue(var.type, out_values.get(key))
+                if prop.check():
+                    var._value = prop
+                else:
+                    warnings.warn(
+                        InferenceWarning(
+                            f"PropValue of {prop.type} does not match the expected type {prop.type}, dropping."
+                        )
+                    )
 
     def validate_types(self) -> None:
         """Validation of types, ran at the end of Node creation."""
@@ -301,56 +288,44 @@ class Node(ABC):
         return None
 
     def _list_types(self, source):
-        for name, _ in source.get_types().items():
-            var = getattr(source, name)
-            if not var:
-                continue
-            value_type = var.type
-            yield name, value_type
+        return ((key, var.type) for key, var in source.get_vars().items())
 
-    def _init_output_vars(
-        self, types: Dict[str, Type], values: Dict[str, PropValueType]
-    ) -> VarFields:
+    def _init_output_vars(self) -> BaseOutputs:
         """
         Initialize empty output vars bound to this Node and return the respective Fields object.
         Their type is bound in the create method.
         Note: called in ``__init__`` while the state may be partially initialized.
         """
-
-        def arr(name):
-            typ: Optional[Type] = types.get(name)
-            val: Optional[PropValue]
-            if typ is not None and name in values:
-                val = PropValue(typ, values.get(name))
-                if not val.check():
-                    warnings.warn(
-                        InferenceWarning(
-                            f"PropValue of {val.value} does not match the expected type {val.type}, dropping."
-                        )
-                    )
-                    val = None
-            else:
-                val = None
-            return Var(self, typ, val)
-
-        var = self.Outputs.get_variadic_name()
-        outputs: Dict[str, Union[Var, Sequence[Var]]] = {
-            name: arr(name) for name in self.Outputs.get_kwargs() if name != var
+        variadics = {
+            field.name
+            for field in dataclasses.fields(self.Outputs)
+            if self.Outputs._get_field_type(field) == VarFieldKind.VARIADIC
         }
-        if var is not None:
+        if variadics:
+            (variadic,) = variadics
+        else:
+            variadic = None
+        outputs: Dict[str, Union[Var, Sequence[Var]]] = {
+            field.name: Var(self, None, None)
+            for field in dataclasses.fields(self.Outputs)
+            if field.name != variadic
+        }
+        if variadic is not None:
             assert self.out_variadic is not None
-            outputs[var] = [arr(f"{var}_{i}") for i in range(self.out_variadic)]
-        return self.Outputs(**outputs)
+            outputs[variadic] = [
+                Var(self, None, None) for _ in range(self.out_variadic)
+            ]
+        return self.Outputs(**outputs)  # type: ignore
 
     @property
     def dependencies(self) -> Iterable[Var]:
         """List of input Vars into this Node."""
-        return (var for var in self.inputs.as_dict().values() if var)
+        return (var for var in self.inputs.get_vars().values())
 
     @property
     def dependents(self) -> Iterable[Var]:
         """List of output Vars from this Node."""
-        return (var for var in self.outputs.as_dict().values() if var)
+        return (var for var in self.outputs.get_vars().values())
 
     @property
     def incident(self) -> Iterable[Var]:
@@ -359,7 +334,7 @@ class Node(ABC):
 
     @property
     def subgraphs(self) -> Iterable["Graph"]:
-        for attr in self.attrs.__dict__.values():
+        for attr in self.attrs.get_fields().values():
             if isinstance(attr, AttrGraph):
                 yield attr.value
 
@@ -376,8 +351,10 @@ class Node(ABC):
     ) -> List[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""
         assert self.op_type.identifier
-        input_names = [scope.var[var] for var in self.inputs.as_dict().values()]
-        output_names = [scope.var[var] for var in self.outputs.as_dict().values()]
+        input_names = [scope.var[var] if var is not None else "" for var in self.inputs]
+        output_names = [
+            scope.var[var] if var is not None else "" for var in self.outputs
+        ]
         while len(input_names) > self.min_input and not input_names[-1]:
             input_names.pop()
         while len(output_names) > self.min_output and not output_names[-1]:
@@ -393,7 +370,7 @@ class Node(ABC):
 
         # We add all attributes manually since not everything (e.g. refs) is supported by make_node
         # Subgraphs are also special-cased here
-        for key, attr in self.attrs.__dict__.items():
+        for key, attr in self.attrs.get_fields().items():
             if attr is not None:
                 if isinstance(attr, AttrGraph):
                     assert build_subgraph is not None

@@ -12,7 +12,6 @@ from ._attributes import AttrType
 from ._graph import results
 from ._type_system import Type
 from ._var import Var
-from ._varfields import NoVars
 
 
 def argument(typ: Type) -> Var:
@@ -29,8 +28,7 @@ def argument(typ: Type) -> Var:
         An unnamed argument variable of given type that may be used as a model input to build a graph.
     """
     return _internal_op.Argument(
-        _internal_op.Argument.Attributes(type=AttrType(typ), default=None),
-        NoVars(),
+        _internal_op.Argument.Attributes(type=AttrType(typ), default=None)
     ).outputs.arg
 
 

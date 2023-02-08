@@ -81,7 +81,7 @@ class Var:
         """Return the name of the output field that this var is stored in under ``self._op``."""
         if self._op is None:
             return None
-        op_outs = self._op.outputs.as_dict()
+        op_outs = self._op.outputs.get_vars()
         candidates = [key for key, var in op_outs.items() if var is self]
         return candidates[0] if candidates else None
 
@@ -95,7 +95,7 @@ class Var:
         nm = repr(self._name) + " " if self._name is not None else ""
         op_repr = self._op.get_op_repr() if self._op else "??"
         which = self._which_output
-        is_unary = len(self._op.outputs.as_dict()) <= 1
+        is_unary = len(self._op.outputs) <= 1 if self._op else True
         which_repr = "->??" if which is None else (f"->{which}" if is_unary else "")
         return (
             f"<Var {nm}from {op_repr}{which_repr} of {self.type}"
@@ -182,40 +182,6 @@ class Var:
 
     def __rxor__(self, other) -> "Var":
         return Var._operator_dispatcher.xor(other, self)
-
-
-class _NilVar(Var):
-    """
-    Singleton Var which indicates lack of a value.
-
-    This is used as internally some operator inputs may be None, and it is convenient for the rest of the code
-    to actually access Vars instead of special-casing None in every instance.
-
-    Operator inputs/outputs that are unspecified in the ONNX representation receive an empty string as the name of the
-    value. This is what a NilVar gets converted to.
-    """
-
-    def __init__(self):  # noqa
-        self.type = None
-        self._value = None
-        self._name = ""
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, _NilVar)
-
-    def __repr__(self) -> str:
-        return "<nil>"
-
-    def __bool__(self):
-        return False
-
-
-# Singleton instance for _NilVar.
-_nil = _NilVar()
-del _NilVar.__init__
 
 
 def result_type(

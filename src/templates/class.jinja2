@@ -1,6 +1,6 @@
 class _{{ schema.name }}(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
     {% if not attributes %}
         pass
     {% else %}{% for attr in attributes %}
@@ -9,7 +9,8 @@ class _{{ schema.name }}(StandardNode):
     {% endif %}  
 
 {% if schema.inputs %}
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
     {% for input in schema.inputs %}
         {{ input.name }}: {%
             if is_optional(input)
@@ -23,11 +24,12 @@ class _{{ schema.name }}(StandardNode):
     {% endfor %}
 
 {% else %}
-    Inputs = NoVars
+    Inputs = BaseInputs
 
 {% endif %}
 {% if schema.outputs %}
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
     {% for output in schema.outputs %}
         {{ output.name }}: {%
             if is_optional(output)
@@ -41,7 +43,7 @@ class _{{ schema.name }}(StandardNode):
     {% endfor %}
 
 {% else %}
-    Outputs = NoVars
+    Outputs = BaseOutputs
 
 {% endif %}
 {% if type_inference %}
@@ -61,7 +63,7 @@ class _{{ schema.name }}(StandardNode):
     op_type = OpType("{{ schema.name }}", "{{ schema.domain }}", {{ schema.since_version }})
 
     attrs: Attributes
-    inputs: {% if schema.inputs %}Inputs{% else %}NoVars{% endif %}
+    inputs: {% if schema.inputs %}Inputs{% else %}BaseInputs{% endif %}
 
-    outputs: {% if schema.outputs %}Outputs{% else %}NoVars{% endif %}
+    outputs: {% if schema.outputs %}Outputs{% else %}BaseOutputs{% endif %}
 

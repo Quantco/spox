@@ -1,4 +1,4 @@
-((key, raw),) = ((k, v.value) for k, v in self.attrs.__dict__.items() if v is not None)
+((key, raw),) = ((k, v.value) for k, v in self.attrs.get_fields().items() if v is not None)
 if key == "value":
     value = raw
 elif key == "value_float":

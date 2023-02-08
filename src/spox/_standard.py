@@ -18,7 +18,6 @@ from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValueType
-from ._var import _nil
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
@@ -59,11 +58,10 @@ class StandardNode(Node):
         # Prepare names for the values in scope of the node
         scope = Scope()
         scope.node[self] = "_this_"
-        scope.var[_nil] = ""
-        for key, var in self.inputs.as_dict().items():
+        for key, var in self.inputs.get_vars().items():
             if var not in scope.var:
                 scope.var[var] = key
-        for key, var in self.outputs.as_dict().items():
+        for key, var in self.outputs.get_vars().items():
             if var not in scope.var:
                 scope.var[var] = key
         # We inject the evaluated attribute values here and then substitute back
@@ -74,7 +72,7 @@ class StandardNode(Node):
             self.attrs = self.Attributes(
                 **{
                     k: type(v)(v.value) if v is not None else v
-                    for k, v in self.attrs.__dict__.items()
+                    for k, v in self.attrs.get_fields().items()
                 }
             )
             node_proto: onnx.NodeProto
@@ -89,8 +87,7 @@ class StandardNode(Node):
         # Input types
         input_info = [
             var.unwrap_type()._to_onnx_value_info(key)
-            for key, var in self.inputs.as_dict().items()
-            if var
+            for key, var in self.inputs.get_vars().items()
         ]
 
         # Output types with placeholder empty TypeProto (or actual type if not using dummies)
@@ -100,15 +97,13 @@ class StandardNode(Node):
             return curr_var.unwrap_type()._to_onnx_value_info(curr_key)
 
         output_info = [
-            out_value_info(key, var)
-            for key, var in self.outputs.as_dict().items()
-            if var
+            out_value_info(key, var) for key, var in self.outputs.get_vars().items()
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
         initializers = [
             from_array(var._value.value, key)
-            for key, var in self.inputs.as_dict().items()
+            for key, var in self.inputs.get_vars().items()
             if var._value and isinstance(var._value.value, numpy.ndarray)
         ]
         #  Graph and model
@@ -133,7 +128,7 @@ class StandardNode(Node):
     def infer_output_types_onnx(self) -> Dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
-        if any(var.type is None for var in self.inputs.as_dict().values() if var):
+        if any(var.type is None for var in self.inputs.get_vars().values()):
             return {}
 
         model, _ = self.to_singleton_onnx_model()
@@ -164,8 +159,8 @@ class StandardNode(Node):
         """
         # Cannot do propagation when some inputs were not propagated/inferred
         if any(
-            var and (var.type is None or var._value is None)
-            for var in self.inputs.as_dict().values()
+            var.type is None or var._value is None
+            for var in self.inputs.get_vars().values()
         ):
             return {}
         if next(iter(self.subgraphs), None) is not None:
@@ -175,8 +170,8 @@ class StandardNode(Node):
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
             scope.var[var]: wrap_feed(var._value)
-            for var in self.inputs.as_dict().values()
-            if var and var._value
+            for var in self.inputs.get_vars().values()
+            if var._value
         }
         output_feed = run(model, input_feed)
         results = {

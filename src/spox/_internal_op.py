@@ -12,6 +12,7 @@ import onnx
 
 from . import _value_prop
 from ._attributes import AttrString, AttrTensor, AttrType
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs
 from ._node import Node, OpType
 from ._scope import Scope
 from ._shape import SimpleShape
@@ -19,7 +20,6 @@ from ._type_system import Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValueType
 from ._var import Var
-from ._varfields import NoVars, VarFields
 
 
 class _InternalNode(Node, ABC):
@@ -41,16 +41,21 @@ class Argument(_InternalNode):
     op_type = OpType("Argument", "spox.internal", 0)
 
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         type: AttrType
         name: Optional[AttrString] = None
         default: Optional[AttrTensor] = None
 
-    class Outputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
+        pass
+
+    @dataclass
+    class Outputs(BaseOutputs):
         arg: Var
 
     attrs: Attributes
-    inputs: NoVars
+    inputs: Inputs
     outputs: Outputs
 
     def post_init(self, **kwargs):
@@ -79,15 +84,16 @@ class _Initializer(_InternalNode):
     op_type = OpType("Initializer", "spox.internal", 0)
 
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         type: AttrType
         default: AttrTensor
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         arg: Var
 
     attrs: Attributes
-    inputs: NoVars
+    inputs: BaseInputs
     outputs: Outputs
 
     def infer_output_types(self) -> Dict[str, Type]:
@@ -111,13 +117,15 @@ class _Constant(_InternalNode):
     version: Optional[int]
 
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         value: AttrTensor
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         pass
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     attrs: Attributes
@@ -168,13 +176,15 @@ class _Embedded(_InternalNode):
     model: onnx.ModelProto
 
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         inputs: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         outputs: Sequence[Var]
 
     op_type = OpType("Embedded", "spox.internal", 0)
@@ -219,8 +229,8 @@ class _Embedded(_InternalNode):
 
     def propagate_values(self) -> Dict[str, _value_prop.PropValueType]:
         if any(
-            var and (var.type is None or var._value is None)
-            for var in self.inputs.as_dict().values()
+            var.type is None or var._value is None
+            for var in self.inputs.get_vars().values()
         ):
             return {}
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
@@ -315,13 +325,15 @@ class _Introduce(_InternalNode):
     """Internal operator used for introducing values, to manually evaluate them in the current scope."""
 
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         inputs: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         outputs: Sequence[Var]
 
     op_type = OpType("Introduce", "spox.internal", 0)

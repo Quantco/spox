@@ -12,13 +12,13 @@ import onnx.shape_inference
 from . import _build
 from ._adapt import adapt_best_effort
 from ._attributes import AttrString, AttrTensor, AttrType
+from ._fields import BaseInputs
 from ._internal_op import Argument, _Initializer
 from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
 from ._utils import from_array
 from ._var import Var
-from ._varfields import NoVars
 
 
 def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, Var]:
@@ -41,7 +41,7 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
         if isinstance(info, Type):
             result[name] = Argument(
                 Argument.Attributes(name=attr_name, type=AttrType(info), default=None),
-                NoVars(),
+                BaseInputs(),
             ).outputs.arg
         elif isinstance(info, numpy.ndarray):
             ty = Tensor(info.dtype, info.shape)
@@ -49,7 +49,7 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
                 Argument.Attributes(
                     name=attr_name, type=AttrType(ty), default=AttrTensor(info)
                 ),
-                NoVars(),
+                BaseInputs(),
             ).outputs.arg
         else:
             raise TypeError(f"Cannot construct argument from {type(info)}.")
@@ -103,7 +103,7 @@ def initializer(arr: numpy.ndarray) -> Var:
     ty = Tensor(arr.dtype, arr.shape)
     return _Initializer(
         _Initializer.Attributes(type=AttrType(ty), default=AttrTensor(arr)),
-        NoVars(),
+        BaseInputs(),
     ).outputs.arg
 
 

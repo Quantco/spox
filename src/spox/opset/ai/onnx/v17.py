@@ -29,6 +29,7 @@ from spox._attributes import (
     AttrTensor,
     AttrType,
 )
+from spox._fields import BaseAttributes, BaseInputs, BaseOutputs  # noqa: F401
 from spox._graph import Graph, subgraph  # noqa: F401
 from spox._internal_op import intro  # noqa: F401
 from spox._node import OpType  # noqa: F401
@@ -36,19 +37,20 @@ from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropValueType
-from spox._var import Var, _nil, result_type  # noqa: F401
-from spox._varfields import NoVars, VarFields  # noqa: F401
+from spox._var import Var, result_type  # noqa: F401
 
 
 class _Abs(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Abs", "", 13)
@@ -60,13 +62,15 @@ class _Abs(StandardNode):
 
 class _Acos(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Acos", "", 7)
@@ -78,13 +82,15 @@ class _Acos(StandardNode):
 
 class _Acosh(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Acosh", "", 9)
@@ -96,14 +102,16 @@ class _Acosh(StandardNode):
 
 class _Add(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Add", "", 14)
@@ -115,14 +123,16 @@ class _Add(StandardNode):
 
 class _And(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("And", "", 7)
@@ -134,15 +144,17 @@ class _And(StandardNode):
 
 class _ArgMax(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         keepdims: AttrInt64
         select_last_index: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ArgMax", "", 13)
@@ -154,15 +166,17 @@ class _ArgMax(StandardNode):
 
 class _ArgMin(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         keepdims: AttrInt64
         select_last_index: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ArgMin", "", 13)
@@ -174,13 +188,15 @@ class _ArgMin(StandardNode):
 
 class _Asin(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Asin", "", 7)
@@ -192,13 +208,15 @@ class _Asin(StandardNode):
 
 class _Asinh(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Asinh", "", 9)
@@ -210,13 +228,15 @@ class _Asinh(StandardNode):
 
 class _Atan(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Atan", "", 7)
@@ -228,13 +248,15 @@ class _Atan(StandardNode):
 
 class _Atanh(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Atanh", "", 9)
@@ -246,7 +268,7 @@ class _Atanh(StandardNode):
 
 class _AveragePool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         auto_pad: AttrString
         ceil_mode: AttrInt64
         count_include_pad: AttrInt64
@@ -254,10 +276,12 @@ class _AveragePool(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("AveragePool", "", 11)
@@ -269,19 +293,21 @@ class _AveragePool(StandardNode):
 
 class _BatchNormalization(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         epsilon: AttrFloat32
         momentum: AttrFloat32
         training_mode: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         scale: Var
         B: Var
         input_mean: Var
         input_var: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
         running_mean: Optional[Var]
         running_var: Optional[Var]
@@ -295,14 +321,16 @@ class _BatchNormalization(StandardNode):
 
 class _Bernoulli(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: Optional[AttrDtype]
         seed: Optional[AttrFloat32]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Bernoulli", "", 15)
@@ -314,14 +342,16 @@ class _Bernoulli(StandardNode):
 
 class _BitShift(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         direction: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         Y: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Z: Var
 
     op_type = OpType("BitShift", "", 11)
@@ -333,14 +363,16 @@ class _BitShift(StandardNode):
 
 class _BlackmanWindow(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         output_datatype: AttrInt64
         periodic: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         size: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("BlackmanWindow", "", 17)
@@ -352,13 +384,15 @@ class _BlackmanWindow(StandardNode):
 
 class _Cast(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         to: AttrDtype
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Cast", "", 13)
@@ -370,14 +404,16 @@ class _Cast(StandardNode):
 
 class _CastLike(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         target_type: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("CastLike", "", 15)
@@ -389,13 +425,15 @@ class _CastLike(StandardNode):
 
 class _Ceil(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Ceil", "", 13)
@@ -407,13 +445,15 @@ class _Ceil(StandardNode):
 
 class _Celu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Celu", "", 12)
@@ -425,15 +465,17 @@ class _Celu(StandardNode):
 
 class _Clip(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         min: Optional[Var]
         max: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Clip", "", 13)
@@ -445,14 +487,16 @@ class _Clip(StandardNode):
 
 class _Compress(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: Optional[AttrInt64]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         condition: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     def infer_output_types(self) -> Dict[str, Type]:
@@ -490,13 +534,15 @@ class _Compress(StandardNode):
 
 class _Concat(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         inputs: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         concat_result: Var
 
     op_type = OpType("Concat", "", 13)
@@ -508,14 +554,16 @@ class _Concat(StandardNode):
 
 class _ConcatFromSequence(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         new_axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input_sequence: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         concat_result: Var
 
     op_type = OpType("ConcatFromSequence", "", 11)
@@ -527,7 +575,7 @@ class _ConcatFromSequence(StandardNode):
 
 class _Constant(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         value: Optional[AttrTensor]
         value_float: Optional[AttrFloat32]
         value_floats: Optional[AttrFloat32s]
@@ -536,14 +584,15 @@ class _Constant(StandardNode):
         value_string: Optional[AttrString]
         value_strings: Optional[AttrStrings]
 
-    Inputs = NoVars
+    Inputs = BaseInputs
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     def propagate_values(self) -> Dict[str, PropValueType]:
         ((key, raw),) = (
-            (k, v.value) for k, v in self.attrs.__dict__.items() if v is not None
+            (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
         )
         if key == "value":
             value = raw
@@ -570,19 +619,21 @@ class _Constant(StandardNode):
     op_type = OpType("Constant", "", 13)
 
     attrs: Attributes
-    inputs: NoVars
+    inputs: BaseInputs
     outputs: Outputs
 
 
 class _ConstantOfShape(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         value: Optional[AttrTensor]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("ConstantOfShape", "", 9)
@@ -594,7 +645,7 @@ class _ConstantOfShape(StandardNode):
 
 class _Conv(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         auto_pad: AttrString
         dilations: Optional[AttrInt64s]
         group: AttrInt64
@@ -602,12 +653,14 @@ class _Conv(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         W: Var
         B: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Conv", "", 11)
@@ -619,7 +672,7 @@ class _Conv(StandardNode):
 
 class _ConvInteger(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         auto_pad: AttrString
         dilations: Optional[AttrInt64s]
         group: AttrInt64
@@ -627,13 +680,15 @@ class _ConvInteger(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         x: Var
         w: Var
         x_zero_point: Optional[Var]
         w_zero_point: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         y: Var
 
     op_type = OpType("ConvInteger", "", 10)
@@ -645,7 +700,7 @@ class _ConvInteger(StandardNode):
 
 class _ConvTranspose(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         auto_pad: AttrString
         dilations: Optional[AttrInt64s]
         group: AttrInt64
@@ -655,12 +710,14 @@ class _ConvTranspose(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         W: Var
         B: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("ConvTranspose", "", 11)
@@ -672,13 +729,15 @@ class _ConvTranspose(StandardNode):
 
 class _Cos(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Cos", "", 7)
@@ -690,13 +749,15 @@ class _Cos(StandardNode):
 
 class _Cosh(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Cosh", "", 9)
@@ -708,15 +769,17 @@ class _Cosh(StandardNode):
 
 class _CumSum(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         exclusive: AttrInt64
         reverse: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         x: Var
         axis: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         y: Var
 
     op_type = OpType("CumSum", "", 14)
@@ -728,16 +791,18 @@ class _CumSum(StandardNode):
 
 class _DFT(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         inverse: AttrInt64
         onesided: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         dft_length: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("DFT", "", 17)
@@ -749,14 +814,16 @@ class _DFT(StandardNode):
 
 class _DepthToSpace(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         blocksize: AttrInt64
         mode: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("DepthToSpace", "", 13)
@@ -768,15 +835,17 @@ class _DepthToSpace(StandardNode):
 
 class _DequantizeLinear(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         x: Var
         x_scale: Var
         x_zero_point: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         y: Var
 
     op_type = OpType("DequantizeLinear", "", 13)
@@ -788,13 +857,15 @@ class _DequantizeLinear(StandardNode):
 
 class _Det(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Det", "", 11)
@@ -806,14 +877,16 @@ class _Det(StandardNode):
 
 class _Div(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Div", "", 14)
@@ -825,15 +898,17 @@ class _Div(StandardNode):
 
 class _Dropout(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         seed: Optional[AttrInt64]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         ratio: Optional[Var]
         training_mode: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
         mask: Optional[Var]
 
@@ -846,13 +921,15 @@ class _Dropout(StandardNode):
 
 class _DynamicQuantizeLinear(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         x: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         y: Var
         y_scale: Var
         y_zero_point: Var
@@ -866,13 +943,15 @@ class _DynamicQuantizeLinear(StandardNode):
 
 class _Einsum(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         equation: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         Inputs: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Output: Var
 
     op_type = OpType("Einsum", "", 12)
@@ -884,13 +963,15 @@ class _Einsum(StandardNode):
 
 class _Elu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Elu", "", 6)
@@ -902,14 +983,16 @@ class _Elu(StandardNode):
 
 class _Equal(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Equal", "", 13)
@@ -921,13 +1004,15 @@ class _Equal(StandardNode):
 
 class _Erf(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Erf", "", 13)
@@ -939,13 +1024,15 @@ class _Erf(StandardNode):
 
 class _Exp(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Exp", "", 13)
@@ -957,14 +1044,16 @@ class _Exp(StandardNode):
 
 class _Expand(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         shape: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Expand", "", 13)
@@ -976,14 +1065,16 @@ class _Expand(StandardNode):
 
 class _EyeLike(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: Optional[AttrDtype]
         k: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("EyeLike", "", 9)
@@ -995,13 +1086,15 @@ class _EyeLike(StandardNode):
 
 class _Flatten(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Flatten", "", 13)
@@ -1013,13 +1106,15 @@ class _Flatten(StandardNode):
 
 class _Floor(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Floor", "", 13)
@@ -1031,7 +1126,7 @@ class _Floor(StandardNode):
 
 class _GRU(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         activation_alpha: Optional[AttrFloat32s]
         activation_beta: Optional[AttrFloat32s]
         activations: Optional[AttrStrings]
@@ -1041,7 +1136,8 @@ class _GRU(StandardNode):
         layout: AttrInt64
         linear_before_reset: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         W: Var
         R: Var
@@ -1049,7 +1145,8 @@ class _GRU(StandardNode):
         sequence_lens: Optional[Var]
         initial_h: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Optional[Var]
         Y_h: Optional[Var]
 
@@ -1062,14 +1159,16 @@ class _GRU(StandardNode):
 
 class _Gather(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         indices: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Gather", "", 13)
@@ -1081,14 +1180,16 @@ class _Gather(StandardNode):
 
 class _GatherElements(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         indices: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("GatherElements", "", 13)
@@ -1100,14 +1201,16 @@ class _GatherElements(StandardNode):
 
 class _GatherND(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         batch_dims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         indices: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("GatherND", "", 13)
@@ -1119,18 +1222,20 @@ class _GatherND(StandardNode):
 
 class _Gemm(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
         beta: AttrFloat32
         transA: AttrInt64
         transB: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
         C: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Gemm", "", 13)
@@ -1142,13 +1247,15 @@ class _Gemm(StandardNode):
 
 class _GlobalAveragePool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("GlobalAveragePool", "", 1)
@@ -1160,13 +1267,15 @@ class _GlobalAveragePool(StandardNode):
 
 class _GlobalLpPool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         p: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("GlobalLpPool", "", 2)
@@ -1178,13 +1287,15 @@ class _GlobalLpPool(StandardNode):
 
 class _GlobalMaxPool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("GlobalMaxPool", "", 1)
@@ -1196,14 +1307,16 @@ class _GlobalMaxPool(StandardNode):
 
 class _Greater(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Greater", "", 13)
@@ -1215,14 +1328,16 @@ class _Greater(StandardNode):
 
 class _GreaterOrEqual(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("GreaterOrEqual", "", 16)
@@ -1234,16 +1349,18 @@ class _GreaterOrEqual(StandardNode):
 
 class _GridSample(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         align_corners: AttrInt64
         mode: AttrString
         padding_mode: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         grid: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("GridSample", "", 16)
@@ -1255,14 +1372,16 @@ class _GridSample(StandardNode):
 
 class _HammingWindow(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         output_datatype: AttrInt64
         periodic: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         size: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("HammingWindow", "", 17)
@@ -1274,14 +1393,16 @@ class _HammingWindow(StandardNode):
 
 class _HannWindow(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         output_datatype: AttrInt64
         periodic: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         size: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("HannWindow", "", 17)
@@ -1293,14 +1414,16 @@ class _HannWindow(StandardNode):
 
 class _HardSigmoid(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
         beta: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("HardSigmoid", "", 6)
@@ -1312,13 +1435,15 @@ class _HardSigmoid(StandardNode):
 
 class _HardSwish(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("HardSwish", "", 14)
@@ -1330,13 +1455,15 @@ class _HardSwish(StandardNode):
 
 class _Hardmax(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Hardmax", "", 13)
@@ -1348,13 +1475,15 @@ class _Hardmax(StandardNode):
 
 class _Identity(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Identity", "", 16)
@@ -1366,14 +1495,16 @@ class _Identity(StandardNode):
 
 class _If(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         else_branch: AttrGraph
         then_branch: AttrGraph
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         cond: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         outputs: Sequence[Var]
 
     op_type = OpType("If", "", 16)
@@ -1385,15 +1516,17 @@ class _If(StandardNode):
 
 class _InstanceNormalization(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         epsilon: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         scale: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("InstanceNormalization", "", 6)
@@ -1405,14 +1538,16 @@ class _InstanceNormalization(StandardNode):
 
 class _IsInf(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         detect_negative: AttrInt64
         detect_positive: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("IsInf", "", 10)
@@ -1424,13 +1559,15 @@ class _IsInf(StandardNode):
 
 class _IsNaN(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("IsNaN", "", 13)
@@ -1442,16 +1579,18 @@ class _IsNaN(StandardNode):
 
 class _LRN(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
         beta: AttrFloat32
         bias: AttrFloat32
         size: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("LRN", "", 13)
@@ -1463,7 +1602,7 @@ class _LRN(StandardNode):
 
 class _LSTM(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         activation_alpha: Optional[AttrFloat32s]
         activation_beta: Optional[AttrFloat32s]
         activations: Optional[AttrStrings]
@@ -1473,7 +1612,8 @@ class _LSTM(StandardNode):
         input_forget: AttrInt64
         layout: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         W: Var
         R: Var
@@ -1483,7 +1623,8 @@ class _LSTM(StandardNode):
         initial_c: Optional[Var]
         P: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Optional[Var]
         Y_h: Optional[Var]
         Y_c: Optional[Var]
@@ -1497,17 +1638,19 @@ class _LSTM(StandardNode):
 
 class _LayerNormalization(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         epsilon: AttrFloat32
         stash_type: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         Scale: Var
         B: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
         Mean: Optional[Var]
         InvStdDev: Optional[Var]
@@ -1521,13 +1664,15 @@ class _LayerNormalization(StandardNode):
 
 class _LeakyRelu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("LeakyRelu", "", 16)
@@ -1539,14 +1684,16 @@ class _LeakyRelu(StandardNode):
 
 class _Less(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Less", "", 13)
@@ -1558,14 +1705,16 @@ class _Less(StandardNode):
 
 class _LessOrEqual(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("LessOrEqual", "", 16)
@@ -1577,13 +1726,15 @@ class _LessOrEqual(StandardNode):
 
 class _Log(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Log", "", 13)
@@ -1595,13 +1746,15 @@ class _Log(StandardNode):
 
 class _LogSoftmax(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("LogSoftmax", "", 13)
@@ -1613,15 +1766,17 @@ class _LogSoftmax(StandardNode):
 
 class _Loop(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         body: AttrGraph
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         M: Optional[Var]
         cond: Optional[Var]
         v_initial: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         v_final_and_scan_outputs: Sequence[Var]
 
     op_type = OpType("Loop", "", 16)
@@ -1633,14 +1788,16 @@ class _Loop(StandardNode):
 
 class _LpNormalization(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         p: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("LpNormalization", "", 1)
@@ -1652,17 +1809,19 @@ class _LpNormalization(StandardNode):
 
 class _LpPool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         auto_pad: AttrString
         kernel_shape: AttrInt64s
         p: AttrInt64
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("LpPool", "", 11)
@@ -1674,14 +1833,16 @@ class _LpPool(StandardNode):
 
 class _MatMul(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("MatMul", "", 13)
@@ -1693,16 +1854,18 @@ class _MatMul(StandardNode):
 
 class _MatMulInteger(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
         a_zero_point: Optional[Var]
         b_zero_point: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("MatMulInteger", "", 10)
@@ -1714,13 +1877,15 @@ class _MatMulInteger(StandardNode):
 
 class _Max(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data_0: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         max: Var
 
     op_type = OpType("Max", "", 13)
@@ -1732,7 +1897,7 @@ class _Max(StandardNode):
 
 class _MaxPool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         auto_pad: AttrString
         ceil_mode: AttrInt64
         dilations: Optional[AttrInt64s]
@@ -1741,10 +1906,12 @@ class _MaxPool(StandardNode):
         storage_order: AttrInt64
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
         Indices: Optional[Var]
 
@@ -1757,15 +1924,17 @@ class _MaxPool(StandardNode):
 
 class _MaxRoiPool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pooled_shape: AttrInt64s
         spatial_scale: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         rois: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("MaxRoiPool", "", 1)
@@ -1777,17 +1946,19 @@ class _MaxRoiPool(StandardNode):
 
 class _MaxUnpool(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         kernel_shape: AttrInt64s
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         I: Var
         output_shape: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("MaxUnpool", "", 11)
@@ -1799,13 +1970,15 @@ class _MaxUnpool(StandardNode):
 
 class _Mean(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data_0: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         mean: Var
 
     op_type = OpType("Mean", "", 13)
@@ -1817,13 +1990,15 @@ class _Mean(StandardNode):
 
 class _MeanVarianceNormalization(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: AttrInt64s
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("MeanVarianceNormalization", "", 13)
@@ -1835,17 +2010,19 @@ class _MeanVarianceNormalization(StandardNode):
 
 class _MelWeightMatrix(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         output_datatype: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         num_mel_bins: Var
         dft_length: Var
         sample_rate: Var
         lower_edge_hertz: Var
         upper_edge_hertz: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("MelWeightMatrix", "", 17)
@@ -1857,13 +2034,15 @@ class _MelWeightMatrix(StandardNode):
 
 class _Min(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data_0: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         min: Var
 
     op_type = OpType("Min", "", 13)
@@ -1875,14 +2054,16 @@ class _Min(StandardNode):
 
 class _Mod(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         fmod: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Mod", "", 13)
@@ -1894,14 +2075,16 @@ class _Mod(StandardNode):
 
 class _Mul(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Mul", "", 14)
@@ -1913,15 +2096,17 @@ class _Mul(StandardNode):
 
 class _Multinomial(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: AttrDtype
         sample_size: AttrInt64
         seed: Optional[AttrFloat32]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Multinomial", "", 7)
@@ -1933,13 +2118,15 @@ class _Multinomial(StandardNode):
 
 class _Neg(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Neg", "", 13)
@@ -1951,16 +2138,18 @@ class _Neg(StandardNode):
 
 class _NegativeLogLikelihoodLoss(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         ignore_index: Optional[AttrInt64]
         reduction: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         target: Var
         weight: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         loss: Var
 
     op_type = OpType("NegativeLogLikelihoodLoss", "", 13)
@@ -1972,17 +2161,19 @@ class _NegativeLogLikelihoodLoss(StandardNode):
 
 class _NonMaxSuppression(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         center_point_box: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         boxes: Var
         scores: Var
         max_output_boxes_per_class: Optional[Var]
         iou_threshold: Optional[Var]
         score_threshold: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         selected_indices: Var
 
     op_type = OpType("NonMaxSuppression", "", 11)
@@ -1994,13 +2185,15 @@ class _NonMaxSuppression(StandardNode):
 
 class _NonZero(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("NonZero", "", 13)
@@ -2012,13 +2205,15 @@ class _NonZero(StandardNode):
 
 class _Not(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Not", "", 1)
@@ -2030,15 +2225,17 @@ class _Not(StandardNode):
 
 class _OneHot(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         indices: Var
         depth: Var
         values: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("OneHot", "", 11)
@@ -2050,13 +2247,15 @@ class _OneHot(StandardNode):
 
 class _Optional(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         type: Optional[AttrType]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Optional", "", 15)
@@ -2068,13 +2267,15 @@ class _Optional(StandardNode):
 
 class _OptionalGetElement(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("OptionalGetElement", "", 15)
@@ -2086,13 +2287,15 @@ class _OptionalGetElement(StandardNode):
 
 class _OptionalHasElement(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("OptionalHasElement", "", 15)
@@ -2104,14 +2307,16 @@ class _OptionalHasElement(StandardNode):
 
 class _Or(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Or", "", 7)
@@ -2123,14 +2328,16 @@ class _Or(StandardNode):
 
 class _PRelu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         slope: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("PRelu", "", 16)
@@ -2142,15 +2349,17 @@ class _PRelu(StandardNode):
 
 class _Pad(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         mode: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         pads: Var
         constant_value: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Pad", "", 13)
@@ -2162,14 +2371,16 @@ class _Pad(StandardNode):
 
 class _Pow(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         Y: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Z: Var
 
     op_type = OpType("Pow", "", 15)
@@ -2181,7 +2392,7 @@ class _Pow(StandardNode):
 
 class _QLinearConv(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         auto_pad: AttrString
         dilations: Optional[AttrInt64s]
         group: AttrInt64
@@ -2189,7 +2400,8 @@ class _QLinearConv(StandardNode):
         pads: Optional[AttrInt64s]
         strides: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         x: Var
         x_scale: Var
         x_zero_point: Var
@@ -2200,7 +2412,8 @@ class _QLinearConv(StandardNode):
         y_zero_point: Var
         B: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         y: Var
 
     op_type = OpType("QLinearConv", "", 10)
@@ -2212,10 +2425,11 @@ class _QLinearConv(StandardNode):
 
 class _QLinearMatMul(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         a: Var
         a_scale: Var
         a_zero_point: Var
@@ -2225,7 +2439,8 @@ class _QLinearMatMul(StandardNode):
         y_scale: Var
         y_zero_point: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         y: Var
 
     op_type = OpType("QLinearMatMul", "", 10)
@@ -2237,15 +2452,17 @@ class _QLinearMatMul(StandardNode):
 
 class _QuantizeLinear(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         x: Var
         y_scale: Var
         y_zero_point: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         y: Var
 
     op_type = OpType("QuantizeLinear", "", 13)
@@ -2257,7 +2474,7 @@ class _QuantizeLinear(StandardNode):
 
 class _RNN(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         activation_alpha: Optional[AttrFloat32s]
         activation_beta: Optional[AttrFloat32s]
         activations: AttrStrings
@@ -2266,7 +2483,8 @@ class _RNN(StandardNode):
         hidden_size: Optional[AttrInt64]
         layout: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         W: Var
         R: Var
@@ -2274,7 +2492,8 @@ class _RNN(StandardNode):
         sequence_lens: Optional[Var]
         initial_h: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Optional[Var]
         Y_h: Optional[Var]
 
@@ -2287,37 +2506,40 @@ class _RNN(StandardNode):
 
 class _RandomNormal(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: AttrDtype
         mean: AttrFloat32
         scale: AttrFloat32
         seed: Optional[AttrFloat32]
         shape: AttrInt64s
 
-    Inputs = NoVars
+    Inputs = BaseInputs
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("RandomNormal", "", 1)
 
     attrs: Attributes
-    inputs: NoVars
+    inputs: BaseInputs
     outputs: Outputs
 
 
 class _RandomNormalLike(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: Optional[AttrDtype]
         mean: AttrFloat32
         scale: AttrFloat32
         seed: Optional[AttrFloat32]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("RandomNormalLike", "", 1)
@@ -2329,37 +2551,40 @@ class _RandomNormalLike(StandardNode):
 
 class _RandomUniform(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: AttrDtype
         high: AttrFloat32
         low: AttrFloat32
         seed: Optional[AttrFloat32]
         shape: AttrInt64s
 
-    Inputs = NoVars
+    Inputs = BaseInputs
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("RandomUniform", "", 1)
 
     attrs: Attributes
-    inputs: NoVars
+    inputs: BaseInputs
     outputs: Outputs
 
 
 class _RandomUniformLike(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: Optional[AttrDtype]
         high: AttrFloat32
         low: AttrFloat32
         seed: Optional[AttrFloat32]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("RandomUniformLike", "", 1)
@@ -2371,15 +2596,17 @@ class _RandomUniformLike(StandardNode):
 
 class _Range(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         start: Var
         limit: Var
         delta: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Range", "", 11)
@@ -2391,13 +2618,15 @@ class _Range(StandardNode):
 
 class _Reciprocal(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Reciprocal", "", 13)
@@ -2409,14 +2638,16 @@ class _Reciprocal(StandardNode):
 
 class _ReduceL1(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceL1", "", 13)
@@ -2428,14 +2659,16 @@ class _ReduceL1(StandardNode):
 
 class _ReduceL2(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceL2", "", 13)
@@ -2447,14 +2680,16 @@ class _ReduceL2(StandardNode):
 
 class _ReduceLogSum(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceLogSum", "", 13)
@@ -2466,14 +2701,16 @@ class _ReduceLogSum(StandardNode):
 
 class _ReduceLogSumExp(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceLogSumExp", "", 13)
@@ -2485,14 +2722,16 @@ class _ReduceLogSumExp(StandardNode):
 
 class _ReduceMax(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceMax", "", 13)
@@ -2504,14 +2743,16 @@ class _ReduceMax(StandardNode):
 
 class _ReduceMean(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceMean", "", 13)
@@ -2523,14 +2764,16 @@ class _ReduceMean(StandardNode):
 
 class _ReduceMin(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceMin", "", 13)
@@ -2542,14 +2785,16 @@ class _ReduceMin(StandardNode):
 
 class _ReduceProd(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceProd", "", 13)
@@ -2561,15 +2806,17 @@ class _ReduceProd(StandardNode):
 
 class _ReduceSum(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         keepdims: AttrInt64
         noop_with_empty_axes: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         axes: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceSum", "", 13)
@@ -2581,14 +2828,16 @@ class _ReduceSum(StandardNode):
 
 class _ReduceSumSquare(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axes: Optional[AttrInt64s]
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reduced: Var
 
     op_type = OpType("ReduceSumSquare", "", 13)
@@ -2600,13 +2849,15 @@ class _ReduceSumSquare(StandardNode):
 
 class _Relu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Relu", "", 14)
@@ -2618,14 +2869,16 @@ class _Relu(StandardNode):
 
 class _Reshape(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         allowzero: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         shape: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         reshaped: Var
 
     op_type = OpType("Reshape", "", 14)
@@ -2637,7 +2890,7 @@ class _Reshape(StandardNode):
 
 class _Resize(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         coordinate_transformation_mode: AttrString
         cubic_coeff_a: AttrFloat32
         exclude_outside: AttrInt64
@@ -2645,13 +2898,15 @@ class _Resize(StandardNode):
         mode: AttrString
         nearest_mode: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         roi: Optional[Var]
         scales: Optional[Var]
         sizes: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Resize", "", 13)
@@ -2663,15 +2918,17 @@ class _Resize(StandardNode):
 
 class _ReverseSequence(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         batch_axis: AttrInt64
         time_axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         sequence_lens: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("ReverseSequence", "", 10)
@@ -2683,7 +2940,7 @@ class _ReverseSequence(StandardNode):
 
 class _RoiAlign(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         coordinate_transformation_mode: AttrString
         mode: AttrString
         output_height: AttrInt64
@@ -2691,12 +2948,14 @@ class _RoiAlign(StandardNode):
         sampling_ratio: AttrInt64
         spatial_scale: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         rois: Var
         batch_indices: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("RoiAlign", "", 16)
@@ -2708,13 +2967,15 @@ class _RoiAlign(StandardNode):
 
 class _Round(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Round", "", 11)
@@ -2726,16 +2987,18 @@ class _Round(StandardNode):
 
 class _STFT(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         onesided: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         signal: Var
         frame_step: Var
         window: Optional[Var]
         frame_length: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("STFT", "", 17)
@@ -2747,7 +3010,7 @@ class _STFT(StandardNode):
 
 class _Scan(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         body: AttrGraph
         num_scan_inputs: AttrInt64
         scan_input_axes: Optional[AttrInt64s]
@@ -2755,10 +3018,12 @@ class _Scan(StandardNode):
         scan_output_axes: Optional[AttrInt64s]
         scan_output_directions: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         initial_state_and_scan_inputs: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         final_state_and_scan_outputs: Sequence[Var]
 
     op_type = OpType("Scan", "", 16)
@@ -2770,15 +3035,17 @@ class _Scan(StandardNode):
 
 class _Scatter(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         indices: Var
         updates: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Scatter", "", 11)
@@ -2790,16 +3057,18 @@ class _Scatter(StandardNode):
 
 class _ScatterElements(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         reduction: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         indices: Var
         updates: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("ScatterElements", "", 16)
@@ -2811,15 +3080,17 @@ class _ScatterElements(StandardNode):
 
 class _ScatterND(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         reduction: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         indices: Var
         updates: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("ScatterND", "", 16)
@@ -2831,14 +3102,16 @@ class _ScatterND(StandardNode):
 
 class _Selu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
         gamma: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Selu", "", 6)
@@ -2850,14 +3123,16 @@ class _Selu(StandardNode):
 
 class _SequenceAt(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input_sequence: Var
         position: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         tensor: Var
 
     op_type = OpType("SequenceAt", "", 11)
@@ -2869,13 +3144,15 @@ class _SequenceAt(StandardNode):
 
 class _SequenceConstruct(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         inputs: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output_sequence: Var
 
     op_type = OpType("SequenceConstruct", "", 11)
@@ -2887,31 +3164,34 @@ class _SequenceConstruct(StandardNode):
 
 class _SequenceEmpty(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         dtype: Optional[AttrDtype]
 
-    Inputs = NoVars
+    Inputs = BaseInputs
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("SequenceEmpty", "", 11)
 
     attrs: Attributes
-    inputs: NoVars
+    inputs: BaseInputs
     outputs: Outputs
 
 
 class _SequenceErase(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input_sequence: Var
         position: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output_sequence: Var
 
     op_type = OpType("SequenceErase", "", 11)
@@ -2923,15 +3203,17 @@ class _SequenceErase(StandardNode):
 
 class _SequenceInsert(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input_sequence: Var
         tensor: Var
         position: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output_sequence: Var
 
     op_type = OpType("SequenceInsert", "", 11)
@@ -2943,13 +3225,15 @@ class _SequenceInsert(StandardNode):
 
 class _SequenceLength(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input_sequence: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         length: Var
 
     op_type = OpType("SequenceLength", "", 11)
@@ -2961,14 +3245,16 @@ class _SequenceLength(StandardNode):
 
 class _SequenceMap(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         body: AttrGraph
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input_sequence: Var
         additional_inputs: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         out_sequence: Sequence[Var]
 
     op_type = OpType("SequenceMap", "", 17)
@@ -2980,14 +3266,16 @@ class _SequenceMap(StandardNode):
 
 class _Shape(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         end: Optional[AttrInt64]
         start: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         shape: Var
 
     op_type = OpType("Shape", "", 15)
@@ -2999,14 +3287,16 @@ class _Shape(StandardNode):
 
 class _Shrink(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         bias: AttrFloat32
         lambd: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Shrink", "", 9)
@@ -3018,13 +3308,15 @@ class _Shrink(StandardNode):
 
 class _Sigmoid(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Sigmoid", "", 13)
@@ -3036,13 +3328,15 @@ class _Sigmoid(StandardNode):
 
 class _Sign(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Sign", "", 13)
@@ -3054,13 +3348,15 @@ class _Sign(StandardNode):
 
 class _Sin(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Sin", "", 7)
@@ -3072,13 +3368,15 @@ class _Sin(StandardNode):
 
 class _Sinh(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Sinh", "", 9)
@@ -3090,13 +3388,15 @@ class _Sinh(StandardNode):
 
 class _Size(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         size: Var
 
     op_type = OpType("Size", "", 13)
@@ -3108,17 +3408,19 @@ class _Size(StandardNode):
 
 class _Slice(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         starts: Var
         ends: Var
         axes: Optional[Var]
         steps: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Slice", "", 13)
@@ -3130,13 +3432,15 @@ class _Slice(StandardNode):
 
 class _Softmax(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Softmax", "", 13)
@@ -3148,16 +3452,18 @@ class _Softmax(StandardNode):
 
 class _SoftmaxCrossEntropyLoss(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         ignore_index: Optional[AttrInt64]
         reduction: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         scores: Var
         labels: Var
         weights: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
         log_prob: Optional[Var]
 
@@ -3170,13 +3476,15 @@ class _SoftmaxCrossEntropyLoss(StandardNode):
 
 class _Softplus(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Softplus", "", 1)
@@ -3188,13 +3496,15 @@ class _Softplus(StandardNode):
 
 class _Softsign(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Softsign", "", 1)
@@ -3206,13 +3516,15 @@ class _Softsign(StandardNode):
 
 class _SpaceToDepth(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         blocksize: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("SpaceToDepth", "", 13)
@@ -3224,14 +3536,16 @@ class _SpaceToDepth(StandardNode):
 
 class _Split(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         split: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         outputs: Sequence[Var]
 
     op_type = OpType("Split", "", 13)
@@ -3243,15 +3557,17 @@ class _Split(StandardNode):
 
 class _SplitToSequence(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         keepdims: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         split: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output_sequence: Var
 
     op_type = OpType("SplitToSequence", "", 11)
@@ -3263,13 +3579,15 @@ class _SplitToSequence(StandardNode):
 
 class _Sqrt(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Sqrt", "", 13)
@@ -3281,14 +3599,16 @@ class _Sqrt(StandardNode):
 
 class _Squeeze(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         axes: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         squeezed: Var
 
     op_type = OpType("Squeeze", "", 13)
@@ -3300,16 +3620,18 @@ class _Squeeze(StandardNode):
 
 class _StringNormalizer(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         case_change_action: AttrString
         is_case_sensitive: AttrInt64
         locale: Optional[AttrString]
         stopwords: Optional[AttrStrings]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("StringNormalizer", "", 10)
@@ -3321,14 +3643,16 @@ class _StringNormalizer(StandardNode):
 
 class _Sub(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Sub", "", 14)
@@ -3340,13 +3664,15 @@ class _Sub(StandardNode):
 
 class _Sum(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data_0: Sequence[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         sum: Var
 
     op_type = OpType("Sum", "", 13)
@@ -3358,13 +3684,15 @@ class _Sum(StandardNode):
 
 class _Tan(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Tan", "", 7)
@@ -3376,13 +3704,15 @@ class _Tan(StandardNode):
 
 class _Tanh(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Tanh", "", 13)
@@ -3394,7 +3724,7 @@ class _Tanh(StandardNode):
 
 class _TfIdfVectorizer(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         max_gram_length: AttrInt64
         max_skip_count: AttrInt64
         min_gram_length: AttrInt64
@@ -3405,10 +3735,12 @@ class _TfIdfVectorizer(StandardNode):
         pool_strings: Optional[AttrStrings]
         weights: Optional[AttrFloat32s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("TfIdfVectorizer", "", 9)
@@ -3420,13 +3752,15 @@ class _TfIdfVectorizer(StandardNode):
 
 class _ThresholdedRelu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         alpha: AttrFloat32
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("ThresholdedRelu", "", 10)
@@ -3438,14 +3772,16 @@ class _ThresholdedRelu(StandardNode):
 
 class _Tile(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         repeats: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Tile", "", 13)
@@ -3457,16 +3793,18 @@ class _Tile(StandardNode):
 
 class _TopK(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: AttrInt64
         largest: AttrInt64
         sorted: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         K: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Values: Var
         Indices: Var
 
@@ -3479,13 +3817,15 @@ class _TopK(StandardNode):
 
 class _Transpose(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         perm: Optional[AttrInt64s]
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         transposed: Var
 
     op_type = OpType("Transpose", "", 13)
@@ -3497,14 +3837,16 @@ class _Transpose(StandardNode):
 
 class _Trilu(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         upper: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         input: Var
         k: Optional[Var]
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Trilu", "", 14)
@@ -3516,14 +3858,16 @@ class _Trilu(StandardNode):
 
 class _Unique(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         axis: Optional[AttrInt64]
         sorted: AttrInt64
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
         indices: Optional[Var]
         inverse_indices: Optional[Var]
@@ -3538,14 +3882,16 @@ class _Unique(StandardNode):
 
 class _Unsqueeze(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         data: Var
         axes: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         expanded: Var
 
     op_type = OpType("Unsqueeze", "", 13)
@@ -3557,14 +3903,16 @@ class _Unsqueeze(StandardNode):
 
 class _Upsample(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         mode: AttrString
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         X: Var
         scales: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         Y: Var
 
     op_type = OpType("Upsample", "", 10)
@@ -3576,15 +3924,17 @@ class _Upsample(StandardNode):
 
 class _Where(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         condition: Var
         X: Var
         Y: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         output: Var
 
     op_type = OpType("Where", "", 16)
@@ -3596,14 +3946,16 @@ class _Where(StandardNode):
 
 class _Xor(StandardNode):
     @dataclass
-    class Attributes:
+    class Attributes(BaseAttributes):
         pass
 
-    class Inputs(VarFields):
+    @dataclass
+    class Inputs(BaseInputs):
         A: Var
         B: Var
 
-    class Outputs(VarFields):
+    @dataclass
+    class Outputs(BaseOutputs):
         C: Var
 
     op_type = OpType("Xor", "", 7)
@@ -4185,8 +4537,8 @@ def average_pool(
             ceil_mode=AttrInt64(ceil_mode),
             count_include_pad=AttrInt64(count_include_pad),
             kernel_shape=AttrInt64s(kernel_shape),
-            pads=None if pads is None else AttrInt64s(pads),
-            strides=None if strides is None else AttrInt64s(strides),
+            pads=AttrInt64s.maybe(pads),
+            strides=AttrInt64s.maybe(strides),
         ),
         _AveragePool.Inputs(
             X=X,
@@ -4375,8 +4727,8 @@ def bernoulli(
     """
     return _Bernoulli(
         _Bernoulli.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
-            seed=None if seed is None else AttrFloat32(seed),
+            dtype=AttrDtype.maybe(dtype),
+            seed=AttrFloat32.maybe(seed),
         ),
         _Bernoulli.Inputs(
             input=input,
@@ -4808,7 +5160,7 @@ def compress(
     """
     return _Compress(
         _Compress.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64.maybe(axis),
         ),
         _Compress.Inputs(
             input=input,
@@ -4970,13 +5322,13 @@ def constant(
     """
     return _Constant(
         _Constant.Attributes(
-            value=None if value is None else AttrTensor(value),
-            value_float=None if value_float is None else AttrFloat32(value_float),
-            value_floats=None if value_floats is None else AttrFloat32s(value_floats),
-            value_int=None if value_int is None else AttrInt64(value_int),
-            value_ints=None if value_ints is None else AttrInt64s(value_ints),
-            value_string=None if value_string is None else AttrString(value_string),
-            value_strings=None if value_strings is None else AttrStrings(value_strings),
+            value=AttrTensor.maybe(value),
+            value_float=AttrFloat32.maybe(value_float),
+            value_floats=AttrFloat32s.maybe(value_floats),
+            value_int=AttrInt64.maybe(value_int),
+            value_ints=AttrInt64s.maybe(value_ints),
+            value_string=AttrString.maybe(value_string),
+            value_strings=AttrStrings.maybe(value_strings),
         ),
         _Constant.Inputs(),
     ).outputs.output
@@ -5021,7 +5373,7 @@ def constant_of_shape(
     """
     return _ConstantOfShape(
         _ConstantOfShape.Attributes(
-            value=None if value is None else AttrTensor(value),
+            value=AttrTensor.maybe(value),
         ),
         _ConstantOfShape.Inputs(
             input=input,
@@ -5129,11 +5481,11 @@ def conv(
     return _Conv(
         _Conv.Attributes(
             auto_pad=AttrString(auto_pad),
-            dilations=None if dilations is None else AttrInt64s(dilations),
+            dilations=AttrInt64s.maybe(dilations),
             group=AttrInt64(group),
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
-            pads=None if pads is None else AttrInt64s(pads),
-            strides=None if strides is None else AttrInt64s(strides),
+            kernel_shape=AttrInt64s.maybe(kernel_shape),
+            pads=AttrInt64s.maybe(pads),
+            strides=AttrInt64s.maybe(strides),
         ),
         _Conv.Inputs(
             X=X,
@@ -5254,11 +5606,11 @@ def conv_integer(
     return _ConvInteger(
         _ConvInteger.Attributes(
             auto_pad=AttrString(auto_pad),
-            dilations=None if dilations is None else AttrInt64s(dilations),
+            dilations=AttrInt64s.maybe(dilations),
             group=AttrInt64(group),
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
-            pads=None if pads is None else AttrInt64s(pads),
-            strides=None if strides is None else AttrInt64s(strides),
+            kernel_shape=AttrInt64s.maybe(kernel_shape),
+            pads=AttrInt64s.maybe(pads),
+            strides=AttrInt64s.maybe(strides),
         ),
         _ConvInteger.Inputs(
             x=x,
@@ -5398,15 +5750,13 @@ def conv_transpose(
     return _ConvTranspose(
         _ConvTranspose.Attributes(
             auto_pad=AttrString(auto_pad),
-            dilations=None if dilations is None else AttrInt64s(dilations),
+            dilations=AttrInt64s.maybe(dilations),
             group=AttrInt64(group),
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
-            output_padding=None
-            if output_padding is None
-            else AttrInt64s(output_padding),
-            output_shape=None if output_shape is None else AttrInt64s(output_shape),
-            pads=None if pads is None else AttrInt64s(pads),
-            strides=None if strides is None else AttrInt64s(strides),
+            kernel_shape=AttrInt64s.maybe(kernel_shape),
+            output_padding=AttrInt64s.maybe(output_padding),
+            output_shape=AttrInt64s.maybe(output_shape),
+            pads=AttrInt64s.maybe(pads),
+            strides=AttrInt64s.maybe(strides),
         ),
         _ConvTranspose.Inputs(
             X=X,
@@ -5944,7 +6294,7 @@ def dropout(
     """
     return _Dropout(
         _Dropout.Attributes(
-            seed=None if seed is None else AttrInt64(seed),
+            seed=AttrInt64.maybe(seed),
         ),
         _Dropout.Inputs(
             data=data,
@@ -6344,7 +6694,7 @@ def eye_like(
     """
     return _EyeLike(
         _EyeLike.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
+            dtype=AttrDtype.maybe(dtype),
             k=AttrInt64(k),
         ),
         _EyeLike.Inputs(
@@ -6638,16 +6988,12 @@ def gru(
     """
     return _GRU(
         _GRU.Attributes(
-            activation_alpha=None
-            if activation_alpha is None
-            else AttrFloat32s(activation_alpha),
-            activation_beta=None
-            if activation_beta is None
-            else AttrFloat32s(activation_beta),
-            activations=None if activations is None else AttrStrings(activations),
-            clip=None if clip is None else AttrFloat32(clip),
+            activation_alpha=AttrFloat32s.maybe(activation_alpha),
+            activation_beta=AttrFloat32s.maybe(activation_beta),
+            activations=AttrStrings.maybe(activations),
+            clip=AttrFloat32.maybe(clip),
             direction=AttrString(direction),
-            hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
+            hidden_size=AttrInt64.maybe(hidden_size),
             layout=AttrInt64(layout),
             linear_before_reset=AttrInt64(linear_before_reset),
         ),
@@ -8207,16 +8553,12 @@ def lstm(
     """
     return _LSTM(
         _LSTM.Attributes(
-            activation_alpha=None
-            if activation_alpha is None
-            else AttrFloat32s(activation_alpha),
-            activation_beta=None
-            if activation_beta is None
-            else AttrFloat32s(activation_beta),
-            activations=None if activations is None else AttrStrings(activations),
-            clip=None if clip is None else AttrFloat32(clip),
+            activation_alpha=AttrFloat32s.maybe(activation_alpha),
+            activation_beta=AttrFloat32s.maybe(activation_beta),
+            activations=AttrStrings.maybe(activations),
+            clip=AttrFloat32.maybe(clip),
             direction=AttrString(direction),
-            hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
+            hidden_size=AttrInt64.maybe(hidden_size),
             input_forget=AttrInt64(input_forget),
             layout=AttrInt64(layout),
         ),
@@ -8875,8 +9217,8 @@ def lp_pool(
             auto_pad=AttrString(auto_pad),
             kernel_shape=AttrInt64s(kernel_shape),
             p=AttrInt64(p),
-            pads=None if pads is None else AttrInt64s(pads),
-            strides=None if strides is None else AttrInt64s(strides),
+            pads=AttrInt64s.maybe(pads),
+            strides=AttrInt64s.maybe(strides),
         ),
         _LpPool.Inputs(
             X=X,
@@ -9155,11 +9497,11 @@ def max_pool(
         _MaxPool.Attributes(
             auto_pad=AttrString(auto_pad),
             ceil_mode=AttrInt64(ceil_mode),
-            dilations=None if dilations is None else AttrInt64s(dilations),
+            dilations=AttrInt64s.maybe(dilations),
             kernel_shape=AttrInt64s(kernel_shape),
-            pads=None if pads is None else AttrInt64s(pads),
+            pads=AttrInt64s.maybe(pads),
             storage_order=AttrInt64(storage_order),
-            strides=None if strides is None else AttrInt64s(strides),
+            strides=AttrInt64s.maybe(strides),
         ),
         _MaxPool.Inputs(
             X=X,
@@ -9323,8 +9665,8 @@ def max_unpool(
     return _MaxUnpool(
         _MaxUnpool.Attributes(
             kernel_shape=AttrInt64s(kernel_shape),
-            pads=None if pads is None else AttrInt64s(pads),
-            strides=None if strides is None else AttrInt64s(strides),
+            pads=AttrInt64s.maybe(pads),
+            strides=AttrInt64s.maybe(strides),
         ),
         _MaxUnpool.Inputs(
             X=X,
@@ -9700,7 +10042,7 @@ def multinomial(
         _Multinomial.Attributes(
             dtype=AttrDtype(dtype),
             sample_size=AttrInt64(sample_size),
-            seed=None if seed is None else AttrFloat32(seed),
+            seed=AttrFloat32.maybe(seed),
         ),
         _Multinomial.Inputs(
             input=input,
@@ -9902,7 +10244,7 @@ def negative_log_likelihood_loss(
     """
     return _NegativeLogLikelihoodLoss(
         _NegativeLogLikelihoodLoss.Attributes(
-            ignore_index=None if ignore_index is None else AttrInt64(ignore_index),
+            ignore_index=AttrInt64.maybe(ignore_index),
             reduction=AttrString(reduction),
         ),
         _NegativeLogLikelihoodLoss.Inputs(
@@ -10190,7 +10532,7 @@ def optional(
     """
     return _Optional(
         _Optional.Attributes(
-            type=None if type is None else AttrType(type),
+            type=AttrType.maybe(type),
         ),
         _Optional.Inputs(
             input=input,
@@ -10658,11 +11000,11 @@ def qlinear_conv(
     return _QLinearConv(
         _QLinearConv.Attributes(
             auto_pad=AttrString(auto_pad),
-            dilations=None if dilations is None else AttrInt64s(dilations),
+            dilations=AttrInt64s.maybe(dilations),
             group=AttrInt64(group),
-            kernel_shape=None if kernel_shape is None else AttrInt64s(kernel_shape),
-            pads=None if pads is None else AttrInt64s(pads),
-            strides=None if strides is None else AttrInt64s(strides),
+            kernel_shape=AttrInt64s.maybe(kernel_shape),
+            pads=AttrInt64s.maybe(pads),
+            strides=AttrInt64s.maybe(strides),
         ),
         _QLinearConv.Inputs(
             x=x,
@@ -11006,16 +11348,12 @@ def rnn(
     """
     return _RNN(
         _RNN.Attributes(
-            activation_alpha=None
-            if activation_alpha is None
-            else AttrFloat32s(activation_alpha),
-            activation_beta=None
-            if activation_beta is None
-            else AttrFloat32s(activation_beta),
+            activation_alpha=AttrFloat32s.maybe(activation_alpha),
+            activation_beta=AttrFloat32s.maybe(activation_beta),
             activations=AttrStrings(activations),
-            clip=None if clip is None else AttrFloat32(clip),
+            clip=AttrFloat32.maybe(clip),
             direction=AttrString(direction),
-            hidden_size=None if hidden_size is None else AttrInt64(hidden_size),
+            hidden_size=AttrInt64.maybe(hidden_size),
             layout=AttrInt64(layout),
         ),
         _RNN.Inputs(
@@ -11085,7 +11423,7 @@ def random_normal(
             dtype=AttrDtype(dtype),
             mean=AttrFloat32(mean),
             scale=AttrFloat32(scale),
-            seed=None if seed is None else AttrFloat32(seed),
+            seed=AttrFloat32.maybe(seed),
             shape=AttrInt64s(shape),
         ),
         _RandomNormal.Inputs(),
@@ -11147,10 +11485,10 @@ def random_normal_like(
     """
     return _RandomNormalLike(
         _RandomNormalLike.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
+            dtype=AttrDtype.maybe(dtype),
             mean=AttrFloat32(mean),
             scale=AttrFloat32(scale),
-            seed=None if seed is None else AttrFloat32(seed),
+            seed=AttrFloat32.maybe(seed),
         ),
         _RandomNormalLike.Inputs(
             input=input,
@@ -11213,7 +11551,7 @@ def random_uniform(
             dtype=AttrDtype(dtype),
             high=AttrFloat32(high),
             low=AttrFloat32(low),
-            seed=None if seed is None else AttrFloat32(seed),
+            seed=AttrFloat32.maybe(seed),
             shape=AttrInt64s(shape),
         ),
         _RandomUniform.Inputs(),
@@ -11275,10 +11613,10 @@ def random_uniform_like(
     """
     return _RandomUniformLike(
         _RandomUniformLike.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
+            dtype=AttrDtype.maybe(dtype),
             high=AttrFloat32(high),
             low=AttrFloat32(low),
-            seed=None if seed is None else AttrFloat32(seed),
+            seed=AttrFloat32.maybe(seed),
         ),
         _RandomUniformLike.Inputs(
             input=input,
@@ -11431,7 +11769,7 @@ def reduce_l1(
     """
     return _ReduceL1(
         _ReduceL1.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceL1.Inputs(
@@ -11485,7 +11823,7 @@ def reduce_l2(
     """
     return _ReduceL2(
         _ReduceL2.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceL2.Inputs(
@@ -11539,7 +11877,7 @@ def reduce_log_sum(
     """
     return _ReduceLogSum(
         _ReduceLogSum.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceLogSum.Inputs(
@@ -11593,7 +11931,7 @@ def reduce_log_sum_exp(
     """
     return _ReduceLogSumExp(
         _ReduceLogSumExp.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceLogSumExp.Inputs(
@@ -11647,7 +11985,7 @@ def reduce_max(
     """
     return _ReduceMax(
         _ReduceMax.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceMax.Inputs(
@@ -11701,7 +12039,7 @@ def reduce_mean(
     """
     return _ReduceMean(
         _ReduceMean.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceMean.Inputs(
@@ -11755,7 +12093,7 @@ def reduce_min(
     """
     return _ReduceMin(
         _ReduceMin.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceMin.Inputs(
@@ -11809,7 +12147,7 @@ def reduce_prod(
     """
     return _ReduceProd(
         _ReduceProd.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceProd.Inputs(
@@ -11927,7 +12265,7 @@ def reduce_sum_square(
     """
     return _ReduceSumSquare(
         _ReduceSumSquare.Attributes(
-            axes=None if axes is None else AttrInt64s(axes),
+            axes=AttrInt64s.maybe(axes),
             keepdims=AttrInt64(keepdims),
         ),
         _ReduceSumSquare.Inputs(
@@ -12693,18 +13031,10 @@ def scan(
         _Scan.Attributes(
             body=AttrGraph(_body_subgraph),
             num_scan_inputs=AttrInt64(num_scan_inputs),
-            scan_input_axes=None
-            if scan_input_axes is None
-            else AttrInt64s(scan_input_axes),
-            scan_input_directions=None
-            if scan_input_directions is None
-            else AttrInt64s(scan_input_directions),
-            scan_output_axes=None
-            if scan_output_axes is None
-            else AttrInt64s(scan_output_axes),
-            scan_output_directions=None
-            if scan_output_directions is None
-            else AttrInt64s(scan_output_directions),
+            scan_input_axes=AttrInt64s.maybe(scan_input_axes),
+            scan_input_directions=AttrInt64s.maybe(scan_input_directions),
+            scan_output_axes=AttrInt64s.maybe(scan_output_axes),
+            scan_output_directions=AttrInt64s.maybe(scan_output_directions),
         ),
         _Scan.Inputs(
             initial_state_and_scan_inputs=initial_state_and_scan_inputs,
@@ -13241,7 +13571,7 @@ def sequence_empty(
     """
     return _SequenceEmpty(
         _SequenceEmpty.Attributes(
-            dtype=None if dtype is None else AttrDtype(dtype),
+            dtype=AttrDtype.maybe(dtype),
         ),
         _SequenceEmpty.Inputs(),
     ).outputs.output
@@ -13516,7 +13846,7 @@ def shape(
     """
     return _Shape(
         _Shape.Attributes(
-            end=None if end is None else AttrInt64(end),
+            end=AttrInt64.maybe(end),
             start=AttrInt64(start),
         ),
         _Shape.Inputs(
@@ -13985,7 +14315,7 @@ def softmax_cross_entropy_loss(
     """
     return _SoftmaxCrossEntropyLoss(
         _SoftmaxCrossEntropyLoss.Attributes(
-            ignore_index=None if ignore_index is None else AttrInt64(ignore_index),
+            ignore_index=AttrInt64.maybe(ignore_index),
             reduction=AttrString(reduction),
         ),
         _SoftmaxCrossEntropyLoss.Inputs(
@@ -14363,8 +14693,8 @@ def string_normalizer(
         _StringNormalizer.Attributes(
             case_change_action=AttrString(case_change_action),
             is_case_sensitive=AttrInt64(is_case_sensitive),
-            locale=None if locale is None else AttrString(locale),
-            stopwords=None if stopwords is None else AttrStrings(stopwords),
+            locale=AttrString.maybe(locale),
+            stopwords=AttrStrings.maybe(stopwords),
         ),
         _StringNormalizer.Inputs(
             X=X,
@@ -14659,9 +14989,9 @@ def tf_idf_vectorizer(
             mode=AttrString(mode),
             ngram_counts=AttrInt64s(ngram_counts),
             ngram_indexes=AttrInt64s(ngram_indexes),
-            pool_int64s=None if pool_int64s is None else AttrInt64s(pool_int64s),
-            pool_strings=None if pool_strings is None else AttrStrings(pool_strings),
-            weights=None if weights is None else AttrFloat32s(weights),
+            pool_int64s=AttrInt64s.maybe(pool_int64s),
+            pool_strings=AttrStrings.maybe(pool_strings),
+            weights=AttrFloat32s.maybe(weights),
         ),
         _TfIdfVectorizer.Inputs(
             X=X,
@@ -14868,7 +15198,7 @@ def transpose(
     """
     return _Transpose(
         _Transpose.Attributes(
-            perm=None if perm is None else AttrInt64s(perm),
+            perm=AttrInt64s.maybe(perm),
         ),
         _Transpose.Inputs(
             data=data,
@@ -15053,7 +15383,7 @@ def unique(
     """
     return _Unique(
         _Unique.Attributes(
-            axis=None if axis is None else AttrInt64(axis),
+            axis=AttrInt64.maybe(axis),
             sorted=AttrInt64(sorted),
         ),
         _Unique.Inputs(

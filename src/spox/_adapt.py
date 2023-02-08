@@ -28,19 +28,17 @@ def adapt_node(
             var.unwrap_type()._to_onnx_value_info(
                 var_names[var], _traceback_name=f"adapt-input {key}"
             )
-            for key, var in node.inputs.as_dict().items()
-            if var
+            for key, var in node.inputs.get_vars().items()
         ]
         output_info = [
             var.unwrap_type()._to_onnx_value_info(
                 var_names[var], _traceback_name=f"adapt-output {key}"
             )
-            for key, var in node.outputs.as_dict().items()
-            if var
+            for key, var in node.outputs.get_vars().items()
         ]
         initializers = [
             from_array(var._value, name)
-            for name, var in node.inputs.as_dict().items()
+            for name, var in node.inputs.get_vars().items()
             if isinstance(var._value, numpy.ndarray)
         ]
     except ValueError:

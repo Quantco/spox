@@ -10,14 +10,17 @@ _{{ attr.name }}_subgraph: Graph = subgraph(
 return _{{ schema.name }}(
     _{{ schema.name }}.Attributes(
 {% for attr in attributes %}
-    {% if attr.attr_constructor == "AttrGraph" %}
-        {% set expr = "AttrGraph(_{}_subgraph)".format(attr.name) %}
+    {% if attr.constructor_type_hint.startswith("Optional[") and attr.constructor_type_hint.endswith("]") %}
+        {% set method = ".maybe" %}
     {% else %}
-        {% set expr = "{}({})".format(attr.attr_constructor, attr.name) %}
+        {% set method = "" %}
     {% endif %}
-    {{ attr.name }}={% if attr.constructor_type_hint.startswith("Optional[") and attr.constructor_type_hint.endswith("]")
-        %}None if {{ attr.name }} is None else {{ expr }}{%
-    else %}{{ expr }}{% endif %},
+    {% if attr.attr_constructor == "AttrGraph" %}
+        {% set expr = "AttrGraph{}(_{}_subgraph)".format(method, attr.name) %}
+    {% else %}
+        {% set expr = "{}{}({})".format(attr.attr_constructor, method, attr.name) %}
+    {% endif %}
+    {{ attr.name }}={{ expr }},
 {% endfor %}
     ), _{{ schema.name }}.Inputs(
 {% for param in schema.inputs

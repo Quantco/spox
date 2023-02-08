@@ -22,7 +22,7 @@ from ._internal_op import Argument, intros
 from ._node import Node
 from ._scope import Scope
 from ._traverse import iterative_dfs
-from ._var import Var, _nil
+from ._var import Var
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -195,8 +195,7 @@ class Builder:
             raise BuildError("Some graphs have missing build data.")
         self.update_scope_tree(self.main)
         self.resolve_scopes()
-
-        return self.compile_graph(self.main, Scope.of((_nil, "")))
+        return self.compile_graph(self.main, Scope())
 
     @staticmethod
     def get_intro_results(

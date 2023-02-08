@@ -1,17 +1,17 @@
 import inspect
 import itertools
-from dataclasses import dataclass
+from dataclasses import dataclass, make_dataclass
 from typing import TYPE_CHECKING, Callable, Dict, Iterable, Tuple, TypeVar
 
 import onnx
 from typing_extensions import TypeAlias
 
 from . import _attributes
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
 from ._var import Var
-from ._varfields import VarFields
 
 if TYPE_CHECKING:
     from . import _graph
@@ -42,8 +42,8 @@ class Function(_InternalNode):
 
     func_args: Dict[str, Var]
     func_attrs: Dict[str, _attributes._Ref]
-    func_inputs: VarFields
-    func_outputs: VarFields
+    func_inputs: BaseInputs
+    func_outputs: BaseOutputs
     func_graph: "_graph.Graph"
 
     def constructor(self, attrs, inputs):
@@ -63,23 +63,27 @@ class Function(_InternalNode):
         from . import _graph
 
         self.func_args = _graph.arguments_dict(
-            **{name: var.type for name, var in self.inputs.as_dict().items()}
+            **{name: var.type for name, var in self.inputs.get_vars().items()}
         )
 
         func_attrs = {}
-        for name, attr in self.attrs.__dict__.items():
+        for name, attr in self.attrs.get_fields().items():
+            if attr is None:
+                raise TypeError(
+                    f"Function attributes is not optional, but {name} is None."
+                )
             func_attrs[name] = _attributes._Ref(concrete=attr, outer_name=name)
         self.func_attrs = func_attrs
 
-        self.func_inputs = self.Inputs(**self.func_args)
+        self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
-        self.func_graph = _graph.results(**self.func_outputs.as_dict()).with_arguments(
+        self.func_graph = _graph.results(**self.func_outputs.get_vars()).with_arguments(
             *self.func_args.values()
         )
 
         return {
             name: var.type
-            for name, var in self.func_outputs.as_dict().items()
+            for name, var in self.func_outputs.get_vars().items()
             if var.type
         }
 
@@ -107,30 +111,30 @@ class Function(_InternalNode):
         return onnx.helper.make_function(
             self.op_type.domain,
             self.op_type.identifier,
-            self.func_inputs.get_kwargs(),
-            self.func_outputs.get_kwargs(),
+            list(self.func_inputs.get_fields().keys()),
+            list(self.func_outputs.get_fields().keys()),
             list(node_protos),
             [
                 onnx.helper.make_operatorsetid(domain, version)
                 for domain, version in graph.get_opsets().items()
             ],
-            self.Attributes.__dataclass_fields__.keys(),
+            list(self.func_attrs.keys()),
         )
 
 
 def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
-    class _FuncInputs(VarFields):
-        ...
-
-    class _FuncOutputs(VarFields):
-        ...
-
-    _FuncInputs.__annotations__ = {f"in{i}": "Var" for i in range(num_inputs)}
-    _FuncOutputs.__annotations__ = {f"out{i}": "Var" for i in range(num_outputs)}
+    _FuncInputs = make_dataclass(
+        "_FuncInputs", ((f"in{i}", Var) for i in range(num_inputs)), bases=(BaseInputs,)
+    )
+    _FuncOutputs = make_dataclass(
+        "_FuncOutputs",
+        ((f"out{i}", Var) for i in range(num_outputs)),
+        bases=(BaseOutputs,),
+    )
 
     class _Func(Function):
         @dataclass
-        class Attributes:
+        class Attributes(BaseAttributes):
             pass
 
         Inputs = _FuncInputs
@@ -138,7 +142,7 @@ def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
         op_type = OpType(name, domain, version)
 
         def constructor(self, attrs, inputs):
-            return self.Outputs(*fun(*inputs.unpack()))
+            return self.Outputs(*fun(*inputs.get_fields().values()))
 
     return _Func
 
@@ -183,7 +187,9 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
 
         def alt_fun(*args: Var) -> Iterable[Var]:
             cls = init(*args)
-            return cls(cls.Attributes(), cls.Inputs(*args)).outputs.unpack()
+            return (
+                cls(cls.Attributes(), cls.Inputs(*args)).outputs.get_fields().values()
+            )
 
         return alt_fun  # type: ignore
 

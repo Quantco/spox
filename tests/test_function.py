@@ -10,26 +10,28 @@ import onnxruntime
 import pytest
 
 from spox._attributes import AttrFloat32, _Ref
+from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._function import Function, to_function
 from spox._graph import arguments, results
 from spox._node import OpType
 from spox._type_system import Tensor
 from spox._var import Var
-from spox._varfields import VarFields
 
 
 @pytest.fixture
 def linear(op):
     class LinearFunction(Function):
         @dataclass
-        class Attributes:
+        class Attributes(BaseAttributes):
             slope: AttrFloat32
             shift: AttrFloat32
 
-        class Inputs(VarFields):
+        @dataclass
+        class Inputs(BaseInputs):
             X: Var
 
-        class Outputs(VarFields):
+        @dataclass
+        class Outputs(BaseOutputs):
             Y: Var
 
         op_type = OpType("LinearFunction", "spox.test", 0)
@@ -57,14 +59,16 @@ def linear(op):
 def linear2(op, linear):
     class LinearFunction2(Function):
         @dataclass
-        class Attributes:
+        class Attributes(BaseAttributes):
             slope1: AttrFloat32
             shift1: AttrFloat32
 
-        class Inputs(VarFields):
+        @dataclass
+        class Inputs(BaseInputs):
             X: Var
 
-        class Outputs(VarFields):
+        @dataclass
+        class Outputs(BaseOutputs):
             Y: Var
 
         op_type = OpType("LinearFunction2", "spox.test", 0)
@@ -89,16 +93,18 @@ def linear2(op, linear):
 def cubic(op, linear):
     class CubicFunction(Function):
         @dataclass
-        class Attributes:
+        class Attributes(BaseAttributes):
             a3: AttrFloat32
             a2: AttrFloat32
             a1: AttrFloat32
             a0: AttrFloat32
 
-        class Inputs(VarFields):
+        @dataclass
+        class Inputs(BaseInputs):
             X: Var
 
-        class Outputs(VarFields):
+        @dataclass
+        class Outputs(BaseOutputs):
             Y: Var
 
         op_type = OpType("CubicFunction", "spox.test.extra", 0)
