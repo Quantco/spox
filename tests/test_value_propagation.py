@@ -1,5 +1,4 @@
 import numpy
-import pytest
 
 import spox.opset.ai.onnx.ml.v3 as ml
 from spox import Var, _type_system
@@ -128,10 +127,12 @@ def test_with_reconstruct(op):
     )
 
 
-def test_bad_reshape_raises(op):
-    op.reshape(op.const([1, 2]), op.const([2]))  # sanity
-    with pytest.raises(Exception):
-        op.reshape(op.const([1, 2, 3]), op.const([2]))
+def test_bad_reshape_fails(caplog, op):
+    caplog.set_level("DEBUG")
+    _ = op.reshape(op.const([1, 2]), op.const([2]))  # sanity
+    assert not caplog.records
+    _ = op.reshape(op.const([1, 2, 3]), op.const([2]))._value
+    assert any(record.levelname == "DEBUG" for record in caplog.records)
 
 
 def test_give_up_silently(op):

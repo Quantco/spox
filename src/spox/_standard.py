@@ -1,5 +1,5 @@
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
-
+import logging
 import typing
 from typing import Dict, Tuple
 
@@ -173,7 +173,15 @@ class StandardNode(Node):
             for var in self.inputs.get_vars().values()
             if var._value
         }
-        output_feed = run(model, input_feed)
+        try:
+            output_feed = run(model, input_feed)
+        except Exception as e:
+            logging.debug(
+                f"Value propagation in {self.get_op_repr()} on backend "
+                f"{_value_prop._VALUE_PROP_BACKEND} failed with - "
+                f"{type(e).__name__}: {e}"
+            )
+            output_feed = {}
         results = {
             scope.var[str(name)]
             ._which_output: unwrap_feed(scope.var[str(name)].unwrap_type(), result)
