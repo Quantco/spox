@@ -62,9 +62,10 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
 
     Returns
     -------
+    onnx.ModelProto
         An ONNX ModelProto containing operators necessary to compute ``outputs`` from ``inputs``.
 
-        If multiple versions of the ``ai.onnx`` domain are present, the nodes are all converted to the newest one
+        If multiple versions of the ``ai.onnx`` domain are present, the nodes are all converted to the newest one.
 
         The returned model may be mutated after building to add metadata, docstrings, etc.
     """
