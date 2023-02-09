@@ -268,7 +268,7 @@ class Graph:
         """
         Do a best-effort at generating NodeProtos of consistent versions, matching ``self.opsets``.
         In essence, the policy is to upgrade to the highest used version.
-        This does not attempt to fix too complicated nodes, but should work for embedded models and simple single nodes.
+        This does not attempt to fix too complicated nodes, but should work for inline models and simple single nodes.
 
         Note that onnx.version_converter only implements conversion for the default domain.
         """

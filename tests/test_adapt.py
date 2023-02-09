@@ -9,8 +9,8 @@ import pytest
 from spox._attributes import AttrInt64s
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
-from spox._internal_op import embedded
 from spox._node import OpType
+from spox._public import inline
 from spox._standard import StandardNode
 from spox._type_system import Tensor
 from spox._var import Var
@@ -33,7 +33,7 @@ agraph (float[1, N] A) => (float[N] B)
 
 
 @pytest.fixture
-def embedded_old_squeeze_graph(op, old_squeeze):
+def inline_old_squeeze_graph(op, old_squeeze):
     (data,) = arguments(
         data=Tensor(
             numpy.float32,
@@ -43,7 +43,7 @@ def embedded_old_squeeze_graph(op, old_squeeze):
             ),
         )
     )
-    (result,) = embedded(old_squeeze)(A=data).values()
+    (result,) = inline(old_squeeze)(A=data).values()
     return results(final=result).with_opset(("ai.onnx", 17))
 
 
@@ -86,10 +86,10 @@ def old_squeeze_graph(op, old_squeeze):
     return results(final=result).with_opset(("ai.onnx", 17))
 
 
-def test_adapts_embedded_old_squeeze(onnx_helper, embedded_old_squeeze_graph):
+def test_adapts_inline_old_squeeze(onnx_helper, inline_old_squeeze_graph):
     onnx_helper.assert_close(
         onnx_helper.run(
-            embedded_old_squeeze_graph,
+            inline_old_squeeze_graph,
             "final",
             data=numpy.array([[1, 2, 3, 4]], dtype=numpy.float32),
         ),

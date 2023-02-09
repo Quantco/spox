@@ -10,6 +10,7 @@ from onnx.numpy_helper import to_array
 from . import _internal_op
 from ._attributes import AttrType
 from ._graph import results
+from ._inline import _Inline
 from ._type_system import Type
 from ._var import Var
 
@@ -139,7 +140,6 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     TypeError
         If the arguments to the callback are supplied incorrectly or the variables are of the wrong type.
     """
-    embed = _internal_op.embedded(model)
     in_names = [i.name for i in model.graph.input]
     in_defaults = {i.name: i for i in model.graph.initializer}
     out_names = [o.name for o in model.graph.output]
@@ -163,7 +163,17 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             if array.dtype == np.dtype(object):
                 array = array.astype(str)
             kwargs[name] = _internal_op.constant(array, version)
-        return embed(**kwargs)
+
+        if set(kwargs) != set(in_names):
+            raise TypeError(
+                f"Error processing arguments, got {set(kwargs)}, expected {set(in_names)}."
+            )
+        node = _Inline(
+            inputs=_Inline.Inputs([kwargs[name] for name in in_names]),
+            out_variadic=len(model.graph.output),
+            model=model,
+        )
+        return dict(zip(out_names, node.outputs.outputs))
 
     return inline_inner
 

@@ -4,7 +4,7 @@ import onnx.parser
 import pytest
 
 from spox._graph import arguments, results
-from spox._internal_op import embedded
+from spox._public import inline
 from spox._type_system import Tensor
 from spox._utils import from_array
 
@@ -80,7 +80,7 @@ def min_graph(op, lin_fun_proto):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
-    (result,) = embedded(lin_fun_proto)(A=first, X=op.const(1.0), B=second).values()
+    (result,) = inline(lin_fun_proto)(A=first, X=op.const(1.0), B=second).values()
     return results(final=result)
 
 
@@ -102,7 +102,7 @@ def larger_graph(op, lin_fun_proto):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
-    (result,) = embedded(lin_fun_proto)(
+    (result,) = inline(lin_fun_proto)(
         A=op.add(first, second), X=op.const(2.0), B=second
     ).values()
     return results(final=op.div(result, first))
@@ -120,7 +120,7 @@ def test_larger(onnx_helper, larger_graph):
 @pytest.fixture
 def add4_graph(op, add_proto):
     def add(x, y):
-        return embedded(add_proto)(A=x, B=y)["C"]
+        return inline(add_proto)(A=x, B=y)["C"]
 
     vec = Tensor(numpy.float32, (None,))
     a, b, c, d = arguments(a=vec, b=vec, c=vec, d=vec)
@@ -141,7 +141,7 @@ def test_repeated(onnx_helper, add4_graph):
 @pytest.fixture
 def inc3_graph(op, inc_proto):
     def inc(s):
-        return embedded(inc_proto)(X=s)["Y"]
+        return inline(inc_proto)(X=s)["Y"]
 
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
     y = inc(inc(inc(x)))
@@ -156,7 +156,7 @@ def test_inc3_with_initializer(onnx_helper, inc3_graph):
 @pytest.fixture
 def inc3_graph_sparse_init(op, inc_proto_sparse_one):
     def inc(s):
-        return embedded(inc_proto_sparse_one)(X=s)["Y"]
+        return inline(inc_proto_sparse_one)(X=s)["Y"]
 
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
     y = inc(inc(inc(x)))
@@ -170,7 +170,7 @@ def test_inc3_with_sparse_initializer(onnx_helper, inc3_graph_sparse_init):
 
 def test_inc3_value_prop(op, inc_proto):
     def inc(s):
-        return embedded(inc_proto)(X=s)["Y"]
+        return inline(inc_proto)(X=s)["Y"]
 
     assert inc(inc(inc(op.const([0.0]))))._get_value() == numpy.array(
         [3.0], numpy.float32

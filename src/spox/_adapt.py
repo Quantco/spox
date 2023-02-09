@@ -5,7 +5,8 @@ import numpy
 import onnx
 import onnx.version_converter
 
-from ._internal_op import _Embedded, _InternalNode
+from ._inline import _Inline
+from ._internal_op import _InternalNode
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
@@ -60,8 +61,8 @@ def adapt_node(
     return list(target_model.graph.node)
 
 
-def adapt_embedded(
-    node: _Embedded,
+def adapt_inline(
+    node: _Inline,
     protos: List[onnx.NodeProto],
     target_opsets: Dict[str, int],
     var_names: Dict[Var, str],
@@ -91,8 +92,8 @@ def adapt_best_effort(
     var_names: Dict[Var, str],
     node_names: Dict[Node, str],
 ) -> Optional[List[onnx.NodeProto]]:
-    if isinstance(node, _Embedded):
-        return adapt_embedded(
+    if isinstance(node, _Inline):
+        return adapt_inline(
             node,
             protos,
             opsets,
