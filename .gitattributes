@@ -5,4 +5,4 @@
 *.{py,yaml,yml,sh} text eol=lf
 *.bat text eol=crlf
 
-src/spox/opset/* linguist-vendored
+src/spox/opset/** linguist-vendored
