@@ -157,12 +157,11 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             raise TypeError(
                 f"inline callback missing required arguments: {missing}, {_signature_msg}."
             )
-        version = {imp.domain: imp.version for imp in model.opset_import}.get("", 1)
         for name in missing:
             array = to_array(in_defaults[name])
             if array.dtype == np.dtype(object):
                 array = array.astype(str)
-            kwargs[name] = _internal_op.constant(array, version)
+            kwargs[name] = _internal_op.constant(array)
 
         if set(kwargs) != set(in_names):
             raise TypeError(

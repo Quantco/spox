@@ -20,6 +20,31 @@ from ._utils import from_array
 from ._value_prop import PropValueType
 from ._var import Var
 
+# This is a default used for internal operators that
+# require the default domain. The most common of these
+# is Introduce, which is effectively used in every graph.
+# It implements an 'opset-independent' `Identity`.
+#
+# At the time of writing, there are three versions for
+# `Identity` in the standard: 1, 13 and 14. 1 and 13 only
+# cover `tensor`s. 14 includes `seq` as well. No version
+# currently supports `map`. Another constraint at play is that
+# ORT will throw warnings when encountering any version less
+# than 7. If we want to avoid spamming the user with warnings
+# in simple test cases, we ought to use 7 or higher.
+#
+# Version 7 was released some time in May 2018, version 13 in
+# Nov 2020, and version 14 in April 2021. The only version
+# that users can currently choose via `spox.opset.ai.onnx` is
+# version 17 (released June 2022) and I doubt we will ever
+# decrease that.
+#
+# Putting it all together, it seems reasonable to set this to
+# 14. That version is almost 2 years old at this point and
+# spares us any special casing if we want to use `seq`.
+# This effectively sets the lower bound on every model.
+INTERNAL_MIN_OPSET = 14
+
 
 class _InternalNode(Node, ABC):
     @property
@@ -113,7 +138,6 @@ class _Constant(_InternalNode):
     """Internal operator allowing usage of a universal-versioned Constant operator."""
 
     op_type = OpType("Constant", "spox.internal", 0)
-    version: Optional[int]
 
     @dataclass
     class Attributes(BaseAttributes):
@@ -131,8 +155,9 @@ class _Constant(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def post_init(self, **kwargs):
-        self.version = kwargs.get("version")
+    @property
+    def opset_req(self) -> Set[Tuple[str, int]]:
+        return {("", INTERNAL_MIN_OPSET)}
 
     def infer_output_types(self) -> Dict[str, Type]:
         # Output type is based on the value of the type attribute
@@ -141,10 +166,6 @@ class _Constant(_InternalNode):
 
     def propagate_values(self) -> Dict[str, PropValueType]:
         return {"output": self.attrs.value.value}
-
-    @property
-    def opset_req(self) -> Set[Tuple[str, int]]:
-        return {("", self.version)} if self.version is not None else set()
 
     def to_onnx(
         self,
@@ -163,10 +184,8 @@ class _Constant(_InternalNode):
         ]
 
 
-def constant(value: numpy.ndarray, version: Optional[int]) -> Var:
-    return _Constant(
-        _Constant.Attributes(AttrTensor(value)), version=version
-    ).outputs.output
+def constant(value: numpy.ndarray) -> Var:
+    return _Constant(_Constant.Attributes(AttrTensor(value))).outputs.output
 
 
 class _Introduce(_InternalNode):
@@ -199,10 +218,7 @@ class _Introduce(_InternalNode):
 
     @property
     def opset_req(self) -> Set[Tuple[str, int]]:
-        # This is a questionable default (this operator is used in every graph),
-        # but there's not much else to do that doesn't lower-bound the version in an implicit way.
-        # The assumption here is that no-one will need graphs which only have Introduce nodes.
-        return {("", 1)}
+        return {("", INTERNAL_MIN_OPSET)}
 
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None

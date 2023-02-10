@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Sequence, Set, Tuple
 import onnx
 
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
-from spox._internal_op import _InternalNode
+from spox._internal_op import INTERNAL_MIN_OPSET, _InternalNode
 from spox._node import OpType
 from spox._scope import Scope
 from spox._type_system import Type
@@ -45,16 +45,9 @@ class _Inline(_InternalNode):
 
     @property
     def opset_req(self) -> Set[Tuple[str, int]]:
-        constant_req = (
-            {("", 11)}
-            if self.graph.sparse_initializer
-            else {("", 9)}
-            if self.graph.initializer
-            else set()
-        )
-        return {
-            (imp.domain, imp.version) for imp in self.model.opset_import
-        } | constant_req
+        return {(imp.domain, imp.version) for imp in self.model.opset_import} | {
+            ("", INTERNAL_MIN_OPSET)
+        }
 
     def infer_output_types(self) -> Dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
