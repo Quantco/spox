@@ -19,6 +19,9 @@ CONSTRUCTOR_RENAMES = {
     "not": "not_",
     "is_na_n": "isnan",
     "is_inf": "isinf",
+    "mat_mul": "matmul",
+    "mat_mul_integer": "matmul_integer",
+    "qlinear_mat_mul": "qlinear_matmul",
 }
 
 # Mapping from attribute proto type integers to Python types.

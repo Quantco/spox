@@ -9226,7 +9226,7 @@ def lp_pool(
     ).outputs.Y
 
 
-def mat_mul(
+def matmul(
     A: Var,
     B: Var,
 ) -> Var:
@@ -9265,7 +9265,7 @@ def mat_mul(
     ).outputs.Y
 
 
-def mat_mul_integer(
+def matmul_integer(
     A: Var,
     B: Var,
     a_zero_point: Optional[Var] = None,
@@ -11020,7 +11020,7 @@ def qlinear_conv(
     ).outputs.y
 
 
-def qlinear_mat_mul(
+def qlinear_matmul(
     a: Var,
     a_scale: Var,
     a_zero_point: Var,
@@ -15901,8 +15901,8 @@ _CONSTRUCTORS = {
     "Loop": loop,
     "LpNormalization": lp_normalization,
     "LpPool": lp_pool,
-    "MatMul": mat_mul,
-    "MatMulInteger": mat_mul_integer,
+    "MatMul": matmul,
+    "MatMulInteger": matmul_integer,
     "Max": max,
     "MaxPool": max_pool,
     "MaxRoiPool": max_roi_pool,
@@ -15928,7 +15928,7 @@ _CONSTRUCTORS = {
     "Pad": pad,
     "Pow": pow,
     "QLinearConv": qlinear_conv,
-    "QLinearMatMul": qlinear_mat_mul,
+    "QLinearMatMul": qlinear_matmul,
     "QuantizeLinear": quantize_linear,
     "RNN": rnn,
     "RandomNormal": random_normal,
