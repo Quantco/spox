@@ -14,12 +14,18 @@ Representation
 
 On the fundamental level, operators have attributes, inputs and outputs. For an ONNX runtime, operators are the elementary operations (instructions) that are performed within the model.
 
+Example operators include:
+
+- Arithmetic - ``Add``, ``Mul``, ``MatMul``, ...
+- Tensor/ndarray operations - ``Reshape``, ``Concat``, ``Gather``, ``Scatter``, ...
+- ML/DL-specific operations like ``AveragePool``, ``OneHot``, ...
+
 Attributes
 ----------
 
-Attributes are like *template parameters* for the operator. They often affect the operation performed by the operator, including what type or shape the output is.
+Attributes are strongly typed constants known at build time – similarly to *template parameters* for the operator. They often affect the operation performed by the operator, including what type or shape the output is, and may not be runtime-dependent (contrary to operator `inputs`).
 
-They are strongly typed constants known when the model was built and as such are not runtime-dependent. They may be either required or optional (in which case they may have a default). A common construct is one-of attributes, where only one of a given group of arguments may be set. Such more complex logic is usually documented in the docstring of the operator as it is not directly expressible in either Python or ONNX itself.
+They may be either required or optional (in which case they may have a default). Another common construct is `one-of attributes`, where only one of a given group of arguments may be set. Such more complex logic is usually documented in the docstring of the operator as it is not directly expressible in either a Python signature or ONNX itself.
 
 In Spox, attributes are keyword arguments to operator constructors. They expect Python and numpy datatypes to avoid the inconvenience of constructing ONNX protobuf objects. Whenever a constructor takes an attribute the type-hint explicitly specifies which type is required. Passing the wrong attribute type is an error, as using it would cause the model to fail validation.
 
@@ -40,15 +46,19 @@ Outputs are like *function results*. Outputs are also a list of variables, to wh
 
 In the representation inputs and outputs are specified positionally. Because of this, inputs are positional arguments and outputs are either a single variable or a tuple.
 
-Runtime-dependent values (variables) – such as operator inputs and outputs – are represented with ``Var`` objects in Spox. Internally, ``Var`` store the information (their ancestry) necessary to recover the computational graph to compute them. They should never be mutated
+Runtime-dependent values (variables) – such as operator inputs and outputs – are represented with immutable ``Var`` objects in Spox. Internally, ``Var`` store the information (their ancestry) necessary to recover the computational graph to compute them.
 
 Inputs and outputs may also be variadic or optional.
 
-- Variadic indicates that we may have a (usually arbitrary) number of variables passed in for this input. Since in ONNX protobuf inputs/outputs are just a homogenous positional list, only the last argument may be variadic. However, in Spox a ``Sequence[Var]`` is used to represent this case.
+- Variadic indicates that we may have a (usually arbitrary) number of variables passed in for this input. Since in ONNX protobuf inputs/outputs are just a homogenous positional list, only the last argument may be variadic. However, in Spox a ``Sequence[Var]`` is used to represent this case. As a variadic output's length may be ambiguous, this is resolved at generation-time either with a `output variadic solution patch`, or by generating an extra argument to specify this.
 - Optional implies the input may be omitted. This is slightly inconsistent within the ONNX representation, as there are two ways to omit an argument: either it can be not provided in the argument list or instead an "empty variable" (empty string for the name) may be passed in. The generated Spox constructors make a best attempt to abstract this out, and optionals are represented with ``Optional[Var]``.
+
+Multiple outputs of an operator are returned as a tuple, with its elements typed as above.
 
 .. note::
    Though optional outputs are allowed by the standard, Spox does not support them. All the possible outputs will be named in the model. It is expected that model optimisers will remove references to unused outputs.
+
+A simple example would be ``Reshape`` with two inputs: ``data: Var`` and ``shape: Var``. On the other hand, ``Concat`` has a variadic input ``inputs: Sequence[Var]``, and ``Split``'s variadic output is returned as ``Sequence[Var]``.
 
 Schema
 ------
@@ -56,16 +66,30 @@ Schema
 Information about an operator is summarised in the `operator schema`, which is programmatically accessible from the ``onnx`` Python module. Spox does not directly expose schemas, but operator constructors (including their docstrings) are generated based on them.
 
 .. warning::
-   Spox makes a best effort to figure out how to interpret schemas. However, not all operators are tested by hand and some may not be instantiable in some forms which are actually allowed by the standard. In that case, instantiating them in another way and using an embedded model may be required, as provided by an internal operator.
+   Spox makes a best effort to figure out how to interpret schemas. However, not all operators are tested by hand and some may not be instantiable in some forms which are actually allowed by the standard. In that case, instantiating them in another way and using an inlined model may be required.
 
 Usage
 =====
 
 The best way to use an opset is to import it like ``import spox.opset.ai.onnx.v17 as op``. That way, all the public functions from the module are the operator constructors for the relevant domain – in this example, ``ai.onnx`` (the default domain, sometimes written as the empty string ``""``) at version 17.
 
-Operator constructors may be used in any way that is legal in Python, as long as no state of ``Var`` or other internal Spox objects is modified, in which case the behaviour is undefined. As such, constructs such as ``functools.reduce(op.mul, vars)`` are legal to express a product of all the variables ``vars``.
+An example signature is:
 
-In operator constructors Spox expects exactly the types that are mentioned in the type hints. No other types should be passed in.
+..  code:: python
+    def reshape(
+        data: Var,
+        shape: Var,
+        *,
+        allowzero: int = 0,
+    ) -> Var:
+        ...
+
+Operator constructors may be used in any way that is legal in Python, As such, constructs such as ``functools.reduce(op.mul, vars)`` are legal to express a product of all the variables ``vars``.
+
+No state of ``Var`` or other internal Spox objects is modified. Breaking this rule should be considered undefined behaviour.
+
+In operator constructors Spox expects exactly the types that are specified in the type hints. No other types should be passed in.
+In particular, ``Var`` subclasses are currently not supported.
 
 Docstrings
 ----------
@@ -79,17 +103,21 @@ Docstrings are not handwritten by the Spox developers and are based on what the 
 Operator renames
 -----------------
 
-To follow Python conventions, operator constructors are renamed to follow PEP8. This is done by renaming to snake-case, by prepending underscores before capitals at the start of words, followed lower-casing all characters. If the result is a Python keyword (like in the case of ``if``, ``and``, ``or``, ``not``), it an underscore ``_`` is appended.
+To follow Python conventions, operator constructors are renamed to follow PEP8. This is done by renaming to snake-case, by prepending underscores before capitals at the start of words, followed lower-casing all characters. If the result is a Python keyword (like in the case of ``if``, ``and``, ``or``, ``not``), an underscore ``_`` is appended.
 
 .. note::
-   This naming scheme causes some operators (like ``min``, ``max``, ``abs``, ``range``, ...) to shadow builtin Python functions. A programmer may choose to alias them to another name when they are imported directly to avoid this issue. Additionally, ``IsInf`` and ``IsNaN`` are hard to predictably get right, and they are called ``isinf`` and ``isnan`` like in numpy.
+   This naming scheme causes some operators (like ``min``, ``max``, ``abs``, ``range``, ...) to shadow builtin Python functions. A programmer may choose to alias them to another name when they are imported directly to avoid this issue. Additionally, ``IsInf``, ``IsNaN``, and ``MatMul`` are hard to predictably get right. They are called ``isinf``, ``isnan``, and ``matmul`` - like in numpy.
 
    If required to do programmatically, to access a constructor by the ONNX operator name one may use the unstable  ``_CONSTRUCTORS`` dictionary.
 
 Data type attributes
 --------------------
 
-In standard ONNX an operator like ``Cast`` takes an ``int`` to express the datatype of the resulting tensor. Spox overrides this behaviour to instead take ``DTypeLike``, such as ``float``, ``np.int16``, ``np.dtype('bool')``. The type hint is changed accordingly, but the docstring may suggest otherwise.
+In standard ONNX an operator like ``Cast`` takes an ``int`` to express the datatype of the resulting tensor. Spox overrides this behaviour to instead take a value of ``numpy.typing.DTypeLike``.  This includes values like ``float``, ``np.int16``, ``np.dtype('bool')``. The type hint is changed accordingly, but the docstring may suggest otherwise.
+
+Also note that Spox represents types using ``numpy`` datatypes. As such, it also follows its typing conventions - a Python ``float`` becomes ``float64``, and an ``int`` becomes ``int64``. This may be unexpected, as ONNX may prefer ``float32`` in some contexts.
+
+Spox strays from ONNX in the representation of the string datatype. ``np.str_``/``np.dtype(str)`` is used instead of ``np.object_``/``np.dtype(object)``. For example, a ``Cast`` to a string type is expressible as ``op.cast(x, to=str)``.
 
 Subgraphs
 ---------
@@ -100,14 +128,14 @@ Spox abstracts this away by instead expecting a callable of the right signature 
 
 For example, since ``If``'s subgraphs (``then_branch`` and ``else_branch``) take no arguments but both return some *n* variables, a valid construct would be ``op.if_(cond, lambda: (x, y), lambda: (y, x))``, where ``cond``, ``x``, ``y`` are ``Var``.
 
-The passed callbacks will be called once to determine what the subgraph body is. The arguments for the subgraph are constructed implicitly with the right types based on a patch in the generation.
+The passed callbacks will be called once to determine what the subgraph body is. The arguments for the subgraph are constructed implicitly with the right types based on a `subgraph input type patch` in the generation.
 
 .. note::
    ONNX subgraphs have name scoping rules – as such, a subgraph may access the variables from outer graphs, but a graph may not access its subgraph's variables.
 
-   Currently Spox uses a method such that a resolution for the scoping is found which matches all of the constraints, but it may not directly follow from what the respective Python scopes were, as its hard to reliably detect where a Python variables is instantiated.
+   Currently Spox uses a resolution method to find scoping which matches all of the operator and subgraph constraints. This ONNX scoping may not directly follow from what the respective Python scopes were, as it is difficult to reliably detect where a Python variables is instantiated.
 
-   This behaviour is currently not stable and as such it is recommended to avoid side effects leaking the function scope within subgraph callbacks.
+   This behaviour should be treated as unstable. It is recommended to avoid side effects within subgraph callbacks.
 
 Type inference
 --------------
