@@ -7,15 +7,15 @@ Spox is a Python framework for constructing `ONNX <https://github.com/onnx/onnx/
    :maxdepth: 2
    :caption: Manual
 
-   overview
-   operators
-   unstable
+   manual/overview
+   manual/operators
+   manual/unstable
 
 .. toctree::
    :maxdepth: 2
    :caption: Guides
 
-    tutorial
+   guides/tutorial
 
 .. toctree::
    :maxdepth: 1
