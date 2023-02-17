@@ -35,7 +35,10 @@ author = "QuantCo, Inc."
 
 extensions = [
     "numpydoc",
+    "IPython.sphinxext.ipython_console_highlighting",
+    "IPython.sphinxext.ipython_directive",
     "nbsphinx",
+    "sphinx.ext.doctest",
     "sphinx.ext.linkcode",
     "sphinxcontrib.apidoc",
 ]

@@ -76,6 +76,7 @@ The best way to use an opset is to import it like ``import spox.opset.ai.onnx.v1
 An example signature is:
 
 ..  code:: python
+
     def reshape(
         data: Var,
         shape: Var,
@@ -108,7 +109,6 @@ To follow Python conventions, operator constructors are renamed to follow PEP8. 
 .. note::
    This naming scheme causes some operators (like ``min``, ``max``, ``abs``, ``range``, ...) to shadow builtin Python functions. A programmer may choose to alias them to another name when they are imported directly to avoid this issue. Additionally, ``IsInf``, ``IsNaN``, and ``MatMul`` are hard to predictably get right. They are called ``isinf``, ``isnan``, and ``matmul`` - like in numpy.
 
-   If required to do programmatically, to access a constructor by the ONNX operator name one may use the unstable  ``_CONSTRUCTORS`` dictionary.
 
 Data type attributes
 --------------------
@@ -128,7 +128,7 @@ Spox abstracts this away by instead expecting a callable of the right signature 
 
 For example, since ``If``'s subgraphs (``then_branch`` and ``else_branch``) take no arguments but both return some *n* variables, a valid construct would be ``op.if_(cond, lambda: (x, y), lambda: (y, x))``, where ``cond``, ``x``, ``y`` are ``Var``.
 
-The passed callbacks will be called once to determine what the subgraph body is. The arguments for the subgraph are constructed implicitly with the right types based on a `subgraph input type patch` in the generation.
+The passed callbacks will be called once to determine what the subgraph body is. The arguments for the subgraph are constructed implicitly.
 
 .. note::
    ONNX subgraphs have name scoping rules – as such, a subgraph may access the variables from outer graphs, but a graph may not access its subgraph's variables.

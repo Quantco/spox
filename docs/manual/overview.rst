@@ -17,7 +17,7 @@ The ``add`` function is an *operator constructor*, which internally constructs a
 ``Var`` maintains the information about its ancestry. This implicit graph as constructed can be later built into a full ONNX computational graph. The only needed assumption is that ``Var`` objects may not be modified.
 
 Operator constructors
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 In ONNX, operators take *inputs* (``Var``), which may be optional (``Optional[Var]``) or variadic (``Sequence[Var]``).
 
@@ -35,11 +35,11 @@ To construct operators Spox does _not_ access the Python AST, and as such all le
 Graphs
 ------
 
-To construct a computational graph we need to introduce some variables. This is done by constructing a special *argument* ``Var`` (sometimes called a *source* or *graph input*), with the public ``argument(typ: Type) -> Var`` function.
+To construct a computational graph we need to introduce some variables. This is done by constructing a special *argument* ``Var`` (sometimes called a *source* or *graph input*), with the public ``spox.argument(typ: Type) -> Var`` function.
 
-Once such a placeholder is constructed, any operator constructors may be used on it. After construction, you can build the graph with ``build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto``. When building, only nodes which are necessary to compute the requested ``Var`` are included, and ``Var`` belonging to ``inputs`` must have been returned by ``argument``.
+Once such a placeholder is constructed, any operator constructors may be used on it. After construction, you can build the graph with ``build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto``.
 
-If a computational graph contains operations from different versions of the standard, Spox will attempt to update all operators to the newest version observed in the graph. This process is known as *adapting* and is achieved with the public ONNX API, though on a more fine-grained level. Note that ONNX does not expose functionality to adapt ``ai.onnx.ml`` operators.
+If a computational graph contains operations from different versions of the standard, Spox will attempt to update all operators to the newest version observed in the graph. This "adapting" functionality is provided by the upstream ``onnx`` package but is currently only available for operators of the ``ai.onnx`` domain (i.e. not ``ai.onnx.ml``).
 
 Running
 -------
@@ -53,7 +53,7 @@ Example usage
 
 This example constructs a graph, taking floating point vectors ``a``, ``b``, ``c``, and returning ``r = a*b + c``.
 
-..  code:: python
+..  ipython:: python
 
     import numpy
     import onnxruntime

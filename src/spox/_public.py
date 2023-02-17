@@ -23,10 +23,12 @@ def argument(typ: Type) -> Var:
     ----------
     typ
         The type of the created argument variable.
+
     Returns
     -------
     arg
-        An unnamed argument variable of given type that may be used as a model input to build a graph.
+        An unnamed argument variable of given type that may be used as
+        a model input to build a graph.
     """
     return _internal_op.Argument(
         _internal_op.Argument.Attributes(type=AttrType(typ), default=None)
@@ -35,8 +37,9 @@ def argument(typ: Type) -> Var:
 
 @contextlib.contextmanager
 def _temporary_renames(**kwargs: Var):
-    # The build code can't really special-case variable names that are not just ``Var._name``.
-    # So we set names here and reset them afterwards.
+    # The build code can't really special-case variable names that are
+    # not just ``Var._name``.  So we set names here and reset them
+    # afterwards.
     name: Optional[str]
     pre: Dict[Var, Optional[str]] = {}
     try:
@@ -53,22 +56,43 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
     """
     Builds an ONNX Model with given model inputs and outputs.
 
+    Additional data such as docstrings and metadata can be added to
+    the returned ``onnx.ModelProto`` using tools from the
+    ``onnx.helper`` module.
+
     Parameters
     ----------
     inputs
-        Model inputs. Keys are names, values must be results of ``argument``.
+        Model inputs. Keys are names, values must be results of
+        ``argument``.
     outputs
         Model outputs. Keys are names, values may be any ``Var``.
-        Building will resolve what nodes were used in the construction of output variables.
+        Building will resolve what nodes were used in the construction
+        of output variables.
 
     Returns
     -------
     onnx.ModelProto
-        An ONNX ModelProto containing operators necessary to compute ``outputs`` from ``inputs``.
+        An ONNX ModelProto containing operators necessary to compute
+        ``outputs`` from ``inputs``.  If multiple versions of the
+        ``ai.onnx`` domain are present, the nodes are all converted to
+        the newest one.
 
-        If multiple versions of the ``ai.onnx`` domain are present, the nodes are all converted to the newest one.
-
-        The returned model may be mutated after building to add metadata, docstrings, etc.
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import onnxruntime
+    >>> from spox import argument, build, Tensor
+    >>> import spox.opset.ai.onnx.v17 as op
+    >>> # Construct a Tensor type representing a (1D) vector of float32, of size N.
+    >>> VectorFloat32 = Tensor(np.float32, ('N',))
+    >>> # a, b, c are all vectors and named the same in the graph
+    >>> # We create 3 distinct arguments
+    >>> a, b, c = [argument(VectorFloat32) for _ in range(3)]
+    >>> # p represents the Var equivalent to a * b
+    >>> q = op.add(op.mul(a, b), c)
+    >>> # Build an ONNX model in Spox
+    >>> model = build({'a': a, 'b': b, 'c': c}, {'r': q})
     """
     with _temporary_renames(**inputs):
         graph = results(**outputs)
@@ -78,8 +102,9 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
 
 class _InlineCall(Protocol):
     """
-    A callable returned by ``inline``, taking positional and keyword arguments of type ``Var``,
-    and returning a dictionary of names (str) into ``Var``.
+    A callable returned by ``inline``, taking positional and keyword
+    arguments of type ``Var``, and returning a dictionary of names
+    (``str``) into ``Var``.
     """
 
     def __call__(self, *args: Var, **kwargs: Var) -> Dict[str, Var]:
@@ -87,9 +112,11 @@ class _InlineCall(Protocol):
         Parameters
         ----------
         args
-            Variables passed as model inputs - positional, as they are listed in the model.
+            Variables passed as model inputs - positional, as they are
+            listed in the model.
         kwargs
-            Further variables passed as model inputs - keyword, as they are named in the model.
+            Further variables passed as model inputs - keyword, as
+            they are named in the model.
         Returns
         -------
         Dict[str, Var]
@@ -98,24 +125,18 @@ class _InlineCall(Protocol):
 
 
 def inline(model: onnx.ModelProto) -> _InlineCall:
-    """
-    Inline an existing ONNX model. Takes and produces ``Var``s.
+    """Inline an existing ONNX model. Takes and produces ``Var``s.
 
-    Any valid model should be successfully inlined, and the model is assumed to have been checked by ONNX.
-
-    The behaviour of a model is replicated, but some of its metadata (docstring, annotations) may be stripped.
-
-    The opset imports of the target model are significant and the model itself may be adapted
-    if its version is inconsistent.
-
-    At build time, an inlined model puts its nodes at the assigned insertion point in the topological ordering.
-    Prefixing is applied (with the build system name) to attempt to avoid collisions.
-    Build behaviour should be treated as an implementation detail and may change.
+    Any valid model may be inlined. The behaviour of the ``model`` is
+    replicated, its metadata (docstring, annotations) may be stripped.
+    The opset imports of the target model are significant and the
+    model itself may be adapted if its version is inconsistent.
 
     ``inline`` is intended to help achieve:
 
-    - Applying ONNX which may not be produced by Spox directly, like custom operators.
-    - Interfacing with other ONNX libraries - for instance converters - and composing existing ONNX models.
+    - Composing existing ONNX models.
+    - Interfacing with other ONNX libraries such as ``skl2onnx``.
+    - Interface with custom operators.
 
     Parameters
     ----------
@@ -125,20 +146,34 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     Returns
     -------
     _InlineCall
-        A callable which takes ``Var`` arguments and returns a dictionary of output names into ``Var``.
+        A callable which takes ``Var`` arguments and returns a
+        dictionary of output names into ``Var``.
 
-        Positional arguments are assigned based on the order they are listed in the model.
-        Keyword arguments are assigned based on their names in the model.
+        Positional arguments are assigned based on the order they are
+        listed in the model.  Keyword arguments are assigned based on
+        their names in the model.
 
-        Unspecified arguments are replaced by an initializer of the same name in the model, if one exists.
+        Unspecified arguments are replaced by an initializer of the
+        same name in the model, if one exists.
 
-        Input types are expected to be compatible with the model's graph input types.
-        Output types produced are copied from the model's graph output types.
+        Input types are expected to be compatible with the model's
+        graph input types.  Output types produced are copied from the
+        model's graph output types.
 
     Raises
     ------
     TypeError
-        If the arguments to the callback are supplied incorrectly or the variables are of the wrong type.
+        If the arguments to the callback are supplied incorrectly or
+        the variables are of the wrong type.
+
+    Notes
+    -----
+    At build time, an inlined model puts its nodes at the assigned
+    insertion point in the topological ordering.  Prefixing is applied
+    (with the build system name) to attempt to avoid collisions.
+    Build behaviour should be treated as an implementation detail and
+    may change.
+
     """
     in_names = [i.name for i in model.graph.input]
     in_defaults = {i.name: i for i in model.graph.initializer}

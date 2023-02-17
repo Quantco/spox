@@ -104,6 +104,8 @@ class Var:
 
     def unwrap_type(self) -> _type_system.Type:
         """
+        Return the :class:`~spox.Type` of ``self``, unless it is unknown.
+
         Returns
         -------
         _type_system.Type

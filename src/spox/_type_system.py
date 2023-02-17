@@ -23,12 +23,18 @@ class Type:
     following is true:
 
     - They have identical ``dtype``s
-    - The former's shape is equal to or less specific than (but compatible) the shape of the latter
+    - The former's shape is equal to or less specific than (but
+      compatible) the shape of the latter
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from spox import Tensor
     >>> Tensor(np.int64, (1, 2, 3)) <= Tensor(np.int64)
     True
     >>> Tensor(np.int64, (1, 2, 3)) <= Tensor(np.int32)
     False
+
     """
 
     @classmethod
@@ -38,14 +44,18 @@ class Type:
         ----------
         proto
             Protobuf object to translate from.
+
         Returns
         -------
         Type
-            Respective subtype of Type representing the ONNX type in the protobuf object.
+            Respective subtype of Type representing the ONNX type in
+            the protobuf object.
+
         Raises
         ------
         ValueError
-            If the passed protobuf does not contain any of the expected fields (tensor, sequence, optional).
+            If the passed protobuf does not contain any of the
+            expected fields (tensor, sequence, optional).
         """
         if proto.HasField("tensor_type"):
             return Tensor(
@@ -63,9 +73,11 @@ class Type:
         )
 
     def _assert_concrete(self, *, _traceback_name: str = "?"):
-        """
-        Function used by the build process to check if a type is well-specified (e.g. Tensor shape is defined).
-        Inheritors of Type should throw if they do not specify enough information to be accepted as Model input/outputs.
+        """Function used by the build process to check if a type is
+        well-specified (e.g. Tensor shape is defined).
+
+        Inheritors of ``Type`` should throw if they do not specify enough
+        information to be accepted as Model input/outputs.
         """
         return self
 
@@ -80,14 +92,13 @@ class Type:
 
     def unwrap_tensor(self) -> "Tensor":
         """
-        Returns
-        -------
-        Tensor
-            ``self``, unless this Type is not a Tensor.
+        Return ``self``, unless this Type is not a Tensor.
+
         Raises
         ------
         TypeError
             If the type isn't a Tensor.
+
         """
         if not isinstance(self, Tensor):
             raise TypeError(f"Cannot unwrap requested Tensor type from {self}")
@@ -95,10 +106,8 @@ class Type:
 
     def unwrap_sequence(self) -> "Sequence":
         """
-        Returns
-        -------
-        Sequence
-            ``self``, unless this Type is not a Sequence.
+        Return ``self``, unless this Type is not a Sequence.
+
         Raises
         ------
         TypeError
@@ -110,14 +119,13 @@ class Type:
 
     def unwrap_optional(self) -> "Optional":
         """
-        Returns
-        -------
-        Optional
-            ``self``, unless this Type is not an Optional.
+        Return ``self``, unless this Type is not an Optional.
+
         Raises
         ------
         TypeError
             If the type isn't an Optional.
+
         """
         if not isinstance(self, Optional):
             raise TypeError(f"Cannot unwrap requested Optional type from {self}")
@@ -164,17 +172,19 @@ class Tensor(Type):
     The ``dtype`` describes the element type of the ``Tensor``.
     It must correspond to an allowed ONNX tensor element type.
 
-    A shape is denoted with a tuple (simplified) format, where each element describes the respective axis.
-    The types used may be:
+    A shape is denoted with a tuple (simplified) format, where each
+    element describes the respective axis.  The types used may be:
 
     - An ``int`` denoting a statically known length
     - A ``str`` denoting a named runtime-dependent length
     - ``None`` representing any length.
 
-    The ``shape`` may also be ``None`` if the rank of the ``Tensor`` is unknown.
+    The ``shape`` may also be ``None`` if the rank of the ``Tensor``
+    is unknown.
 
-    If you want to specify that dimensions will be equal, you can use the same parameter strings.
-    However, this is not very strictly enforced.
+    If you want to specify that dimensions will be equal, you can use
+    the same parameter strings.  However, this is not very strictly
+    enforced.
     """
 
     _elem_type: typing.Type[np.generic]
@@ -185,7 +195,8 @@ class Tensor(Type):
         dtype: npt.DTypeLike,
         shape: SimpleShape = None,
     ):
-        """
+        """Create a ``Tensor``.
+
         Raises
         ------
         TypeError
@@ -196,6 +207,7 @@ class Tensor(Type):
             ``numpy.int16``, ``numpy.int32``, ``numpy.int64``,
             ``numpy.int8``, ``numpy.str_``, ``numpy.uint16``,
             ``numpy.uint32``, ``numpy.uint64``, ``numpy.uint8``.
+
         """
         # Try converting to a tensor type. If it fails, we allow the
         # exception to bubble up.
@@ -212,14 +224,17 @@ class Tensor(Type):
     @property
     def shape(self) -> SimpleShape:
         """
-        Return the shape of this tensor in a simplified/tuple format (as used by the ``onnx`` module).
-        Each element of the ``SimpleShape`` tuple denotes information about the respective axis.
+        Return the shape of this tensor in a simplified/tuple format
+        (as used by the ``onnx`` module).  Each element of the
+        ``SimpleShape`` tuple denotes information about the respective
+        axis.
 
         Returns
         -------
         SimpleShape
             The shape of this Tensor. If it is unknown, ``None`` is returned,
             otherwise it is a tuple describing each dimension.
+
         """
         return self._shape.to_simple()
 
@@ -287,8 +302,11 @@ class Sequence(Type):
 
 @dataclass(frozen=True)
 class Optional(Type):
-    """wrapper that may contain an element of ``Tensor`` or
-    ``Sequence`` type, or may be empty (containing none)."""
+    """
+    Wrapper that may contain an element of :class:`~spox.Tensor` or
+    :class:`~spox.Sequence` type, or may be empty (containing none).
+
+    """
 
     elem_type: Type
 

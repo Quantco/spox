@@ -6,6 +6,7 @@ channels:
 dependencies:
   - python>=3.8
   - ipython
+  - jupyterlab
   - jinja2
   - make
   - matplotlib
