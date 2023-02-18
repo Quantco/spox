@@ -54,7 +54,7 @@ class Inverse(Node):
         # This is optional and implements value propagation ('partial data propagation' in ONNX).
         # In essence constant folding carried through for purposes of type inference.
         return (
-            {"Y": numpy.linalg.inv(self.inputs.X._value)}
+            {"Y": numpy.linalg.inv(self.inputs.X._get_value())}
             if self.inputs.X._value is not None
             else {}
         )
@@ -66,10 +66,18 @@ def inverse(matrix: Var) -> Var:
 
 
 # Test the correct runtime behaviour with ORT
-def test_copied_outer_argument(op, onnx_helper):
+def test_basic_build(op, onnx_helper):
     (a,) = arguments(a=Tensor(numpy.float64, ("N", "N")))
     graph = results(b=inverse(a))
     onnx_helper.assert_close(
         onnx_helper.run(graph, "b", a=numpy.array([[1.0, 1.0], [0.0, 1.0]])),
         numpy.array([[1.0, -1.0], [0.0, 1.0]]),
     )
+
+
+def test_node_overrides(op):
+    f = numpy.array([[1, 0], [1, 1]], dtype=numpy.float64)
+    a = op.constant(value=f)
+    b = inverse(a)
+    assert b.type == Tensor(numpy.float64, (2, 2))
+    numpy.testing.assert_allclose(b._get_value(), numpy.linalg.inv(f))
