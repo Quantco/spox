@@ -94,6 +94,15 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
     >>> # Build an ONNX model in Spox
     >>> model = build({'a': a, 'b': b, 'c': c}, {'r': q})
     """
+    if not all(isinstance(var, Var) for var in inputs.values()):
+        raise TypeError(
+            f"Build inputs must be Vars, not {set(type(obj) for obj in inputs.values()) - {Var} }."
+        )
+    if not all(isinstance(var, Var) for var in outputs.values()):
+        raise TypeError(
+            f"Build outputs must be Vars, not {set(type(obj) for obj in outputs.values()) - {Var} }."
+        )
+
     with _temporary_renames(**inputs):
         graph = results(**outputs)
         graph = graph.with_arguments(*inputs.values())
