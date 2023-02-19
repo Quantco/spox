@@ -23,3 +23,11 @@ def test_unspecified_optional(op, onnx_helper):
         onnx_helper.run(graph, "r", x=numpy.array([-3, -1, 1, 2], numpy.float32)),
         [-1, -1, 1, 1],
     )
+
+
+def test_variadic_no_input_list_mutation(op, onnx_helper):
+    a, b = op.const([1]), op.const([2])
+    ins = [a, b]
+    concat = op.concat(ins, axis=0)
+    ins[1] = b
+    assert list(concat._op.inputs) == [a, b]

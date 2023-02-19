@@ -47,6 +47,7 @@ class BaseVars(BaseFields):
                     raise TypeError(
                         f"Variadic field must be iterable, got '{type(value)}'."
                     )
+                # Cast to tuple to avoid accidental mutation
                 setattr(self, field.name, tuple(value))
                 if bad := {type(var) for var in value} - {Var}:
                     raise TypeError(
