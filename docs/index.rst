@@ -3,9 +3,9 @@ Welcome to Spox's documentation!
 
 Spox is a Python framework for constructing `ONNX <https://github.com/onnx/onnx/>`_ computational graphs.
 
-- The `manual` serves as a technical explanation of Spox and describes various features that may be useful.
-- The following `guides` serve as a collection of practical examples with explanations, in the form of Jupyter notebooks.
-- Lastly, the generated `API listing` allows quick access to documentation of stable public functions in Spox.
+- The `manual` serves as a technical explanation of Spox, describing various features.
+- The `guides` serve as a collection of practical examples in the form of Jupyter notebooks.
+- Lastly, the generated `API listing` allows quick access to documentation of public functions.
 
 .. toctree::
    :maxdepth: 2
@@ -23,6 +23,7 @@ Spox is a Python framework for constructing `ONNX <https://github.com/onnx/onnx/
    guides/inline
    guides/inference
    guides/converter
+   guides/advanced
 
 .. toctree::
    :maxdepth: 1
