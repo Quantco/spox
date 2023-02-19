@@ -1,4 +1,5 @@
 import numpy
+import pytest
 
 from spox._graph import arguments, results
 from spox._type_system import Sequence, Tensor
@@ -329,3 +330,24 @@ def test_graph_inherits_subgraph_opset_req(op, onnx_helper):
         ),
         [numpy.array([-2]), numpy.array([0]), numpy.array([6])],
     )
+
+
+def test_subgraph_not_callback_raises(op):
+    with pytest.raises(TypeError):
+        op.if_(op.const(True), then_branch=[op.const(0)], else_branch=[op.const(1)])
+
+
+def test_subgraph_not_iterable_raises(op):
+    with pytest.raises(TypeError):
+        op.if_(
+            op.const(True),
+            then_branch=lambda: op.const(0),
+            else_branch=lambda: op.const(1),
+        )
+
+
+def test_subgraph_not_var_iterable_raises(op):
+    with pytest.raises(TypeError):
+        op.if_(
+            op.const(True), then_branch=lambda: [0], else_branch=lambda: [op.const(1)]
+        )

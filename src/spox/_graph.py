@@ -475,8 +475,16 @@ def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Var]]) -> Graph:
     Graph
         Graph with results based on the return value of `fun`.
     """
+    if not (
+        isinstance(types, Iterable) and all(isinstance(typ, Type) for typ in types)
+    ):
+        raise TypeError("Subgraph input types must be an Iterable of Type.")
     ins = enum_arguments(*types)
     for var in ins:
         var._rename(None)
+    if not callable(fun):
+        raise TypeError("Subgraph callback must be callable.")
     outs = fun(*ins)
+    if not (isinstance(outs, Iterable) and all(isinstance(out, Var) for out in outs)):
+        raise TypeError("Subgraph result must be an Iterable of Var.")
     return enum_results(*outs).with_arguments(*ins)._with_constructor(fun)
