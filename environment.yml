@@ -6,7 +6,6 @@ dependencies:
   # Runtime
   - numpy
   - onnx>=1.13.0
-  - onnxruntime>=1.13.1
   - python>=3.8
 
   # Development
@@ -17,6 +16,7 @@ dependencies:
   - matplotlib
   - nbsphinx
   - numpydoc
+  - onnxruntime>=1.13.1
   - pandoc  # ONNX docstrings in opset generation
   - pip
   - pre-commit

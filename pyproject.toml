@@ -16,7 +16,6 @@ maintainers = [
 ]
 keywords = [
   "machine-learning",
-  "sklearn",
   "onnx",
 ]
 classifiers = [
@@ -36,11 +35,10 @@ requires-python = ">=3.8.0"
 dependencies = [
   "numpy",
   "onnx>=1.13",
-  "onnxruntime>=1.13",
 ]
 
 [project.urls]
-Source = "https://github.com/quantco/pytsql"
+Source = "https://github.com/quantco/spox-foss"
 
 [project.readme]
 file = "README.md"
