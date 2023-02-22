@@ -70,7 +70,7 @@ jobs:
           environment-name: build
           channels: conda-forge
           extra-specs: |
-            python=3.10
+            python=${{ matrix.PYTHON_VERSION }}
             boa
       - name: Build Conda package
         run: conda mambabuild conda.recipe
