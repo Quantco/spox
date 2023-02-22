@@ -3,23 +3,26 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python>=3.8
-  - ipython
-  - jupyterlab
-  - jinja2
-  - make
-  - matplotlib
+  # Runtime
   - numpy
-  - numpydoc
   - onnx>=1.13.0
   - onnxruntime>=1.13.1
+  - python>=3.8
+
+  # Development
+  - ipython
+  - jinja2
+  - jupyterlab
+  - make
+  - matplotlib
+  - nbsphinx
+  - numpydoc
   - pandoc  # ONNX docstrings in opset generation
   - pip
   - pre-commit
-  - pytest>=6
   - pytest-cov
+  - pytest>=6
   - setuptools_scm
   - sphinx
-  - sphinxcontrib-apidoc
   - sphinx_rtd_theme
-  - nbsphinx
+  - sphinxcontrib-apidoc
