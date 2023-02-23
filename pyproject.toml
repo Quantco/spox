@@ -38,7 +38,7 @@ dependencies = [
 ]
 
 [project.urls]
-Source = "https://github.com/quantco/spox-foss"
+Source = "https://github.com/quantco/spox"
 
 [project.readme]
 file = "README.md"
