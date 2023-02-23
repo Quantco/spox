@@ -1,6 +1,5 @@
 name: spox
 channels:
-  - qc-internal
   - conda-forge
   - nodefaults
 dependencies:

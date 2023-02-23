@@ -1,0 +1,76 @@
+name: CI
+
+on: push
+
+defaults:
+  run:
+    shell: bash -el {0}
+
+jobs:
+  pre-commit-checks:
+    name: "Linux - pre-commit hooks - Python 3.8"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+      - name: Install Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: Run pre-commit checks
+        uses: pre-commit/action@v3.0.0
+
+  tests:
+    name: "Linux - unit tests - Python ${{ matrix.PYTHON_VERSION }}"
+    runs-on: ubuntu-latest
+    env:
+      CI: True
+    strategy:
+      fail-fast: true
+      matrix:
+        PYTHON_VERSION: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.PYTHON_VERSION }}
+          miniforge-variant: Mambaforge
+          miniforge-version: 4.11.0-2
+          use-mamba: true
+          environment-file: environment.yml
+          activate-environment: spox
+      - name: Run Unit Tests
+        shell: bash -l {0}
+        run: |
+          pip install .
+          pytest
+
+  linux-conda-build:
+    name: "Linux - conda-build - Python ${{ matrix.PYTHON_VERSION }}"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        PYTHON_VERSION: ['3.8']
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Fetch full git history
+        run: git fetch --prune --unshallow
+      - name: Set up Conda env
+        uses: mamba-org/provision-with-micromamba@v15
+        with:
+          environment-file: false
+          environment-name: build
+          channels: conda-forge
+          extra-specs: |
+            python=${{ matrix.PYTHON_VERSION }}
+            boa
+      - name: Build Conda package
+        run: conda mambabuild conda.recipe
