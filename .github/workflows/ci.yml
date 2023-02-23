@@ -47,30 +47,3 @@ jobs:
         run: |
           pip install .
           pytest
-
-  linux-conda-build:
-    name: "Linux - conda-build - Python ${{ matrix.PYTHON_VERSION }}"
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        PYTHON_VERSION: ['3.8']
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-      - name: Fetch full git history
-        run: git fetch --prune --unshallow
-      - name: Set up Conda env
-        uses: mamba-org/provision-with-micromamba@v15
-        with:
-          environment-file: false
-          environment-name: build
-          channels: conda-forge
-          extra-specs: |
-            python=${{ matrix.PYTHON_VERSION }}
-            boa
-      - name: Build Conda package
-        run: conda mambabuild conda.recipe
