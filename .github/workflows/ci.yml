@@ -74,5 +74,6 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install .
+          pip install pandoc
           python codegen/generate.py
 
