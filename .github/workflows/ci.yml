@@ -75,5 +75,4 @@ jobs:
         run: |
           pip install .
           pip install pandoc
-          python codegen/generate.py
-
+          python tools/generate_opset.py
