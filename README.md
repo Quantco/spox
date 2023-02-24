@@ -1,7 +1,7 @@
 # Spox
 
 [![CI](https://github.com/Quantco/spox/actions/workflows/ci.yml/badge.svg)](https://github.com/Quantco/spox/actions/workflows/ci.yml)
-[![Documentation](https://img.shields.io/badge/docs-latest-success?style=plastic)](https://docs.dev.quantco.cloud/qc-github-artifacts/Quantco/spox/latest/index.html)
+[![Documentation Status](https://readthedocs.org/projects/spox/badge/?version=latest)](https://spox.readthedocs.io/en/latest/?badge=latest)
 
 Spox is a Python framework for constructing [ONNX](https://github.com/onnx/onnx/) computational graphs.
 
