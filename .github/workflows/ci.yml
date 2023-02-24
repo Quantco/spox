@@ -49,7 +49,7 @@ jobs:
           pytest
 
   opset-generation:
-    name: "Linux - opset-generation - Python ${{ matrix.PYTHON_VERSION }}"
+    name: "Linux - opset generation - Python ${{ matrix.PYTHON_VERSION }}"
     runs-on: ubuntu-latest
     env:
       CI: True
