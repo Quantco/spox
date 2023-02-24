@@ -42,8 +42,38 @@ jobs:
           use-mamba: true
           environment-file: environment.yml
           activate-environment: spox
-      - name: Run Unit Tests
+      - name: Run unit tests
         shell: bash -l {0}
         run: |
           pip install .
           pytest
+
+  opset-generation:
+    name: "Linux - opset generation - Python ${{ matrix.PYTHON_VERSION }}"
+    runs-on: ubuntu-latest
+    env:
+      CI: True
+    strategy:
+      fail-fast: true
+      matrix:
+        PYTHON_VERSION: ['3.8']
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.PYTHON_VERSION }}
+          miniforge-variant: Mambaforge
+          miniforge-version: 4.11.0-2
+          use-mamba: true
+          environment-file: environment.yml
+          activate-environment: spox
+      - name: Run code generation
+        shell: bash -l {0}
+        run: |
+          pip install .
+          pip install pandoc
+          python tools/generate_opset.py
+          git diff --exit-code

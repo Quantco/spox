@@ -1,4 +1,3 @@
-import importlib.resources
 import re
 import subprocess
 from dataclasses import dataclass
@@ -94,8 +93,7 @@ DEFAULT_ATTR_TYPE_OVERRIDES = [
     ("If", "else_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
 ]
 
-with importlib.resources.path("spox", ".") as _resource_path:
-    _TEMPLATE_DIR = _resource_path.parent / "templates"
+_TEMPLATE_DIR = Path(__file__).parent / "templates/"
 
 
 @dataclass
@@ -556,7 +554,9 @@ def main(
         List of template names under ``jinja_templates/extras/`` to add at the end of the code.
         This includes convenience functions that may use the rest of the operator set.
     target
-        Based directory to save the generated operator set file (not counting subdirectory from ``domain``).
+        Base directory to save the generated operator set file (not
+        counting subdirectories from ``domain``). An error is raised if
+        it does not exist.
     pre_commit_hooks
         Whether to call the pre-commit hooks on the generated code.
     gen_docstrings
@@ -584,6 +584,10 @@ def main(
     schemas = list(SCHEMAS[onnx_domain][version].values())
 
     domain_path = "/".join(domain.split("."))
+
+    if not Path(target).exists():
+        raise ValueError("Target folder does not exist.")
+
     path = Path(target) / Path(domain_path) / Path(f"v{version}.py")
     path.parent.mkdir(parents=True, exist_ok=True)
 
