@@ -554,9 +554,9 @@ def main(
         List of template names under ``jinja_templates/extras/`` to add at the end of the code.
         This includes convenience functions that may use the rest of the operator set.
     target
-        Based directory to save the generated operator set file (not
-        counting subdirectory from ``domain``). An error is raised if
-        the folder does not exist.
+        Base directory to save the generated operator set file (not
+        counting subdirectories from ``domain``). An error is raised if
+        it does not exist.
     pre_commit_hooks
         Whether to call the pre-commit hooks on the generated code.
     gen_docstrings
