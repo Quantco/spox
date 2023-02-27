@@ -27,7 +27,7 @@ conda install spox
 
 ## Quick start
 
-Spox users interact most commonly with `Var` objects - **variables** which will have values assigned to them at only at runtime.
+Spox users interact most commonly with `Var` objects - **variables** which will have values assigned to them at runtime.
 The initial `Var` objects which represent the *argument*s of a model (the model inputs in ONNX nomenclature) are created with an explicit type and shape using the `spox.argument` function.
 All further `Var` objects are created by calling functions which take existing `Var` objects as inputs and produce new `Var` objects as outputs.
 Spox provides such functions for all operators in the standard grouped by domain and version inside the `spox.opset` module.
