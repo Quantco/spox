@@ -5,7 +5,7 @@
 
 Spox makes it easy to construct [ONNX](https://github.com/onnx/onnx/) models through clean and idiomatic Python code.
 
-# Why use Spox?
+## Why use Spox?
 
 Converting a trained model into ONNX entails replicating its inference logic with ONNX operators.
 In the past that constituted a major undertaking.
@@ -59,3 +59,7 @@ c = geometric_mean(a, b)
 # Build an `onnx.ModelProto` for the given inputs and outputs.
 model: onnx.ModelProto = build(inputs={'a': a, 'b': b}, outputs={'c': c})
 ```
+
+## Credits
+
+Original authors: @jbachurski with supervision from @cbourjau
