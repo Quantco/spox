@@ -62,4 +62,4 @@ model: onnx.ModelProto = build(inputs={'a': a, 'b': b}, outputs={'c': c})
 
 ## Credits
 
-Original authors: @jbachurski with supervision from @cbourjau
+Original authors: [@jbachurski](https://github.com/jbachurski) with supervision from [@cbourjau](https://github.com/cbourjau).
