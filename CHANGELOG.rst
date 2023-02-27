@@ -7,7 +7,7 @@
 Change log
 ==========
 
-0.6.0 (2023-24-02)
+0.6.0 (2023-27-02)
 ------------------
 
 **Other changes**
@@ -20,11 +20,11 @@ Change log
 
 **New Features**
 
-- The :func:`~spox.build` and :func:`~spox.argument` functions were added enabling the building of graphs through a stable interface.
+- The `spox.build` and `spox.argument` functions were added enabling the building of graphs through a stable interface.
 
 **Notable changes**
 
-- The documentation formatting inside the (auto-generated) :mod:`~spox.opset` module was greatly improved.
+- The documentation formatting inside the (auto-generated) `spox.opset` module was greatly improved.
 
 
 0.4.0 (2023-16-01)

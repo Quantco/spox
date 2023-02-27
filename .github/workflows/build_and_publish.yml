@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build wheel
-        run: pip wheel -w wheelhouse .
+        run: pip wheel --no-deps -w wheelhouse .
 
       - uses: actions/upload-artifact@v3
         with:
