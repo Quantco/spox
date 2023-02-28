@@ -7,8 +7,8 @@ on:
       - published
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+  build_sdist_and_wheel:
+    name: Build sdist and wheel on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -19,31 +19,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build wheel
-        run: pip wheel --no-deps -w wheelhouse .
+      - name: Build
+        run: |
+          pip install build
+          python -m build
 
       - uses: actions/upload-artifact@v3
         with:
-          path: ./wheelhouse/*.whl
-
-  build_sdist:
-    name: Build source distribution
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Build sdist
-        run: pipx run build --sdist
-
-      - uses: actions/upload-artifact@v3
-        with:
-          path: dist/*.tar.gz
+          path: dist/*
 
   upload_pypi:
     name: Upload to PyPI
-    needs: [build_wheels, build_sdist]
+    needs: [build_sdist_and_wheel]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
