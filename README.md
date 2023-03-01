@@ -7,7 +7,7 @@ Spox makes it easy to construct [ONNX](https://github.com/onnx/onnx/) models thr
 
 ## Why use Spox?
 
-A common application of ONNX is converting models from various frameworks. This requires replicating its runtime behaviour with ONNX operators.
+A common application of ONNX is converting models from various frameworks. This requires replicating their runtime behaviour with ONNX operators.
 In the past this has been a major challenge.
 Based on our experience, we designed Spox from the ground up to make the process of writing converters (and ONNX models in general) as easy as possible.
 
