@@ -1,82 +1,72 @@
 # Spox
 
 [![CI](https://github.com/Quantco/spox/actions/workflows/ci.yml/badge.svg)](https://github.com/Quantco/spox/actions/workflows/ci.yml)
-[![Documentation](https://img.shields.io/badge/docs-latest-success?style=plastic)](https://docs.dev.quantco.cloud/qc-github-artifacts/Quantco/spox/latest/index.html)
+[![Documentation Status](https://readthedocs.org/projects/spox/badge/?version=latest)](https://spox.readthedocs.io/en/latest/?badge=latest)
 
-Spox is a Python framework for constructing [ONNX](https://github.com/onnx/onnx/) computational graphs.
+Spox makes it easy to construct [ONNX](https://github.com/onnx/onnx/) models through clean and idiomatic Python code.
 
-Spox:
+## Why use Spox?
 
-- Implements the ONNX standard while also allowing Pythonic code.
-  - Spox follows conventions set out by numpy and other Python libraries.
-- Enforces the strong type system of ONNX, by raising errors with Python tracebacks to the offending operator.
-  - Checks are performed as eagerly as possible!
-- Supports the entirety of modern opsets, including features like subgraphs (control flow) and types other than tensors (like sequences and optionals).
-  - Standard operators all have typed Python signatures and docstrings!
-- Is designed for predictability. No mutable types are passed around, so it's difficult to invalidate the graph accidentally.
-  - If it's legal Spox, it (should be) legal ONNX!
+A common application of ONNX is converting models from various frameworks. This requires replicating their runtime behaviour with ONNX operators.
+In the past this has been a major challenge.
+Based on our experience, we designed Spox from the ground up to make the process of writing converters (and ONNX models in general) as easy as possible.
 
-The main goal of Spox is to provide a robust and Pythonic framework for developing libraries building ONNX graphs, such as converters or other custom applications.
+Spox's features include:
+
+- Eager operator validation and type inference
+- Errors with Python tracebacks to offending operators
+- First-class support for subgraphs (control flow)
+- A lean and predictable API
 
 ## Installation
 
-Spox is published on conda-forge and can be installed as expected:
+Spox releases are available on PyPI:
+
+```bash
+pip install spox
+```
+
+There is also a package available on conda-forge:
 
 ```bash
 conda install spox
 ```
 
-## Getting started
+## Quick start
 
-### Constructing
+In Spox, you primarily interact with `Var` objects - **variables** - which are placeholders for runtime values.
+The initial `Var` objects, which represent the _arguments_ of a model (the model inputs in ONNX nomenclature), are created with an explicit type using the `argument(Type) -> Var` function. The possible types include `Tensor`, `Sequence`, and `Optional`.
+All further `Var` objects are created by calling functions which take existing `Var` objects as inputs and produce new `Var` objects as outputs. Spox determines the `Var.type` for these eagerly to allow validation.
+Spox provides such functions for all operators in the standard. They are grouped by domain and version in the `spox.opset` submodule.
 
-In Spox, most of the time you'll be working with `Var` objects - **variables**. You either create them yourself as arguments for a model, or receive them from another source, for example when you're writing a converter in a library.
+The final `onnx.ModelProto` object is built by passing input and output `Var`s for the model to the `spox.build` function.
 
-You may print out the `Var` or check its `Var.type` to learn a bit more about it.
-
-To perform operations on a `Var`, use an _opset_ (operator set) module like `spox.opset.ai.onnx.v17` or `spox.opset.ai.onnx.ml.v3` - which correspond to `ai.onnx@17` and `ai.onnx.ml@3`, the standard opsets. These are pre-generated for you and you may import them as required.
-
-For instance, using the default opset you could write a function that given two variables returns their [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean):
+Below is an example for defining an ONNX graph which computes the [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of two inputs.
+Make sure to consult the Spox [documentation](https://spox.readthedocs.io/en/latest) to find more details and tutorials.
 
 ```python
-from spox import Var
+import onnx
+
+from spox import argument, build, Tensor, Var
+# Import operators from the ai.onnx domain at version 17
 from spox.opset.ai.onnx import v17 as op
 
 def geometric_mean(x: Var, y: Var) -> Var:
-    return op.sqrt(
-      op.mul(x, y)
-    )
-```
+    # use the standard Sqrt and Mul
+    return op.sqrt(op.mul(x, y))
 
-Since ONNX is tensor-oriented, this code assumes that `x` and `y` are floating point tensors with matching (broadcastable) shapes, and the geometric mean is computed elementwise. You may learn more about what types and shapes are acceptable for given operators by checking their docstring.
+# Create typed model inputs. Each tensor is of rank 1
+# and has the runtime-determined length 'N'.
+a = argument(Tensor(float, ('N',)))
+b = argument(Tensor(float, ('N',)))
 
-Performing operations on Variables creates further Variables, all of which keep track of what computation has been performed so far. If an operation is determined to be illegal (for example due to mismatching types/shapes), an exception will be immediately raised by Spox.
-
-### Building
-
-To introduce _argument_ variables (which are placeholders for runtime values - graph/model inputs in ONNX nomenclature), you may use the `argument(typ: Type) -> Var` function with the required type, like `Tensor`.
-
-When you're done you may build an `onnx.ModelProto` - the model protobuf, which is the ONNX program representation. You may do this with the public `build(inputs, outputs) -> onnx.ModelProto` function:
-
-```python
-from spox import argument, build, Tensor, Var
-
-def geometric_mean(x: Var, y: Var) -> Var: ...
-
-a = argument(Tensor(float, (1, 'N')))
-b = argument(Tensor(float, ('M', 1)))
-
+# Perform operations on `Var`s
 c = geometric_mean(a, b)
 
-model = build({'a': a, 'b': b}, {'c': c})
+# Build an `onnx.ModelProto` for the given inputs and outputs.
+model: onnx.ModelProto = build(inputs={'a': a, 'b': b}, outputs={'c': c})
 ```
 
-The keys of passed dictionaries are used to _name_ the arguments and results you would like the model to have. Keep in mind that `inputs` may only contain `Var` returned by `argument`.
+## Credits
 
-Building the model may be done for you if you're writing a component of a library using Spox.
-
-### Running
-
-Afterwards, you may use an ONNX runtime/backend to execute the model with some inputs, for example the [ONNX Runtime](https://github.com/microsoft/onnxruntime).
-
-You can learn more about Spox in the [documentation](https://docs.dev.quantco.cloud/qc-github-artifacts/Quantco/spox/latest/index.html).
+Original designed and developed by [@jbachurski](https://github.com/jbachurski) with the supervision of [@cbourjau](https://github.com/cbourjau).
