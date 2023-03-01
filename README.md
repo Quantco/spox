@@ -25,12 +25,13 @@ Spox releases are available on PyPI:
 ```bash
 pip install spox
 ```
-
+<!-- 
 There is also a package available on conda-forge:
 
 ```bash
 conda install spox
 ```
+-->
 
 ## Quick start
 
