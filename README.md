@@ -9,7 +9,7 @@ Spox makes it easy to construct [ONNX](https://github.com/onnx/onnx/) models thr
 
 A common application of ONNX is converting models from various frameworks. This requires replicating its runtime behaviour with ONNX operators.
 In the past this has been a major challenge.
-Based on our experience, we designed Spox from the ground up to make the process of writing converters (and ONNX models in general) as easy as possible. 
+Based on our experience, we designed Spox from the ground up to make the process of writing converters (and ONNX models in general) as easy as possible.
 
 Spox's features include:
 
@@ -35,9 +35,9 @@ conda install spox
 ## Quick start
 
 In Spox, you primarily interact with `Var` objects - **variables** - which are placeholders for runtime values.
-The initial `Var` objects, which represent the *arguments* of a model (the model inputs in ONNX nomenclature), are created with an explicit type using the `argument(Type) -> Var` function. The possible types include `Tensor`, `Sequence`, and `Optional`.
+The initial `Var` objects, which represent the _arguments_ of a model (the model inputs in ONNX nomenclature), are created with an explicit type using the `argument(Type) -> Var` function. The possible types include `Tensor`, `Sequence`, and `Optional`.
 All further `Var` objects are created by calling functions which take existing `Var` objects as inputs and produce new `Var` objects as outputs. Spox determines the `Var.type` for these eagerly to allow validation.
-Spox provides such functions for all operators in the standard grouped by domain and version inside the `spox.opset` module.
+Spox provides such functions for all operators in the standard. They are grouped by domain and version in the `spox.opset` submodule.
 
 The final `onnx.ModelProto` object is built by passing input and output `Var`s for the model to the `spox.build` function.
 
@@ -69,4 +69,4 @@ model: onnx.ModelProto = build(inputs={'a': a, 'b': b}, outputs={'c': c})
 
 ## Credits
 
-Original authors: [@jbachurski](https://github.com/jbachurski) with supervision from [@cbourjau](https://github.com/cbourjau).
+Original designed and developed by [@jbachurski](https://github.com/jbachurski) with the supervision of [@cbourjau](https://github.com/cbourjau).
