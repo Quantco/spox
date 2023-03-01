@@ -7,19 +7,26 @@ Spox makes it easy to construct [ONNX](https://github.com/onnx/onnx/) models thr
 
 ## Why use Spox?
 
-Converting a trained model into ONNX entails replicating its inference logic with ONNX operators.
-In the past that constituted a major undertaking.
-Based on those experiences we designed Spox from the ground up to make the process of writing converters (and ONNX models in general) as easy as possible.
+A common application of ONNX is converting models from various frameworks. This requires replicating its runtime behaviour with ONNX operators.
+In the past this has been a major challenge.
+Based on our experience, we designed Spox from the ground up to make the process of writing converters (and ONNX models in general) as easy as possible. 
+
+Spox's features include:
+
+- Eager operator validation and type inference
+- Errors with Python tracebacks to offending operators
+- First-class support for subgraphs (control flow)
+- A lean and predictable API
 
 ## Installation
 
-With pip:
+Spox releases are available on PyPI:
 
 ```bash
 pip install spox
 ```
 
-Spox is also available on conda-forge and can be installed as expected:
+There is also a package available on conda-forge:
 
 ```bash
 conda install spox
@@ -27,21 +34,21 @@ conda install spox
 
 ## Quick start
 
-Spox users interact most commonly with `Var` objects - **variables** which will have values assigned to them at runtime.
-The initial `Var` objects which represent the *argument*s of a model (the model inputs in ONNX nomenclature) are created with an explicit type and shape using the `spox.argument` function.
-All further `Var` objects are created by calling functions which take existing `Var` objects as inputs and produce new `Var` objects as outputs.
+In Spox, you primarily interact with `Var` objects - **variables** - which are placeholders for runtime values.
+The initial `Var` objects, which represent the *arguments* of a model (the model inputs in ONNX nomenclature), are created with an explicit type using the `argument(Type) -> Var` function. The possible types include `Tensor`, `Sequence`, and `Optional`.
+All further `Var` objects are created by calling functions which take existing `Var` objects as inputs and produce new `Var` objects as outputs. Spox determines the `Var.type` for these eagerly to allow validation.
 Spox provides such functions for all operators in the standard grouped by domain and version inside the `spox.opset` module.
 
-The final `onnx.ModelProto` object is build by specifying the explicit input and output `Var`s of the model to in the `spox.build` function.
+The final `onnx.ModelProto` object is built by passing input and output `Var`s for the model to the `spox.build` function.
 
 Below is an example for defining an ONNX graph which computes the [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of two inputs.
-Please consult the [documentation](https://spox.readthedocs.io/en/latest) for more details and further tutorials on how to use Spox.
+Make sure to consult the Spox [documentation](https://spox.readthedocs.io/en/latest) to find more details and tutorials.
 
 ```python
 import onnx
 
 from spox import argument, build, Tensor, Var
-# import operators from the ai.onnx domain at version 17
+# Import operators from the ai.onnx domain at version 17
 from spox.opset.ai.onnx import v17 as op
 
 def geometric_mean(x: Var, y: Var) -> Var:
@@ -49,7 +56,7 @@ def geometric_mean(x: Var, y: Var) -> Var:
     return op.sqrt(op.mul(x, y))
 
 # Create typed model inputs. Each tensor is of rank 1
-# and has the runtime-defined length "N".
+# and has the runtime-determined length 'N'.
 a = argument(Tensor(float, ('N',)))
 b = argument(Tensor(float, ('N',)))
 
