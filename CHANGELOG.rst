@@ -7,6 +7,13 @@
 Change log
 ==========
 
+0.7.0 (2023-xx-03)
+------------------
+
+**Breaking changes**
+
+- The previously available ``Type <= Type`` (``Type.__le__``) internal overload has been removed, as it was unintentionally public.
+
 0.6.0 (2023-27-02)
 ------------------
 
