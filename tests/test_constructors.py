@@ -6,7 +6,7 @@ from spox._type_system import Tensor
 
 def test_explicit_unspecified_optional(op, onnx_helper):
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
-    r = op.clip(x, min=None, max=op.const(0.0))
+    r = op.clip(x, min=None, max=op.const(0.0, numpy.float32))
     graph = results(r=r)
     onnx_helper.assert_close(
         onnx_helper.run(graph, "r", x=numpy.array([-1, 1, 2], numpy.float32)),
@@ -16,8 +16,8 @@ def test_explicit_unspecified_optional(op, onnx_helper):
 
 def test_unspecified_optional(op, onnx_helper):
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
-    r = op.clip(x, max=op.const(1.0))
-    r = op.clip(r, min=op.const(-1.0))
+    r = op.clip(x, max=op.const(1.0, numpy.float32))
+    r = op.clip(r, min=op.const(-1.0, numpy.float32))
     graph = results(r=r)
     onnx_helper.assert_close(
         onnx_helper.run(graph, "r", x=numpy.array([-3, -1, 1, 2], numpy.float32)),
