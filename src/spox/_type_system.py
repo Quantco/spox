@@ -15,27 +15,7 @@ S = TypeVar("S")
 
 @dataclass(frozen=True)
 class Type:
-    """
-    Base class for representing Spox Types, which are based on ONNX types.
-
-    Additionally, ``Types`` support membership testing (with <= and >=).
-    One ``Type`` is a subset of another ``Type`` if both of the
-    following is true:
-
-    - They have identical ``dtype``s
-    - The former's shape is equal to or less specific than (but
-      compatible) the shape of the latter
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from spox import Tensor
-    >>> Tensor(np.int64, (1, 2, 3)) <= Tensor(np.int64)
-    True
-    >>> Tensor(np.int64, (1, 2, 3)) <= Tensor(np.int32)
-    False
-
-    """
+    """Base class for classes representing ONNX types in Spox."""
 
     @classmethod
     def _from_onnx(cls, proto: onnx.TypeProto) -> "Type":
@@ -154,7 +134,7 @@ class Type:
             doc_string,
         )
 
-    def __le__(self, other: "Type") -> bool:
+    def _subtype(self, other: "Type") -> bool:
         """
         Compare Types for membership.
         An Unknown field (like an unspecified Tensor shape) is treated as "any" in this comparison.
@@ -176,7 +156,7 @@ class Tensor(Type):
     element describes the respective axis.  The types used may be:
 
     - An ``int`` denoting a statically known length
-    - A ``str`` denoting a named runtime-dependent length
+    - A ``str`` denoting a named runtime-determined length
     - ``None`` representing any length.
 
     The ``shape`` may also be ``None`` if the rank of the ``Tensor``
@@ -262,7 +242,7 @@ class Tensor(Type):
         )
         return f"{self._elem_type.__name__.rstrip('_')}" + dims_repr
 
-    def __le__(self, other: Type) -> bool:
+    def _subtype(self, other: Type) -> bool:
         if not isinstance(other, Type):
             return NotImplemented
         if other == Type() or self == other:
@@ -297,7 +277,7 @@ class Sequence(Type):
             return True
         if not isinstance(other, Sequence):
             return False
-        return self.elem_type <= other.elem_type
+        return self.elem_type._subtype(other.elem_type)
 
 
 @dataclass(frozen=True)
@@ -319,11 +299,11 @@ class Optional(Type):
     def __str__(self):
         return f"{self.elem_type}?"
 
-    def __le__(self, other: Type) -> bool:
+    def _subtype(self, other: Type) -> bool:
         if not isinstance(other, Type):
             return NotImplemented
         if other == Type() or self == other:
             return True
         if not isinstance(other, Optional):
             return False
-        return self.elem_type <= other.elem_type
+        return self.elem_type._subtype(other.elem_type)

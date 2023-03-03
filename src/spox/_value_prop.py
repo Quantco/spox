@@ -69,7 +69,7 @@ class PropValue:
             )
         elif isinstance(self.type, Sequence):
             return isinstance(self.value, list) and all(
-                elem.type <= self.type.elem_type for elem in self.value
+                elem.type._subtype(self.type.elem_type) for elem in self.value
             )
         elif isinstance(self.type, Optional):
             return self.value is None or isinstance(self.value, PropValue)
