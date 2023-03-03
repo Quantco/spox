@@ -52,7 +52,9 @@ class _Inline(_InternalNode):
     def infer_output_types(self) -> Dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
         for i, var in zip(self.graph.input, self.inputs.inputs):
-            if var.type is not None and not (var.type._subtype(Type._from_onnx(i.type))):
+            if var.type is not None and not (
+                var.type._subtype(Type._from_onnx(i.type))
+            ):
                 raise TypeError(
                     f"Embedded model input {i.name} type {var.type} "
                     f"does not match expected {Type._from_onnx(i.type)}."
