@@ -80,7 +80,9 @@ def min_graph(op, lin_fun_proto):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
-    (result,) = inline(lin_fun_proto)(A=first, X=op.const(1.0), B=second).values()
+    (result,) = inline(lin_fun_proto)(
+        A=first, X=op.const(1.0, numpy.float32), B=second
+    ).values()
     return results(final=result)
 
 
@@ -103,7 +105,7 @@ def larger_graph(op, lin_fun_proto):
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
     (result,) = inline(lin_fun_proto)(
-        A=op.add(first, second), X=op.const(2.0), B=second
+        A=op.add(first, second), X=op.const(2.0, numpy.float32), B=second
     ).values()
     return results(final=op.div(result, first))
 
@@ -172,6 +174,6 @@ def test_inc3_value_prop(op, inc_proto):
     def inc(s):
         return inline(inc_proto)(X=s)["Y"]
 
-    assert inc(inc(inc(op.const([0.0]))))._get_value() == numpy.array(
+    assert inc(inc(inc(op.const([0.0], numpy.float32))))._get_value() == numpy.array(
         [3.0], numpy.float32
     )

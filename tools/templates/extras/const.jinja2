@@ -1,8 +1,10 @@
-def const(
+def _const(
     value: Union[np.ndarray, np.generic, bool, float, int, str, Iterable[float], Iterable[int], Iterable[str]]
 ) -> Var:
     """
-    Convenience Spox function for creating Vars for constants.
+    Legacy convenience function for creating constants, attempting to follow the closest ONNX equivalent.
+    In particular, ``float`` and ``Iterable[float]`` become ``float32``.
+
     Calls the right overload of Constant (setting the right attribute) depending on the type.
     """
 
@@ -29,3 +31,13 @@ def const(
         else:
             raise TypeError(f"Bad container values for requested Constant: {elems}")
     raise TypeError(f"Bad value for requested Constant: {value}")
+
+
+def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+    """
+    Convenience function for creating constants.
+
+    Shorthand for ``constant(value=np.array(value, dtype))``. The types follow numpy rules.
+    """
+
+    return constant(value=np.array(value, dtype))

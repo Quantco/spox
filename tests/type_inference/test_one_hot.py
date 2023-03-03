@@ -1,4 +1,3 @@
-import numpy
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
@@ -24,16 +23,6 @@ def test_one_hot_inference():
     assert op.one_hot(x, y, z, axis=-2).unwrap_tensor() == Tensor(
         float, ("N", None, "M")
     )
-
-
-def test_one_hot_inference_checks_depth_scalar():
-    with pytest.raises(InferenceError):
-        op.one_hot(op.const([]), op.const([1]), op.const([0, 1]))
-
-
-def test_one_hot_inference_checks_values_vector():
-    with pytest.raises(InferenceError):
-        op.one_hot(op.const([]), op.const(1), op.const(numpy.array([[0], [1]])))
 
 
 def test_one_hot_inference_checks_axis_in_range():

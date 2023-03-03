@@ -66,7 +66,10 @@ def test_add(op):
 
 
 def test_div(op):
-    assert_equal_value(op.div(op.const(5.0), op.const(2.0)), numpy.float32(2.5))
+    assert_equal_value(
+        op.div(op.const(5.0, numpy.float32), op.const(2.0, numpy.float32)),
+        numpy.float32(2.5),
+    )
 
 
 def test_identity(op):
@@ -86,7 +89,7 @@ def test_reshape(op):
 
 
 def test_optional(op):
-    assert_equal_value(op.optional(op.const(2.0)), numpy.float32(2.0))
+    assert_equal_value(op.optional(op.const(2.0, numpy.float32)), numpy.float32(2.0))
 
 
 def test_empty_optional(op):
