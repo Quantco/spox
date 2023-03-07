@@ -15,8 +15,13 @@ Change log
 
 - An undocumented extra operator constructor (``const``) now raises a ``DeprecationWarning`` on ``float``, as its behaviour will change to follow that of ``numpy``.
 
+
 0.6.0 (2023-02-27)
 ------------------
+
+**New features**
+
+- ``spox.inline`` was added to the public interface, allowing embedding existing ONNX models in Spox.
 
 **Other changes**
 
@@ -26,13 +31,13 @@ Change log
 0.5.0 (2023-01-20)
 ------------------
 
-**New Features**
+**New features**
 
-- The `spox.build` and `spox.argument` functions were added enabling the building of graphs through a stable interface.
+- The ``spox.build`` and ``spox.argument`` functions were added enabling the building of graphs through a stable interface.
 
 **Notable changes**
 
-- The documentation formatting inside the (auto-generated) `spox.opset` module was greatly improved.
+- The documentation formatting inside the (auto-generated) ``spox.opset`` module was greatly improved.
 
 
 0.4.0 (2023-01-16)
