@@ -76,7 +76,8 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
         An ONNX ModelProto containing operators necessary to compute
         ``outputs`` from ``inputs``.  If multiple versions of the
         ``ai.onnx`` domain are present, the nodes are all converted to
-        the newest one.
+        the newest one. The minimum ``ai.onnx`` version is set to 14 to
+        avoid tooling issues with legacy versions.
 
     Examples
     --------
