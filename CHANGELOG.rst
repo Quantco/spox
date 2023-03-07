@@ -7,27 +7,43 @@
 Change log
 ==========
 
-0.6.0 (2023-27-02)
+
+0.6.1 (2023-03-07)
 ------------------
+
+**Pending breaking changes**
+
+- An undocumented extra operator constructor (``const``) now raises a ``DeprecationWarning`` on ``float``, as its behaviour will change in Spox ``0.7.0`` to follow that of ``numpy``.
+
+
+0.6.0 (2023-02-27)
+------------------
+
+**New features**
+
+- ``spox.inline`` was added to the public interface, allowing embedding existing ONNX models in Spox.
 
 **Other changes**
 
 - Models now have a minimum opset version of ``14`` for the ``ai.onnx`` domain to avoid issues with low-versioned models in ORT and other tooling.
 
+**Breaking changes**
 
-0.5.0 (2023-20-01)
+- The operator constructor for ``MatMul`` - ``mat_mul`` - has been renamed to ``matmul`` to follow numpy naming.
+
+0.5.0 (2023-01-20)
 ------------------
 
-**New Features**
+**New features**
 
-- The `spox.build` and `spox.argument` functions were added enabling the building of graphs through a stable interface.
+- The ``spox.build`` and ``spox.argument`` functions were added enabling the building of graphs through a stable interface.
 
 **Notable changes**
 
-- The documentation formatting inside the (auto-generated) `spox.opset` module was greatly improved.
+- The documentation formatting inside the (auto-generated) ``spox.opset`` module was greatly improved.
 
 
-0.4.0 (2023-16-01)
+0.4.0 (2023-01-16)
 ------------------
 
 **Breaking changes**
@@ -40,7 +56,7 @@ Change log
 - The ``Compress`` operator has gained an explicit type and shape inference implementation
 
 
-0.3.0 (2022-20-12)
+0.3.0 (2022-12-20)
 ------------------
 
 **Notable changes**
