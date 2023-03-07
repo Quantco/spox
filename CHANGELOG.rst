@@ -7,6 +7,14 @@
 Change log
 ==========
 
+
+0.6.1 (2023-07-03)
+------------------
+
+**Deprecations**
+
+- An undocumented extra operator constructor (``const``) now raises a ``DeprecationWarning`` on ``float``, as its behaviour will change to follow that of ``numpy``.
+
 0.6.0 (2023-27-02)
 ------------------
 
