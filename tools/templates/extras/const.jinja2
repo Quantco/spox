@@ -15,6 +15,12 @@ def const(
     elif isinstance(value, int):
         return constant(value_int=value)
     elif isinstance(value, float):
+        warnings.warn(
+            "The extra constructor `const` will change its behaviour in Spox 0.7.0"
+            " - float will no longer become float32, but float64. "
+            "Use `op.constant(value_float=...)` instead.",
+            DeprecationWarning, stacklevel=2
+        )
         return constant(value_float=value)
     elif isinstance(value, str):
         return constant(value_string=value)
@@ -23,6 +29,12 @@ def const(
         if all(isinstance(elem, int) for elem in elems):
             return constant(value_ints=elems)
         elif all(isinstance(elem, float) for elem in elems):
+            warnings.warn(
+                "The extra constructor `const` will change its behaviour in Spox 0.7.0"
+                " - float will no longer become float32, but float64. "
+                "Use `op.constant(value_floats=...)` instead.",
+                DeprecationWarning, stacklevel=2
+            )
             return constant(value_floats=elems)
         elif all(isinstance(elem, str) for elem in elems):
             return constant(value_strings=elems)
