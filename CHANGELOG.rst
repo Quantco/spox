@@ -11,9 +11,9 @@ Change log
 0.6.1 (2023-03-07)
 ------------------
 
-**Deprecations**
+**Pending breaking changes**
 
-- An undocumented extra operator constructor (``const``) now raises a ``DeprecationWarning`` on ``float``, as its behaviour will change to follow that of ``numpy``.
+- An undocumented extra operator constructor (``const``) now raises a ``DeprecationWarning`` on ``float``, as its behaviour will change in Spox ``0.7.0`` to follow that of ``numpy``.
 
 
 0.6.0 (2023-02-27)
@@ -27,6 +27,9 @@ Change log
 
 - Models now have a minimum opset version of ``14`` for the ``ai.onnx`` domain to avoid issues with low-versioned models in ORT and other tooling.
 
+**Breaking changes**
+
+- The operator constructor for ``MatMul`` - ``mat_mul`` - has been renamed to ``matmul`` to follow numpy naming.
 
 0.5.0 (2023-01-20)
 ------------------
