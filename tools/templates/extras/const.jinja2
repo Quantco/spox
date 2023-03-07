@@ -18,7 +18,7 @@ def const(
         warnings.warn(
             "The extra constructor `const` will change its behaviour in Spox 0.7.0"
             " - float will no longer become float32, but float64 (like numpy). "
-            "Use `op.constant(value_float=...)` or wrap the value in `np.array` instead.",
+            "Use `op.constant(value_float=...)` or wrap the argument in `np.array` instead.",
             DeprecationWarning, stacklevel=2
         )
         return constant(value_float=value)
@@ -32,7 +32,7 @@ def const(
             warnings.warn(
                 "The extra constructor `const` will change its behaviour in Spox 0.7.0"
                 " - float will no longer become float32, but float64 (like numpy). "
-                "Use `op.constant(value_floats=...)` or wrap the value in `np.array` instead.",
+                "Use `op.constant(value_floats=...)` or wrap the argument in `np.array` instead.",
                 DeprecationWarning, stacklevel=2
             )
             return constant(value_floats=elems)
