@@ -233,7 +233,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             array = to_array(in_defaults[name])
             if array.dtype == np.dtype(object):
                 array = array.astype(str)
-            kwargs[name] = _internal_op.constant(array)
+            kwargs[name] = const(array)
 
         if set(kwargs) != set(in_names):
             raise TypeError(

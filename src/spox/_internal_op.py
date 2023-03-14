@@ -7,7 +7,6 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple
 
-import numpy
 import onnx
 
 from ._attributes import AttrString, AttrTensor, AttrType
@@ -16,7 +15,6 @@ from ._node import Node, OpType
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
-from ._utils import from_array
 from ._value_prop import PropValueType
 from ._var import Var
 
@@ -136,60 +134,6 @@ class _Initializer(_InternalNode):
     ) -> List[onnx.NodeProto]:
         # Initializers are added via update_metadata and don't affect the nodes proto list
         return []
-
-
-class _Constant(_InternalNode):
-    """Internal operator allowing usage of a universal-versioned Constant operator."""
-
-    op_type = OpType("Constant", "spox.internal", 0)
-
-    @dataclass
-    class Attributes(BaseAttributes):
-        value: AttrTensor
-
-    @dataclass
-    class Inputs(BaseInputs):
-        pass
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        output: Var
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-    @property
-    def opset_req(self) -> Set[Tuple[str, int]]:
-        return {("", INTERNAL_MIN_OPSET)}
-
-    def infer_output_types(self) -> Dict[str, Type]:
-        # Output type is based on the value of the type attribute
-        value = self.attrs.value.value
-        return {"output": Tensor(value.dtype, value.shape)}
-
-    def propagate_values(self) -> Dict[str, PropValueType]:
-        return {"output": self.attrs.value.value}
-
-    def to_onnx(
-        self,
-        scope: "Scope",
-        doc_string=None,
-        build_subgraph=None,
-    ) -> List[onnx.NodeProto]:
-        return [
-            onnx.helper.make_node(
-                "Constant",
-                [],
-                [scope.var[self.outputs.output]],
-                scope.node[self],
-                value=from_array(self.attrs.value.value),
-            )
-        ]
-
-
-def constant(value: numpy.ndarray) -> Var:
-    return _Constant(_Constant.Attributes(AttrTensor(value))).outputs.output
 
 
 class _Introduce(_InternalNode):
