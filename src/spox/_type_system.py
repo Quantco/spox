@@ -1,4 +1,5 @@
 import typing
+import warnings
 from dataclasses import dataclass
 from typing import TypeVar
 
@@ -142,6 +143,15 @@ class Type:
         if not isinstance(other, Type):
             return NotImplemented
         return other == Type() or self == other
+
+    def __le__(self, other: "Type") -> bool:
+        warnings.warn(
+            "Type membership comparison with <= will be removed in Spox 0.7.0 "
+            "(and placed in a private interface instead).",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._subtype(other)
 
 
 @dataclass(frozen=True)
