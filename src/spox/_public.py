@@ -4,12 +4,13 @@ import contextlib
 from typing import Dict, Optional, Protocol
 
 import numpy as np
+import numpy.typing as npt
 import onnx
 from onnx.numpy_helper import to_array
 
 from . import _internal_op
 from ._attributes import AttrType
-from ._graph import results
+from ._graph import initializer, results
 from ._inline import _Inline
 from ._type_system import Type
 from ._var import Var
@@ -108,6 +109,32 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
         graph = results(**outputs)
         graph = graph.with_arguments(*inputs.values())
         return graph.to_onnx_model()
+
+
+def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+    """
+    Create a Var with a constant value.
+
+    Parameters
+    ----------
+    value
+        Array-like value for the variable.
+    dtype
+        Datatype for the given value. If None, it is inferred from the value
+        using numpy rules (``numpy.array(value)``).
+
+    Returns
+    -------
+    Var
+        Variable with the given constant ``value``.
+
+    Notes
+    -----
+    When the model is built, constants created by this function become initializers.
+    As such, they are independent of an opset version and are listed separately
+    in the model. Initializers are also used internally in Spox.
+    """
+    return initializer(np.array(value, dtype))
 
 
 class _InlineCall(Protocol):
@@ -222,4 +249,4 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     return inline_inner
 
 
-__all__ = ["argument", "build", "inline"]
+__all__ = ["argument", "build", "const", "inline"]
