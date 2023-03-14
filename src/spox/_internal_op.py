@@ -109,8 +109,7 @@ class _Initializer(_InternalNode):
 
     @dataclass
     class Attributes(BaseAttributes):
-        type: AttrType
-        default: AttrTensor
+        value: AttrTensor
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -122,15 +121,20 @@ class _Initializer(_InternalNode):
 
     def infer_output_types(self) -> Dict[str, Type]:
         # Output type is based on the value of the type attribute
-        return {"arg": self.attrs.type.value}
+        arr = self.attrs.value.value
+        return {"arg": Tensor(arr.dtype, arr.shape)}
+
+    def propagate_values(self) -> Dict[str, PropValueType]:
+        return {"arg": self.attrs.value.value}
 
     def update_metadata(self, opset_req, initializers, functions):
         super().update_metadata(opset_req, initializers, functions)
-        initializers[self.outputs.arg] = self.attrs.default.value
+        initializers[self.outputs.arg] = self.attrs.value.value
 
     def to_onnx(
         self, scope: "Scope", doc_string: Optional[str] = None, build_subgraph=None
     ) -> List[onnx.NodeProto]:
+        # Initializers are added via update_metadata and don't affect the nodes proto list
         return []
 
 
