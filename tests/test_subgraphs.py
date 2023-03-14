@@ -1,6 +1,7 @@
 import numpy
 import pytest
 
+from spox import const
 from spox._graph import arguments, results
 from spox._type_system import Sequence, Tensor
 
@@ -351,3 +352,11 @@ def test_subgraph_not_var_iterable_raises(op):
         op.if_(
             op.const(True), then_branch=lambda: [0], else_branch=lambda: [op.const(1)]
         )
+
+
+def test_subgraph_basic_const(op, onnx_helper):
+    (e,) = arguments(e=Tensor(bool, ()))
+    (f,) = op.if_(e, then_branch=lambda: [const(0)], else_branch=lambda: [op.const(1)])
+    graph = results(f=f)
+    onnx_helper.assert_close(onnx_helper.run(graph, "f", e=numpy.array(True)), [0])
+    onnx_helper.assert_close(onnx_helper.run(graph, "f", e=numpy.array(False)), [1])
