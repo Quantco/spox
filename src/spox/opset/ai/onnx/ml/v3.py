@@ -1,5 +1,6 @@
 # flake8: noqa
 import typing  # noqa: F401
+import warnings  # noqa: F401
 from dataclasses import dataclass
 from typing import (  # noqa: F401
     Any,
@@ -36,7 +37,7 @@ from spox._node import OpType  # noqa: F401
 from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
 from spox._type_system import Tensor, Type
-from spox._value_prop import PropValueType
+from spox._value_prop import PropValueType  # noqa: F401
 from spox._var import Var, result_type  # noqa: F401
 
 
