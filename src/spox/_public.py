@@ -107,6 +107,8 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
         raise TypeError(
             "Build inputs must be argument Vars, and not results of other operations."
         )
+    if not outputs:
+        raise ValueError("Build outputs must not be empty for the graph to be valid.")
 
     with _temporary_renames(**inputs):
         graph = results(**outputs)
