@@ -8,6 +8,14 @@ Change log
 ==========
 
 
+0.7.0 (2023-03-xx)
+------------------
+
+**New features**
+
+- ``spox.const(ArrayLike, DTypeLike = None) -> Var`` is a new public function that allows creation of variables from a constant value. The created value is constructed with ``numpy.array``. This function is opset-independent and is implemented using initializers.
+
+
 0.6.1 (2023-03-07)
 ------------------
 
