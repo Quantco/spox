@@ -85,19 +85,20 @@ class _Inline(_InternalNode):
     ) -> List[onnx.NodeProto]:
         # Prefix all names in the graph to try and avoid name clashes
         name = scope.node[self] if self in scope.node else None
-        # FIXME: This is a bug upstream - when add_prefix_graph has rename_edges,
-        #        unused inputs are not renamed. We need 2 separate calls to fix this.
         if name is not None:
-            graph = onnx.compose.add_prefix_graph(
-                self.graph,
-                f"{name}__",
-                rename_nodes=False,
-                rename_edges=False,
-                rename_inputs=True,
-                rename_outputs=False,
-                rename_initializers=True,
-                rename_value_infos=False,
-            )
+            graph = onnx.GraphProto()
+            graph.CopyFrom(self.graph)
+            # FIXME: This is a bug upstream - when add_prefix_graph has rename_edges,
+            #        unused inputs are not renamed. We apply identities to use the inputs.
+            for i in graph.input:
+                graph.node.append(
+                    onnx.helper.make_node(
+                        "Identity", [i.name], [f"__{i.name}_Identity_dummy_use"]
+                    )
+                )
+            graph = onnx.compose.add_prefix_graph(graph, f"{name}__")
+            for _ in graph.input:
+                graph.node.pop()
             graph = onnx.compose.add_prefix_graph(
                 graph, f"{name}__", rename_inputs=False
             )
