@@ -37,8 +37,7 @@ def test_subset_shapes(shape_clique):
 def test_subset_types(weak_type_clique):
     for i, first in enumerate(weak_type_clique):
         for second in weak_type_clique[i:]:
-            assert first <= second
-            assert second >= first
+            assert first._subtype(second)
 
 
 @pytest.mark.parametrize(
@@ -55,4 +54,9 @@ def test_incompatible_shapes(first, second):
     [(Tensor(numpy.int32, (2, 3)), Tensor(numpy.int64, (2, 3)))],
 )
 def test_incompatible_types(first, second):
-    assert not (first <= second or second <= first)
+    assert not (first._subtype(second) or second._subtype(first))
+
+
+def test_deprecated_subtype_call():
+    with pytest.warns(DeprecationWarning):
+        assert Tensor(numpy.int32, (2, 3)) <= Tensor(numpy.int32, (None, None))
