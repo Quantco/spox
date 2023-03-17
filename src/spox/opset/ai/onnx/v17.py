@@ -5833,7 +5833,7 @@ def cosh(
     ).outputs.output
 
 
-def cum_sum(
+def cumsum(
     x: Var,
     axis: Var,
     *,
@@ -15654,6 +15654,7 @@ def const(
     raise TypeError(f"Bad value for requested Constant: {value}")
 
 
+cum_sum = cumsum
 _OPERATORS = {
     "Abs": _Abs,
     "Acos": _Acos,
@@ -15867,7 +15868,7 @@ _CONSTRUCTORS = {
     "ConvTranspose": conv_transpose,
     "Cos": cos,
     "Cosh": cosh,
-    "CumSum": cum_sum,
+    "CumSum": cumsum,
     "DFT": dft,
     "DepthToSpace": depth_to_space,
     "DequantizeLinear": dequantize_linear,
