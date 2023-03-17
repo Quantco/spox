@@ -88,10 +88,18 @@ class _Inline(_InternalNode):
         # FIXME: This is a bug upstream - when add_prefix_graph has rename_edges,
         #        unused inputs are not renamed. We need 2 separate calls to fix this.
         if name is not None:
-            # graph = onnx.compose.add_prefix_graph(
-            #     self.graph, f"{name}__", rename_nodes=False, rename_edges=False, rename_inputs=True, rename_outputs=False, rename_initializers=True, rename_value_infos=False)
             graph = onnx.compose.add_prefix_graph(
-                self.graph, f"{name}__", rename_inputs=False
+                self.graph,
+                f"{name}__",
+                rename_nodes=False,
+                rename_edges=False,
+                rename_inputs=True,
+                rename_outputs=False,
+                rename_initializers=True,
+                rename_value_infos=False,
+            )
+            graph = onnx.compose.add_prefix_graph(
+                graph, f"{name}__", rename_inputs=False
             )
         else:
             graph = self.graph
