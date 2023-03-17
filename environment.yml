@@ -17,7 +17,7 @@ dependencies:
   - nbsphinx
   - numpydoc
   - onnxruntime>=1.13.1
-  - pandoc  # ONNX docstrings in opset generation
+  - pandoc<=2.19.2  # ONNX docstrings in opset generation
   - pip
   - pre-commit
   - pytest-cov
