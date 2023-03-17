@@ -76,6 +76,22 @@ agraph (float[N] A, float X, float[N] B) => (float[N] C)
 
 
 @pytest.fixture
+def proj_proto() -> onnx.ModelProto:
+    return onnx.parser.parse_model(
+        """
+<
+ ir_version: 8,
+ opset_import: ["" : 17]
+>
+agraph (double[N] a, double[N] b) => (double[N] c)
+{
+    c = Identity(b)
+}
+"""
+    )
+
+
+@pytest.fixture
 def min_graph(op, lin_fun_proto):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
@@ -174,4 +190,40 @@ def test_inc3_value_prop(op, inc_proto):
 
     assert inc(inc(inc(op.const([0.0]))))._get_value() == numpy.array(
         [3.0], numpy.float32
+    )
+
+
+def test_proj_different_outer_name(onnx_helper, proj_proto):
+    def proj(a, b):
+        return inline(proj_proto)(a=a, b=b)["c"]
+
+    x, y = arguments(x=Tensor(float, ("N",)), y=Tensor(float, ("N",)))
+    graph = results(z=proj(x, y))
+
+    onnx_helper.assert_close(
+        onnx_helper.run(graph, "z", x=numpy.array([1.0]), y=numpy.array([2.0])), 2
+    )
+
+
+def test_proj_same_outer_name(onnx_helper, proj_proto):
+    def proj(a, b):
+        return inline(proj_proto)(a=a, b=b)["c"]
+
+    x, y = arguments(a=Tensor(float, ("N",)), b=Tensor(float, ("N",)))
+    graph = results(c=proj(x, y))
+
+    onnx_helper.assert_close(
+        onnx_helper.run(graph, "c", a=numpy.array([1.0]), b=numpy.array([2.0])), 2
+    )
+
+
+def test_proj_composed_same_name(onnx_helper, proj_proto):
+    def proj(a, b):
+        return inline(proj_proto)(a=a, b=b)["c"]
+
+    x, y = arguments(a=Tensor(float, ("N",)), b=Tensor(float, ("N",)))
+    graph = results(c=proj(y, proj(x, y)))
+
+    onnx_helper.assert_close(
+        onnx_helper.run(graph, "c", a=numpy.array([1.0]), b=numpy.array([2.0])), 2
     )
