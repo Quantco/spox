@@ -58,5 +58,5 @@ def test_multiple_outputs(op):
         a=Tensor(numpy.float32, ("N", "M", "K")), b=Tensor(numpy.int64, (1,))
     )
     values, indices = op.top_k(x, k)
-    assert values.type <= Tensor(numpy.float32, ("N", "M", None))
-    assert indices.type <= Tensor(numpy.int64, ("N", "M", None))
+    assert values.type._subtype(Tensor(numpy.float32, ("N", "M", None)))
+    assert indices.type._subtype(Tensor(numpy.int64, ("N", "M", None)))

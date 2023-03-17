@@ -1,5 +1,6 @@
 # flake8: noqa
 import typing  # noqa: F401
+import warnings  # noqa: F401
 from dataclasses import dataclass
 from typing import (  # noqa: F401
     Any,
@@ -36,7 +37,7 @@ from spox._node import OpType  # noqa: F401
 from spox._standard import InferenceError, StandardNode  # noqa: F401
 from spox._type_system import Sequence as SpoxSequence  # noqa: F401
 from spox._type_system import Tensor, Type
-from spox._value_prop import PropValueType
+from spox._value_prop import PropValueType  # noqa: F401
 from spox._var import Var, result_type  # noqa: F401
 
 
@@ -15625,6 +15626,13 @@ def _const(
     elif isinstance(value, int):
         return constant(value_int=value)
     elif isinstance(value, float):
+        warnings.warn(
+            "The extra constructor `const` will change its behaviour in Spox 0.7.0"
+            " - float will no longer become float32, but float64 (like numpy). "
+            "Use `op.constant(value_float=...)` or wrap the argument in `np.array` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return constant(value_float=value)
     elif isinstance(value, str):
         return constant(value_string=value)
@@ -15633,6 +15641,13 @@ def _const(
         if all(isinstance(elem, int) for elem in elems):
             return constant(value_ints=elems)
         elif all(isinstance(elem, float) for elem in elems):
+            warnings.warn(
+                "The extra constructor `const` will change its behaviour in Spox 0.7.0"
+                " - float will no longer become float32, but float64 (like numpy). "
+                "Use `op.constant(value_floats=...)` or wrap the argument in `np.array` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
             return constant(value_floats=elems)
         elif all(isinstance(elem, str) for elem in elems):
             return constant(value_strings=elems)
