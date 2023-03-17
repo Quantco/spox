@@ -293,7 +293,7 @@ def test_scan_for_product(op, onnx_helper):
 
 def test_sequence_map_for_zip_mul(op, onnx_helper):
     xs, ys = arguments(
-        xs=Sequence(Tensor(numpy.int32)), ys=Sequence(Tensor(numpy.int32))
+        xs=Sequence(Tensor(numpy.int64)), ys=Sequence(Tensor(numpy.int64))
     )
     (zs,) = op.sequence_map(xs, [ys], body=lambda x, y: (op.mul(x, y),))
     onnx_helper.assert_close(

@@ -7,6 +7,13 @@
 Change log
 ==========
 
+0.6.2 (2023-03-xx)
+------------------
+
+**Pending breaking changes**
+
+- The previously available ``Type <= Type`` (``Type.__le__``) overload is deprecated and will be removed in Spox ``0.7.0``, as it was unintentionally public.
+
 
 0.7.0 (2023-03-xx)
 ------------------
