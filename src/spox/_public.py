@@ -105,7 +105,8 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
         )
     if not all(isinstance(var._op, Argument) for var in inputs.values()):
         raise TypeError(
-            "Build inputs must be argument Vars, and not results of other operations."
+            "Build inputs must be `Var`s constructed using the `spox.argument` function. "
+            "They must not be results of other operations."
         )
     if not outputs:
         raise ValueError("Build outputs must not be empty for the graph to be valid.")
