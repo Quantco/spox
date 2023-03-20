@@ -5211,7 +5211,7 @@ def concat(
     else:
         if args:
             raise ValueError(
-                "When the variadic input inputs is an iterable, no args should be passed."
+                "When the variadic input 'inputs' is an iterable, no args should be passed."
             )
         inputs = tuple(inputs)
     assert not isinstance(inputs, Var) and isinstance(inputs, Sequence)
@@ -6453,7 +6453,7 @@ def einsum(
     else:
         if args:
             raise ValueError(
-                "When the variadic input Inputs is an iterable, no args should be passed."
+                "When the variadic input 'Inputs' is an iterable, no args should be passed."
             )
         Inputs = tuple(Inputs)
     assert not isinstance(Inputs, Var) and isinstance(Inputs, Sequence)
@@ -9111,7 +9111,7 @@ def loop(
     else:
         if args:
             raise ValueError(
-                "When the variadic input v_initial is an iterable, no args should be passed."
+                "When the variadic input 'v_initial' is an iterable, no args should be passed."
             )
         v_initial = tuple(v_initial)
     assert not isinstance(v_initial, Var) and isinstance(v_initial, Sequence)
@@ -9403,7 +9403,7 @@ def max(
     else:
         if args:
             raise ValueError(
-                "When the variadic input data_0 is an iterable, no args should be passed."
+                "When the variadic input 'data_0' is an iterable, no args should be passed."
             )
         data_0 = tuple(data_0)
     assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)
@@ -9764,7 +9764,7 @@ def mean(
     else:
         if args:
             raise ValueError(
-                "When the variadic input data_0 is an iterable, no args should be passed."
+                "When the variadic input 'data_0' is an iterable, no args should be passed."
             )
         data_0 = tuple(data_0)
     assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)
@@ -9947,7 +9947,7 @@ def min(
     else:
         if args:
             raise ValueError(
-                "When the variadic input data_0 is an iterable, no args should be passed."
+                "When the variadic input 'data_0' is an iterable, no args should be passed."
             )
         data_0 = tuple(data_0)
     assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)
@@ -13097,7 +13097,7 @@ def scan(
     else:
         if args:
             raise ValueError(
-                "When the variadic input initial_state_and_scan_inputs is an iterable, no args should be passed."
+                "When the variadic input 'initial_state_and_scan_inputs' is an iterable, no args should be passed."
             )
         initial_state_and_scan_inputs = tuple(initial_state_and_scan_inputs)
     assert not isinstance(initial_state_and_scan_inputs, Var) and isinstance(
@@ -13633,7 +13633,7 @@ def sequence_construct(
     else:
         if args:
             raise ValueError(
-                "When the variadic input inputs is an iterable, no args should be passed."
+                "When the variadic input 'inputs' is an iterable, no args should be passed."
             )
         inputs = tuple(inputs)
     assert not isinstance(inputs, Var) and isinstance(inputs, Sequence)
@@ -13877,7 +13877,7 @@ def sequence_map(
     else:
         if args:
             raise ValueError(
-                "When the variadic input additional_inputs is an iterable, no args should be passed."
+                "When the variadic input 'additional_inputs' is an iterable, no args should be passed."
             )
         additional_inputs = tuple(additional_inputs)
     assert not isinstance(additional_inputs, Var) and isinstance(
@@ -14900,7 +14900,7 @@ def sum(
     else:
         if args:
             raise ValueError(
-                "When the variadic input data_0 is an iterable, no args should be passed."
+                "When the variadic input 'data_0' is an iterable, no args should be passed."
             )
         data_0 = tuple(data_0)
     assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)

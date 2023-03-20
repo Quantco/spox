@@ -957,7 +957,7 @@ def feature_vectorizer(
     else:
         if args:
             raise ValueError(
-                "When the variadic input X is an iterable, no args should be passed."
+                "When the variadic input 'X' is an iterable, no args should be passed."
             )
         X = tuple(X)
     assert not isinstance(X, Var) and isinstance(X, Sequence)
