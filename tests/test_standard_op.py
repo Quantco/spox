@@ -25,14 +25,14 @@ def test_variadic_output_inference(op):
 
 def test_optional_input_inference(op):
     (x,) = arguments(x=Tensor(numpy.float32, ("N",)))
-    assert op.clip(x, max=op.const(1.0, numpy.float32)).type == Tensor(
+    assert op.clip(x, max=op.constant(value_float=1.0)).type == Tensor(
         numpy.float32, ("N",)
     )
-    assert op.clip(x, min=op.const(0.0, numpy.float32)).type == Tensor(
+    assert op.clip(x, min=op.constant(value_float=0.0)).type == Tensor(
         numpy.float32, ("N",)
     )
     assert op.clip(
-        x, min=op.const(0.0, numpy.float32), max=op.const(1.0, numpy.float32)
+        x, min=op.constant(value_float=0.0), max=op.constant(value_float=1.0)
     ).type == Tensor(numpy.float32, ("N",))
 
 

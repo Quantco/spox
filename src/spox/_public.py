@@ -9,7 +9,7 @@ from onnx.numpy_helper import to_array
 
 from . import _internal_op
 from ._attributes import AttrType
-from ._graph import results
+from ._graph import Argument, results
 from ._inline import _Inline
 from ._type_system import Type
 from ._var import Var
@@ -103,6 +103,13 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
         raise TypeError(
             f"Build outputs must be Vars, not {set(type(obj) for obj in outputs.values()) - {Var} }."
         )
+    if not all(isinstance(var._op, Argument) for var in inputs.values()):
+        raise TypeError(
+            "Build inputs must be `Var`s constructed using the `spox.argument` function. "
+            "They must not be results of other operations."
+        )
+    if not outputs:
+        raise ValueError("Build outputs must not be empty for the graph to be valid.")
 
     with _temporary_renames(**inputs):
         graph = results(**outputs)
