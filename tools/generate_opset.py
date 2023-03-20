@@ -70,8 +70,8 @@ SCAN16_SUBGRAPH_SOLUTION = {
     "for var in initial_state_and_scan_inputs[num_scan_inputs:]]"
 }
 SEQUENCEMAP17_SUBGRAPH_SOLUTION = {
-    "body": "[typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type] + "
-    "[typing_cast(SpoxSequence, var.unwrap_type()).elem_type for var in additional_inputs]"
+    "body": "[input_sequence.unwrap_sequence().elem_type] + "
+    "[var.unwrap_sequence().elem_type for var in additional_inputs]"
 }
 
 V16_OUT_VARIADIC_SOLUTIONS = {
