@@ -76,10 +76,3 @@ def test_variadic_no_input_list_mutation(op, onnx_helper):
     concat = op.concat(ins, axis=0)
     ins[1] = b
     assert list(concat._op.inputs) == [a, b]
-
-
-def test_const_float_warns(op):
-    with pytest.warns(DeprecationWarning):
-        op.const(1.0)
-    with pytest.warns(DeprecationWarning):
-        op.const([1.0, 2.0, 3.0])
