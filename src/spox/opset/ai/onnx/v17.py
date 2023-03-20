@@ -5185,6 +5185,9 @@ def concat(
     inputs
         Type T.
         List of tensors for concatenation
+    args
+        The previous argument, inputs, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
     axis
         Attribute.
         Which axis to concat on. A negative value means counting dimensions from
@@ -6425,6 +6428,9 @@ def einsum(
     Inputs
         Type T.
         Operands
+    args
+        The previous argument, Inputs, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
     equation
         Attribute.
         Einsum expression string.
@@ -9071,6 +9077,9 @@ def loop(
         Type V.
         The initial values of any loop-carried dependencies (values that change
         across loop iterations)
+    args
+        The previous argument, v_initial, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
     body
         Attribute.
         The graph run each iteration. It has 2+N inputs: (iteration_num,
@@ -9372,6 +9381,9 @@ def max(
     data_0
         Type T.
         List of tensors for max.
+    args
+        The previous argument, data_0, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
 
     Returns
     =======
@@ -9730,6 +9742,9 @@ def mean(
     data_0
         Type T.
         List of tensors for mean.
+    args
+        The previous argument, data_0, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
 
     Returns
     =======
@@ -9910,6 +9925,9 @@ def min(
     data_0
         Type T.
         List of tensors for min.
+    args
+        The previous argument, data_0, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
 
     Returns
     =======
@@ -13019,6 +13037,9 @@ def scan(
     initial_state_and_scan_inputs
         Type V.
         Initial values of the loop's N state variables followed by M scan_inputs
+    args
+        The previous argument, initial_state_and_scan_inputs, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
     body
         Attribute.
         The graph run each iteration. It has N+M inputs: (loop state
@@ -13589,6 +13610,9 @@ def sequence_construct(
     inputs
         Type T.
         Tensors.
+    args
+        The previous argument, inputs, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
 
     Returns
     =======
@@ -13825,6 +13849,9 @@ def sequence_map(
     additional_inputs
         Type V.
         Additional inputs to the graph
+    args
+        The previous argument, additional_inputs, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
     body
         Attribute.
         The graph to be run for each sample in the sequence(s). It should have
@@ -14851,6 +14878,9 @@ def sum(
     data_0
         Type T.
         List of tensors for sum.
+    args
+        The previous argument, data_0, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
 
     Returns
     =======

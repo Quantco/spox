@@ -932,6 +932,9 @@ def feature_vectorizer(
     X
         Type T1.
         An ordered collection of tensors, all with the same element type.
+    args
+        The previous argument, X, represents a variadic input.
+        This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
     inputdimensions
         Attribute.
         The size of each input in the input list

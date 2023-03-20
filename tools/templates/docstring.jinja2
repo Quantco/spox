@@ -14,6 +14,11 @@ Parameters
 {{ param.description | format_github_markdown }}
 {% endfilter %}
 {% endfor %}
+{% if schema.inputs and is_variadic(schema.inputs[-1]) %}
+args
+    The previous argument, {{ schema.inputs[-1].name }}, represents a variadic input.
+    This function accepts it either as an ``Iterable[Var]`` or an ``*args: Var``.
+{% endif %}
 {% for attr in schema.attributes.values() %}
 {{ attr.name }}
 {% filter indent(width=4) %}
