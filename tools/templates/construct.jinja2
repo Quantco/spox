@@ -1,3 +1,13 @@
+{% if schema.inputs and is_variadic(schema.inputs[-1]) %}
+{% set vararg = schema.inputs[-1].name %}
+if isinstance({{ vararg }}, Var):
+    {{ vararg }} = ({{ vararg }},) + args
+else:
+    if args:
+        raise ValueError("When the variadic input {{ vararg }} is an iterable, no args should be passed.")
+    {{ vararg }} = tuple({{ vararg }})
+assert not isinstance({{ vararg }}, Var) and isinstance({{ vararg }}, Sequence)
+{% endif %}
 {% for attr in attributes %}
     {% if attr.attr_constructor == "AttrGraph" %}
 _{{ attr.name }}_subgraph: Graph = subgraph(

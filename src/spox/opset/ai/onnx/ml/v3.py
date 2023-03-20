@@ -916,8 +916,8 @@ def dict_vectorizer(
 
 
 def feature_vectorizer(
-    X: Sequence[Var],
-    *,
+    X: Union[Var, Iterable[Var]],
+    *args: Var,
     inputdimensions: Optional[Iterable[int]] = None,
 ) -> Var:
     r"""
@@ -949,6 +949,15 @@ def feature_vectorizer(
     Type constraints:
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    if isinstance(X, Var):
+        X = (X,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input X is an iterable, no args should be passed."
+            )
+        X = tuple(X)
+    assert not isinstance(X, Var) and isinstance(X, Sequence)
     return _FeatureVectorizer(
         _FeatureVectorizer.Attributes(
             inputdimensions=AttrInt64s.maybe(inputdimensions),

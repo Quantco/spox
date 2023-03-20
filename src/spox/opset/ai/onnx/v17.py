@@ -5171,8 +5171,8 @@ def compress(
 
 
 def concat(
-    inputs: Sequence[Var],
-    *,
+    inputs: Union[Var, Iterable[Var]],
+    *args: Var,
     axis: int,
 ) -> Var:
     r"""
@@ -5203,6 +5203,15 @@ def concat(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    if isinstance(inputs, Var):
+        inputs = (inputs,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input inputs is an iterable, no args should be passed."
+            )
+        inputs = tuple(inputs)
+    assert not isinstance(inputs, Var) and isinstance(inputs, Sequence)
     return _Concat(
         _Concat.Attributes(
             axis=AttrInt64(axis),
@@ -6374,8 +6383,8 @@ def dynamic_quantize_linear(
 
 
 def einsum(
-    Inputs: Sequence[Var],
-    *,
+    Inputs: Union[Var, Iterable[Var]],
+    *args: Var,
     equation: str,
 ) -> Var:
     r"""
@@ -6433,6 +6442,15 @@ def einsum(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    if isinstance(Inputs, Var):
+        Inputs = (Inputs,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input Inputs is an iterable, no args should be passed."
+            )
+        Inputs = tuple(Inputs)
+    assert not isinstance(Inputs, Var) and isinstance(Inputs, Sequence)
     return _Einsum(
         _Einsum.Attributes(
             equation=AttrString(equation),
@@ -8890,8 +8908,8 @@ def log_softmax(
 def loop(
     M: Optional[Var] = None,
     cond: Optional[Var] = None,
-    v_initial: Sequence[Var] = (),
-    *,
+    v_initial: Union[Var, Iterable[Var]] = (),
+    *args: Var,
     body: Callable[..., Iterable[Var]],
 ) -> Sequence[Var]:
     r"""
@@ -9079,6 +9097,15 @@ def loop(
      - B: `tensor(bool)`
      - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    if isinstance(v_initial, Var):
+        v_initial = (v_initial,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input v_initial is an iterable, no args should be passed."
+            )
+        v_initial = tuple(v_initial)
+    assert not isinstance(v_initial, Var) and isinstance(v_initial, Sequence)
     _body_subgraph: Graph = subgraph(
         typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
         + [var.unwrap_type() for var in v_initial],
@@ -9330,7 +9357,8 @@ def matmul_integer(
 
 
 def max(
-    data_0: Sequence[Var],
+    data_0: Union[Var, Iterable[Var]],
+    *args: Var,
 ) -> Var:
     r"""
     Element-wise max of each of the input tensors (with Numpy-style
@@ -9358,6 +9386,15 @@ def max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    if isinstance(data_0, Var):
+        data_0 = (data_0,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input data_0 is an iterable, no args should be passed."
+            )
+        data_0 = tuple(data_0)
+    assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)
     return _Max(
         _Max.Attributes(),
         _Max.Inputs(
@@ -9678,7 +9715,8 @@ def max_unpool(
 
 
 def mean(
-    data_0: Sequence[Var],
+    data_0: Union[Var, Iterable[Var]],
+    *args: Var,
 ) -> Var:
     r"""
     Element-wise mean of each of the input tensors (with Numpy-style
@@ -9706,6 +9744,15 @@ def mean(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
+    if isinstance(data_0, Var):
+        data_0 = (data_0,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input data_0 is an iterable, no args should be passed."
+            )
+        data_0 = tuple(data_0)
+    assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)
     return _Mean(
         _Mean.Attributes(),
         _Mean.Inputs(
@@ -9848,7 +9895,8 @@ def mel_weight_matrix(
 
 
 def min(
-    data_0: Sequence[Var],
+    data_0: Union[Var, Iterable[Var]],
+    *args: Var,
 ) -> Var:
     r"""
     Element-wise min of each of the input tensors (with Numpy-style
@@ -9876,6 +9924,15 @@ def min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    if isinstance(data_0, Var):
+        data_0 = (data_0,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input data_0 is an iterable, no args should be passed."
+            )
+        data_0 = tuple(data_0)
+    assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)
     return _Min(
         _Min.Attributes(),
         _Min.Inputs(
@@ -12808,8 +12865,8 @@ def stft(
 
 
 def scan(
-    initial_state_and_scan_inputs: Sequence[Var],
-    *,
+    initial_state_and_scan_inputs: Union[Var, Iterable[Var]],
+    *args: Var,
     body: Callable[..., Iterable[Var]],
     num_scan_inputs: int,
     scan_input_axes: Optional[Iterable[int]] = None,
@@ -13014,6 +13071,17 @@ def scan(
     Type constraints:
      - V: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    if isinstance(initial_state_and_scan_inputs, Var):
+        initial_state_and_scan_inputs = (initial_state_and_scan_inputs,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input initial_state_and_scan_inputs is an iterable, no args should be passed."
+            )
+        initial_state_and_scan_inputs = tuple(initial_state_and_scan_inputs)
+    assert not isinstance(initial_state_and_scan_inputs, Var) and isinstance(
+        initial_state_and_scan_inputs, Sequence
+    )
     _body_subgraph: Graph = subgraph(
         [
             Tensor(
@@ -13509,7 +13577,8 @@ def sequence_at(
 
 
 def sequence_construct(
-    inputs: Sequence[Var],
+    inputs: Union[Var, Iterable[Var]],
+    *args: Var,
 ) -> Var:
     r"""
     Construct a tensor sequence containing 'inputs' tensors. All tensors in
@@ -13535,6 +13604,15 @@ def sequence_construct(
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
     """
+    if isinstance(inputs, Var):
+        inputs = (inputs,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input inputs is an iterable, no args should be passed."
+            )
+        inputs = tuple(inputs)
+    assert not isinstance(inputs, Var) and isinstance(inputs, Sequence)
     return _SequenceConstruct(
         _SequenceConstruct.Attributes(),
         _SequenceConstruct.Inputs(
@@ -13717,8 +13795,8 @@ def sequence_length(
 
 def sequence_map(
     input_sequence: Var,
-    additional_inputs: Sequence[Var] = (),
-    *,
+    additional_inputs: Union[Var, Iterable[Var]] = (),
+    *args: Var,
     body: Callable[..., Iterable[Var]],
 ) -> Sequence[Var]:
     r"""
@@ -13767,12 +13845,20 @@ def sequence_map(
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    if isinstance(additional_inputs, Var):
+        additional_inputs = (additional_inputs,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input additional_inputs is an iterable, no args should be passed."
+            )
+        additional_inputs = tuple(additional_inputs)
+    assert not isinstance(additional_inputs, Var) and isinstance(
+        additional_inputs, Sequence
+    )
     _body_subgraph: Graph = subgraph(
-        [typing_cast(SpoxSequence, input_sequence.unwrap_type()).elem_type]
-        + [
-            typing_cast(SpoxSequence, var.unwrap_type()).elem_type
-            for var in additional_inputs
-        ],
+        [input_sequence.unwrap_sequence().elem_type]
+        + [var.unwrap_sequence().elem_type for var in additional_inputs],
         body,
     )
     return _SequenceMap(
@@ -14750,7 +14836,8 @@ def sub(
 
 
 def sum(
-    data_0: Sequence[Var],
+    data_0: Union[Var, Iterable[Var]],
+    *args: Var,
 ) -> Var:
     r"""
     Element-wise sum of each of the input tensors (with Numpy-style
@@ -14778,6 +14865,15 @@ def sum(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
+    if isinstance(data_0, Var):
+        data_0 = (data_0,) + args
+    else:
+        if args:
+            raise ValueError(
+                "When the variadic input data_0 is an iterable, no args should be passed."
+            )
+        data_0 = tuple(data_0)
+    assert not isinstance(data_0, Var) and isinstance(data_0, Sequence)
     return _Sum(
         _Sum.Attributes(),
         _Sum.Inputs(

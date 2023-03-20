@@ -3,13 +3,15 @@ for param in schema.inputs %}{%
     if is_optional(param)
         %}{{ param.name }}: Optional[Var] = None, {%
     elif is_variadic(param)
-        %}{{ param.name }}: Sequence[Var]{{" = ()" if loop.index0 >= schema.min_input else ""}}, {%
+        %}{{ param.name }}: Union[Var, Iterable[Var]]{{" = ()" if loop.index0 >= schema.min_input else ""}}, {%
     else
         %}{{ param.name }}: Var, {%
-endif %}{% endfor %}
-    {% if schema.attributes
-        %}*, {%
-    endif %}{%
+endif %}{% endfor %}{%
+if schema.inputs and is_variadic(schema.inputs[-1])
+  %}*args: Var, {%
+elif schema.attributes
+    %}*, {%
+endif %}{%
 if is_variadic(schema.outputs[-1]) and not out_variadic_solution
     %}{{ schema.outputs[-1].name }}_count: int, {% endif %}
 {% for attr in attributes %}
