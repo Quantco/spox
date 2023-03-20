@@ -101,9 +101,6 @@ class _Inline(_InternalNode):
             graph = onnx.compose.add_prefix_graph(graph, f"{name}__")
             for _ in graph.input:
                 graph.node.pop()
-            graph = onnx.compose.add_prefix_graph(
-                graph, f"{name}__", rename_inputs=False
-            )
         else:
             graph = self.graph
         nodes: List[onnx.NodeProto] = []
