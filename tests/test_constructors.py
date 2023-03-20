@@ -34,6 +34,24 @@ def test_variadic_no_input_list_mutation(op, onnx_helper):
     assert list(concat._op.inputs) == [a, b]
 
 
+def test_variadic_as_iterable(op, onnx_helper):
+    a, b, c = op.const([1]), op.const([2]), op.const([3])
+    concat = op.concat([a, b, c], axis=0)
+    assert list(concat._op.inputs) == [a, b, c]
+
+
+def test_variadic_as_args(op, onnx_helper):
+    a, b, c = op.const([1]), op.const([2]), op.const([3])
+    concat = op.concat(a, b, c, axis=0)
+    assert list(concat._op.inputs) == [a, b, c]
+
+
+def test_variadic_mixed_raises(op, onnx_helper):
+    a, b, c = op.const([1]), op.const([2]), op.const([3])
+    with pytest.raises(ValueError):
+        op.concat([a, b], c, axis=0)
+
+
 def test_const_float_warns(op):
     with pytest.warns(DeprecationWarning):
         op.const(1.0)
