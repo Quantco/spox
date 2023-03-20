@@ -10,7 +10,7 @@ from spox.opset.ai.onnx import v17 as op
 @pytest.fixture
 def simple_model():
     x, y = argument(Tensor(float, ())), argument(Tensor(float, ()))
-    z = op.add(x, op.mul(y, op.cast(op.const(2.0), to=float)))
+    z = op.add(x, op.mul(y, op.cast(op.constant(value_float=2.0), to=float)))
     return build({"x": x, "y": y}, {"z": z})
 
 
