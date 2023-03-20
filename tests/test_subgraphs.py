@@ -334,20 +334,26 @@ def test_graph_inherits_subgraph_opset_req(onnx_helper):
 
 def test_subgraph_not_callback_raises():
     with pytest.raises(TypeError):
-        op.if_(op.const(True), then_branch=[op.const(0)], else_branch=[op.const(1)])
+        op.if_(
+            op.const(True),
+            then_branch=[op.const(0)],  # type: ignore
+            else_branch=[op.const(1)],  # type: ignore
+        )
 
 
 def test_subgraph_not_iterable_raises():
     with pytest.raises(TypeError):
         op.if_(
             op.const(True),
-            then_branch=lambda: op.const(0),
-            else_branch=lambda: op.const(1),
+            then_branch=lambda: op.const(0),  # type: ignore
+            else_branch=lambda: op.const(1),  # type: ignore
         )
 
 
 def test_subgraph_not_var_iterable_raises():
     with pytest.raises(TypeError):
         op.if_(
-            op.const(True), then_branch=lambda: [0], else_branch=lambda: [op.const(1)]
+            op.const(True),
+            then_branch=lambda: [0],  # type: ignore
+            else_branch=lambda: [op.const(1)],
         )
