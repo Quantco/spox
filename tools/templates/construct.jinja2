@@ -1,7 +1,7 @@
 {% if schema.deprecated %}
 warnings.warn(
     "{{ schema.name }} is a deprecated operator and its constructor should not be used. "
-    "Deprecated constructors will no longer be generated in a future release."
+    "Deprecated constructors will be removed in Spox 0.7.0.",
     DeprecationWarning, stacklevel=2
 )
 {% endif %}

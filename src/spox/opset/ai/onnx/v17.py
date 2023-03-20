@@ -13145,6 +13145,12 @@ def scatter(
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
+    warnings.warn(
+        "Scatter is a deprecated operator and its constructor should not be used. "
+        "Deprecated constructors will be removed in Spox 0.7.0.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _Scatter(
         _Scatter.Attributes(
             axis=AttrInt64(axis),
@@ -15485,6 +15491,12 @@ def upsample(
     Type constraints:
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    warnings.warn(
+        "Upsample is a deprecated operator and its constructor should not be used. "
+        "Deprecated constructors will be removed in Spox 0.7.0.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _Upsample(
         _Upsample.Attributes(
             mode=AttrString(mode),
