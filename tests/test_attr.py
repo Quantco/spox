@@ -17,7 +17,7 @@ def test_cast_with_build_in_type():
 
 def test_float_instead_of_int_attr():
     with pytest.raises(TypeError):
-        op.concat([op.const(1)], axis=3.14)
+        op.concat([op.const(1)], axis=3.14)  # type: ignore
 
 
 @pytest.mark.parametrize(

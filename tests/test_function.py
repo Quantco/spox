@@ -42,8 +42,9 @@ def linear():
         outputs: Outputs
 
         def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
-            a = op.constant(value_float=attrs["slope"])
-            b = op.constant(value_float=attrs["shift"])
+            # FIXME: At some point, attribute references should be properly type-hinted.
+            a = op.constant(value_float=attrs["slope"])  # type: ignore
+            b = op.constant(value_float=attrs["shift"])  # type: ignore
             x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b))
 
@@ -79,7 +80,7 @@ def linear2(linear):
         outputs: Outputs
 
         def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
-            return self.Outputs(linear(inputs.X, attrs["slope1"], attrs["shift1"]))
+            return self.Outputs(linear(inputs.X, attrs["slope1"], attrs["shift1"]))  # type: ignore
 
     def linear_inner(x: Var, a: float, b: float) -> Var:
         return LinearFunction2(
@@ -116,10 +117,10 @@ def cubic(linear):
 
         def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
             x = inputs.X
-            a = op.mul(linear(x, attrs["a3"], attrs["a2"]), op.mul(x, x))
+            a = op.mul(linear(x, attrs["a3"], attrs["a2"]), op.mul(x, x))  # type: ignore
             b = op.add(
-                op.mul(x, op.constant(value_float=attrs["a1"])),
-                op.constant(value_float=attrs["a0"]),
+                op.mul(x, op.constant(value_float=attrs["a1"])),  # type: ignore
+                op.constant(value_float=attrs["a0"]),  # type: ignore
             )
             y = op.add(a, b)
             return self.Outputs(y)
