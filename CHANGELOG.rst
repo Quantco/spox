@@ -14,8 +14,9 @@ Change log
 
 - The previously available ``Type <= Type`` (``Type.__le__``) overload is deprecated and will be removed in Spox ``0.7.0``, as it was unintentionally public.
 
-**Bug fixes*
+**Bug fixes**
 
+- ``spox.inline`` now correctly renames unused model inputs when building. This could previously cause invalid models to be built.
 - Array attributes are now copied when they are passed to an operator. This avoids accidentally mutating them after the operator is constructed.
 
 0.6.1 (2023-03-07)
