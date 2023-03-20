@@ -79,6 +79,9 @@ class _Ref(Generic[T]):
         self._concrete = concrete
         self._outer_name = outer_name
 
+    def copy(self) -> "_Ref[T]":
+        return self
+
     def _to_onnx(self, key: str) -> AttributeProto:
         parent_type = self._concrete._to_onnx(key).type
         return AttributeProto(
@@ -112,6 +115,9 @@ class AttrString(Attr[str]):
 
 class AttrTensor(Attr[np.ndarray]):
     _attribute_proto_type_int = AttributeProto.TENSOR
+
+    def __init__(self, value: Union[np.ndarray, _Ref[np.ndarray]]):
+        super().__init__(value.copy())
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         return make_attribute(key, from_array(self.value))

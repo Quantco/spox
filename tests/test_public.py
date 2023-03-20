@@ -20,6 +20,35 @@ def test_simple_build(simple_model):
     ) == np.array(17.0)
 
 
+def test_build_no_outputs_raises():
+    with pytest.raises(Exception):
+        build({"x": argument(Tensor(float, ()))}, {})
+
+
+def test_build_inputs_not_vars_raises():
+    x, y = argument(Tensor(float, ())), argument(Tensor(float, ()))
+    with pytest.raises(TypeError):
+        build({"x": x, "y": y}, {"z": None})  # type: ignore
+    with pytest.raises(TypeError):
+        build({"x": x, "y": y}, {"z": [op.add(x, y)]})  # type: ignore
+
+
+def test_build_outputs_not_vars_raises():
+    x, y = argument(Tensor(float, ())), argument(Tensor(float, ()))
+    with pytest.raises(TypeError):
+        build({"x": x, "y": y, "z": None}, {"z": op.add(x, y)})  # type: ignore
+    with pytest.raises(TypeError):
+        build({"x": x, "y": y, "xs": [x]}, {"z": op.add(x, y)})  # type: ignore
+
+
+def test_build_inputs_not_arguments_raises():
+    x, y = argument(Tensor(float, ())), argument(Tensor(float, ()))
+    with pytest.raises(TypeError):
+        build({"x": x, "y": op.add(x, y)}, {"z": op.add(x, y)})
+    with pytest.raises(TypeError):
+        build({"x": x, "y": y, "t": op.const(1)}, {"z": op.add(x, y)})
+
+
 def test_simple_inline(simple_model):
     a, b = argument(Tensor(float, ())), argument(Tensor(float, ()))
     (c,) = inline(simple_model)(a, y=b).values()
