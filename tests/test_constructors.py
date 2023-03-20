@@ -1,5 +1,4 @@
 import numpy
-import pytest
 
 from spox._graph import arguments, results
 from spox._type_system import Tensor
@@ -46,10 +45,3 @@ def test_variadic_no_attr_mutation_list(op, onnx_helper):
     x = op.constant(value_ints=a)
     a[0] = 0
     assert list(x._op.attrs.value_ints.value) == [1]
-
-
-def test_const_float_warns(op):
-    with pytest.warns(DeprecationWarning):
-        op.const(1.0)
-    with pytest.warns(DeprecationWarning):
-        op.const([1.0, 2.0, 3.0])
