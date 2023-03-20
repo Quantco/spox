@@ -245,7 +245,7 @@ class Node(ABC):
                 else:
                     warnings.warn(
                         InferenceWarning(
-                            f"PropValue of {prop} does not type-check, dropping. "
+                            f"Propagated value {prop} does not type-check, dropping. "
                             f"Hint: this indicates a bug with the current value prop backend or type inference."
                         )
                     )
