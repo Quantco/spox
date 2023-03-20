@@ -13,7 +13,7 @@ def test_compress_inference():
     assert op.compress(x, y, axis=1).unwrap_tensor() == Tensor(float, ("N", None))
 
 
-def test_compress_inference_checks_bool_cond(op):
+def test_compress_inference_checks_bool_cond():
     (x,) = arguments(x=Tensor(float, ("N", "M")))
     with pytest.raises(InferenceError):
         op.compress(x, op.const(123)).unwrap_tensor()

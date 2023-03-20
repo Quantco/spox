@@ -1,11 +1,12 @@
 import numpy
 import pytest
 
+import spox.opset.ai.onnx.v17 as op
 from spox._graph import arguments, results
 from spox._type_system import Sequence, Tensor
 
 
-def test_subgraph(op, onnx_helper):
+def test_subgraph(onnx_helper):
     (e,) = arguments(e=Tensor(numpy.int64, ()))
     lp, sc = op.loop(
         v_initial=[op.constant(value_floats=[0.0])],  # Initial carry
@@ -28,7 +29,7 @@ def test_subgraph(op, onnx_helper):
     )
 
 
-def test_subgraph_copy_result(op, onnx_helper):
+def test_subgraph_copy_result(onnx_helper):
     b, x, y = arguments(
         b=Tensor(numpy.bool_, ()), x=Tensor(numpy.int64, ()), y=Tensor(numpy.int64, ())
     )
@@ -60,7 +61,7 @@ def test_subgraph_copy_result(op, onnx_helper):
     )
 
 
-def test_subgraph_non_copy_repeated_result(op, onnx_helper):
+def test_subgraph_non_copy_repeated_result(onnx_helper):
     b, x, y = arguments(
         b=Tensor(numpy.bool_, ()), x=Tensor(numpy.int64, ()), y=Tensor(numpy.int64, ())
     )
@@ -94,7 +95,7 @@ def test_subgraph_non_copy_repeated_result(op, onnx_helper):
     )
 
 
-def test_outer_scope_arguments(op, onnx_helper):
+def test_outer_scope_arguments(onnx_helper):
     b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.float32, (None,)))
     (r,) = op.if_(
         b, else_branch=lambda: [op.add(x, x)], then_branch=lambda: [op.mul(x, x)]
@@ -120,7 +121,7 @@ def test_outer_scope_arguments(op, onnx_helper):
     )
 
 
-def test_outer_scope_arguments_nested(op, onnx_helper):
+def test_outer_scope_arguments_nested(onnx_helper):
     b, c, x, y = arguments(
         b=Tensor(numpy.bool_, ()),
         c=Tensor(numpy.bool_, ()),
@@ -170,7 +171,7 @@ def test_outer_scope_arguments_nested(op, onnx_helper):
     )
 
 
-def test_outer_scope_arguments_nested_used_in_both(op, onnx_helper):
+def test_outer_scope_arguments_nested_used_in_both(onnx_helper):
     b, c, x, y = arguments(
         b=Tensor(numpy.bool_, ()),
         c=Tensor(numpy.bool_, ()),
@@ -190,7 +191,7 @@ def test_outer_scope_arguments_nested_used_in_both(op, onnx_helper):
     graph.to_onnx_model(check_model=2)
 
 
-def test_subgraph_argument_used_only_in_subsubgraph(op, onnx_helper):
+def test_subgraph_argument_used_only_in_subsubgraph(onnx_helper):
     (r,) = op.loop(
         M=op.const([5]),
         v_initial=[],
@@ -207,7 +208,7 @@ def test_subgraph_argument_used_only_in_subsubgraph(op, onnx_helper):
     graph.to_onnx_model(check_model=2)
 
 
-def test_copied_outer_argument(op, onnx_helper):
+def test_copied_outer_argument(onnx_helper):
     b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.float32, (None,)))
     (r,) = op.if_(b, else_branch=lambda: [x], then_branch=lambda: [x])
     graph = results(r=op.add(x, r))
@@ -222,7 +223,7 @@ def test_copied_outer_argument(op, onnx_helper):
     )
 
 
-def test_outer_scope_argument_used_only_inner(op, onnx_helper):
+def test_outer_scope_argument_used_only_inner(onnx_helper):
     b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.float32, (None,)))
     two = op.const(numpy.float32(2.0))
     (r,) = op.if_(b, else_branch=lambda: [x], then_branch=lambda: [op.mul(two, x)])
@@ -247,7 +248,7 @@ def test_outer_scope_argument_used_only_inner(op, onnx_helper):
     )
 
 
-def test_subgraph_arguments_kept_separate(op, onnx_helper):
+def test_subgraph_arguments_kept_separate(onnx_helper):
     a, b = arguments(a=Tensor(numpy.int64, ()), b=Tensor(numpy.int64, ()))
 
     x, y = op.loop(
@@ -275,7 +276,7 @@ def test_subgraph_arguments_kept_separate(op, onnx_helper):
     )
 
 
-def test_scan_for_product(op, onnx_helper):
+def test_scan_for_product(onnx_helper):
     (x,) = arguments(x=Tensor(numpy.int32, ("N",)))
     one = op.const(numpy.array(1, dtype=numpy.int32))
     prod, _x = op.scan([one, x], body=lambda a, p: [op.mul(a, p), a], num_scan_inputs=1)
@@ -289,7 +290,7 @@ def test_scan_for_product(op, onnx_helper):
     )
 
 
-def test_sequence_map_for_zip_mul(op, onnx_helper):
+def test_sequence_map_for_zip_mul(onnx_helper):
     xs, ys = arguments(
         xs=Sequence(Tensor(numpy.int64)), ys=Sequence(Tensor(numpy.int64))
     )
@@ -305,7 +306,7 @@ def test_sequence_map_for_zip_mul(op, onnx_helper):
     )
 
 
-def test_graph_inherits_subgraph_opset_req(op, onnx_helper):
+def test_graph_inherits_subgraph_opset_req(onnx_helper):
     import spox.opset.ai.onnx.ml.v3 as ml
 
     xs, ys = arguments(
@@ -331,12 +332,12 @@ def test_graph_inherits_subgraph_opset_req(op, onnx_helper):
     )
 
 
-def test_subgraph_not_callback_raises(op):
+def test_subgraph_not_callback_raises():
     with pytest.raises(TypeError):
         op.if_(op.const(True), then_branch=[op.const(0)], else_branch=[op.const(1)])
 
 
-def test_subgraph_not_iterable_raises(op):
+def test_subgraph_not_iterable_raises():
     with pytest.raises(TypeError):
         op.if_(
             op.const(True),
@@ -345,7 +346,7 @@ def test_subgraph_not_iterable_raises(op):
         )
 
 
-def test_subgraph_not_var_iterable_raises(op):
+def test_subgraph_not_var_iterable_raises():
     with pytest.raises(TypeError):
         op.if_(
             op.const(True), then_branch=lambda: [0], else_branch=lambda: [op.const(1)]

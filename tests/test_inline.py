@@ -3,6 +3,7 @@ import onnx
 import onnx.parser
 import pytest
 
+import spox.opset.ai.onnx.v17 as op
 from spox._graph import arguments, results
 from spox._public import inline
 from spox._type_system import Tensor
@@ -92,7 +93,7 @@ agraph (double[N] a, double[N] b) => (double[N] c)
 
 
 @pytest.fixture
-def min_graph(op, lin_fun_proto):
+def min_graph(lin_fun_proto):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
@@ -116,7 +117,7 @@ def test_minimal(onnx_helper, min_graph):
 
 
 @pytest.fixture
-def larger_graph(op, lin_fun_proto):
+def larger_graph(lin_fun_proto):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
@@ -136,7 +137,7 @@ def test_larger(onnx_helper, larger_graph):
 
 
 @pytest.fixture
-def add4_graph(op, add_proto):
+def add4_graph(add_proto):
     def add(x, y):
         return inline(add_proto)(A=x, B=y)["C"]
 
@@ -157,7 +158,7 @@ def test_repeated(onnx_helper, add4_graph):
 
 
 @pytest.fixture
-def inc3_graph(op, inc_proto):
+def inc3_graph(inc_proto):
     def inc(s):
         return inline(inc_proto)(X=s)["Y"]
 
@@ -172,7 +173,7 @@ def test_inc3_with_initializer(onnx_helper, inc3_graph):
 
 
 @pytest.fixture
-def inc3_graph_sparse_init(op, inc_proto_sparse_one):
+def inc3_graph_sparse_init(inc_proto_sparse_one):
     def inc(s):
         return inline(inc_proto_sparse_one)(X=s)["Y"]
 
@@ -186,7 +187,7 @@ def test_inc3_with_sparse_initializer(onnx_helper, inc3_graph_sparse_init):
     onnx_helper.assert_close(onnx_helper.run(inc3_graph_sparse_init, "y", x=x), x + 3)
 
 
-def test_inc3_value_prop(op, inc_proto):
+def test_inc3_value_prop(inc_proto):
     def inc(s):
         return inline(inc_proto)(X=s)["Y"]
 

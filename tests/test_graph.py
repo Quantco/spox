@@ -1,13 +1,14 @@
 import numpy
 import pytest
 
+import spox.opset.ai.onnx.v17 as op
 from spox._graph import arguments, initializer, results
 from spox._internal_op import intro
 from spox._type_system import Tensor
 
 
 @pytest.fixture
-def min_graph(op):
+def min_graph():
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
@@ -15,13 +16,13 @@ def min_graph(op):
 
 
 @pytest.fixture
-def square_graph(op):
+def square_graph():
     (value,) = arguments(value=Tensor(numpy.float32, (None,)))
     return results(final=op.identity(op.mul(value, value)))
 
 
 @pytest.fixture
-def trivial_seq_graph(op):
+def trivial_seq_graph():
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
@@ -29,7 +30,7 @@ def trivial_seq_graph(op):
 
 
 @pytest.fixture
-def expanding_seq_graph(op):
+def expanding_seq_graph():
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
@@ -37,7 +38,7 @@ def expanding_seq_graph(op):
 
 
 @pytest.fixture
-def copy_graph(op):
+def copy_graph():
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float64, (None,))
     )
@@ -45,7 +46,7 @@ def copy_graph(op):
 
 
 @pytest.fixture
-def tri_graph(op):
+def tri_graph():
     first, second, third = arguments(
         first=Tensor(numpy.float32, (2, None)),
         second=Tensor(numpy.float32, (None,)),
@@ -57,7 +58,7 @@ def tri_graph(op):
 
 
 @pytest.fixture
-def initializer_graph(op):
+def initializer_graph():
     normal, defaulted = arguments(
         normal=Tensor(numpy.float32, (None,)),
         defaulted=numpy.array([3, 2, 1], dtype=numpy.float32),
@@ -103,7 +104,7 @@ def test_expanding_seq(onnx_helper, expanding_seq_graph):
     )
 
 
-def test_no_shape_throws(op):
+def test_no_shape_throws():
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32)
     )
@@ -112,7 +113,7 @@ def test_no_shape_throws(op):
         fun.to_onnx_model()
 
 
-def test_no_type_throws(op):
+def test_no_type_throws():
     with pytest.raises(TypeError):
         first, second = arguments(first=Tensor(numpy.float32, (None,)), second=None)
 

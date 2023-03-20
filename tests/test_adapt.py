@@ -33,7 +33,7 @@ agraph (float[1, N] A) => (float[N] B)
 
 
 @pytest.fixture
-def inline_old_squeeze_graph(op, old_squeeze):
+def inline_old_squeeze_graph(old_squeeze):
     (data,) = arguments(
         data=Tensor(
             numpy.float32,
@@ -48,7 +48,7 @@ def inline_old_squeeze_graph(op, old_squeeze):
 
 
 @pytest.fixture
-def old_squeeze_graph(op, old_squeeze):
+def old_squeeze_graph(old_squeeze):
     class Squeeze11(StandardNode):
         @dataclass
         class Attributes(BaseAttributes):
