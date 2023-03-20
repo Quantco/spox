@@ -120,7 +120,7 @@ def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
     value
         Array-like value for the variable.
     dtype
-        Datatype for the given value. If None, it is inferred from the value
+        Data type for the given value. If ``None``, it is inferred from the value
         using numpy rules (``numpy.array(value)``).
 
     Returns
