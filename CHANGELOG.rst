@@ -18,6 +18,7 @@ Change log
 
 - ``spox.inline`` now correctly renames unused model inputs when building. This could previously cause invalid models to be built.
 - Array attributes are now copied when they are passed to an operator. This avoids accidentally mutating them after the operator is constructed.
+- The ``Loop`` operator now has patched type inference, so that the loop-carries in its results preserve shapes if the subgraph had them inferred.
 
 0.6.1 (2023-03-07)
 ------------------
