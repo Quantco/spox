@@ -9,4 +9,4 @@ def test_loop_inference():
     )
     assert x.type == Tensor(float, (None,))
     assert y.type == Tensor(int, ("N", 2))
-    assert zs.type == Tensor(int, (None,))
+    assert zs.type == Tensor(int, (None, 1))
