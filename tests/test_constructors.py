@@ -7,7 +7,7 @@ from spox._type_system import Tensor
 
 def test_explicit_unspecified_optional(op, onnx_helper):
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
-    r = op.clip(x, min=None, max=op.const(0.0))
+    r = op.clip(x, min=None, max=op.constant(value_float=0.0))
     graph = results(r=r)
     onnx_helper.assert_close(
         onnx_helper.run(graph, "r", x=numpy.array([-1, 1, 2], numpy.float32)),
@@ -17,8 +17,8 @@ def test_explicit_unspecified_optional(op, onnx_helper):
 
 def test_unspecified_optional(op, onnx_helper):
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
-    r = op.clip(x, max=op.const(1.0))
-    r = op.clip(r, min=op.const(-1.0))
+    r = op.clip(x, max=op.constant(value_float=1.0))
+    r = op.clip(r, min=op.constant(value_float=-1.0))
     graph = results(r=r)
     onnx_helper.assert_close(
         onnx_helper.run(graph, "r", x=numpy.array([-3, -1, 1, 2], numpy.float32)),
@@ -32,6 +32,20 @@ def test_variadic_no_input_list_mutation(op, onnx_helper):
     concat = op.concat(ins, axis=0)
     ins[1] = b
     assert list(concat._op.inputs) == [a, b]
+
+
+def test_variadic_no_attr_mutation_array(op, onnx_helper):
+    a = numpy.array([1])
+    x = op.constant(value=a)
+    a[0] = 0
+    assert list(x._op.attrs.value.value) == [1]
+
+
+def test_variadic_no_attr_mutation_list(op, onnx_helper):
+    a = [1]
+    x = op.constant(value_ints=a)
+    a[0] = 0
+    assert list(x._op.attrs.value_ints.value) == [1]
 
 
 def test_const_float_warns(op):

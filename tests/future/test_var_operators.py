@@ -30,7 +30,7 @@ def test_arithmetic(bin_op, x, y):
 def test_arithmetic_mismatching_types():
     with operator_overloading(op, type_promotion=False):
         with pytest.raises(TypeError):
-            op.const(1) + op.const(2.0)
+            op.const(1) + op.const(np.float32(2.0))
 
 
 def test_var_neg():
