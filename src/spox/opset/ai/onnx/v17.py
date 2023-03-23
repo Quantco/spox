@@ -15494,7 +15494,8 @@ def upsample(
     """
     warnings.warn(
         "Upsample is a deprecated operator and its constructor should not be used. "
-        "Deprecated constructors will be removed in Spox 0.7.0.",
+    "Building will raise an error. "
+    "Deprecated constructors will be removed in Spox 0.7.0.",
         DeprecationWarning,
         stacklevel=2,
     )
