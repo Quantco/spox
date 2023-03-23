@@ -13,6 +13,7 @@ Change log
 **Pending breaking changes**
 
 - The previously available ``Type <= Type`` (``Type.__le__``) overload is deprecated and will be removed in Spox ``0.7.0``, as it was unintentionally public.
+- Constructors for deprecated ONNX operators (currently ``Scatter`` and ``Upsample``) now raise a warning when they are called. They will be removed entirely in ``0.7.0``.
 
 **Bug fixes**
 
