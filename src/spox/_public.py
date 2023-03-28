@@ -9,6 +9,7 @@ from onnx.numpy_helper import to_array
 
 from . import _internal_op
 from ._attributes import AttrType
+from ._exceptions import BuildError
 from ._graph import Argument, results
 from ._inline import _Inline
 from ._type_system import Type
@@ -109,7 +110,7 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
             "They must not be results of other operations."
         )
     if not outputs:
-        raise ValueError("Build outputs must not be empty for the graph to be valid.")
+        raise BuildError("Build outputs must not be empty for the graph to be valid.")
 
     with _temporary_renames(**inputs):
         graph = results(**outputs)
