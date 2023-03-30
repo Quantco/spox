@@ -14,6 +14,10 @@ Change log
 
 - The opset ``ai.onnx@18`` is now shipped with Spox (version 18 of the default domain, as introduced in ONNX 1.13). To avoid code duplication, unchanged implementations are 'inherited' from the previous version.
 
+**Bug fixes**
+
+- The operator constructor ``cum_sum`` now also has an alias ``cumsum``, to mirror ``numpy``. This alias should be preferred.
+
 **New unstable features**
 
 - ``spox._future.initializer(ArrayLike, DTypeLike = None) -> Var`` is a new function for creating of variables from a constant value. The created value is constructed with ``numpy.array``. This function is opset-independent and is implemented using initializers.
