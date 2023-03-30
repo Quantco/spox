@@ -4,7 +4,7 @@ from typing import Any, List
 import numpy
 import pytest
 
-import spox
+from spox._future import initializer
 
 TESTED_CONST_ROWS: List[List[Any]] = [
     [0, 1, 2],
@@ -23,14 +23,14 @@ def assert_expected_const(var, value):
 
 @pytest.mark.parametrize("value", itertools.chain.from_iterable(TESTED_CONST_ROWS))
 def test_const_scalar(value):
-    assert_expected_const(spox.const(value), value)
+    assert_expected_const(initializer(value), value)
 
 
 @pytest.mark.parametrize("row", TESTED_CONST_ROWS)
 def test_const_iter(row):
-    assert_expected_const(spox.const(row), row)
+    assert_expected_const(initializer(row), row)
 
 
 @pytest.mark.parametrize("row", TESTED_CONST_ROWS)
 def test_const_matrix(row):
-    assert_expected_const(spox.const([row, row]), [row, row])
+    assert_expected_const(initializer([row, row]), [row, row])

@@ -11,7 +11,7 @@ except ModuleNotFoundError:
     pass
 
 from spox import _patch_ref_impl
-from spox._public import argument, build, const, inline
+from spox._public import argument, build, inline
 from spox._type_system import Optional, Sequence, Tensor, Type
 from spox._var import Var
 
