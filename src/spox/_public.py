@@ -142,7 +142,7 @@ class _InlineCall(Protocol):
 
 
 def inline(model: onnx.ModelProto) -> _InlineCall:
-    """Inline an existing ONNX model. Takes and produces ``Var``s.
+    """Inline an existing ONNX model, taking and producing ``Var``.
 
     Any valid model may be inlined. The behaviour of the ``model`` is
     replicated, its metadata (docstring, annotations) may be stripped.

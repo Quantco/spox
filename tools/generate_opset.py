@@ -591,7 +591,11 @@ def main(
     onnx_domain = domain if domain != DEFAULT_DOMAIN else ""
     if version is None:
         version = max(DOMAIN_VERSIONS[onnx_domain])
-    schemas = list(SCHEMAS[onnx_domain][version].values())
+    schemas = [
+        schema
+        for schema in SCHEMAS[onnx_domain][version].values()
+        # if not schema.deprecated  # TODO: Do not generate deprecated schemas.
+    ]
 
     domain_path = "/".join(domain.split("."))
 
@@ -641,7 +645,7 @@ if __name__ == "__main__":
         "ai.onnx",
         17,
         extras=["const"],
-        type_inference={"Compress": "compress11"},
+        type_inference={"Compress": "compress11", "Loop": "loop16-fix"},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V16_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,

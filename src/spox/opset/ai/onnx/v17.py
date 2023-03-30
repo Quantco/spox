@@ -1780,6 +1780,20 @@ class _Loop(StandardNode):
     class Outputs(BaseOutputs):
         v_final_and_scan_outputs: Sequence[Var]
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        output_types = super().infer_output_types()
+
+        body = self.attrs.body.value
+        n = len(body.requested_arguments) - 2
+
+        carried_names = list(self.outputs.get_vars())[:n]
+        carried_types = [v.type for v in list(body.requested_results.values())[1:][:n]]
+
+        for name, typ in zip(carried_names, carried_types):
+            output_types[name] = typ
+
+        return output_types
+
     op_type = OpType("Loop", "", 16)
 
     attrs: Attributes
@@ -13145,6 +13159,13 @@ def scatter(
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
+    warnings.warn(
+        "Scatter is a deprecated operator and its constructor should not be used. "
+        "Building will raise an error. "
+        "Deprecated constructors will be removed in Spox 0.7.0.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _Scatter(
         _Scatter.Attributes(
             axis=AttrInt64(axis),
@@ -15485,6 +15506,13 @@ def upsample(
     Type constraints:
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
+    warnings.warn(
+        "Upsample is a deprecated operator and its constructor should not be used. "
+        "Building will raise an error. "
+        "Deprecated constructors will be removed in Spox 0.7.0.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _Upsample(
         _Upsample.Attributes(
             mode=AttrString(mode),
