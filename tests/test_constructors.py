@@ -1,4 +1,5 @@
 import numpy
+import pytest
 
 from spox._graph import arguments, results
 from spox._type_system import Tensor
