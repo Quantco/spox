@@ -20,7 +20,7 @@ Change log
 
 **New unstable features**
 
-- ``spox._future.initializer(ArrayLike, DTypeLike = None) -> Var`` is a new function for creating of variables from a constant value. The created value is constructed with ``numpy.array``. This function is opset-independent and is implemented using initializers.
+- ``spox._future.initializer(ArrayLike, DTypeLike = None) -> Var`` is a new function for creating variables from a constant value. The created value is constructed with ``numpy.array`` and follows the same rules. This function is opset-independent and is implemented using initializers.
 
 0.6.2 (2023-03-29)
 ------------------
