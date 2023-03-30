@@ -55,8 +55,3 @@ def test_incompatible_shapes(first, second):
 )
 def test_incompatible_types(first, second):
     assert not (first._subtype(second) or second._subtype(first))
-
-
-def test_deprecated_subtype_call():
-    with pytest.warns(DeprecationWarning):
-        assert Tensor(numpy.int32, (2, 3)) <= Tensor(numpy.int32, (None, None))
