@@ -39,6 +39,8 @@ def test_variadic_no_attr_mutation_array(onnx_helper):
     a = numpy.array([1])
     x = op.constant(value=a)
     a[0] = 0
+    assert isinstance(x._op, op._Constant)
+    assert x._op.attrs.value is not None
     assert list(x._op.attrs.value.value) == [1]
 
 
@@ -46,6 +48,8 @@ def test_variadic_no_attr_mutation_list(onnx_helper):
     a = [1]
     x = op.constant(value_ints=a)
     a[0] = 0
+    assert isinstance(x._op, op._Constant)
+    assert x._op.attrs.value_ints is not None
     assert list(x._op.attrs.value_ints.value) == [1]
 
 
