@@ -9,7 +9,7 @@ from spox._type_system import Sequence, Tensor
 def test_subgraph(op, onnx_helper):
     (e,) = arguments(e=Tensor(numpy.int64, ()))
     lp, sc = op.loop(
-        v_initial=[op.const([0.0])],  # Initial carry
+        v_initial=[op.constant(value_floats=[0.0])],  # Initial carry
         body=lambda iter_num, cond_in, carry_in: (
             # Stop condition: iter_num < e
             op.less(iter_num, e),
@@ -225,9 +225,8 @@ def test_copied_outer_argument(op, onnx_helper):
 
 def test_outer_scope_argument_used_only_inner(op, onnx_helper):
     b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.float32, (None,)))
-    (r,) = op.if_(
-        b, else_branch=lambda: [x], then_branch=lambda: [op.mul(op.const(2.0), x)]
-    )
+    two = op.const(numpy.float32(2.0))
+    (r,) = op.if_(b, else_branch=lambda: [x], then_branch=lambda: [op.mul(two, x)])
     graph = results(r=r)
     onnx_helper.assert_close(
         onnx_helper.run(
