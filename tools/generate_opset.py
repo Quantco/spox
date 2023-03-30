@@ -21,6 +21,12 @@ CONSTRUCTOR_RENAMES = {
     "mat_mul": "matmul",
     "mat_mul_integer": "matmul_integer",
     "qlinear_mat_mul": "qlinear_matmul",
+    "cum_sum": "cumsum",
+}
+CONSTRUCTOR_ALIASES = {
+    "ai.onnx": [
+        ("cumsum", "cum_sum"),
+    ]
 }
 
 # Mapping from attribute proto type integers to Python types.
@@ -338,6 +344,7 @@ def get_env():
 
 def write_schemas_code(
     file,
+    domain: str,
     schemas: List[onnx.defs.OpSchema],
     type_inference: Dict[str, str],
     value_propagation: Dict[str, str],
@@ -474,6 +481,9 @@ def write_schemas_code(
         extra = env.get_template(f"extras/{key}.jinja2")
         print(extra.render(), file=file, end="\n\n\n")
 
+    for name, alias in CONSTRUCTOR_ALIASES.get(domain, ()):
+        print(f"{alias} = {name}", file=file, end="\n")
+
     print(
         env.get_template("summary.jinja2").render(
             built_names=sorted({schema.name for schema in schemas})
@@ -601,6 +611,7 @@ def main(
     with path.open("w") as file:
         write_schemas_code(
             file,
+            domain,
             schemas,
             type_inference,
             value_propagation,
@@ -641,6 +652,19 @@ if __name__ == "__main__":
         attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
         allow_extra_constructor_arguments=["Split"],
         gen_docstrings=gen_all_docstrings,
+    )
+    ai_onnx_v18_schemas, ai_onnx_v18_module = main(
+        "ai.onnx",
+        18,
+        extras=["const"],
+        type_inference={"Compress": "compress11"},
+        value_propagation={"Constant": "constant13"},
+        out_variadic_solutions=V16_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        allow_extra_constructor_arguments=["Split"],
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v17_module for s in ai_onnx_v17_schemas},
     )
     ai_onnx_ml_v3_schemas, ai_onnx_ml_v3_module = main(
         "ai.onnx.ml",
