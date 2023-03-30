@@ -58,8 +58,5 @@ def test_const_float_warns(op):
 def test_deprecated_raises(op):
     (x,) = arguments(x=Tensor(float, (None,)))
     s = op.const(numpy.array([2.0], numpy.float32))
-    with pytest.warns(DeprecationWarning):
-        y = op.upsample(x, s)
-    graph = results(y=y).with_arguments(x)
-    with pytest.raises(Exception):
-        graph.to_onnx_model()
+    with pytest.raises(AttributeError):
+        op.upsample(x, s)
