@@ -7,6 +7,17 @@
 Change log
 ==========
 
+0.7.0 (2023-03-xx)
+------------------
+
+**New features**
+
+- The opset ``ai.onnx@18`` is now shipped with Spox (version 18 of the default domain, as introduced in ONNX 1.13). To avoid code duplication, unchanged implementations are 'inherited' from the previous version.
+
+**New unstable features**
+
+- ``spox._future.initializer(ArrayLike, DTypeLike = None) -> Var`` is a new function for creating of variables from a constant value. The created value is constructed with ``numpy.array``. This function is opset-independent and is implemented using initializers.
+
 0.6.2 (2023-03-29)
 ------------------
 
@@ -20,14 +31,6 @@ Change log
 - ``spox.inline`` now correctly renames unused model inputs when building. This could previously cause invalid models to be built.
 - Array attributes are now copied when they are passed to an operator. This avoids accidentally mutating them after the operator is constructed.
 - The ``Loop`` operator now has patched type inference, so that the loop-carries in its results preserve shapes if the subgraph had them inferred.
-
-0.7.0 (2023-03-xx)
-------------------
-
-**New features**
-
-- ``spox.const(ArrayLike, DTypeLike = None) -> Var`` is a new public function that allows creation of variables from a constant value. The created value is constructed with ``numpy.array``. This function is opset-independent and is implemented using initializers.
-
 
 0.6.1 (2023-03-07)
 ------------------
