@@ -164,7 +164,8 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
         their names in the model.
 
         Unspecified arguments are replaced by an initializer of the
-        same name in the model, if one exists.
+        same name in the model, if one exists. This essentially
+        uses them as a _default argument_.
 
         Input types are expected to be compatible with the model's
         graph input types.  Output types produced are copied from the
@@ -181,6 +182,11 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     At build time, an inlined model puts its nodes at the assigned
     insertion point in the topological ordering.  Prefixing is applied
     (with the build system name) to attempt to avoid collisions.
+
+    Initializers present in the model are replaced with Constant nodes,
+    unless they are used as a default argument value. In this case
+    they are also built as initializers.
+
     Build behaviour should be treated as an implementation detail and
     may change.
 
