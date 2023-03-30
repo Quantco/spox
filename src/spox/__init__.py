@@ -27,7 +27,6 @@ __all__ = [
     "Optional",
     "argument",
     "build",
-    "const",
     "inline",
 ]
 
