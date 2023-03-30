@@ -15,16 +15,19 @@ Change log
 - The typing rules of the (previously partially documented) extra constructor ``const`` have changed. Its signature is now ``const(npt.ArrayLike, npt.DTypeLike = None) -> Var``. In particular, ``const`` of a Python ``float`` no longer becomes ``float32``, but ``float64`` like numpy - this is a **breaking change**. The operator is redefined to be equivalent to ``constant(numpy.array(value), dtype)``, instead of a complex set of cases like before. To ease the transition the old function is still available as ``op._const``.
 
 
-0.6.2 (2023-03-xx)
+0.6.2 (2023-03-29)
 ------------------
 
 **Pending breaking changes**
 
 - The previously available ``Type <= Type`` (``Type.__le__``) overload is deprecated and will be removed in Spox ``0.7.0``, as it was unintentionally public.
+- Constructors for deprecated ONNX operators (currently ``Scatter`` and ``Upsample``) now raise a warning when they are called. They will be removed entirely in ``0.7.0``.
 
-**Bug fixes*
+**Bug fixes**
 
+- ``spox.inline`` now correctly renames unused model inputs when building. This could previously cause invalid models to be built.
 - Array attributes are now copied when they are passed to an operator. This avoids accidentally mutating them after the operator is constructed.
+- The ``Loop`` operator now has patched type inference, so that the loop-carries in its results preserve shapes if the subgraph had them inferred.
 
 0.6.1 (2023-03-07)
 ------------------
