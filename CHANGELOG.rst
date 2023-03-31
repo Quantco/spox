@@ -10,6 +10,8 @@ Change log
 0.7.0 (2023-04-xx)
 ------------------
 
+This version is intended as a release candidate for ``1.0.0``.
+
 **New features**
 
 - The opset ``ai.onnx@18`` is now shipped with Spox (version 18 of the default domain, as introduced in ONNX 1.13). To avoid code duplication, unchanged implementations are 'inherited' from the previous version.
