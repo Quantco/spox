@@ -353,7 +353,7 @@ def test_subgraph_not_var_iterable_raises(op):
         )
 
 
-def test_subgraph_basic_const(op, onnx_helper):
+def test_subgraph_basic_initializer(op, onnx_helper):
     (e,) = arguments(e=Tensor(bool, ()))
     (f,) = op.if_(
         e, then_branch=lambda: [initializer(0)], else_branch=lambda: [op.const(1)]
