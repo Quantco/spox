@@ -160,7 +160,6 @@ from spox.opset.ai.onnx.v17 import (
     _RoiAlign,
     _Round,
     _Scan,
-    _Scatter,
     _Selu,
     _SequenceAt,
     _SequenceConstruct,
@@ -198,7 +197,6 @@ from spox.opset.ai.onnx.v17 import (
     _Trilu,
     _Unique,
     _Unsqueeze,
-    _Upsample,
     _Where,
     _Xor,
     abs,
@@ -320,7 +318,6 @@ from spox.opset.ai.onnx.v17 import (
     roi_align,
     round,
     scan,
-    scatter,
     selu,
     sequence_at,
     sequence_construct,
@@ -359,7 +356,6 @@ from spox.opset.ai.onnx.v17 import (
     trilu,
     unique,
     unsqueeze,
-    upsample,
     where,
     xor,
 )
@@ -2778,61 +2774,14 @@ def split(
     ).outputs.outputs
 
 
-def const(
-    value: Union[
-        np.ndarray,
-        np.generic,
-        bool,
-        float,
-        int,
-        str,
-        Iterable[float],
-        Iterable[int],
-        Iterable[str],
-    ]
-) -> Var:
+def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
     """
-    Convenience Spox function for creating Vars for constants.
-    Calls the right overload of Constant (setting the right attribute) depending on the type.
+    Convenience function for creating constants.
+
+    Shorthand for ``constant(value=np.array(value, dtype))``. The types follow numpy rules.
     """
 
-    if isinstance(value, np.ndarray):
-        return constant(value=value)
-    elif isinstance(value, np.generic):
-        return constant(value=np.array(value))
-    elif isinstance(value, bool):
-        return constant(value=np.array(value, dtype=np.bool_))
-    elif isinstance(value, int):
-        return constant(value_int=value)
-    elif isinstance(value, float):
-        warnings.warn(
-            "The extra constructor `const` will change its behaviour in Spox 0.7.0"
-            " - float will no longer become float32, but float64 (like numpy). "
-            "Use `op.constant(value_float=...)` or wrap the argument in `np.array` instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return constant(value_float=value)
-    elif isinstance(value, str):
-        return constant(value_string=value)
-    elif isinstance(value, Iterable):
-        elems = list(value)
-        if all(isinstance(elem, int) for elem in elems):
-            return constant(value_ints=elems)
-        elif all(isinstance(elem, float) for elem in elems):
-            warnings.warn(
-                "The extra constructor `const` will change its behaviour in Spox 0.7.0"
-                " - float will no longer become float32, but float64 (like numpy). "
-                "Use `op.constant(value_floats=...)` or wrap the argument in `np.array` instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            return constant(value_floats=elems)
-        elif all(isinstance(elem, str) for elem in elems):
-            return constant(value_strings=elems)
-        else:
-            raise TypeError(f"Bad container values for requested Constant: {elems}")
-    raise TypeError(f"Bad value for requested Constant: {value}")
+    return constant(value=np.array(value, dtype))
 
 
 cum_sum = cumsum
@@ -2979,7 +2928,6 @@ _OPERATORS = {
     "Round": _Round,
     "STFT": _STFT,
     "Scan": _Scan,
-    "Scatter": _Scatter,
     "ScatterElements": _ScatterElements,
     "ScatterND": _ScatterND,
     "Selu": _Selu,
@@ -3020,7 +2968,6 @@ _OPERATORS = {
     "Trilu": _Trilu,
     "Unique": _Unique,
     "Unsqueeze": _Unsqueeze,
-    "Upsample": _Upsample,
     "Where": _Where,
     "Xor": _Xor,
 }
@@ -3168,7 +3115,6 @@ _CONSTRUCTORS = {
     "Round": round,
     "STFT": stft,
     "Scan": scan,
-    "Scatter": scatter,
     "ScatterElements": scatter_elements,
     "ScatterND": scatter_nd,
     "Selu": selu,
@@ -3209,7 +3155,6 @@ _CONSTRUCTORS = {
     "Trilu": trilu,
     "Unique": unique,
     "Unsqueeze": unsqueeze,
-    "Upsample": upsample,
     "Where": where,
     "Xor": xor,
 }

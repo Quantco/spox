@@ -7,6 +7,29 @@
 Change log
 ==========
 
+0.7.0 (2023-04-xx)
+------------------
+
+This version is intended as a release candidate for ``1.0.0``.
+
+**New features**
+
+- The opset ``ai.onnx@18`` is now shipped with Spox (version 18 of the default domain, as introduced in ONNX 1.13). To avoid code duplication, unchanged implementations are 'inherited' from the previous version.
+
+**Breaking changes**
+
+- The typing rules of the (previously partially documented) extra constructor ``const`` have changed. Its signature is now ``const(npt.ArrayLike, npt.DTypeLike = None) -> Var``. In particular, ``const`` of a Python ``float`` no longer becomes ``float32``, but ``float64`` like numpy - this is a **breaking change**. The operator is redefined to be equivalent to ``constant(numpy.array(value), dtype)``, instead of a complex set of cases like before. 
+- The ``Type <= Type`` (``Type.__le__``) overload is now removed.
+- Deprecated operator constructors are now no longer generated after the version their schema was deprecated. Effectively, this means ``ai.onnx@17::Scatter`` and ``ai.onnx@17::Upsample`` (available as ``op.scatter`` and ``op.upsample``) are no longer available in ``spox.opset.ai.onnx.v17``. They likely were not used in practice as attempting to build deprecated operators has always failed.
+
+**Bug fixes**
+
+- The operator constructor ``cum_sum`` now also has an alias ``cumsum``, to mirror ``numpy``. This alias should be preferred.
+
+**New unstable features**
+
+- ``spox._future.initializer(ArrayLike, DTypeLike = None) -> Var`` is a new function for creating variables from a constant value. The created value is constructed with ``numpy.array`` and follows the same rules. This function is opset-independent and is implemented using initializers.
+
 0.6.2 (2023-03-29)
 ------------------
 

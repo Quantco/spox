@@ -594,7 +594,7 @@ def main(
     schemas = [
         schema
         for schema in SCHEMAS[onnx_domain][version].values()
-        # if not schema.deprecated  # TODO: Do not generate deprecated schemas.
+        if not schema.deprecated
     ]
 
     domain_path = "/".join(domain.split("."))
