@@ -3048,28 +3048,6 @@ class _Scan(StandardNode):
     outputs: Outputs
 
 
-class _Scatter(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        axis: AttrInt64
-
-    @dataclass
-    class Inputs(BaseInputs):
-        data: Var
-        indices: Var
-        updates: Var
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        output: Var
-
-    op_type = OpType("Scatter", "", 11)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-
 class _ScatterElements(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
@@ -3910,27 +3888,6 @@ class _Unsqueeze(StandardNode):
         expanded: Var
 
     op_type = OpType("Unsqueeze", "", 13)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-
-class _Upsample(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        mode: AttrString
-
-    @dataclass
-    class Inputs(BaseInputs):
-        X: Var
-        scales: Var
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        Y: Var
-
-    op_type = OpType("Upsample", "", 10)
 
     attrs: Attributes
     inputs: Inputs
@@ -13058,126 +13015,6 @@ def scan(
     ).outputs.final_state_and_scan_outputs
 
 
-def scatter(
-    data: Var,
-    indices: Var,
-    updates: Var,
-    *,
-    axis: int = 0,
-) -> Var:
-    r"""
-    This operator is deprecated. Please use ScatterElements, which provides
-    the same functionality.
-
-    Scatter takes three inputs ``data``, ``updates``, and ``indices`` of the
-    same rank r >= 1 and an optional attribute axis that identifies an axis
-    of ``data`` (by default, the outer-most axis, that is axis 0). The
-    output of the operation is produced by creating a copy of the input
-    ``data``, and then updating its value to values specified by ``updates``
-    at specific index positions specified by ``indices``. Its output shape
-    is the same as the shape of ``data``.
-
-    For each entry in ``updates``, the target index in ``data`` is obtained
-    by combining the corresponding entry in ``indices`` with the index of
-    the entry itself: the index-value for dimension = axis is obtained from
-    the value of the corresponding entry in ``indices`` and the index-value
-    for dimension != axis is obtained from the index of the entry itself.
-
-    For instance, in a 2-D tensor case, the update corresponding to the
-    [i][j] entry is performed as below:
-
-    ::
-
-         output[indices[i][j]][j] = updates[i][j] if axis = 0,
-         output[i][indices[i][j]] = updates[i][j] if axis = 1,
-
-    This operator is the inverse of GatherElements. It is similar to Torch's
-    Scatter operation.
-
-    Example 1:
-
-    ::
-
-         data = [
-             [0.0, 0.0, 0.0],
-             [0.0, 0.0, 0.0],
-             [0.0, 0.0, 0.0],
-         ]
-         indices = [
-             [1, 0, 2],
-             [0, 2, 1],
-         ]
-         updates = [
-             [1.0, 1.1, 1.2],
-             [2.0, 2.1, 2.2],
-         ]
-         output = [
-             [2.0, 1.1, 0.0]
-             [1.0, 0.0, 2.2]
-             [0.0, 2.1, 1.2]
-         ]
-
-    Example 2:
-
-    ::
-
-         data = [[1.0, 2.0, 3.0, 4.0, 5.0]]
-         indices = [[1, 3]]
-         updates = [[1.1, 2.1]]
-         axis = 1
-         output = [[1.0, 1.1, 3.0, 2.1, 5.0]]
-
-    Parameters
-    ==========
-    data
-        Type T.
-        Tensor of rank r >= 1.
-    indices
-        Type Tind.
-        Tensor of int32/int64 indices, of r >= 1 (same rank as input). All index
-        values are expected to be within bounds [-s, s-1] along axis of size s.
-        It is an error if any of the index values are out of bounds.
-    updates
-        Type T.
-        Tensor of rank r >=1 (same rank and shape as indices)
-    axis
-        Attribute.
-        Which axis to scatter on. Negative value means counting dimensions from
-        the back. Accepted range is [-r, r-1] where r = rank(data).
-
-    Returns
-    =======
-    output : Var
-        Type T.
-        Tensor of rank r >= 1 (same rank as input).
-
-    Notes
-    =====
-    Signature: ``ai.onnx@11::Scatter``.
-
-    Type constraints:
-     - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
-     - Tind: `tensor(int32)`, `tensor(int64)`
-    """
-    warnings.warn(
-        "Scatter is a deprecated operator and its constructor should not be used. "
-        "Building will raise an error. "
-        "Deprecated constructors will be removed in Spox 0.7.0.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _Scatter(
-        _Scatter.Attributes(
-            axis=AttrInt64(axis),
-        ),
-        _Scatter.Inputs(
-            data=data,
-            indices=indices,
-            updates=updates,
-        ),
-    ).outputs.output
-
-
 def scatter_elements(
     data: Var,
     indices: Var,
@@ -15468,62 +15305,6 @@ def unsqueeze(
     ).outputs.expanded
 
 
-def upsample(
-    X: Var,
-    scales: Var,
-    *,
-    mode: str = "nearest",
-) -> Var:
-    r"""
-    Upsample the input tensor. Each dimension value of the output tensor is:
-    output_dimension = floor(input_dimension \* scale).
-
-    Parameters
-    ==========
-    X
-        Type T.
-        N-D tensor
-    scales
-        Type tensor(float).
-        The scale array along each dimension. It takes value greater than or
-        equal to 1. The number of elements of 'scales' should be the same as the
-        rank of input 'X'.
-    mode
-        Attribute.
-        Two interpolation modes: nearest (default), and linear (including
-        bilinear, trilinear, etc)
-
-    Returns
-    =======
-    Y : Var
-        Type T.
-        N-D tensor after resizing
-
-    Notes
-    =====
-    Signature: ``ai.onnx@10::Upsample``.
-
-    Type constraints:
-     - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
-    """
-    warnings.warn(
-        "Upsample is a deprecated operator and its constructor should not be used. "
-        "Building will raise an error. "
-        "Deprecated constructors will be removed in Spox 0.7.0.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _Upsample(
-        _Upsample.Attributes(
-            mode=AttrString(mode),
-        ),
-        _Upsample.Inputs(
-            X=X,
-            scales=scales,
-        ),
-    ).outputs.Y
-
-
 def where(
     condition: Var,
     X: Var,
@@ -15818,7 +15599,6 @@ _OPERATORS = {
     "Round": _Round,
     "STFT": _STFT,
     "Scan": _Scan,
-    "Scatter": _Scatter,
     "ScatterElements": _ScatterElements,
     "ScatterND": _ScatterND,
     "Selu": _Selu,
@@ -15859,7 +15639,6 @@ _OPERATORS = {
     "Trilu": _Trilu,
     "Unique": _Unique,
     "Unsqueeze": _Unsqueeze,
-    "Upsample": _Upsample,
     "Where": _Where,
     "Xor": _Xor,
 }
@@ -15999,7 +15778,6 @@ _CONSTRUCTORS = {
     "Round": round,
     "STFT": stft,
     "Scan": scan,
-    "Scatter": scatter,
     "ScatterElements": scatter_elements,
     "ScatterND": scatter_nd,
     "Selu": selu,
@@ -16040,7 +15818,6 @@ _CONSTRUCTORS = {
     "Trilu": trilu,
     "Unique": unique,
     "Unsqueeze": unsqueeze,
-    "Upsample": upsample,
     "Where": where,
     "Xor": xor,
 }
