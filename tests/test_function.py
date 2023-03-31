@@ -9,6 +9,7 @@ import onnx.shape_inference
 import onnxruntime
 import pytest
 
+import spox.opset.ai.onnx.v17 as op
 from spox._attributes import AttrFloat32, _Ref
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._function import Function, to_function
@@ -19,7 +20,7 @@ from spox._var import Var
 
 
 @pytest.fixture
-def linear(op):
+def linear():
     class LinearFunction(Function):
         @dataclass
         class Attributes(BaseAttributes):
@@ -41,8 +42,9 @@ def linear(op):
         outputs: Outputs
 
         def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
-            a = op.constant(value_float=attrs["slope"])
-            b = op.constant(value_float=attrs["shift"])
+            # FIXME: At some point, attribute references should be properly type-hinted.
+            a = op.constant(value_float=attrs["slope"])  # type: ignore
+            b = op.constant(value_float=attrs["shift"])  # type: ignore
             x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b))
 
@@ -56,7 +58,7 @@ def linear(op):
 
 
 @pytest.fixture
-def linear2(op, linear):
+def linear2(linear):
     class LinearFunction2(Function):
         @dataclass
         class Attributes(BaseAttributes):
@@ -78,7 +80,7 @@ def linear2(op, linear):
         outputs: Outputs
 
         def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
-            return self.Outputs(linear(inputs.X, attrs["slope1"], attrs["shift1"]))
+            return self.Outputs(linear(inputs.X, attrs["slope1"], attrs["shift1"]))  # type: ignore
 
     def linear_inner(x: Var, a: float, b: float) -> Var:
         return LinearFunction2(
@@ -90,7 +92,7 @@ def linear2(op, linear):
 
 
 @pytest.fixture
-def cubic(op, linear):
+def cubic(linear):
     class CubicFunction(Function):
         @dataclass
         class Attributes(BaseAttributes):
@@ -115,10 +117,10 @@ def cubic(op, linear):
 
         def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
             x = inputs.X
-            a = op.mul(linear(x, attrs["a3"], attrs["a2"]), op.mul(x, x))
+            a = op.mul(linear(x, attrs["a3"], attrs["a2"]), op.mul(x, x))  # type: ignore
             b = op.add(
-                op.mul(x, op.constant(value_float=attrs["a1"])),
-                op.constant(value_float=attrs["a0"]),
+                op.mul(x, op.constant(value_float=attrs["a1"])),  # type: ignore
+                op.constant(value_float=attrs["a0"]),  # type: ignore
             )
             y = op.add(a, b)
             return self.Outputs(y)
@@ -138,13 +140,13 @@ def cubic(op, linear):
 
 
 @pytest.fixture
-def min_fun_graph(op, linear):
+def min_fun_graph(linear):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
     return results(final=linear(start, 3, 2))
 
 
 @pytest.fixture
-def big_fun_graph(op, linear):
+def big_fun_graph(linear):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
     )
@@ -152,37 +154,37 @@ def big_fun_graph(op, linear):
 
 
 @pytest.fixture
-def double_fun_graph(op, linear):
+def double_fun_graph(linear):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
     return results(final=linear(linear(start, 3, 2), 5, 3))
 
 
 @pytest.fixture
-def wrapped_linear_graph(op, linear2):
+def wrapped_linear_graph(linear2):
     (start,) = arguments(start=Tensor(numpy.float32, (None,)))
     return results(final=linear2(start, 3, 2))
 
 
 @pytest.fixture
-def cubic_graph(op, cubic):
+def cubic_graph(cubic):
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
     return results(y=cubic(x, 5, 3, 2, 1))
 
 
 @pytest.fixture
-def cubic_rational_graph(op, cubic):
+def cubic_rational_graph(cubic):
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
     return results(y=op.div(cubic(x, 5, 3, 2, 1), cubic(x, 3, 4, 2, 3)))
 
 
 @pytest.fixture
-def cubic_rational_graph_2x3(op, linear, cubic):
+def cubic_rational_graph_2x3(linear, cubic):
     (x,) = arguments(x=Tensor(numpy.float32, (None,)))
     return results(y=linear(op.div(cubic(x, 5, 3, 2, 1), cubic(x, 3, 4, 2, 3)), 2, 3))
 
 
 @pytest.fixture
-def isnan_graph(op):
+def isnan_graph():
     x, y, z = arguments(
         x=Tensor(numpy.float64, ()),
         y=Tensor(numpy.float64, ()),

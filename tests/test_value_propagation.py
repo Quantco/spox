@@ -1,6 +1,7 @@
 import numpy
 
 import spox.opset.ai.onnx.ml.v3 as ml
+import spox.opset.ai.onnx.v17 as op
 from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
@@ -52,27 +53,27 @@ def assert_equal_value(var: Var, expected: ORTValue):
         raise NotImplementedError(f"Datatype {var.type}")
 
 
-def test_sanity_no_prop(op):
+def test_sanity_no_prop():
     (x,) = arguments(x=_type_system.Tensor(numpy.int64, ()))
     op.add(x, x)
 
 
-def test_sanity_const(op):
+def test_sanity_const():
     assert_equal_value(op.const(2), numpy.int64(2))
 
 
-def test_add(op):
+def test_add():
     assert_equal_value(op.add(op.const(2), op.const(2)), numpy.int64(4))
 
 
-def test_div(op):
+def test_div():
     assert_equal_value(
         op.div(op.const(numpy.float32(5.0)), op.const(numpy.float32(2.0))),
         numpy.float32(2.5),
     )
 
 
-def test_identity(op):
+def test_identity():
     for x in [
         5,
         [1, 2, 3],
@@ -82,21 +83,21 @@ def test_identity(op):
         assert_equal_value(op.const(x), x)
 
 
-def test_reshape(op):
+def test_reshape():
     assert_equal_value(
         op.reshape(op.const([1, 2, 3, 4]), op.const([2, 2])), [[1, 2], [3, 4]]
     )
 
 
-def test_optional(op):
+def test_optional():
     assert_equal_value(op.optional(op.const(numpy.float32(2.0))), numpy.float32(2.0))
 
 
-def test_empty_optional(op):
+def test_empty_optional():
     assert_equal_value(op.optional(type=_type_system.Tensor(numpy.float32, ())), None)
 
 
-def test_empty_optional_has_no_element(op):
+def test_empty_optional_has_no_element():
     assert_equal_value(
         op.optional_has_element(
             op.optional(type=_type_system.Tensor(numpy.float32, ()))
@@ -105,18 +106,18 @@ def test_empty_optional_has_no_element(op):
     )
 
 
-def test_sequence_empty(op):
+def test_sequence_empty():
     assert_equal_value(op.sequence_empty(dtype=numpy.float32), [])
 
 
-def test_sequence_append(op):
+def test_sequence_append():
     emp = op.sequence_empty(dtype=numpy.int64)
     assert_equal_value(
         op.sequence_insert(op.sequence_insert(emp, op.const(2)), op.const(1)), [2, 1]
     )
 
 
-def test_with_reconstruct(op):
+def test_with_reconstruct():
     a, b = arguments(
         a=_type_system.Tensor(numpy.int64, ()),
         b=_type_system.Tensor(numpy.int64, ()),
@@ -130,7 +131,7 @@ def test_with_reconstruct(op):
     )
 
 
-def test_bad_reshape_fails(caplog, op):
+def test_bad_reshape_fails(caplog):
     caplog.set_level("DEBUG")
     _ = op.reshape(op.const([1, 2]), op.const([2]))  # sanity
     assert not caplog.records
@@ -138,7 +139,7 @@ def test_bad_reshape_fails(caplog, op):
     assert any(record.levelname == "DEBUG" for record in caplog.records)
 
 
-def test_give_up_silently(op):
+def test_give_up_silently():
     # The LabelEncoder currently has no reference implementation.
     ml.label_encoder(
         op.const(numpy.array(["foo"])),
@@ -148,5 +149,5 @@ def test_give_up_silently(op):
     )
 
 
-def test_non_ascii_characters_in_string_tensor(op):
+def test_non_ascii_characters_in_string_tensor():
     op.cast(op.constant(value_string="FööBär"), to=str)

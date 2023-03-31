@@ -10,6 +10,7 @@ from typing import Dict
 
 import numpy
 
+import spox.opset.ai.onnx.v17 as op
 from spox import Var
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
@@ -66,7 +67,7 @@ def inverse(matrix: Var) -> Var:
 
 
 # Test the correct runtime behaviour with ORT
-def test_basic_build(op, onnx_helper):
+def test_basic_build(onnx_helper):
     (a,) = arguments(a=Tensor(numpy.float64, ("N", "N")))
     graph = results(b=inverse(a))
     onnx_helper.assert_close(
@@ -75,7 +76,7 @@ def test_basic_build(op, onnx_helper):
     )
 
 
-def test_node_overrides(op):
+def test_node_overrides():
     f = numpy.array([[1, 0], [1, 1]], dtype=numpy.float64)
     a = op.constant(value=f)
     b = inverse(a)

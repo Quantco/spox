@@ -5,7 +5,6 @@ import numpy
 import onnxruntime
 import pytest
 
-import spox.opset.ai.onnx.v17
 from spox import _value_prop
 from spox._debug import show_construction_tracebacks
 from spox._graph import Graph
@@ -72,9 +71,3 @@ class ONNXRuntimeHelper:
 @pytest.fixture(scope="session")
 def onnx_helper():
     return ONNXRuntimeHelper()
-
-
-# Selects operator sets for testing
-@pytest.fixture(params=[spox.opset.ai.onnx.v17])
-def op(request):
-    return request.param

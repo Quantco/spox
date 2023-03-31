@@ -1,6 +1,6 @@
-from spox.opset.ai.onnx import v17 as op17
-from spox.opset.ai.onnx import v18 as op18
-from spox.opset.ai.onnx.ml import v3 as ml3
+import spox.opset.ai.onnx.ml.v3 as ml3
+import spox.opset.ai.onnx.v17 as op17
+import spox.opset.ai.onnx.v18 as op18
 
 
 def test_ai_onnx_v17():
