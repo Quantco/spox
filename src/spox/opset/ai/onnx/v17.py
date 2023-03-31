@@ -15406,61 +15406,14 @@ def xor(
     ).outputs.C
 
 
-def const(
-    value: Union[
-        np.ndarray,
-        np.generic,
-        bool,
-        float,
-        int,
-        str,
-        Iterable[float],
-        Iterable[int],
-        Iterable[str],
-    ]
-) -> Var:
+def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
     """
-    Convenience Spox function for creating Vars for constants.
-    Calls the right overload of Constant (setting the right attribute) depending on the type.
+    Convenience function for creating constants.
+
+    Shorthand for ``constant(value=np.array(value, dtype))``. The types follow numpy rules.
     """
 
-    if isinstance(value, np.ndarray):
-        return constant(value=value)
-    elif isinstance(value, np.generic):
-        return constant(value=np.array(value))
-    elif isinstance(value, bool):
-        return constant(value=np.array(value, dtype=np.bool_))
-    elif isinstance(value, int):
-        return constant(value_int=value)
-    elif isinstance(value, float):
-        warnings.warn(
-            "The extra constructor `const` will change its behaviour in Spox 0.7.0"
-            " - float will no longer become float32, but float64 (like numpy). "
-            "Use `op.constant(value_float=...)` or wrap the argument in `np.array` instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return constant(value_float=value)
-    elif isinstance(value, str):
-        return constant(value_string=value)
-    elif isinstance(value, Iterable):
-        elems = list(value)
-        if all(isinstance(elem, int) for elem in elems):
-            return constant(value_ints=elems)
-        elif all(isinstance(elem, float) for elem in elems):
-            warnings.warn(
-                "The extra constructor `const` will change its behaviour in Spox 0.7.0"
-                " - float will no longer become float32, but float64 (like numpy). "
-                "Use `op.constant(value_floats=...)` or wrap the argument in `np.array` instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            return constant(value_floats=elems)
-        elif all(isinstance(elem, str) for elem in elems):
-            return constant(value_strings=elems)
-        else:
-            raise TypeError(f"Bad container values for requested Constant: {elems}")
-    raise TypeError(f"Bad value for requested Constant: {value}")
+    return constant(value=np.array(value, dtype))
 
 
 cum_sum = cumsum
