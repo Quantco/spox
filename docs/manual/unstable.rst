@@ -84,6 +84,18 @@ It may be useful to note that if absolutely necessary the ``_internal_op.unsafe_
 
 The most common cause of missing or incomplete types is a missing type inference implementation in ONNX. In some cases Spox adds a `type inference patch` that attempts to fix this. In rare cases it is impossible to determine the type (like a dynamic reshape) - it is recommended to use the above cast functions as early as possible to get type checks back.
 
+Initializers
+============
+
+Initializers are an ONNX mechanism for expressing constant tensor values in the model. Spox provides a function to create them:
+
+..  code:: python
+    def initializer(value: ArrayLike, dtype: DTypeLike = None) -> Var:
+        ...
+
+This is a mechanism alternative to the ``ai.onnx::Constant`` operator. In our experience initializers sometimes have worse support, which is why they remain unstable. Additionally, both methods essentially achieve the same result.
+
+
 Operator overloading
 ====================
 

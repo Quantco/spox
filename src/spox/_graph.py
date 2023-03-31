@@ -100,9 +100,8 @@ def initializer(arr: numpy.ndarray) -> Var:
     -------
         Var which is always equal to the respective value provided by `arr`.
     """
-    ty = Tensor(arr.dtype, arr.shape)
     return _Initializer(
-        _Initializer.Attributes(type=AttrType(ty), default=AttrTensor(arr)),
+        _Initializer.Attributes(value=AttrTensor(arr)),
         BaseInputs(),
     ).outputs.arg
 
