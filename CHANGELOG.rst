@@ -13,6 +13,8 @@ Change log
 **New features**
 
 - The opset ``ai.onnx@18`` is now shipped with Spox (version 18 of the default domain, as introduced in ONNX 1.13). To avoid code duplication, unchanged implementations are 'inherited' from the previous version.
+- The ``Type <= Type`` (``Type.__le__``) overload is now removed.
+- Deprecated operator constructors are now no longer generated after the version their schema was deprecated. Effectively, this means ``ai.onnx@17::Scatter`` and ``ai.onnx@17::Upsample`` (available as ``op.scatter`` and ``op.upsample``) are no longer available in ``spox.opset.ai.onnx.v17``. They likely were not used in practice as attempting to build deprecated operators has always failed.
 
 **Bug fixes**
 

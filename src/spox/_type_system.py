@@ -1,5 +1,4 @@
 import typing
-import warnings
 from dataclasses import dataclass
 from typing import TypeVar
 
@@ -144,15 +143,6 @@ class Type:
             return NotImplemented
         return other == Type() or self == other
 
-    def __le__(self, other: "Type") -> bool:
-        warnings.warn(
-            "Type membership comparison with <= will be removed in Spox 0.7.0 "
-            "(and placed in a private interface instead).",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._subtype(other)
-
 
 @dataclass(frozen=True)
 class Tensor(Type):
@@ -280,7 +270,7 @@ class Sequence(Type):
     def __str__(self):
         return f"[{self.elem_type}]"
 
-    def __le__(self, other: Type) -> bool:
+    def _subtype(self, other: Type) -> bool:
         if not isinstance(other, Type):
             return NotImplemented
         if other == Type() or self == other:
