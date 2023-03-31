@@ -55,11 +55,8 @@ def test_const_float_warns(op):
         op.const([1.0, 2.0, 3.0])
 
 
-def test_deprecated_raises(op):
-    (x,) = arguments(x=Tensor(float, (None,)))
-    s = op.const(numpy.array([2.0], numpy.float32))
-    with pytest.warns(DeprecationWarning):
-        y = op.upsample(x, s)
-    graph = results(y=y).with_arguments(x)
-    with pytest.raises(Exception):
-        graph.to_onnx_model()
+def test_deprecated_schemas_removed():
+    import spox.opset.ai.onnx.v17 as op17
+
+    assert not hasattr(op17, "scatter")
+    assert not hasattr(op17, "upsample")

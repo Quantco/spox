@@ -13,6 +13,7 @@ Change log
 **Breaking changes**
 
 - The ``Type <= Type`` (``Type.__le__``) overload is now removed.
+- Deprecated operator constructors are now no longer generated after the version their schema was deprecated. Effectively, this means ``ai.onnx@17::Scatter`` and ``ai.onnx@17::Upsample`` (available as ``op.scatter`` and ``op.upsample``) are no longer available in ``spox.opset.ai.onnx.v17``. They likely were not used in practice as attempting to build deprecated operators has always failed.
 
 0.6.2 (2023-03-29)
 ------------------
