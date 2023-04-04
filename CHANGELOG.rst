@@ -7,7 +7,7 @@
 Change log
 ==========
 
-0.7.0 (2023-04-xx)
+0.7.0 (2023-04-04)
 ------------------
 
 This version is intended as a release candidate for ``1.0.0``.
