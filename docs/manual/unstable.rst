@@ -90,6 +90,7 @@ Initializers
 Initializers are an ONNX mechanism for expressing constant tensor values in the model. Spox provides a function to create them:
 
 ..  code:: python
+
     def initializer(value: ArrayLike, dtype: DTypeLike = None) -> Var:
         ...
 
