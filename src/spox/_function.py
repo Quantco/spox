@@ -17,8 +17,7 @@ if TYPE_CHECKING:
 
 DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
-Constructor = Callable[..., Iterable[Var]]
-ConstructorT = TypeVar("ConstructorT", bound=Constructor)
+ConstructorT = TypeVar("ConstructorT", bound=Callable[..., Iterable[Var]])
 
 
 class Function(_InternalNode):
