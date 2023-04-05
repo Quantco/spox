@@ -4,7 +4,6 @@ from dataclasses import dataclass, make_dataclass
 from typing import TYPE_CHECKING, Callable, Dict, Iterable, Tuple, TypeVar
 
 import onnx
-from typing_extensions import TypeAlias
 
 from . import _attributes
 from ._fields import BaseAttributes, BaseInputs, BaseOutputs
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
 
 DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
-Constructor: TypeAlias = Callable[..., Iterable[Var]]
+Constructor = Callable[..., Iterable[Var]]
 ConstructorT = TypeVar("ConstructorT", bound=Constructor)
 
 
