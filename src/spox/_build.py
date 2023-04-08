@@ -308,6 +308,8 @@ class Builder:
                 if sub not in self.scope_tree.subgraph_of:
                     self.scope_tree.subgraph_of[sub] = node
                     self.update_scope_tree(sub)
+                if self.scope_tree.subgraph_of[sub] != node:
+                    raise BuildError("Two nodes reused the same subgraph.")
 
         # Visit from the source (result) of this graph. Traverse only input edges for the first constraint.
         iterative_dfs(
