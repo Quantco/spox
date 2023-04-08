@@ -153,10 +153,16 @@ class Builder:
             Time and space complexity in the length of the path between a, b in the tree.
             """
             vis = set()
+            graphs = list(set(self.subgraph_of) | set(self.scope_of.values()))
+            p = {g: graphs.index(g) for g in graphs}
+            _a, _b = a, b
             while a not in vis:
                 vis.add(a)
                 a = self.parent(a)
                 a, b = b, a
+            print(
+                f"lca({p[_a]}, {p[_b]}) = {p[a]}  at {[(p[g], p[self.parent(g)]) for g in self.subgraph_of]}"
+            )
             return a
 
     # Graphs needed in the build
