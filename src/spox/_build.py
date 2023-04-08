@@ -188,53 +188,18 @@ class Builder:
         self.scope_own = {}
 
     def build_main(self) -> BuildResult:
+        # Discovery
         self.discover(self.main)
         self.graph_topo.reverse()
         if not self.graphs == set(self.arguments_of) == set(self.results_of):
             raise BuildError("Some graphs have missing build data.")
 
+        # Resolving scopes
         for graph in self.graph_topo:
             self.update_scope_tree(graph)
-
         self.resolve_scopes()
 
-        import networkx as nx
-
-        G = nx.DiGraph()
-        G.add_nodes_from(self.scope_tree.scope_of)
-        for nd in G.nodes:
-            G.add_edges_from((nd, a._op) for a in nd.dependencies)
-            G.add_edges_from((nd, self.source_of[a]) for a in nd.subgraphs)
-        nx.draw(
-            G,
-            pos=nx.nx_agraph.pygraphviz_layout(G),
-            with_labels=True,
-            labels={nd: nd.op_type.identifier for nd in G.nodes},
-        )
-        import matplotlib.pyplot as plt
-
-        plt.show()
-
-        print("\n\n")
-        print(
-            ", ".join(
-                f"{graph._name} ^ {self.scope_tree.parent(graph)._name}"
-                for graph in self.graphs
-            )
-        )
-        for node, graph in self.scope_tree.scope_of.items():
-            tr = node._traceback.copy()
-            while "test_subgraphs" not in tr[-1]:
-                tr.pop()
-            print(
-                graph._name,
-                " :: ",
-                tr[-1].splitlines()[0],
-                "\n",
-                " " * 16,
-                tr[-2].splitlines()[0],
-            )
-
+        # Compilation
         return self.compile_graph(self.main, Scope())
 
     @staticmethod
@@ -453,8 +418,6 @@ class Builder:
         functions: List[_function.Function] = []
         initializers: Dict[Var, numpy.ndarray] = {}
 
-        print("compile_graph", graph, self.arguments_of[graph])
-
         # Add arguments to our scope
         for arg in self.arguments_of[graph]:
             node = arg._op
@@ -468,7 +431,6 @@ class Builder:
         for node in self.scope_own[graph]:
             if isinstance(node, Argument):
                 continue
-            print(" ", graph, node)
             node.update_metadata(opset_req, initializers, functions)
             scope.update(
                 node, prefix
