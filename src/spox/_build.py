@@ -146,23 +146,18 @@ class Builder:
             """
             A simple LCA algorithm without preprocessing that only accesses the parents.
 
-            The algorithm is simple - we keep going up one step with both nodes
-            Whenever we hit a node that was already visited, it must be the lowest common ancestor
+            The algorithm is simple - we keep going up one step alternating between the nodes.
+            Whenever we hit a node that was already visited, it must be the lowest common ancestor.
             - as it is definitely a common ancestor, and it required the least steps up.
 
             Time and space complexity in the length of the path between a, b in the tree.
             """
-            if a is b:
-                return a
             vis = set()
-            while True:
-                if a in vis:
-                    return a
-                if b in vis:
-                    return b
+            while a not in vis:
                 vis.add(a)
-                vis.add(b)
-                a, b = self.parent(a), self.parent(b)
+                a = self.parent(a)
+                a, b = b, a
+            return a
 
     # Graphs needed in the build
     main: "Graph"
