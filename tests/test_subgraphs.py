@@ -354,7 +354,7 @@ def test_subgraph_result_depends_on_result(onnx_helper):
 @pytest.mark.parametrize("f2", [0, 1, 2])
 @pytest.mark.parametrize("f3", [0, 1, 2])
 def test_binary_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
-    def subgraph_id(arg: Var, fork) -> Var:
+    def id(arg: Var, fork) -> Var:
         (ret,) = (
             op.if_(
                 op.const(True),
@@ -370,7 +370,7 @@ def test_binary_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
         v_initial=[op.const(0)],
         body=lambda _i, _c, a: (
             op.const(False),
-            subgraph_id(subgraph_id(subgraph_id(a, fork=f3), fork=f2), fork=f1),
+            id(id(id(a, fork=f3), fork=f2), fork=f1),
         ),
     )
 
