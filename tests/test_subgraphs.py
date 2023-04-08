@@ -353,10 +353,10 @@ def test_subgraph_result_depends_on_result(onnx_helper):
 
 
 @pytest.mark.parametrize("f3", ["fwd", "nest", "tee", "clone"])
-@pytest.mark.parametrize("f2", [0, 1, 2, 3])
-@pytest.mark.parametrize("f1", [0, 1, 2, 3])
+@pytest.mark.parametrize("f2", ["fwd", "nest", "tee", "clone"])
+@pytest.mark.parametrize("f1", ["fwd", "nest", "tee", "clone"])
 def test_complex_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
-    def id(arg: Callable[[], Var], fork) -> Var:
+    def ident(arg: Callable[[], Var], fork) -> Var:
         if fork == "clone":
             fst, snd = arg(), arg()
         else:
@@ -365,7 +365,7 @@ def test_complex_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
             op.if_(
                 op.const(True),
                 then_branch=lambda: (fst,),
-                else_branch=lambda: (snd,) if fork == 2 else (op.const(-1),),
+                else_branch=lambda: (snd,) if fork != "nest" else (op.const(-1),),
             )
             if fork != "fwd"
             else (fst,)
@@ -376,9 +376,9 @@ def test_complex_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
         v_initial=[op.const(0)],
         body=lambda _i, _c, a: (
             op.const(False),
-            id(
-                lambda: id(
-                    lambda: id(
+            ident(
+                lambda: ident(
+                    lambda: ident(
                         lambda: a,
                         fork=f3,
                     ),
