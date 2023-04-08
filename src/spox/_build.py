@@ -311,7 +311,8 @@ class Builder:
         However, a node may be pushed up in the scope tree at most O(s) times, so the complexity is amortised to O(ns).
 
         It is expected that subgraphs reachable from the source of ``graph`` have already been resolved.
-        This is why this method is called for all graphs with topological ordering.
+        This method is called for all graphs in topological ordering, which ensures the scope tree
+        is completed 'bottom-up'.
         """
 
         def satisfy_constraints(node):
