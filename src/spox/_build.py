@@ -305,12 +305,13 @@ class Builder:
           graph that we are in (as this is an indirect result to this graph).
           In this case we update the scope to the LCA of this graph's scope and the existing scope.
         - This cannot break the input-scope (1st) constraint (as we only expose more values to scopes),
-          and the 2nd constraint is not moved.
-        - We may recursively descend into subgraphs found by traversing this graph. This will serve to update the scope
-          tree and satisfy that subgraph's constraints.
+          and the 2nd constraint is not affected.
 
         Pessimistically an LCA constraint update may be O(s), and all n nodes may be visited in all s scopes.
-        However, a node may be pushed up in the scope tree at most O(s) time, so the complexity is amortised to O(ns).
+        However, a node may be pushed up in the scope tree at most O(s) times, so the complexity is amortised to O(ns).
+
+        It is expected that subgraphs reachable from the source of ``graph`` have already been resolved.
+        This is why this method is called for all graphs with topological ordering.
         """
 
         def satisfy_constraints(node):
