@@ -1,3 +1,5 @@
+from typing import Callable
+
 import numpy
 import pytest
 
@@ -350,19 +352,23 @@ def test_subgraph_result_depends_on_result(onnx_helper):
     )
 
 
-@pytest.mark.parametrize("f3", [1])  # [0, 1, 2])
-@pytest.mark.parametrize("f2", [2])  # [0, 1, 2])
-@pytest.mark.parametrize("f1", [2])  # [0, 1, 2])
-def test_binary_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
-    def id(arg: Var, fork) -> Var:
+@pytest.mark.parametrize("f3", ["fwd", "nest", "tee", "clone"])
+@pytest.mark.parametrize("f2", [0, 1, 2, 3])
+@pytest.mark.parametrize("f1", [0, 1, 2, 3])
+def test_complex_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
+    def id(arg: Callable[[], Var], fork) -> Var:
+        if fork == "clone":
+            fst, snd = arg(), arg()
+        else:
+            fst = snd = arg()
         (ret,) = (
             op.if_(
                 op.const(True),
-                then_branch=lambda: (arg,),
-                else_branch=lambda: (arg,) if fork == 2 else (op.const(-1),),
+                then_branch=lambda: (fst,),
+                else_branch=lambda: (snd,) if fork == 2 else (op.const(-1),),
             )
-            if fork >= 1
-            else (arg,)
+            if fork != "fwd"
+            else (fst,)
         )
         return ret
 
@@ -371,9 +377,9 @@ def test_binary_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
         body=lambda _i, _c, a: (
             op.const(False),
             id(
-                id(
-                    id(
-                        a,
+                lambda: id(
+                    lambda: id(
+                        lambda: a,
                         fork=f3,
                     ),
                     fork=f2,
@@ -382,11 +388,10 @@ def test_binary_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
             ),
         ),
     )
-    _a._op.attrs.body._value = _a._op.attrs.body._value.with_name("LOOP")  # type: ignore
 
     (x,) = arguments(x=Tensor(int, ()))
 
-    results(_=_a).with_arguments(x).with_name("MAIN").to_onnx_model()
+    results(_=_a).with_arguments(x).to_onnx_model()
 
 
 def test_subgraph_not_callback_raises():
