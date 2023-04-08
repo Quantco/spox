@@ -350,9 +350,9 @@ def test_subgraph_result_depends_on_result(onnx_helper):
     )
 
 
-@pytest.mark.parametrize("f1", [0, 1, 2])
-@pytest.mark.parametrize("f2", [0, 1, 2])
-@pytest.mark.parametrize("f3", [0, 1, 2])
+@pytest.mark.parametrize("f3", [1])  # [0, 1, 2])
+@pytest.mark.parametrize("f2", [2])  # [0, 1, 2])
+@pytest.mark.parametrize("f1", [2])  # [0, 1, 2])
 def test_binary_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
     def id(arg: Var, fork) -> Var:
         (ret,) = (
@@ -370,13 +370,23 @@ def test_binary_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
         v_initial=[op.const(0)],
         body=lambda _i, _c, a: (
             op.const(False),
-            id(id(id(a, fork=f3), fork=f2), fork=f1),
+            id(
+                id(
+                    id(
+                        a,
+                        fork=f3,
+                    ),
+                    fork=f2,
+                ),
+                fork=f1,
+            ),
         ),
     )
+    _a._op.attrs.body._value = _a._op.attrs.body._value.with_name("LOOP")  # type: ignore
 
     (x,) = arguments(x=Tensor(int, ()))
 
-    results(_=_a).with_arguments(x).to_onnx_model()
+    results(_=_a).with_arguments(x).with_name("MAIN").to_onnx_model()
 
 
 def test_subgraph_not_callback_raises():

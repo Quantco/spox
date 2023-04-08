@@ -122,11 +122,11 @@ class Builder:
         (lowest common ancestor), which is a common operation on trees.
         """
 
-        subgraph_of: Dict["Graph", Node]
+        subgraph_owner: Dict["Graph", Node]
         scope_of: Dict[Node, "Graph"]
 
         def __init__(self):
-            self.subgraph_of = {}
+            self.subgraph_owner = {}
             self.scope_of = {}
 
         def parent(self, graph: "Graph") -> "Graph":
@@ -137,8 +137,8 @@ class Builder:
             If there is no parent (the main graph is not a subgraph of anything), the scope itself is returned.
             """
             return (
-                self.scope_of[self.subgraph_of[graph]]
-                if graph in self.subgraph_of
+                self.scope_of[self.subgraph_owner[graph]]
+                if graph in self.subgraph_owner
                 else graph
             )
 
@@ -163,6 +163,7 @@ class Builder:
     # Graphs needed in the build
     main: "Graph"
     graphs: Set["Graph"]
+    graph_topo: List["Graph"]
     # Arguments, results
     arguments_of: Dict["Graph", List[Var]]
     results_of: Dict["Graph", List[Var]]
@@ -177,6 +178,7 @@ class Builder:
     def __init__(self, main: "Graph"):
         self.main = main
         self.graphs = set()
+        self.graph_topo = list()
         self.arguments_of = {}
         self.results_of = {}
         self.source_of = {}
@@ -187,10 +189,52 @@ class Builder:
 
     def build_main(self) -> BuildResult:
         self.discover(self.main)
+        self.graph_topo.reverse()
         if not self.graphs == set(self.arguments_of) == set(self.results_of):
             raise BuildError("Some graphs have missing build data.")
-        self.update_scope_tree(self.main)
+
+        for graph in self.graph_topo:
+            self.update_scope_tree(graph)
+
         self.resolve_scopes()
+
+        import networkx as nx
+
+        G = nx.DiGraph()
+        G.add_nodes_from(self.scope_tree.scope_of)
+        for nd in G.nodes:
+            G.add_edges_from((nd, a._op) for a in nd.dependencies)
+            G.add_edges_from((nd, self.source_of[a]) for a in nd.subgraphs)
+        nx.draw(
+            G,
+            pos=nx.nx_agraph.pygraphviz_layout(G),
+            with_labels=True,
+            labels={nd: nd.op_type.identifier for nd in G.nodes},
+        )
+        import matplotlib.pyplot as plt
+
+        plt.show()
+
+        print("\n\n")
+        print(
+            ", ".join(
+                f"{graph._name} ^ {self.scope_tree.parent(graph)._name}"
+                for graph in self.graphs
+            )
+        )
+        for node, graph in self.scope_tree.scope_of.items():
+            tr = node._traceback.copy()
+            while "test_subgraphs" not in tr[-1]:
+                tr.pop()
+            print(
+                graph._name,
+                " :: ",
+                tr[-1].splitlines()[0],
+                "\n",
+                " " * 16,
+                tr[-2].splitlines()[0],
+            )
+
         return self.compile_graph(self.main, Scope())
 
     @staticmethod
@@ -212,7 +256,8 @@ class Builder:
 
     def discover(self, graph: "Graph") -> Tuple[Set[Var], Set[Var]]:
         """
-        Run the discover step of the build process. Resolves arguments and results for the involved graphs.
+        Run the discovery step of the build process. Resolves arguments and results for the involved graphs.
+        Finds the topological ordering between (sub)graphs and sets their owners (nodes of which they are attributes).
 
         The time complexity of this step is in the order of the sum over the counts of intermediate nodes
         for all subgraphs (scopes). With number of scopes `s` and number of nodes `n`, worst-case is `O(ns) = O(n^2)`.
@@ -253,12 +298,19 @@ class Builder:
                 all_arguments_sub, claimed_arguments_sub = self.discover(subgraph)
                 all_arguments |= all_arguments_sub
                 claimed_arguments |= claimed_arguments_sub
+                if subgraph not in self.scope_tree.subgraph_owner:
+                    self.scope_tree.subgraph_owner[subgraph] = nd
+                if self.scope_tree.subgraph_owner[subgraph] != nd:
+                    raise BuildError(
+                        "Subgraph has multiple owners (the Graph instance was reused)."
+                    )
 
         iterative_dfs(
             [self.source_of[graph]],
             lambda nd: (a._op for a in nd.dependencies),
             collect_arguments,
         )
+        self.graph_topo.append(graph)
 
         # Now we resolve which arguments we should get.
         if graph.requested_arguments is None:
@@ -298,21 +350,12 @@ class Builder:
 
         def satisfy_constraints(node):
             # By default, a node is bound to the scope it is found in.
-            if node not in self.scope_tree.scope_of:
-                self.scope_tree.scope_of[node] = graph
+            self.scope_tree.scope_of.setdefault(node, graph)
             # Bring up the scope of its node to its ancestors if it is too low to be accessible in the current graph.
             self.scope_tree.scope_of[node] = self.scope_tree.lca(
                 graph, self.scope_tree.scope_of[node]
             )
-            # For every subgraph, if we didn't apply its constraints yet apply a recursive traversal.
-            for sub in node.subgraphs:
-                if sub not in self.scope_tree.subgraph_of:
-                    self.scope_tree.subgraph_of[sub] = node
-                    self.update_scope_tree(sub)
-                if self.scope_tree.subgraph_of[sub] != node:
-                    raise BuildError("Two nodes reused the same subgraph.")
 
-        # Visit from the source (result) of this graph. Traverse only input edges for the first constraint.
         iterative_dfs(
             [self.source_of[graph]],
             lambda nd: (a._op for a in nd.dependencies),
@@ -410,6 +453,8 @@ class Builder:
         functions: List[_function.Function] = []
         initializers: Dict[Var, numpy.ndarray] = {}
 
+        print("compile_graph", graph, self.arguments_of[graph])
+
         # Add arguments to our scope
         for arg in self.arguments_of[graph]:
             node = arg._op
@@ -423,6 +468,7 @@ class Builder:
         for node in self.scope_own[graph]:
             if isinstance(node, Argument):
                 continue
+            print(" ", graph, node)
             node.update_metadata(opset_req, initializers, functions)
             scope.update(
                 node, prefix
