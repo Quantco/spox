@@ -2,7 +2,6 @@
 
 import contextlib
 import itertools
-import warnings
 from typing import Dict, Optional, Protocol
 
 import numpy as np
@@ -206,6 +205,8 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     Build behaviour should be treated as an implementation detail and
     may change.
 
+    Currently, inlining models with subgraphs or functions is not supported
+    as it cannot be performed in most cases due to lack of upstream support.
     """
     in_names = [i.name for i in model.graph.input]
     in_defaults = {i.name: i for i in model.graph.initializer}
@@ -217,13 +218,10 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     # FIXME: Renaming does not work on subgraphs as of ONNX 1.13/1.14.
     for node in model.graph.node:
         for attr in node.attribute:
-            if attr.g or attr.graphs:
-                warnings.warn(
-                    RuntimeWarning(
-                        "Inlining a graph with subgraphs - "
-                        "renaming may not be applied properly, "
-                        "resulting in an invalid model."
-                    )
+            if attr.HasField("g") or attr.graphs:
+                raise ValueError(
+                    "Inlining models with subgraphs is not supported due to "
+                    "lack of upstream support for renaming values in subgraphs."
                 )
     # FIXME: Support for functions is a bit involved, as it interacts with build.
     if model.functions:

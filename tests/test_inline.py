@@ -246,8 +246,8 @@ def test_proj_composed_same_name(onnx_helper, proj_proto):
 
 def test_relu_inline_subgraph_warns(onnx_helper, relu_proto):
     (a,) = arguments(a=Tensor(float, ()))
-    with pytest.warns(RuntimeWarning):
-        (b,) = inline(relu_proto)(a).values()
+    with pytest.raises(ValueError):
+        inline(relu_proto)(a).values()
 
 
 @pytest.mark.skip("Inlining subgraphs requires reimplementing renaming in graphs.")
