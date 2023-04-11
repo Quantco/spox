@@ -86,23 +86,22 @@ class _Inline(_InternalNode):
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
     ) -> List[onnx.NodeProto]:
         # Prefix all names in the graph to try and avoid name clashes
-        name = scope.node[self] if self in scope.node else None
-        if name is not None:
-            graph = onnx.GraphProto()
-            graph.CopyFrom(self.graph)
-            # FIXME: This is a bug upstream - when add_prefix_graph has rename_edges,
-            #        unused inputs are not renamed. We apply identities to use the inputs.
-            for i in graph.input:
-                graph.node.append(
-                    onnx.helper.make_node(
-                        "Identity", [i.name], [f"__{i.name}_Identity_dummy_use"]
-                    )
+        name = scope.node[self] if self in scope.node else ""
+
+        graph = onnx.GraphProto()
+        graph.CopyFrom(self.graph)
+        # FIXME: This is a bug upstream - when add_prefix_graph has rename_edges,
+        #        unused inputs are not renamed. We apply identities to use the inputs.
+        for i in graph.input:
+            graph.node.append(
+                onnx.helper.make_node(
+                    "Identity", [i.name], [f"__{i.name}_Identity_dummy_use"]
                 )
-            graph = onnx.compose.add_prefix_graph(graph, f"{name}__")
-            for _ in graph.input:
-                graph.node.pop()
-        else:
-            graph = self.graph
+            )
+        graph = onnx.compose.add_prefix_graph(graph, f"{name}__")
+        for _ in graph.input:
+            graph.node.pop()
+
         nodes: List[onnx.NodeProto] = []
         # Move initializers to Constant nodes
         input_names = {i.name for i in graph.input}
