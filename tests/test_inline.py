@@ -93,6 +93,17 @@ agraph (double[N] a, double[N] b) => (double[N] c)
 
 
 @pytest.fixture
+def relu_proto() -> onnx.ModelProto:
+    (x,) = arguments(c=Tensor(float, ()))
+    (y,) = op.if_(
+        op.less(x, op.const(0.0)),
+        then_branch=lambda: (op.const(0.0),),
+        else_branch=lambda: (x,),
+    )
+    return results(y=y).with_arguments(x).to_onnx_model()
+
+
+@pytest.fixture
 def min_graph(lin_fun_proto):
     first, second = arguments(
         first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
@@ -230,3 +241,13 @@ def test_proj_composed_same_name(onnx_helper, proj_proto):
     onnx_helper.assert_close(
         onnx_helper.run(graph, "c", a=numpy.array([1.0]), b=numpy.array([2.0])), 2
     )
+
+
+def test_relu_inline_subgraph(onnx_helper, relu_proto):
+    (a,) = arguments(a=Tensor(float, ()))
+    (b,) = inline(relu_proto)(a).values()
+    graph = results(b=b).with_arguments(a)
+
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([1.0])), 1.0)
+
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([-1.0])), 0.0)

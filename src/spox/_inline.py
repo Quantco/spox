@@ -1,3 +1,4 @@
+import warnings
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple
 
@@ -98,6 +99,17 @@ class _Inline(_InternalNode):
                     "Identity", [i.name], [f"__{i.name}_Identity_dummy_use"]
                 )
             )
+        # FIXME: Renaming does not work on subgraphs as of ONNX 1.13/1.14.
+        for node in graph.node:
+            for attr in node.attribute:
+                if attr.g or attr.graphs:
+                    warnings.warn(
+                        RuntimeWarning(
+                            "Inlining a graph with subgraphs - "
+                            "renaming may not be applied properly, "
+                            "resulting in an invalid model."
+                        )
+                    )
         graph = onnx.compose.add_prefix_graph(graph, f"{name}__")
         for _ in graph.input:
             graph.node.pop()
