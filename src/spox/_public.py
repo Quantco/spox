@@ -1,6 +1,7 @@
 """Module implementing the main public interface functions in Spox."""
 
 import contextlib
+import itertools
 import warnings
 from typing import Dict, Optional, Protocol
 
@@ -12,6 +13,7 @@ from . import _internal_op
 from ._attributes import AttrType
 from ._graph import Argument, initializer, results
 from ._inline import _Inline
+from ._standard import _strip_dim_symbol
 from ._type_system import Type
 from ._var import Var
 
@@ -231,8 +233,12 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             "(if that preserves the model validity)."
         )
     # Handling symbolic dimensions is difficult and not particularly useful, so strip them
-    for info in [*model.graph.input, *model.graph.output, *model.graph.value_info]:
-        pass
+    for info in itertools.chain(
+        model.graph.input, model.graph.output, model.graph.value_info
+    ):
+        info.type.CopyFrom(
+            _strip_dim_symbol(Type._from_onnx(info.type), lambda x: True)._to_onnx()
+        )
 
     def inline_inner(*args: Var, **kwargs: Var) -> Dict[str, Var]:
         for name, arg in zip(in_names, args):
