@@ -8,6 +8,7 @@ from spox._graph import arguments, results
 from spox._public import inline
 from spox._type_system import Tensor
 from spox._utils import from_array
+from spox._var import Var
 
 
 @pytest.fixture
@@ -257,3 +258,9 @@ def test_relu_inline_subgraph(onnx_helper, relu_proto):
 
     onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([1.0])), 1.0)
     onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([-1.0])), 0.0)
+
+
+def test_symbolic_dim_stripped(add4_graph):
+    x: Var
+    (x,) = add4_graph.requested_results.values()
+    assert x.unwrap_tensor().shape == (None,)
