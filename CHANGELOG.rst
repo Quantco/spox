@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.7.1 (2023-04-xx)
+------------------
+
+**Bug fixes**
+
+- ``inline`` now removes all symbolic dimensions from input/output shapes (i.e. ``N x 2`` becomes ``? x 2``) before inferring types to avoid inconsistent interactions. This is only a visual change of the output in some cases, as they are not compared strictly in ONNX.
+- ``inline`` now explicitly does not accept model with subgraphs and local functions. Attempting to use these would usually result in invalid models. Support for them will be added in the future.
+
 0.7.0 (2023-04-04)
 ------------------
 
