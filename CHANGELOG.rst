@@ -7,6 +7,12 @@
 Change log
 ==========
 
+0.7.1 (2023-04-xx)
+------------------
+
+- Fix an issue with resolving scopes during the build process. They manifested with a ``KeyError`` in accessing variables in scope on graphs in complex dependencies between subgraphs.
+
+
 0.7.0 (2023-04-04)
 ------------------
 
