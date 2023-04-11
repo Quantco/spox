@@ -56,8 +56,8 @@ class _Inline(_InternalNode):
                 var.type._subtype(Type._from_onnx(i.type))
             ):
                 raise TypeError(
-                    f"Embedded model input {i.name} type {var.type} "
-                    f"does not match expected {Type._from_onnx(i.type)}."
+                    f"Input '{i.name}' to inlined model got type {var.type}, "
+                    f"expected {Type._from_onnx(i.type)}."
                 )
         # If we do, take the types as declared in the model
         return {
