@@ -202,6 +202,9 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     unless they are used as a default argument value. In this case
     they are also built as initializers.
 
+    Symbolic dimensions in input and output shapes are stripped from
+    the model and ignored, to avoid handling them inconsistently.
+
     Build behaviour should be treated as an implementation detail and
     may change.
 
