@@ -86,8 +86,7 @@ class _Inline(_InternalNode):
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
     ) -> List[onnx.NodeProto]:
         # Prefix all names in the graph to try and avoid name clashes
-        name = scope.node[self] if self in scope.node else ""
-
+        name = scope.node[self]
         graph = onnx.GraphProto()
         graph.CopyFrom(self.graph)
         # FIXME: This is a bug upstream - when add_prefix_graph has rename_edges,
