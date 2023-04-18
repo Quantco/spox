@@ -13,13 +13,33 @@ from spox._type_system import Tensor
 from spox._var import Var
 
 TypeWarningLevel = spox._node.TypeWarningLevel
-set_type_warning_level = spox._node.set_type_warning_level
+
+
+def set_type_warning_level(level: TypeWarningLevel) -> None:
+    spox._node._TYPE_WARNING_LEVEL = level
+
+
+@contextmanager
+def type_warning_level(level: TypeWarningLevel):
+    prev_level = spox._node._TYPE_WARNING_LEVEL
+    set_type_warning_level(level)
+    yield
+    set_type_warning_level(prev_level)
+
 
 ValuePropBackend = spox._value_prop.ValuePropBackend
 
 
 def set_value_prop_backend(backend: ValuePropBackend) -> None:
     spox._value_prop._VALUE_PROP_BACKEND = backend
+
+
+@contextmanager
+def value_prop_backend(backend: ValuePropBackend):
+    prev_backend = spox._value_prop._VALUE_PROP_BACKEND
+    set_value_prop_backend(backend)
+    yield
+    set_value_prop_backend(prev_backend)
 
 
 def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
@@ -189,11 +209,13 @@ __all__ = [
     # Type warning levels
     "TypeWarningLevel",
     "set_type_warning_level",
+    "type_warning_level",
     # Initializer-backed constants
     "initializer",
     # Value propagation backend
     "ValuePropBackend",
     "set_value_prop_backend",
+    "value_prop_backend",
     # Operator overloading on Var
     "operator_overloading",
 ]
