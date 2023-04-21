@@ -174,14 +174,14 @@ class _Introduce(_InternalNode):
         assert len(self.inputs.inputs) == len(self.outputs.outputs)
         # Just create a renaming identity from what we forwarded into our actual output
         protos = []
-        name = scope.node[self] if self in scope.node else None
+        name = scope.node[self]
         for i in range(len(self.inputs.inputs)):
             protos.append(
                 onnx.helper.make_node(
                     "Identity",
                     [scope.var[self.inputs.inputs[i]]],
                     [scope.var[self.outputs.outputs[i]]],
-                    name + f"_id{i}" if name is not None else None,
+                    name + f"_id{i}",
                     doc_string,
                 )
             )

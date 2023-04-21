@@ -33,6 +33,22 @@ agraph (float[1, N] A) => (float[N] B)
 
 
 @pytest.fixture
+def old_identity() -> onnx.ModelProto:
+    return onnx.parser.parse_model(
+        """
+<
+ ir_version: 8,
+ opset_import: ["" : 13]
+>
+agraph (float[N] A) => (float[N] B)
+{
+    B = Identity(A)
+}
+    """
+    )
+
+
+@pytest.fixture
 def inline_old_squeeze_graph(old_squeeze):
     (data,) = arguments(
         data=Tensor(
@@ -45,6 +61,14 @@ def inline_old_squeeze_graph(old_squeeze):
     )
     (result,) = inline(old_squeeze)(A=data).values()
     return results(final=result).with_opset(("ai.onnx", 17))
+
+
+@pytest.fixture
+def inline_old_identity_twice_graph(old_identity):
+    (x,) = arguments(data=Tensor(numpy.float32, (None,)))
+    (y,) = inline(old_identity)(A=x).values()
+    (z,) = inline(old_identity)(A=y).values()
+    return results(final=z).with_opset(("ai.onnx", 17))
 
 
 @pytest.fixture
@@ -92,6 +116,17 @@ def test_adapts_inline_old_squeeze(onnx_helper, inline_old_squeeze_graph):
             inline_old_squeeze_graph,
             "final",
             data=numpy.array([[1, 2, 3, 4]], dtype=numpy.float32),
+        ),
+        [1, 2, 3, 4],
+    )
+
+
+def test_adapts_inline_old_identity_twice(onnx_helper, inline_old_identity_twice_graph):
+    onnx_helper.assert_close(
+        onnx_helper.run(
+            inline_old_identity_twice_graph,
+            "final",
+            data=numpy.array([1, 2, 3, 4], dtype=numpy.float32),
         ),
         [1, 2, 3, 4],
     )
