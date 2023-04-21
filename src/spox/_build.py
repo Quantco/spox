@@ -122,11 +122,11 @@ class Builder:
         (lowest common ancestor), which is a common operation on trees.
         """
 
-        subgraph_of: Dict["Graph", Node]
+        subgraph_owner: Dict["Graph", Node]
         scope_of: Dict[Node, "Graph"]
 
         def __init__(self):
-            self.subgraph_of = {}
+            self.subgraph_owner = {}
             self.scope_of = {}
 
         def parent(self, graph: "Graph") -> "Graph":
@@ -137,8 +137,8 @@ class Builder:
             If there is no parent (the main graph is not a subgraph of anything), the scope itself is returned.
             """
             return (
-                self.scope_of[self.subgraph_of[graph]]
-                if graph in self.subgraph_of
+                self.scope_of[self.subgraph_owner[graph]]
+                if graph in self.subgraph_owner
                 else graph
             )
 
@@ -146,27 +146,24 @@ class Builder:
             """
             A simple LCA algorithm without preprocessing that only accesses the parents.
 
-            The algorithm is simple - we keep going up one step with both nodes
-            Whenever we hit a node that was already visited, it must be the lowest common ancestor
+            The algorithm is simple - we keep going up one step alternating between the nodes.
+            Whenever we hit a node that was already visited, it must be the lowest common ancestor.
             - as it is definitely a common ancestor, and it required the least steps up.
 
             Time and space complexity in the length of the path between a, b in the tree.
             """
-            if a is b:
-                return a
-            vis = set()
-            while True:
-                if a in vis:
-                    return a
-                if b in vis:
-                    return b
-                vis.add(a)
-                vis.add(b)
-                a, b = self.parent(a), self.parent(b)
+            vis_a, vis_b = {a}, {b}
+            while a not in vis_b:
+                vis_a.add(a)
+                a = self.parent(a)
+                a, b = b, a
+                vis_a, vis_b = vis_b, vis_a
+            return a
 
     # Graphs needed in the build
     main: "Graph"
     graphs: Set["Graph"]
+    graph_topo: List["Graph"]
     # Arguments, results
     arguments_of: Dict["Graph", List[Var]]
     results_of: Dict["Graph", List[Var]]
@@ -181,6 +178,7 @@ class Builder:
     def __init__(self, main: "Graph"):
         self.main = main
         self.graphs = set()
+        self.graph_topo = list()
         self.arguments_of = {}
         self.results_of = {}
         self.source_of = {}
@@ -190,11 +188,18 @@ class Builder:
         self.scope_own = {}
 
     def build_main(self) -> BuildResult:
+        # Discovery
         self.discover(self.main)
+        self.graph_topo.reverse()
         if not self.graphs == set(self.arguments_of) == set(self.results_of):
             raise BuildError("Some graphs have missing build data.")
-        self.update_scope_tree(self.main)
+
+        # Resolving scopes
+        for graph in self.graph_topo:
+            self.update_scope_tree(graph)
         self.resolve_scopes()
+
+        # Compilation
         return self.compile_graph(self.main, Scope())
 
     @staticmethod
@@ -216,7 +221,8 @@ class Builder:
 
     def discover(self, graph: "Graph") -> Tuple[Set[Var], Set[Var]]:
         """
-        Run the discover step of the build process. Resolves arguments and results for the involved graphs.
+        Run the discovery step of the build process. Resolves arguments and results for the involved graphs.
+        Finds the topological ordering between (sub)graphs and sets their owners (nodes of which they are attributes).
 
         The time complexity of this step is in the order of the sum over the counts of intermediate nodes
         for all subgraphs (scopes). With number of scopes `s` and number of nodes `n`, worst-case is `O(ns) = O(n^2)`.
@@ -257,12 +263,19 @@ class Builder:
                 all_arguments_sub, claimed_arguments_sub = self.discover(subgraph)
                 all_arguments |= all_arguments_sub
                 claimed_arguments |= claimed_arguments_sub
+                if subgraph not in self.scope_tree.subgraph_owner:
+                    self.scope_tree.subgraph_owner[subgraph] = nd
+                if self.scope_tree.subgraph_owner[subgraph] != nd:
+                    raise BuildError(
+                        "Subgraph has multiple owners (the Graph instance was reused)."
+                    )
 
         iterative_dfs(
             [self.source_of[graph]],
             lambda nd: (a._op for a in nd.dependencies),
             collect_arguments,
         )
+        self.graph_topo.append(graph)
 
         # Now we resolve which arguments we should get.
         if graph.requested_arguments is None:
@@ -292,29 +305,24 @@ class Builder:
           graph that we are in (as this is an indirect result to this graph).
           In this case we update the scope to the LCA of this graph's scope and the existing scope.
         - This cannot break the input-scope (1st) constraint (as we only expose more values to scopes),
-          and the 2nd constraint is not moved.
-        - We may recursively descend into subgraphs found by traversing this graph. This will serve to update the scope
-          tree and satisfy that subgraph's constraints.
+          and the 2nd constraint is not affected.
 
         Pessimistically an LCA constraint update may be O(s), and all n nodes may be visited in all s scopes.
-        However, a node may be pushed up in the scope tree at most O(s) time, so the complexity is amortised to O(ns).
+        However, a node may be pushed up in the scope tree at most O(s) times, so the complexity is amortised to O(ns).
+
+        It is expected that subgraphs reachable from the source of ``graph`` have already been resolved.
+        This method is called for all graphs in topological ordering, which ensures the scope tree
+        is completed 'bottom-up'.
         """
 
         def satisfy_constraints(node):
             # By default, a node is bound to the scope it is found in.
-            if node not in self.scope_tree.scope_of:
-                self.scope_tree.scope_of[node] = graph
+            self.scope_tree.scope_of.setdefault(node, graph)
             # Bring up the scope of its node to its ancestors if it is too low to be accessible in the current graph.
             self.scope_tree.scope_of[node] = self.scope_tree.lca(
                 graph, self.scope_tree.scope_of[node]
             )
-            # For every subgraph, if we didn't apply its constraints yet apply a recursive traversal.
-            for sub in node.subgraphs:
-                if sub not in self.scope_tree.subgraph_of:
-                    self.scope_tree.subgraph_of[sub] = node
-                    self.update_scope_tree(sub)
 
-        # Visit from the source (result) of this graph. Traverse only input edges for the first constraint.
         iterative_dfs(
             [self.source_of[graph]],
             lambda nd: (a._op for a in nd.dependencies),
