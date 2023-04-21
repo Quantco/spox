@@ -1,6 +1,7 @@
 """Module implementing the main public interface functions in Spox."""
 
 import contextlib
+import itertools
 from typing import Dict, Optional, Protocol
 
 import numpy as np
@@ -11,6 +12,7 @@ from . import _internal_op
 from ._attributes import AttrType
 from ._graph import Argument, initializer, results
 from ._inline import _Inline
+from ._standard import _strip_dim_symbol
 from ._type_system import Type
 from ._var import Var
 
@@ -141,6 +143,12 @@ class _InlineCall(Protocol):
         """
 
 
+def _copy_model(model: onnx.ModelProto) -> onnx.ModelProto:
+    copied = onnx.ModelProto()
+    copied.CopyFrom(model)
+    return copied
+
+
 def inline(model: onnx.ModelProto) -> _InlineCall:
     """Inline an existing ONNX model, taking and producing ``Var``.
 
@@ -194,15 +202,44 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     unless they are used as a default argument value. In this case
     they are also built as initializers.
 
+    Symbolic dimensions in input and output shapes are stripped from
+    the model and ignored, to avoid handling them inconsistently.
+
     Build behaviour should be treated as an implementation detail and
     may change.
 
+    Currently, inlining models with subgraphs or functions is not supported
+    as it cannot be performed in most cases due to lack of upstream support.
     """
     in_names = [i.name for i in model.graph.input]
     in_defaults = {i.name: i for i in model.graph.initializer}
     out_names = [o.name for o in model.graph.output]
     _defaults_msg = f" (defaults {list(in_defaults.keys())})"
     _signature_msg = f"signature {in_names}{_defaults_msg} -> {out_names}"
+
+    model = _copy_model(model)
+    # FIXME: Renaming does not work on subgraphs as of ONNX 1.13/1.14.
+    for node in model.graph.node:
+        for attr in node.attribute:
+            if attr.HasField("g") or attr.graphs:
+                raise ValueError(
+                    "Inlining models with subgraphs is not supported due to "
+                    "lack of upstream support for renaming values in subgraphs."
+                )
+    # FIXME: Support for functions is a bit involved, as it interacts with build.
+    if model.functions:
+        raise ValueError(
+            "Inlining models with functions is not supported. "
+            "Consider removing or inlining the function definitions "
+            "(if that preserves the model validity)."
+        )
+    # Handling symbolic dimensions is difficult and not particularly useful, so strip them
+    for info in itertools.chain(
+        model.graph.input, model.graph.output, model.graph.value_info
+    ):
+        info.type.CopyFrom(
+            _strip_dim_symbol(Type._from_onnx(info.type), lambda x: True)._to_onnx()
+        )
 
     def inline_inner(*args: Var, **kwargs: Var) -> Dict[str, Var]:
         for name, arg in zip(in_names, args):
