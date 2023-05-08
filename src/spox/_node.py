@@ -39,11 +39,6 @@ class TypeWarningLevel(enum.IntEnum):
 _TYPE_WARNING_LEVEL: TypeWarningLevel = TypeWarningLevel.INITIAL
 
 
-def set_type_warning_level(level: TypeWarningLevel):
-    global _TYPE_WARNING_LEVEL
-    _TYPE_WARNING_LEVEL = level
-
-
 @dataclass(frozen=True)
 class OpType:
     """Stores information on an ONNX operator, like its identifier and domain."""
