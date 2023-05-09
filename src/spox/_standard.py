@@ -1,7 +1,6 @@
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 import logging
-import typing
-from typing import Dict, Tuple
+from typing import TYPE_CHECKING, Callable, Dict, Tuple
 
 import numpy
 import onnx
@@ -19,7 +18,7 @@ from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValueType
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from ._graph import Graph
 
 
@@ -150,7 +149,10 @@ class StandardNode(Node):
             if info.type != onnx.TypeProto()
         }
         # Strips some unuseful type data (unknown dimensions become global-scoped dimension parameters).
-        return {key: _strip_unk_param(type_) for key, type_ in results.items()}
+        return {
+            key: _strip_dim_symbol(type_, lambda x: x.startswith("unk__"))
+            for key, type_ in results.items()
+        }
 
     def propagate_values_onnx(self) -> Dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.
@@ -199,25 +201,27 @@ class StandardNode(Node):
         return {}
 
 
-def _strip_unk_param_shape(shape: SimpleShape) -> SimpleShape:
+def _strip_dim_symbol_shape(
+    shape: SimpleShape, pred: Callable[[str], bool]
+) -> SimpleShape:
     """
     Remove all instances all ``unk__`` dimension parameters from a shape -- created when running
     ONNX shape inference and no parameter to use existed. It is stripped to avoid conflicts (due to global scoping).
     """
     if shape is None:
         return shape
-    xs = [None if isinstance(x, str) and x.startswith("unk__") else x for x in shape]
+    xs = [None if isinstance(x, str) and pred(x) else x for x in shape]
     return tuple(xs)
 
 
-def _strip_unk_param(typ: Type) -> Type:
+def _strip_dim_symbol(typ: Type, pred: Callable[[str], bool]) -> Type:
     """Apply ``_strip_unk_param_shape`` to all shapes present in this ``Type``."""
     if isinstance(typ, Tensor):
-        return Tensor(typ.dtype, _strip_unk_param_shape(typ.shape))
+        return Tensor(typ.dtype, _strip_dim_symbol_shape(typ.shape, pred))
     elif isinstance(typ, Sequence):
-        return Sequence(_strip_unk_param(typ.elem_type))
+        return Sequence(_strip_dim_symbol(typ.elem_type, pred))
     elif isinstance(typ, Optional):
-        return Optional(_strip_unk_param(typ.elem_type))
+        return Optional(_strip_dim_symbol(typ.elem_type, pred))
     else:
         return typ
 

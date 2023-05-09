@@ -8,6 +8,7 @@ from spox._graph import arguments, results
 from spox._public import inline
 from spox._type_system import Tensor
 from spox._utils import from_array
+from spox._var import Var
 
 
 @pytest.fixture
@@ -90,6 +91,17 @@ agraph (double[N] a, double[N] b) => (double[N] c)
 }
 """
     )
+
+
+@pytest.fixture
+def relu_proto() -> onnx.ModelProto:
+    (x,) = arguments(c=Tensor(float, ()))
+    (y,) = op.if_(
+        op.less(x, op.const(0.0)),
+        then_branch=lambda: (op.const(0.0),),
+        else_branch=lambda: (x,),
+    )
+    return results(y=y).with_arguments(x).to_onnx_model()
 
 
 @pytest.fixture
@@ -230,3 +242,25 @@ def test_proj_composed_same_name(onnx_helper, proj_proto):
     onnx_helper.assert_close(
         onnx_helper.run(graph, "c", a=numpy.array([1.0]), b=numpy.array([2.0])), 2
     )
+
+
+def test_relu_inline_subgraph_warns(onnx_helper, relu_proto):
+    (a,) = arguments(a=Tensor(float, ()))
+    with pytest.raises(ValueError):
+        inline(relu_proto)(a).values()
+
+
+@pytest.mark.skip("Inlining subgraphs requires reimplementing renaming in graphs.")
+def test_relu_inline_subgraph(onnx_helper, relu_proto):
+    (a,) = arguments(a=Tensor(float, ()))
+    (b,) = inline(relu_proto)(a).values()
+    graph = results(b=b).with_arguments(a)
+
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([1.0])), 1.0)
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([-1.0])), 0.0)
+
+
+def test_symbolic_dim_stripped(add4_graph):
+    x: Var
+    (x,) = add4_graph.requested_results.values()
+    assert x.unwrap_tensor().shape == (None,)

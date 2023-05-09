@@ -7,8 +7,9 @@ import pytest
 
 from spox import _value_prop
 from spox._debug import show_construction_tracebacks
+from spox._future import set_type_warning_level
 from spox._graph import Graph
-from spox._node import TypeWarningLevel, set_type_warning_level
+from spox._node import TypeWarningLevel
 
 set_type_warning_level(TypeWarningLevel.CRITICAL)
 _value_prop.VALUE_PROP_STRICT_CHECK = True

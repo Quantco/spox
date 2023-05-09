@@ -1,7 +1,10 @@
+from typing import Callable
+
 import numpy
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
+from spox import Var
 from spox._future import initializer
 from spox._graph import arguments, results
 from spox._type_system import Sequence, Tensor
@@ -331,6 +334,64 @@ def test_graph_inherits_subgraph_opset_req(onnx_helper):
         ),
         [numpy.array([-2]), numpy.array([0]), numpy.array([6])],
     )
+
+
+def test_subgraph_result_depends_on_result(onnx_helper):
+    b, x = arguments(b=Tensor(numpy.bool_, ()), x=Tensor(numpy.int64, ()))
+    x = op.mul(x, op.const(2))
+    x1 = op.add(x, op.const(1))
+    z1, z2 = op.if_(b, then_branch=lambda: (x, x1), else_branch=lambda: (x1, x))
+    graph = results(z1=z1, z2=z2)
+    onnx_helper.assert_close(
+        onnx_helper.run(graph, "z1", b=numpy.array(True), x=numpy.array(5)),
+        [10],
+    )
+    onnx_helper.assert_close(
+        onnx_helper.run(graph, "z2", b=numpy.array(True), x=numpy.array(5)),
+        [11],
+    )
+
+
+@pytest.mark.parametrize("f3", ["fwd", "nest", "tee", "clone"])
+@pytest.mark.parametrize("f2", ["fwd", "nest", "tee", "clone"])
+@pytest.mark.parametrize("f1", ["fwd", "nest", "tee", "clone"])
+def test_complex_scope_trees_on_subgraph_argument(onnx_helper, f1, f2, f3):
+    def ident(arg: Callable[[], Var], fork) -> Var:
+        if fork == "clone":
+            fst, snd = arg(), arg()
+        else:
+            fst = snd = arg()
+        (ret,) = (
+            op.if_(
+                op.const(True),
+                then_branch=lambda: (fst,),
+                else_branch=lambda: (snd,) if fork != "nest" else (op.const(-1),),
+            )
+            if fork != "fwd"
+            else (fst,)
+        )
+        return ret
+
+    (_a,) = op.loop(
+        v_initial=[op.const(0)],
+        body=lambda _i, _c, a: (
+            op.const(False),
+            ident(
+                lambda: ident(
+                    lambda: ident(
+                        lambda: a,
+                        fork=f3,
+                    ),
+                    fork=f2,
+                ),
+                fork=f1,
+            ),
+        ),
+    )
+
+    (x,) = arguments(x=Tensor(int, ()))
+
+    results(_=_a).with_arguments(x).to_onnx_model()
 
 
 def test_subgraph_not_callback_raises():

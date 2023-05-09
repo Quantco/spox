@@ -7,14 +7,20 @@
 Change log
 ==========
 
-
-0.7.1 (2023-05-09)
+0.8.0 (2023-05-10)
 ------------------
+
+This version is intended as a release candidate for ``1.0.0``.
 
 **New feature**
 
 - Spox now explicitly sets a model's IR version (currently to version 8) rather than defaulting to the latest IR version supported by the installed onnx package. Increasing the IR version is not considered a breaking change going forward. The IR version will be increase once the ecosystem has adopted it more broadly.
 
+**Bug fixes**
+
+- Fix an issue with resolving scopes during the build process. They manifested with a ``KeyError`` in accessing variables in scope on graphs in complex dependencies between subgraphs.
+- ``inline`` now removes all symbolic dimensions from input/output shapes (i.e. ``N x 2`` becomes ``? x 2``) before inferring types to avoid inconsistent interactions. This is only a visual change of the output in some cases, as they are not compared strictly in ONNX.
+- ``inline`` now explicitly does not accept model with subgraphs and local functions. Attempting to use these would usually result in invalid models. Support for them will be added in the future.
 
 0.7.0 (2023-04-04)
 ------------------
