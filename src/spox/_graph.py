@@ -349,11 +349,12 @@ class Graph:
 
     def to_onnx_model(
         self,
+        *,
         producer_name: str = "spox",
         model_doc_string: str = "",
         infer_shapes: bool = False,
         check_model: Union[Literal[0], Literal[1], Literal[2]] = 1,
-        *,
+        ir_version=8,
         concrete: bool = True,
     ) -> onnx.ModelProto:
         """
@@ -413,6 +414,7 @@ class Graph:
                 onnx.helper.make_operatorsetid(domain, version)
                 for domain, version in opsets.items()
             ],
+            ir_version=ir_version,
         )
 
         if infer_shapes:
