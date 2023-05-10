@@ -7,8 +7,14 @@
 Change log
 ==========
 
-0.7.1 (2023-04-xx)
+0.8.0 (2023-05-10)
 ------------------
+
+This version is intended as a release candidate for ``1.0.0``.
+
+**New feature**
+
+- Spox now explicitly sets a model's IR version (currently to version 8) rather than defaulting to the latest IR version supported by the installed onnx package. Increasing the IR version is not considered a breaking change going forward. The IR version will be increase once the ecosystem has adopted it more broadly.
 
 **Bug fixes**
 
