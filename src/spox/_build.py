@@ -303,8 +303,8 @@ class Builder:
         leaked = claimed_arguments & used_arguments
         if leaked:
             raise BuildError(
-                f"Some subgraph-local arguments were leaked to an outer scope. "
-                f"Hint: avoid side effects in your subgraph callbacks."
+                "Some subgraph-local arguments were leaked to an outer scope. "
+                "Hint: avoid side effects in your subgraph callbacks."
             )
         claimed_arguments |= set(self.arguments_of[graph])
 
