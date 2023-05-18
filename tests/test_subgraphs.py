@@ -5,6 +5,7 @@ import pytest
 
 import spox.opset.ai.onnx.v17 as op
 from spox import Var
+from spox._exceptions import BuildError
 from spox._future import initializer
 from spox._graph import arguments, results
 from spox._type_system import Sequence, Tensor
@@ -429,3 +430,19 @@ def test_subgraph_basic_initializer(onnx_helper):
     graph = results(f=f)
     onnx_helper.assert_close(onnx_helper.run(graph, "f", e=numpy.array(True)), [0])
     onnx_helper.assert_close(onnx_helper.run(graph, "f", e=numpy.array(False)), [1])
+
+
+def test_subgraph_argument_leak_caught():
+    ii: Var = None  # type: ignore
+
+    def fun(i, c):
+        nonlocal ii
+        ii = i
+        return [op.const(True), i]
+
+    (m,) = arguments(m=Tensor(int, ()))
+    (r,) = op.loop(M=m, v_initial=[], body=fun)
+    graph = results(_=op.add(r, ii))
+
+    with pytest.raises(BuildError):
+        graph.to_onnx_model()
