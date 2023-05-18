@@ -254,11 +254,13 @@ class Builder:
         # To avoid too many dictionary accesses, we create aliases for the relevant sets.
         all_arguments = self.all_arguments_in[graph] = set()
         claimed_arguments = self.claimed_arguments_in[graph] = set()
+        used_arguments = set()
 
         def collect_arguments(nd: Node):
-            nonlocal all_arguments, claimed_arguments
+            nonlocal all_arguments, claimed_arguments, used_arguments
             if isinstance(nd, Argument):
                 all_arguments.add(nd.outputs.arg)
+                used_arguments.add(nd.outputs.arg)
             for subgraph in nd.subgraphs:
                 all_arguments_sub, claimed_arguments_sub = self.discover(subgraph)
                 all_arguments |= all_arguments_sub
@@ -270,6 +272,11 @@ class Builder:
                         "Subgraph has multiple owners (the Graph instance was reused)."
                     )
 
+        # Here, we compute:
+        #  - all_arguments to be the set of all Argument instances found anywhere, including subgraphs
+        #  - claimed_arguments to be the arguments found anywhere that are already set as subgraph arguments.
+        #    This is modified afterwards to include arguments assigned to this graph.
+        #  - used_arguments to be arguments that are used directly in this graph, excluding subgraphs.
         iterative_dfs(
             [self.source_of[graph]],
             lambda nd: (a._op for a in nd.dependencies),
@@ -279,7 +286,7 @@ class Builder:
 
         # Now we resolve which arguments we should get.
         if graph.requested_arguments is None:
-            # If there's no request, we take all arguments
+            # If there's no request, we take all arguments found anywhere in this graph
             self.arguments_of[graph] = list(all_arguments - claimed_arguments)
         else:
             # If there is a request, we may not have found it by traversal if an argument was unused.
@@ -290,6 +297,14 @@ class Builder:
             raise BuildError(
                 "Some arguments that this graph claims were already claimed. "
                 "Did subgraphs share arguments they requested?"
+            )
+        # If a claimed argument is used directly in the current graph,
+        # a subgraph-local Argument was leaked, which breaks the contract.
+        leaked = claimed_arguments & used_arguments
+        if leaked:
+            raise BuildError(
+                f"Some subgraph-local arguments were leaked to an outer scope. "
+                f"Hint: avoid side effects in your subgraph callbacks."
             )
         claimed_arguments |= set(self.arguments_of[graph])
 
