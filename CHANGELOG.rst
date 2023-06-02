@@ -7,6 +7,13 @@
 Change log
 ==========
 
+0.8.1 (2023-05-xx)
+------------------
+
+**Bug fixes**
+
+- An explicit error is now raised when local subgraph arguments are leaked to an outer scope. This may happen when the subgraph callback uses side effects saving local variables, which would produce later a confusing error message.
+
 0.8.0 (2023-05-11)
 ------------------
 
