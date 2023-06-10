@@ -1,8 +1,10 @@
+import itertools
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Set, Tuple
+from typing import Callable, Dict, List, Optional, Sequence, Set, Tuple
 
 import onnx
 
+from spox._exceptions import BuildError
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._internal_op import INTERNAL_MIN_OPSET, _InternalNode
 from spox._node import OpType
@@ -11,6 +13,48 @@ from spox._type_system import Type
 from spox._var import Var
 
 from . import _value_prop
+
+
+def rename_in_graph(
+    graph_: onnx.GraphProto,
+    rename: Callable[[str], str],
+    *,
+    rename_node: Optional[Callable[[str], str]] = None,
+    rename_op_type: Optional[Callable[[str], str]] = None,
+) -> onnx.GraphProto:
+    graph = onnx.GraphProto()
+    graph.CopyFrom(graph_)
+
+    for p in itertools.chain(graph.input, graph.initializer):
+        p.name = rename(p.name)
+    for si in graph.sparse_initializer:
+        si.values.name = rename(si.values.name)
+        si.indices.name = rename(si.indices.name)
+
+    for nd in graph.node:
+        if nd.name and rename_node is not None:
+            nd.name = rename_node(nd.name)
+        if nd.op_type and rename_op_type is not None:
+            nd.op_type = rename_op_type(nd.op_type)
+        for seq in (nd.input, nd.output):
+            for i, name in enumerate(seq):
+                seq[i] = rename(name)
+        for attr_proto in nd.attribute:
+            attr = onnx.helper.get_attribute_value(attr_proto)
+            if isinstance(attr, onnx.GraphProto):
+                attr_proto.g.CopyFrom(
+                    rename_in_graph(
+                        attr,
+                        rename,
+                        rename_node=rename_node,
+                        rename_op_type=rename_op_type,
+                    )
+                )
+
+    for p in itertools.chain(graph.output, graph.value_info):
+        p.name = rename(p.name)
+
+    return graph
 
 
 class _Inline(_InternalNode):
@@ -85,55 +129,39 @@ class _Inline(_InternalNode):
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
     ) -> List[onnx.NodeProto]:
-        # Prefix all names in the graph to try and avoid name clashes
-        name = scope.node[self]
-        graph = onnx.GraphProto()
-        graph.CopyFrom(self.graph)
-        # FIXME: This is a bug upstream - when add_prefix_graph has rename_edges,
-        #        unused inputs are not renamed. We apply identities to use the inputs.
-        for i in graph.input:
-            graph.node.append(
-                onnx.helper.make_node(
-                    "Identity", [i.name], [f"__{i.name}_Identity_dummy_use"]
-                )
-            )
-        graph = onnx.compose.add_prefix_graph(graph, f"{name}__")
-        for _ in graph.input:
-            graph.node.pop()
+        input_names: Dict[str, int] = {
+            p.name: i for i, p in enumerate(self.graph.input)
+        }
+        output_names: Dict[str, int] = {
+            p.name: i for i, p in enumerate(self.graph.output)
+        }
+        inner_renames: Dict[str, str] = {}
+        inner_node_renames: Dict[str, str] = {}
 
-        nodes: List[onnx.NodeProto] = []
-        # Move initializers to Constant nodes
-        input_names = {i.name for i in graph.input}
-        nodes.extend(
-            onnx.helper.make_node("Constant", [], [i.name], value=i)
-            for i in graph.initializer
-            if i.name not in input_names
-        )
-        nodes.extend(
-            onnx.helper.make_node("Constant", [], [i.values.name], sparse_value=i)
-            for i in graph.sparse_initializer
-            if i.values.name not in input_names
-        )
-        # Apply a trivial renaming of inputs
-        for i, var in zip(graph.input, self.inputs.inputs):
-            nodes.append(
-                onnx.helper.make_node(
-                    "Identity",
-                    [scope.var[var]],
-                    [i.name],
-                    f"{i.name}__Identity_rename",
-                )
+        def reserve_prefixed(name: str) -> str:
+            return scope.var.reserve(
+                scope.var.maybe_enum(f"{scope.node[self]}__{name}")
             )
-        # Then graph body
-        nodes.extend(graph.node)
-        # Finish with output renaming
-        for o, var in zip(graph.output, self.outputs.outputs):
-            nodes.append(
-                onnx.helper.make_node(
-                    "Identity",
-                    [o.name],
-                    [scope.var[var]],
-                    f"{o.name}__Identity_rename",
-                )
+
+        def apply_rename(name: str) -> str:
+            if name in input_names:
+                return scope.var[self.inputs.inputs[input_names[name]]]
+            if name in output_names:
+                return scope.var[self.outputs.outputs[output_names[name]]]
+            if name not in inner_renames:
+                inner_renames[name] = reserve_prefixed(name)
+            return inner_renames[name]
+
+        def apply_node_rename(name: str) -> str:
+            if name not in inner_node_renames:
+                inner_node_renames[name] = reserve_prefixed(name)
+            return inner_node_renames[name]
+
+        graph = rename_in_graph(self.graph, apply_rename, rename_node=apply_node_rename)
+
+        if graph.initializer:
+            raise BuildError(
+                "Inlined graph initializers should be handled beforehand and be removed from the graph."
             )
+        nodes: List[onnx.NodeProto] = list(graph.node)
         return nodes

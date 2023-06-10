@@ -2,7 +2,7 @@
 
 import contextlib
 import itertools
-from typing import Dict, Optional, Protocol
+from typing import Dict, List, Optional, Protocol
 
 import numpy as np
 import onnx
@@ -238,6 +238,28 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
         info.type.CopyFrom(
             _strip_dim_symbol(Type._from_onnx(info.type), lambda x: True)._to_onnx()
         )
+    # We handle everything related to initializers here, as currently build does not support them too well
+    # Overridable initializers are saved to in_defaults, non-overridable replaced with Constant
+    preamble: List[onnx.NodeProto] = []
+    input_names = {i.name for i in model.graph.input}
+    preamble.extend(
+        onnx.helper.make_node("Constant", [], [i.name], value=i)
+        for i in model.graph.initializer
+        if i.name not in input_names
+    )
+    preamble.extend(
+        onnx.helper.make_node("Constant", [], [i.values.name], sparse_value=i)
+        for i in model.graph.sparse_initializer
+        if i.values.name not in input_names
+    )
+    del model.graph.initializer[:]
+    del model.graph.sparse_initializer[:]
+    # The API on the protobuf list is a bit limited
+    # - this prepends the preamble before the rest of the nodes
+    model.graph.node.reverse()
+    model.graph.node.extend(reversed(preamble))
+    model.graph.node.reverse()
+    # Now we can assume the graph has no initializers
 
     def inline_inner(*args: Var, **kwargs: Var) -> Dict[str, Var]:
         for name, arg in zip(in_names, args):
