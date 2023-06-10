@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.9.0 (2023-06-xx)
+------------------
+
+**Other changes**
+
+- Inlining now no longer adds redundant ``Identity`` nodes and supports subgraphs, thanks to reimplementing the ONNX renaming routine.
+
+
 0.8.1 (2023-05-xx)
 ------------------
 
