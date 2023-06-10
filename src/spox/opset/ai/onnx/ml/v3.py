@@ -820,11 +820,11 @@ def category_mapper(
     default_int64
         Attribute.
         An integer to use when an input string value is not found in the map.One
-        and only one of the 'default_*' attributes must be defined.
+        and only one of the 'default\_\*' attributes must be defined.
     default_string
         Attribute.
         A string to use when an input integer value is not found in the map.One
-        and only one of the 'default_*' attributes must be defined.
+        and only one of the 'default\_\*' attributes must be defined.
 
     Returns
     =======
@@ -979,8 +979,8 @@ def imputer(
     replaced_value_int64 should be defined, which one depends on whether
     floats or integers are being processed. The imputed_value attribute
     length can be 1 element, or it can have one element per input feature.In
-    other words, if the input tensor has the shape [*,F], then the length of
-    the attribute array may be 1 or F. If it is 1, then it is broadcast
+    other words, if the input tensor has the shape [\*,F], then the length
+    of the attribute array may be 1 or F. If it is 1, then it is broadcast
     along the last dimension and applied to each feature.
 
     Parameters
@@ -1082,7 +1082,7 @@ def label_encoder(
         A list of ints.
     keys_strings
         Attribute.
-        A list of strings. One and only one of 'keys_*'s should be set.
+        A list of strings. One and only one of 'keys\_\*'s should be set.
     values_floats
         Attribute.
         A list of floats.
@@ -1091,7 +1091,7 @@ def label_encoder(
         A list of ints.
     values_strings
         Attribute.
-        A list of strings. One and only one of 'value_*'s should be set.
+        A list of strings. One and only one of 'value\_\*'s should be set.
 
     Returns
     =======
@@ -1330,12 +1330,12 @@ def one_hot_encoder(
         Data to be encoded.
     cats_int64s
         Attribute.
-        List of categories, ints.One and only one of the 'cats_*' attributes
+        List of categories, ints.One and only one of the 'cats\_\*' attributes
         must be defined.
     cats_strings
         Attribute.
-        List of categories, strings.One and only one of the 'cats_*' attributes
-        must be defined.
+        List of categories, strings.One and only one of the 'cats\_\*'
+        attributes must be defined.
     zeros
         Attribute.
         If true and category is not present, will return all zeros; if false and
@@ -1392,11 +1392,11 @@ def svmclassifier(
     classlabels_ints
         Attribute.
         Class labels if using integer labels.One and only one of the
-        'classlabels_*' attributes must be defined.
+        'classlabels\_\*' attributes must be defined.
     classlabels_strings
         Attribute.
         Class labels if using string labels.One and only one of the
-        'classlabels_*' attributes must be defined.
+        'classlabels\_\*' attributes must be defined.
     coefficients
         Attribute.
 
@@ -1625,7 +1625,7 @@ def tree_ensemble_classifier(
     Tree Ensemble classifier. Returns the top class for each of N inputs.
     The attributes named 'nodes_X' form a sequence of tuples, associated by
     index into the sequences, which must all be of equal length. These
-    tuples define the nodes. Similarly, all fields prefixed with 'class_'
+    tuples define the nodes. Similarly, all fields prefixed with 'class\_'
     are tuples of votes at the leaves. A leaf may have multiple votes, where
     each vote is weighted by the associated class_weights index. One and
     only one of classlabels_strings or classlabels_int64s will be defined.
@@ -1664,11 +1664,11 @@ def tree_ensemble_classifier(
     classlabels_int64s
         Attribute.
         Class labels if using integer labels.One and only one of the
-        'classlabels_*' attributes must be defined.
+        'classlabels\_\*' attributes must be defined.
     classlabels_strings
         Attribute.
         Class labels if using string labels.One and only one of the
-        'classlabels_*' attributes must be defined.
+        'classlabels\_\*' attributes must be defined.
     nodes_falsenodeids
         Attribute.
         Child node if expression is false.
@@ -1944,12 +1944,12 @@ def zip_map(
         The input values
     classlabels_int64s
         Attribute.
-        The keys when using int keys.One and only one of the 'classlabels_*'
+        The keys when using int keys.One and only one of the 'classlabels\_\*'
         attributes must be defined.
     classlabels_strings
         Attribute.
-        The keys when using string keys.One and only one of the 'classlabels_*'
-        attributes must be defined.
+        The keys when using string keys.One and only one of the
+        'classlabels\_\*' attributes must be defined.
 
     Returns
     =======
