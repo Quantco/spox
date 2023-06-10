@@ -249,8 +249,8 @@ def test_relu_inline_subgraph(onnx_helper, relu_proto):
     (b,) = inline(relu_proto)(a).values()
     graph = results(b=b).with_arguments(a)
 
-    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([1.0])), 1.0)
-    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([-1.0])), 0.0)
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array(1.0)), 1.0)
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array(-1.0)), 0.0)
 
 
 def test_symbolic_dim_stripped(add4_graph):
