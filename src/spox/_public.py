@@ -218,13 +218,11 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     _signature_msg = f"signature {in_names}{_defaults_msg} -> {out_names}"
 
     model = _copy_model(model)
-    # FIXME: Renaming does not work on subgraphs as of ONNX 1.13/1.14.
     for node in model.graph.node:
         for attr in node.attribute:
-            if attr.HasField("g") or attr.graphs:
+            if attr.graphs:
                 raise ValueError(
-                    "Inlining models with subgraphs is not supported due to "
-                    "lack of upstream support for renaming values in subgraphs."
+                    "Inlining models with variadic subgraph attributes is not supported."
                 )
     # FIXME: Support for functions is a bit involved, as it interacts with build.
     if model.functions:
