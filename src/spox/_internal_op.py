@@ -64,7 +64,7 @@ class Argument(_InternalNode):
 
     @dataclass
     class Attributes(BaseAttributes):
-        type: AttrType
+        type: Optional[AttrType] = None
         name: Optional[AttrString] = None
         default: Optional[AttrTensor] = None
 
@@ -80,13 +80,17 @@ class Argument(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
+    @property
+    def untyped(self) -> bool:
+        return super().untyped or self.attrs.type is None
+
     def post_init(self, **kwargs):
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
     def infer_output_types(self) -> Dict[str, Type]:
         # Output type is based on the value of the type attribute
-        return {"arg": self.attrs.type.value}
+        return {"arg": self.attrs.type.value} if self.attrs.type else {}
 
     def update_metadata(self, opset_req, initializers, functions):
         super().update_metadata(opset_req, initializers, functions)

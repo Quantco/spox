@@ -86,3 +86,9 @@ def test_simple_inline_bad_types(simple_model):
         inline(simple_model)(b, a)
     with pytest.raises(TypeError):
         inline(simple_model)(a, c)
+
+
+def test_untyped_arguments_do_not_warn(recwarn):
+    x = argument(None)
+    op.add(x, x)
+    assert not recwarn

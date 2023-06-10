@@ -17,7 +17,7 @@ from ._type_system import Type
 from ._var import Var
 
 
-def argument(typ: Type) -> Var:
+def argument(typ: Optional[Type]) -> Var:
     """
     Create an argument variable which may be used as a model input.
 
@@ -25,6 +25,8 @@ def argument(typ: Type) -> Var:
     ----------
     typ
         The type of the created argument variable.
+        If ``None`` is passed, the variable is untyped.
+        This may be useful when defining ONNX functions.
 
     Returns
     -------
@@ -33,7 +35,7 @@ def argument(typ: Type) -> Var:
         a model input to build a graph.
     """
     return _internal_op.Argument(
-        _internal_op.Argument.Attributes(type=AttrType(typ), default=None)
+        _internal_op.Argument.Attributes(type=AttrType.maybe(typ), default=None)
     ).outputs.arg
 
 

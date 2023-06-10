@@ -144,6 +144,10 @@ class Node(ABC):
         return {(self.op_type.domain, self.op_type.version)}
 
     @property
+    def untyped(self) -> bool:
+        return any(t is None for _, t in self._list_types(self.inputs))
+
+    @property
     def min_input(self) -> int:
         """
         Sets the minimum number of inputs in the ONNX representation.
@@ -247,6 +251,8 @@ class Node(ABC):
 
     def validate_types(self) -> None:
         """Validation of types, ran at the end of Node creation."""
+        if _TYPE_WARNING_LEVEL <= TypeWarningLevel.INITIAL and self.untyped:
+            return
         if _TYPE_WARNING_LEVEL <= TypeWarningLevel.NONE:
             return
         for name, value_type in self._list_types(self.outputs):

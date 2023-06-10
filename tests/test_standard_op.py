@@ -4,6 +4,7 @@ import pytest
 import spox.opset.ai.onnx.v17 as op
 from spox._exceptions import InferenceError
 from spox._graph import arguments
+from spox._public import argument
 from spox._type_system import Tensor
 
 
@@ -52,6 +53,12 @@ def test_inference_validation_fails():
     a, b = arguments(a=Tensor(numpy.float32, (2,)), b=Tensor(numpy.float64, (2,)))
     with pytest.raises(InferenceError):
         op.add(a, b)
+
+
+def test_untyped_arguments(recwarn):
+    x = argument(None)
+    op.add(x, x)
+    assert not recwarn
 
 
 def test_multiple_outputs():

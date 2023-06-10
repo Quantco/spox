@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.9.0 (2023-06-xx)
+------------------
+
+**New features**
+
+- ``argument`` can now take ``None``, indicating the argument variable is untyped.
+
+
 0.8.1 (2023-05-xx)
 ------------------
 
