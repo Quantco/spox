@@ -12,7 +12,7 @@ Change log
 
 **New features**
 
-- The opset ``ai.onnx@18`` (ONNX 1.14) is now shipped with Spox.
+- The opset ``ai.onnx@19`` (ONNX 1.14) is now shipped with Spox.
 
 **Bug fixes**
 
