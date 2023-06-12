@@ -1,3 +1,5 @@
+from typing import Dict
+
 import numpy
 import onnx
 import onnx.parser
@@ -5,6 +7,7 @@ import pytest
 
 import spox.opset.ai.onnx.v17 as op
 from spox._graph import arguments, results
+from spox._inline import rename_in_graph
 from spox._public import inline
 from spox._type_system import Tensor
 from spox._utils import from_array
@@ -257,3 +260,41 @@ def test_symbolic_dim_stripped(add4_graph):
     x: Var
     (x,) = add4_graph.requested_results.values()
     assert x.unwrap_tensor().shape == (None,)
+
+
+def _dummy_duplicate_subgraphs_to_list(
+    graph_proto_: onnx.GraphProto,
+) -> onnx.GraphProto:
+    # Replace all graph attributes with a list of that graph twice
+    # This obviously invalidates the graph, but we just want to test renaming in those subgraphs
+    graph_proto = onnx.GraphProto()
+    graph_proto.CopyFrom(graph_proto_)
+    for node in graph_proto.node:
+        for attr_proto in node.attribute:
+            graph = onnx.helper.get_attribute_value(attr_proto)
+            if isinstance(graph, onnx.GraphProto):
+                attr_proto.Clear()
+                attr_proto.type = onnx.AttributeProto.GRAPHS
+                attr_proto.graphs.append(graph)
+                attr_proto.graphs.append(graph)
+    return graph_proto
+
+
+def test_subgraph_list_rename(relu_proto):
+    # This is a simple property test that ensures renaming
+    # in lists of subgraphs is the same as in just subgraphs
+    renames: Dict[str, str] = {}
+
+    def example_rename(n: str) -> str:
+        if n not in renames:
+            renames[n] = f"{n}_{len(renames)}"
+        return renames[n]
+
+    rename_then_duplicate = _dummy_duplicate_subgraphs_to_list(
+        rename_in_graph(relu_proto.graph, example_rename)
+    )
+    renames.clear()
+    duplicate_then_rename = rename_in_graph(
+        _dummy_duplicate_subgraphs_to_list(relu_proto.graph), example_rename
+    )
+    assert rename_then_duplicate.node == duplicate_then_rename.node
