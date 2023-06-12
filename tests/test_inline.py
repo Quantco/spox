@@ -1,3 +1,5 @@
+from typing import Dict
+
 import numpy
 import onnx
 import onnx.parser
@@ -5,6 +7,7 @@ import pytest
 
 import spox.opset.ai.onnx.v17 as op
 from spox._graph import arguments, results
+from spox._inline import rename_in_graph
 from spox._public import inline
 from spox._type_system import Tensor
 from spox._utils import from_array
@@ -244,23 +247,97 @@ def test_proj_composed_same_name(onnx_helper, proj_proto):
     )
 
 
-def test_relu_inline_subgraph_warns(onnx_helper, relu_proto):
-    (a,) = arguments(a=Tensor(float, ()))
-    with pytest.raises(ValueError):
-        inline(relu_proto)(a).values()
-
-
-@pytest.mark.skip("Inlining subgraphs requires reimplementing renaming in graphs.")
 def test_relu_inline_subgraph(onnx_helper, relu_proto):
     (a,) = arguments(a=Tensor(float, ()))
     (b,) = inline(relu_proto)(a).values()
     graph = results(b=b).with_arguments(a)
 
-    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([1.0])), 1.0)
-    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array([-1.0])), 0.0)
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array(1.0)), 1.0)
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array(-1.0)), 0.0)
 
 
 def test_symbolic_dim_stripped(add4_graph):
     x: Var
     (x,) = add4_graph.requested_results.values()
     assert x.unwrap_tensor().shape == (None,)
+
+
+def _make_subgraph_example(op, node, x, c, y1, y2, y):
+    return onnx.helper.make_graph(
+        [
+            onnx.helper.make_node(op, [x, x], [c], name=node),
+            onnx.helper.make_node(
+                "If",
+                [c],
+                [y],
+                then_branch=onnx.helper.make_graph(
+                    [onnx.helper.make_node("Constant", [], [y1], value_int=0)],
+                    "subgraph_then_branch",
+                    [],
+                    [onnx.helper.make_tensor_value_info(x, onnx.TensorProto.INT64, ())],
+                ),
+                else_branch=onnx.helper.make_graph(
+                    [onnx.helper.make_node("Constant", [], [y2], value_int=1)],
+                    "subgraph_else_branch",
+                    [],
+                    [onnx.helper.make_tensor_value_info(x, onnx.TensorProto.INT64, ())],
+                ),
+            ),
+        ],
+        "graph",
+        [onnx.helper.make_tensor_value_info(x, onnx.TensorProto.FLOAT, ())],
+        [onnx.helper.make_tensor_value_info(y, onnx.TensorProto.INT64, ())],
+    )
+
+
+def test_subgraph_rename():
+    renames = {"X": "in", "C": "cond", "Y1": "sub1", "Y2": "sub2", "Y": "out"}
+    renamed = rename_in_graph(
+        _make_subgraph_example("Equal", "I", "X", "C", "Y1", "Y2", "Y"),
+        lambda x: renames[x],
+        rename_node=lambda x: "test",
+        rename_op=lambda d, t: ("", "Less") if (d, t) == ("", "Equal") else (d, t),
+    )
+    expected = _make_subgraph_example(
+        "Less", "test", "in", "cond", "sub1", "sub2", "out"
+    )
+    for i in range(len(renamed.node)):
+        assert renamed.node[i] == expected.node[i], i
+
+
+def _duplicate_subgraphs_to_list(
+    graph_proto_: onnx.GraphProto,
+) -> onnx.GraphProto:
+    # Replace all graph attributes with a list of that graph twice
+    # This obviously invalidates the graph, but we just want to test renaming in those subgraphs
+    graph_proto = onnx.GraphProto()
+    graph_proto.CopyFrom(graph_proto_)
+    for node in graph_proto.node:
+        for attr_proto in node.attribute:
+            graph = onnx.helper.get_attribute_value(attr_proto)
+            if isinstance(graph, onnx.GraphProto):
+                attr_proto.Clear()
+                attr_proto.type = onnx.AttributeProto.GRAPHS
+                attr_proto.graphs.append(graph)
+                attr_proto.graphs.append(graph)
+    return graph_proto
+
+
+def test_subgraph_list_rename(relu_proto):
+    # This is a simple property test that ensures renaming
+    # in lists of subgraphs is the same as in just subgraphs
+    renames: Dict[str, str] = {}
+
+    def example_rename(n: str) -> str:
+        if n not in renames:
+            renames[n] = f"{n}_{len(renames)}"
+        return renames[n]
+
+    rename_then_duplicate = _duplicate_subgraphs_to_list(
+        rename_in_graph(relu_proto.graph, example_rename)
+    )
+    renames.clear()
+    duplicate_then_rename = rename_in_graph(
+        _duplicate_subgraphs_to_list(relu_proto.graph), example_rename
+    )
+    assert rename_then_duplicate.node == duplicate_then_rename.node

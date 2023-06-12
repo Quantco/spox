@@ -18,6 +18,10 @@ Change log
 
 - The constructor for ``ai.onnx@18::Split`` is no longer generated incorrectly. No extraneous attribute is generated anymore, and the ``num_outputs`` attribute is marked as required (so that Spox can infer the number of outputs).
 
+**Other changes**
+
+- Inlining now no longer adds redundant ``Identity`` nodes and supports subgraphs, thanks to reimplementing the ONNX renaming routine.
+
 
 0.8.1 (2023-05-xx)
 ------------------

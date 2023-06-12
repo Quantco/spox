@@ -1,4 +1,4 @@
-from typing import Dict, Generic, Hashable, Optional, TypeVar, Union, overload
+from typing import Dict, Generic, Hashable, Optional, Set, TypeVar, Union, overload
 
 from ._node import Node
 from ._var import Var
@@ -22,12 +22,14 @@ class ScopeSpace(Generic[H]):
 
     name_of: Dict[H, str]
     of_name: Dict[str, H]
+    reserved: Set[str]
     parent: "Optional[ScopeSpace[H]]"
 
     def __init__(
         self,
         name_of: Optional[Dict[H, str]] = None,
         of_name: Optional[Dict[str, H]] = None,
+        reserved: Optional[Set[str]] = None,
         parent: "Optional[ScopeSpace[H]]" = None,
     ):
         """
@@ -37,17 +39,21 @@ class ScopeSpace(Generic[H]):
             Name of a given object in this namespace.
         of_name
             Object with a given name in this namespace.
+        reserved
+            Set of reserved names, taken up by anonymous objects.
         parent
-            Parent scope's namespace. Is accessed first before all checks, but is not modified directly.
+            Namespace of a parent scope. Is accessed first before all checks, but never modified.
         """
         self.name_of = name_of.copy() if name_of is not None else {}
         self.of_name = of_name.copy() if of_name is not None else {}
+        self.reserved = reserved.copy() if reserved is not None else set()
         self.parent = parent
 
     def __contains__(self, item: Union[str, H]) -> bool:
         """Checks if a given name or object is declared in this (or outer) namespace."""
         return (
             (self.parent is not None and item in self.parent)
+            or item in self.reserved
             or item in self.name_of
             or item in self.of_name
         )
@@ -124,6 +130,12 @@ class ScopeSpace(Generic[H]):
         if base not in self:
             return base
         return self.enum(base, suffix)
+
+    def reserve(self, name: str) -> str:
+        if name in self:
+            raise ScopeError(f"Reserved name is already in use: {name}")
+        self.reserved.add(name)
+        return name
 
 
 class Scope:
