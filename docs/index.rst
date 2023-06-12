@@ -32,6 +32,7 @@ Spox is a Python framework for constructing `ONNX <https://github.com/onnx/onnx/
    API Reference <api/modules>
    Operator constructors for the ai.onnx domain version 17 <api/spox.opset.ai.onnx.v17>
    Operator constructors for the ai.onnx domain version 18 <api/spox.opset.ai.onnx.v18>
+   Operator constructors for the ai.onnx domain version 19 <api/spox.opset.ai.onnx.v19>
    Operator constructors for the ai.onnx.ml domain version 3 <api/spox.opset.ai.onnx.ml.v3>
 
 
