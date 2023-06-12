@@ -20,7 +20,7 @@ def rename_in_graph(
     rename: Callable[[str], str],
     *,
     rename_node: Optional[Callable[[str], str]] = None,
-    rename_op_type: Optional[Callable[[str], str]] = None,
+    rename_op: Optional[Callable[[str, str], Tuple[str, str]]] = None,
 ) -> onnx.GraphProto:
     graph = onnx.GraphProto()
     graph.CopyFrom(graph_)
@@ -34,8 +34,8 @@ def rename_in_graph(
     for nd in graph.node:
         if nd.name and rename_node is not None:
             nd.name = rename_node(nd.name)
-        if nd.op_type and rename_op_type is not None:
-            nd.op_type = rename_op_type(nd.op_type)
+        if rename_op is not None:
+            nd.domain, nd.op_type = rename_op(nd.domain, nd.op_type)
         for seq in (nd.input, nd.output):
             for i, name in enumerate(seq):
                 seq[i] = rename(name)
@@ -47,7 +47,7 @@ def rename_in_graph(
                         attr,
                         rename,
                         rename_node=rename_node,
-                        rename_op_type=rename_op_type,
+                        rename_op=rename_op,
                     )
                 )
 
