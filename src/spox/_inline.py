@@ -50,6 +50,18 @@ def rename_in_graph(
                         rename_op=rename_op,
                     )
                 )
+            elif isinstance(attr, list) and all(
+                isinstance(g, onnx.GraphProto) for g in attr
+            ):
+                for i in range(len(attr)):
+                    attr_proto.graphs[i].CopyFrom(
+                        rename_in_graph(
+                            attr[i],
+                            rename,
+                            rename_node=rename_node,
+                            rename_op=rename_op,
+                        )
+                    )
 
     for p in itertools.chain(graph.output, graph.value_info):
         p.name = rename(p.name)

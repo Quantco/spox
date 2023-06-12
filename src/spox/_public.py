@@ -218,12 +218,6 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     _signature_msg = f"signature {in_names}{_defaults_msg} -> {out_names}"
 
     model = _copy_model(model)
-    for node in model.graph.node:
-        for attr in node.attribute:
-            if attr.graphs:
-                raise ValueError(
-                    "Inlining models with variadic subgraph attributes is not supported."
-                )
     # FIXME: Support for functions is a bit involved, as it interacts with build.
     if model.functions:
         raise ValueError(
