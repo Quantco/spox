@@ -5,12 +5,12 @@
 Parameters
 ==========
 {% for param in schema.inputs %}
-    {% if param.typeStr[0] is upper %}
-        {% do type_vars.update({param.typeStr: param.types}) %}
+    {% if param.type_str[0] is upper %}
+        {% do type_vars.update({param.type_str: param.types}) %}
     {% endif %}
 {{ param.name }}
 {% filter indent(width=4) %}
-    Type {{ param.typeStr }}.
+    Type {{ param.type_str }}.
 {{ param.description | format_github_markdown }}
 {% endfilter %}
 {% endfor %}
@@ -39,8 +39,8 @@ Parameters
 Returns
 =======
 {% for param in schema.outputs %}
-    {% if param.typeStr[0] is upper %}
-        {% do type_vars.update({param.typeStr: param.types}) %}
+    {% if param.type_str[0] is upper %}
+        {% do type_vars.update({param.type_str: param.types}) %}
     {% endif %}
 {{ param.name }} : {%
        if is_variadic(param) %}
@@ -49,7 +49,7 @@ Sequence[Var]
 Var
     {% endif %}
 {% filter indent(width=4) %}
-    Type {{ param.typeStr }}.
+    Type {{ param.type_str }}.
 {{ param.description | format_github_markdown }}
 {% endfilter %}
 {% endfor %}

@@ -7,6 +7,18 @@
 Change log
 ==========
 
+0.9.0 (2023-06-xx)
+------------------
+
+**New features**
+
+- The opset ``ai.onnx@19`` (ONNX 1.14) is now shipped with Spox.
+
+**Bug fixes**
+
+- The constructor for ``ai.onnx@18::Split`` is no longer generated incorrectly. No extraneous attribute is generated anymore, and the ``num_outputs`` attribute is marked as required (so that Spox can infer the number of outputs).
+
+
 0.8.1 (2023-05-xx)
 ------------------
 

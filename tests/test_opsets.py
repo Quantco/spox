@@ -1,6 +1,7 @@
 import spox.opset.ai.onnx.ml.v3 as ml3
 import spox.opset.ai.onnx.v17 as op17
 import spox.opset.ai.onnx.v18 as op18
+import spox.opset.ai.onnx.v19 as op19
 
 
 def test_ai_onnx_v17():
@@ -9,6 +10,11 @@ def test_ai_onnx_v17():
 
 def test_ai_onnx_v18():
     op18.bitwise_and(op17.constant(value_int=7), op17.constant(value_int=10))
+    assert len(op18.split(op18.const([1, 2, 3]), num_outputs=3)) == 3
+
+
+def test_ai_onnx_v19():
+    op19.equal(op19.constant(value_string="abc"), op19.constant(value_string="abc"))
 
 
 def test_ai_onnx_ml_v3():

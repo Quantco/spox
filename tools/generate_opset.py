@@ -62,6 +62,7 @@ IF16_OUT_VARIADIC_SOLUTION = "len(_else_branch_subgraph.requested_results)"
 LOOP16_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results) - 1"
 SCAN16_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results)"
 SEQUENCEMAP17_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results)"
+SPLIT18_OUT_VARIADIC_SOLUTION = "num_outputs"
 
 IF16_SUBGRAPH_SOLUTION = {"else_branch": "()", "then_branch": "()"}
 LOOP16_SUBGRAPH_SOLUTION = {
@@ -86,6 +87,10 @@ V16_OUT_VARIADIC_SOLUTIONS = {
     "Scan": SCAN16_OUT_VARIADIC_SOLUTION,
     "SequenceMap": SEQUENCEMAP17_OUT_VARIADIC_SOLUTION,
 }
+V18_OUT_VARIADIC_SOLUTIONS = {
+    **V16_OUT_VARIADIC_SOLUTIONS,
+    "Split": SPLIT18_OUT_VARIADIC_SOLUTION,
+}
 V16_SUBGRAPH_SOLUTIONS = {
     "If": IF16_SUBGRAPH_SOLUTION,
     "Loop": LOOP16_SUBGRAPH_SOLUTION,
@@ -97,6 +102,7 @@ DEFAULT_ATTR_TYPE_OVERRIDES = [
     ("Cast", "to", ("npt.DTypeLike", "AttrDtype")),
     ("If", "then_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
     ("If", "else_branch", ("Callable[[], Iterable[Var]]", "AttrGraph")),
+    ("Split", "num_outputs", ("int", "AttrInt64")),
 ]
 
 _TEMPLATE_DIR = Path(__file__).parent / "templates/"
@@ -246,15 +252,19 @@ _PANDOC_SEP = "\U0001f6a7"  # U+1F6A7 CONSTRUCTION SIGN
 _PANDOC_GFM_TO_RST_CACHE: Dict[str, str] = {}
 
 
+def _pandoc_run(text: str):
+    return subprocess.run(
+        ["pandoc", "--from=gfm", "--to=rst"], input=text.encode(), capture_output=True
+    ).stdout.decode()
+
+
 def _pandoc_gfm_to_rst_run(*args: str) -> Tuple[str, ...]:
     if not args:
         return ()
 
-    import pandoc
-
     sep = f"\n\n{_PANDOC_SEP}{_PANDOC_SEP}\n\n"
     acc = sep.join([_PANDOC_SEP] + list(args) + [_PANDOC_SEP])
-    acc_results = pandoc.write(pandoc.read(acc, format="gfm"), format="rst")
+    acc_results = _pandoc_run(acc)
     _, *results, _ = acc_results.split(sep)
     for arg, result in zip(args, results):
         if _PANDOC_SEP in result:
@@ -659,12 +669,23 @@ if __name__ == "__main__":
         extras=["const"],
         type_inference={"Compress": "compress11"},
         value_propagation={"Constant": "constant13"},
-        out_variadic_solutions=V16_OUT_VARIADIC_SOLUTIONS,
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
         attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
-        allow_extra_constructor_arguments=["Split"],
         gen_docstrings=gen_all_docstrings,
         inherited_schemas={s: ai_onnx_v17_module for s in ai_onnx_v17_schemas},
+    )
+    ai_onnx_v19_schemas, ai_onnx_v19_module = main(
+        "ai.onnx",
+        19,
+        extras=["const"],
+        type_inference={"Compress": "compress11"},
+        value_propagation={"Constant": "constant13"},
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v18_module for s in ai_onnx_v18_schemas},
     )
     ai_onnx_ml_v3_schemas, ai_onnx_ml_v3_module = main(
         "ai.onnx.ml",

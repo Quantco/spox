@@ -1341,11 +1341,8 @@ def lp_pool(
 
        output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - {kernelSpatialShape}) / strides_spatial_shape[i] + 1)
 
-    if ceil_mode is enabled
-
-    ::
-
-       * pad_shape[i] is sum of pads along axis i
+    if ceil_mode is enabled ``pad_shape[i]`` is the sum of pads along axis
+    ``i``.
 
     ``auto_pad`` is a DEPRECATED attribute. If you are using them currently,
     the output spatial shape will be following:
@@ -1579,39 +1576,69 @@ def pad(
 
     3) ``edge`` - pads with the edge values of array
 
-    Example 1 (``constant`` mode): Insert 0 pads to the beginning of the
-    second dimension.
+    Example 1 (``constant`` mode):
 
-    data = [ [1.0, 1.2], [2.3, 3.4], [4.5, 5.7], ]
+    Insert 0 pads to the beginning of the second dimension.
 
-    pads = [0, 2, 0, 0]
+    ::
 
-    mode = 'constant'
+       data = [
+           [1.0, 1.2],
+           [2.3, 3.4],
+           [4.5, 5.7],
+       ]
 
-    constant_value = 0.0
+       pads = [0, 2, 0, 0]
 
-    output = [ [0.0, 0.0, 1.0, 1.2], [0.0, 0.0, 2.3, 3.4], [0.0, 0.0, 4.5,
-    5.7], ]
+       mode = 'constant'
 
-    Example 2 (``reflect`` mode): data = [ [1.0, 1.2], [2.3, 3.4], [4.5,
-    5.7], ]
+       constant_value = 0.0
 
-    pads = [0, 2, 0, 0]
+       output = [
+           [0.0, 0.0, 1.0, 1.2],
+           [0.0, 0.0, 2.3, 3.4],
+           [0.0, 0.0, 4.5, 5.7],
+       ]
 
-    mode = 'reflect'
+    Example 2 (``reflect`` mode):
 
-    output = [ [1.0, 1.2, 1.0, 1.2], [2.3, 3.4, 2.3, 3.4], [4.5, 5.7, 4.5,
-    5.7], ]
+    ::
 
-    Example 3 (``edge`` mode): data = [ [1.0, 1.2], [2.3, 3.4], [4.5, 5.7],
-    ]
+       data = [
+           [1.0, 1.2],
+           [2.3, 3.4],
+           [4.5, 5.7],
+       ]
 
-    pads = [0, 2, 0, 0]
+       pads = [0, 2, 0, 0]
 
-    mode = 'edge'
+       mode = 'reflect'
 
-    output = [ [1.0, 1.0, 1.0, 1.2], [2.3, 2.3, 2.3, 3.4], [4.5, 4.5, 4.5,
-    5.7], ]
+       output = [
+           [1.0, 1.2, 1.0, 1.2],
+           [2.3, 3.4, 2.3, 3.4],
+           [4.5, 5.7, 4.5, 5.7],
+       ]
+
+    Example 3 (``edge`` mode):
+
+    ::
+
+       data = [
+           [1.0, 1.2],
+           [2.3, 3.4],
+           [4.5, 5.7],
+       ]
+
+       pads = [0, 2, 0, 0]
+
+       mode = 'edge'
+
+       output = [
+           [1.0, 1.0, 1.0, 1.2],
+           [2.3, 2.3, 2.3, 3.4],
+           [4.5, 4.5, 4.5, 5.7],
+       ]
 
     Parameters
     ==========
@@ -1678,10 +1705,10 @@ def reduce_l1(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the L1 norm of the input tensor's element along the provided
+    Computes the L1 norm of the input tensor's elements along the provided
     axes. The resulting tensor has the same rank as the input if keepdims
     equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned.
+    reduced dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -1742,10 +1769,10 @@ def reduce_l2(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the L2 norm of the input tensor's element along the provided
+    Computes the L2 norm of the input tensor's elements along the provided
     axes. The resulting tensor has the same rank as the input if keepdims
     equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned.
+    reduced dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -1806,10 +1833,10 @@ def reduce_log_sum(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the log sum of the input tensor's element along the provided
+    Computes the log sum of the input tensor's elements along the provided
     axes. The resulting tensor has the same rank as the input if keepdims
     equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned.
+    reduced dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -1870,10 +1897,10 @@ def reduce_log_sum_exp(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the log sum exponent of the input tensor's element along the
+    Computes the log sum exponent of the input tensor's elements along the
     provided axes. The resulting tensor has the same rank as the input if
     keepdims equals 1. If keepdims equals 0, then the resulting tensor has
-    the reduced dimension pruned.
+    the reduced dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -1934,10 +1961,10 @@ def reduce_max(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the max of the input tensor's element along the provided axes.
+    Computes the max of the input tensor's elements along the provided axes.
     The resulting tensor has the same rank as the input if keepdims equals
     1. If keepdims equals 0, then the resulting tensor has the reduced
-    dimension pruned.
+    dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -1998,10 +2025,10 @@ def reduce_mean(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the mean of the input tensor's element along the provided axes.
-    The resulting tensor has the same rank as the input if keepdims equals
-    1. If keepdims equals 0, then the resulting tensor has the reduced
-    dimension pruned.
+    Computes the mean of the input tensor's elements along the provided
+    axes. The resulting tensor has the same rank as the input if keepdims
+    equals 1. If keepdims equals 0, then the resulting tensor has the
+    reduced dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -2062,10 +2089,10 @@ def reduce_min(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the min of the input tensor's element along the provided axes.
+    Computes the min of the input tensor's elements along the provided axes.
     The resulting tensor has the same rank as the input if keepdims equals
     1. If keepdims equals 0, then the resulting tensor has the reduced
-    dimension pruned.
+    dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -2126,10 +2153,10 @@ def reduce_prod(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the product of the input tensor's element along the provided
+    Computes the product of the input tensor's elements along the provided
     axes. The resulting tensor has the same rank as the input if keepdims
     equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned.
+    reduced dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -2190,10 +2217,10 @@ def reduce_sum_square(
     noop_with_empty_axes: int = 0,
 ) -> Var:
     r"""
-    Computes the sum square of the input tensor's element along the provided
-    axes. The resulting tensor has the same rank as the input if keepdims
-    equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned.
+    Computes the sum square of the input tensor's elements along the
+    provided axes. The resulting tensor has the same rank as the input if
+    keepdims equals 1. If keepdims equals 0, then the resulting tensor has
+    the reduced dimension pruned. Input tensors of rank zero are valid.
 
     The above behavior is similar to numpy, with the exception that numpy
     defaults keepdims to False instead of True.
@@ -2470,18 +2497,18 @@ def scatter_elements(
 
     ::
 
-         output[indices[i][j]][j] = updates[i][j] if axis = 0,
-         output[i][indices[i][j]] = updates[i][j] if axis = 1,
+       output[indices[i][j]][j] = updates[i][j] if axis = 0,
+       output[i][indices[i][j]] = updates[i][j] if axis = 1,
 
     When ``reduction`` is set to some reduction function ``f``, the update
     corresponding to the [i][j] entry is performed as below:
 
     ::
 
-         output[indices[i][j]][j] += f(output[indices[i][j]][j], updates[i][j]) if axis = 0,
-         output[i][indices[i][j]] += f(output[i][indices[i][j]], updates[i][j]) if axis = 1,
+       output[indices[i][j]][j] += f(output[indices[i][j]][j], updates[i][j]) if axis = 0,
+       output[i][indices[i][j]] += f(output[i][indices[i][j]], updates[i][j]) if axis = 1,
 
-    where the ``f`` is +/*/max/min as specified.
+    where the ``f`` is ``+``, ``*``, ``max`` or ``min`` as specified.
 
     This operator is the inverse of GatherElements. It is similar to Torch's
     Scatter operation.
@@ -2492,34 +2519,34 @@ def scatter_elements(
 
     ::
 
-         data = [
-             [0.0, 0.0, 0.0],
-             [0.0, 0.0, 0.0],
-             [0.0, 0.0, 0.0],
-         ]
-         indices = [
-             [1, 0, 2],
-             [0, 2, 1],
-         ]
-         updates = [
-             [1.0, 1.1, 1.2],
-             [2.0, 2.1, 2.2],
-         ]
-         output = [
-             [2.0, 1.1, 0.0]
-             [1.0, 0.0, 2.2]
-             [0.0, 2.1, 1.2]
-         ]
+       data = [
+           [0.0, 0.0, 0.0],
+           [0.0, 0.0, 0.0],
+           [0.0, 0.0, 0.0],
+       ]
+       indices = [
+           [1, 0, 2],
+           [0, 2, 1],
+       ]
+       updates = [
+           [1.0, 1.1, 1.2],
+           [2.0, 2.1, 2.2],
+       ]
+       output = [
+           [2.0, 1.1, 0.0]
+           [1.0, 0.0, 2.2]
+           [0.0, 2.1, 1.2]
+       ]
 
     Example 2:
 
     ::
 
-         data = [[1.0, 2.0, 3.0, 4.0, 5.0]]
-         indices = [[1, 3]]
-         updates = [[1.1, 2.1]]
-         axis = 1
-         output = [[1.0, 1.1, 3.0, 2.1, 5.0]]
+       data = [[1.0, 2.0, 3.0, 4.0, 5.0]]
+       indices = [[1, 3]]
+       updates = [[1.1, 2.1]]
+       axis = 1
+       output = [[1.0, 1.1, 3.0, 2.1, 5.0]]
 
     Parameters
     ==========
@@ -2636,7 +2663,7 @@ def scatter_nd(
        for idx in np.ndindex(update_indices):
            output[indices[idx]] = f(output[indices[idx]], updates[idx])
 
-    where the ``f`` is +/*/max/min as specified.
+    where the ``f`` is ``+``, ``*``, ``max`` or ``min`` as specified.
 
     This operator is the inverse of GatherND.
 
@@ -2646,26 +2673,26 @@ def scatter_nd(
 
     ::
 
-         data    = [1, 2, 3, 4, 5, 6, 7, 8]
-         indices = [[4], [3], [1], [7]]
-         updates = [9, 10, 11, 12]
-         output  = [1, 11, 3, 10, 9, 6, 7, 12]
+       data    = [1, 2, 3, 4, 5, 6, 7, 8]
+       indices = [[4], [3], [1], [7]]
+       updates = [9, 10, 11, 12]
+       output  = [1, 11, 3, 10, 9, 6, 7, 12]
 
     Example 2:
 
     ::
 
-         data    = [[[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
-                    [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
-                    [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]],
-                    [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
-         indices = [[0], [2]]
-         updates = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
-                    [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]]]
-         output  = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
-                    [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
-                    [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]],
-                    [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
+       data    = [[[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+                   [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+                   [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]],
+                   [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
+       indices = [[0], [2]]
+       updates = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+                   [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]]]
+       output  = [[[5, 5, 5, 5], [6, 6, 6, 6], [7, 7, 7, 7], [8, 8, 8, 8]],
+                   [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],
+                   [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [4, 4, 4, 4]],
+                   [[8, 7, 6, 5], [4, 3, 2, 1], [1, 2, 3, 4], [5, 6, 7, 8]]]
 
     Parameters
     ==========
@@ -2714,7 +2741,6 @@ def split(
     input: Var,
     split: Optional[Var] = None,
     *,
-    outputs_count: int,
     axis: int = 0,
     num_outputs: Optional[int] = None,
 ) -> Sequence[Var]:
@@ -2744,9 +2770,6 @@ def split(
         Attribute.
         Number of outputs to split parts of the tensor into. If the tensor is
         not evenly splittable the last chunk will be smaller.
-    outputs_count
-        Specifies the number of variadic outputs of this operator.
-        Non-standard parameter created by the opset generator, as inference (a solution) it was not implemented or is impossible.
 
     Returns
     =======
@@ -2770,7 +2793,7 @@ def split(
             input=input,
             split=split,
         ),
-        out_variadic=outputs_count,
+        out_variadic=num_outputs,
     ).outputs.outputs
 
 
