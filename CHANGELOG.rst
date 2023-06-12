@@ -10,6 +10,14 @@ Change log
 0.9.0 (2023-06-xx)
 ------------------
 
+**New features**
+
+- The opset ``ai.onnx@19`` (ONNX 1.14) is now shipped with Spox.
+
+**Bug fixes**
+
+- The constructor for ``ai.onnx@18::Split`` is no longer generated incorrectly. No extraneous attribute is generated anymore, and the ``num_outputs`` attribute is marked as required (so that Spox can infer the number of outputs).
+
 **Other changes**
 
 - Inlining now no longer adds redundant ``Identity`` nodes and supports subgraphs, thanks to reimplementing the ONNX renaming routine.
