@@ -35,7 +35,15 @@ def rename_in_graph(
         if nd.name and rename_node is not None:
             nd.name = rename_node(nd.name)
         if rename_op is not None:
-            nd.domain, nd.op_type = rename_op(nd.domain, nd.op_type)
+            # This is a bit elaborate, but we do it this way as
+            # an unset domain field is different from an empty one.
+            if nd.HasField("domain"):
+                nd.domain, nd.op_type = rename_op(nd.domain, nd.op_type)
+            else:
+                # An empty domain is the default domain (ai.onnx)
+                domain, nd.op_type = rename_op("", nd.op_type)
+                if domain:  # Only set the domain explicitly if it's changing
+                    nd.domain = domain
         for seq in (nd.input, nd.output):
             for i, name in enumerate(seq):
                 seq[i] = rename(name)
