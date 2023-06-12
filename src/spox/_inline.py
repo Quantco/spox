@@ -22,6 +22,14 @@ def rename_in_graph(
     rename_node: Optional[Callable[[str], str]] = None,
     rename_op: Optional[Callable[[str, str], Tuple[str, str]]] = None,
 ) -> onnx.GraphProto:
+    def rename_in_subgraph(subgraph):
+        return rename_in_graph(
+            subgraph,
+            rename,
+            rename_node=rename_node,
+            rename_op=rename_op,
+        )
+
     graph = onnx.GraphProto()
     graph.CopyFrom(graph_)
 
@@ -50,26 +58,12 @@ def rename_in_graph(
         for attr_proto in nd.attribute:
             attr = onnx.helper.get_attribute_value(attr_proto)
             if isinstance(attr, onnx.GraphProto):
-                attr_proto.g.CopyFrom(
-                    rename_in_graph(
-                        attr,
-                        rename,
-                        rename_node=rename_node,
-                        rename_op=rename_op,
-                    )
-                )
+                attr_proto.g.CopyFrom(rename_in_subgraph(attr))
             elif isinstance(attr, list) and all(
                 isinstance(g, onnx.GraphProto) for g in attr
             ):
-                for i in range(len(attr)):
-                    attr_proto.graphs[i].CopyFrom(
-                        rename_in_graph(
-                            attr[i],
-                            rename,
-                            rename_node=rename_node,
-                            rename_op=rename_op,
-                        )
-                    )
+                for i, sub in enumerate(attr):
+                    attr_proto.graphs[i].CopyFrom(rename_in_subgraph(sub))
 
     for p in itertools.chain(graph.output, graph.value_info):
         p.name = rename(p.name)
