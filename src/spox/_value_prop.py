@@ -52,8 +52,12 @@ class PropValue:
 
     def __post_init__(self):
         # Fix dtype aliasing
-        if isinstance(self.value, numpy.ndarray) and numpy.issubdtype(self.value.dtype, numpy.number):
-            object.__setattr__(self, 'value', self.value.astype(numpy.dtype(self.value.dtype.name)))
+        if isinstance(self.value, numpy.ndarray) and numpy.issubdtype(
+            self.value.dtype, numpy.number
+        ):
+            object.__setattr__(
+                self, "value", self.value.astype(numpy.dtype(self.value.dtype.name))
+            )
 
         if VALUE_PROP_STRICT_CHECK and not self.check():
             raise ValueError(
