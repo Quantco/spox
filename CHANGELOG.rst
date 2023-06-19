@@ -17,6 +17,7 @@ Change log
 **Bug fixes**
 
 - The constructor for ``ai.onnx@18::Split`` is no longer generated incorrectly. No extraneous attribute is generated anymore, and the ``num_outputs`` attribute is marked as required (so that Spox can infer the number of outputs).
+- Fix an issue where op.const handled numbers in the range(INT64MAX, UINT64MAX) incorrectly
 
 **Other changes**
 
@@ -56,7 +57,7 @@ This version is intended as a release candidate for ``1.0.0``.
 
 **Breaking changes**
 
-- The typing rules of the (previously partially documented) extra constructor ``const`` have changed. Its signature is now ``const(npt.ArrayLike, npt.DTypeLike = None) -> Var``. In particular, ``const`` of a Python ``float`` no longer becomes ``float32``, but ``float64`` like numpy - this is a **breaking change**. The operator is redefined to be equivalent to ``constant(numpy.array(value), dtype)``, instead of a complex set of cases like before. 
+- The typing rules of the (previously partially documented) extra constructor ``const`` have changed. Its signature is now ``const(npt.ArrayLike, npt.DTypeLike = None) -> Var``. In particular, ``const`` of a Python ``float`` no longer becomes ``float32``, but ``float64`` like numpy - this is a **breaking change**. The operator is redefined to be equivalent to ``constant(numpy.array(value), dtype)``, instead of a complex set of cases like before.
 - The ``Type <= Type`` (``Type.__le__``) overload is now removed.
 - Deprecated operator constructors are now no longer generated after the version their schema was deprecated. Effectively, this means ``ai.onnx@17::Scatter`` and ``ai.onnx@17::Upsample`` (available as ``op.scatter`` and ``op.upsample``) are no longer available in ``spox.opset.ai.onnx.v17``. They likely were not used in practice as attempting to build deprecated operators has always failed.
 

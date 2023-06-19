@@ -151,3 +151,10 @@ def test_give_up_silently():
 
 def test_non_ascii_characters_in_string_tensor():
     op.cast(op.constant(value_string="FööBär"), to=str)
+
+
+def test_propagated_value_does_not_alias_dtype():
+    # Ensures that platform-dependent dtypes aren't accidentally propagated
+    x = numpy.iinfo(numpy.int64).max + 1
+    # Without the explicit astype(uint64), x actually ends up being ulonglong
+    assert_equal_value(op.const(x), numpy.array(x).astype(numpy.uint64))
