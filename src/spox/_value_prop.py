@@ -51,6 +51,18 @@ class PropValue:
     value: PropValueType
 
     def __post_init__(self):
+        # The underlying numpy array might have been constructed with a
+        # platform-dependent dtype - such as ulonglong.
+        # Though very similar, it does not compare equal to the usual sized dtype.
+        # (for example ulonglong is not uint64)
+        if isinstance(self.value, numpy.ndarray) and numpy.issubdtype(
+            self.value.dtype, numpy.number
+        ):
+            # We normalize by reconstructing the dtype through its name
+            object.__setattr__(
+                self, "value", self.value.astype(numpy.dtype(self.value.dtype.name))
+            )
+
         if VALUE_PROP_STRICT_CHECK and not self.check():
             raise ValueError(
                 f"Attempt to construct PropValue of {self.value}, "
@@ -111,7 +123,6 @@ class PropValue:
             return cls(typ, [cls.from_ort_value(elem_type, elem) for elem in value])
         elif isinstance(value, numpy.ndarray):  # Tensor
             # Normalise the dtype in case we got an alias (like longlong)
-            value = value.astype(numpy.dtype(value.dtype.name))
             if value.dtype == numpy.dtype(object):
                 value = value.astype(str)
             return cls(typ, value)
