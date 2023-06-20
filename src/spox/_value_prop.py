@@ -21,7 +21,7 @@ The internal representation for runtime values.
 """
 PropValueType = Union[numpy.ndarray, List["PropValue"], "PropValue", None]
 ORTValue = Union[numpy.ndarray, list, None]
-RefValue = Union[numpy.ndarray, list, float]
+RefValue = Union[numpy.ndarray, list, float, None]
 
 VALUE_PROP_STRICT_CHECK: bool = False
 
@@ -130,7 +130,7 @@ class PropValue:
 
     def to_ref_value(self) -> RefValue:
         if self.value is None:  # Optional, Nothing
-            return [None]  # Optionals are wrapped in a singleton list
+            return None  # Optionals are wrapped in a singleton list
         elif isinstance(self.value, PropValue):  # Optional, Some
             return [self.value.to_ref_value()]
         elif isinstance(self.value, list):  # Sequence
