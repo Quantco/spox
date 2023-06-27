@@ -10,6 +10,9 @@ from spox._debug import show_construction_tracebacks
 from spox._future import set_type_warning_level
 from spox._graph import Graph
 from spox._node import TypeWarningLevel
+from spox._future import set_value_prop_backend, ValuePropBackend
+
+set_value_prop_backend(ValuePropBackend.ONNXRUNTIME)
 
 set_type_warning_level(TypeWarningLevel.CRITICAL)
 _value_prop.VALUE_PROP_STRICT_CHECK = True

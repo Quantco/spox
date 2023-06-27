@@ -18,6 +18,7 @@ from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValueType
 from ._attributes import AttrGraph
+from ._graph import results
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -155,21 +156,12 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
-    def attrs_ready_for_value_propagation(self):
-        """ Checks if all attribute subgraphs' results have been propagated. """
-        ret = True
-        for attr in vars(self.attrs).values():
-            if not isinstance(attr, AttrGraph):
-                continue
-            ret &= not any(x.type is None or x._value is None for x in attr._value._results.values())
-        return ret
-
     def ready_for_value_propagation(self):
-        """ Checks if value propagation can be performed. """
-        return all(
-            var.type is not None or var._value is not None
-            for var in self.inputs.get_vars().values()
-        ) and self.attrs_ready_for_value_propagation()
+        """ Checks if value propagation can be performed.
+        The check performed is to just construct a hypothetical model
+        and see if it depends on any arguments.
+        """
+        return not results(**self.outputs.get_vars()).get_arguments()
 
     def propagate_values_onnx(self) -> Dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.

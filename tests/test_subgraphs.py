@@ -440,9 +440,8 @@ def test_subgraph_argument_leak_caught():
         ii = i
         return [op.const(True), i]
 
-    (m,) = arguments(m=Tensor(int, ()))
-    (r,) = op.loop(M=m, v_initial=[], body=fun)
-    graph = results(_=op.add(r, ii))
-
     with pytest.raises(BuildError):
+        (m,) = arguments(m=Tensor(int, ()))
+        (r,) = op.loop(M=m, v_initial=[], body=fun)
+        graph = results(_=op.add(r, ii))
         graph.to_onnx_model()
