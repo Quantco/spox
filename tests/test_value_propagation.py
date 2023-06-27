@@ -131,6 +131,14 @@ def test_with_reconstruct():
     )
 
 
+def test_if():
+    (a,) = op.if_(op.const(True), then_branch=lambda: [op.const([1, 2, 3])], else_branch=lambda: [op.const([4, 5])])
+    assert_equal_value(
+        a,
+        numpy.array([1, 2, 3])
+    )
+
+
 def test_bad_reshape_fails(caplog):
     caplog.set_level("DEBUG")
     _ = op.reshape(op.const([1, 2]), op.const([2]))  # sanity
