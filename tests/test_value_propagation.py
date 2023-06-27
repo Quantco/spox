@@ -132,11 +132,12 @@ def test_with_reconstruct():
 
 
 def test_if():
-    (a,) = op.if_(op.const(True), then_branch=lambda: [op.const([1, 2, 3])], else_branch=lambda: [op.const([4, 5])])
-    assert_equal_value(
-        a,
-        numpy.array([1, 2, 3])
+    (a,) = op.if_(
+        op.const(True),
+        then_branch=lambda: [op.const([1, 2, 3])],
+        else_branch=lambda: [op.const([4, 5])],
     )
+    assert_equal_value(a, numpy.array([1, 2, 3]))
 
 
 def test_loop():
@@ -152,10 +153,7 @@ def test_loop():
             )[0],
         ),
     )
-    assert_equal_value(
-        r,
-        numpy.array([[2], [2], [2], [3], [4]])
-    )
+    assert_equal_value(r, numpy.array([[2], [2], [2], [3], [4]]))
 
 
 def test_scan_prod():
@@ -164,10 +162,7 @@ def test_scan_prod():
     one = op.const(numpy.array(1, dtype=numpy.int64))
     prod, _x = op.scan([one, x], body=lambda a, p: [op.mul(a, p), a], num_scan_inputs=1)
     print(prod)
-    assert_equal_value(
-        prod,
-        numpy.prod(arr)
-    )
+    assert_equal_value(prod, numpy.prod(arr))
 
 
 def test_bad_reshape_fails(caplog):

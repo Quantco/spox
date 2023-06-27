@@ -10,6 +10,7 @@ from onnx.defs import OpSchema
 
 from . import _value_prop
 from ._exceptions import InferenceError
+from ._graph import results
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
@@ -17,8 +18,6 @@ from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValueType
-from ._attributes import AttrGraph
-from ._graph import results
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -80,7 +79,9 @@ class StandardNode(Node):
             # Subgraphs are not fully built for possibly significant performance gains.
             # However, this uses a trick so that they type correctly.
             # This may throw if we are building ``not with_subgraphs``.
-            build_subgraph = _make_dummy_subgraph if with_dummy_subgraphs else _make_actual_subgraph
+            build_subgraph = (
+                _make_dummy_subgraph if with_dummy_subgraphs else _make_actual_subgraph
+            )
             (node_proto,) = self.to_onnx(scope, build_subgraph=build_subgraph)
         finally:
             self.attrs = self_attrs
@@ -157,7 +158,7 @@ class StandardNode(Node):
         }
 
     def ready_for_value_propagation(self):
-        """ Checks if value propagation can be performed.
+        """Checks if value propagation can be performed.
         The check performed is to just construct a hypothetical model
         and see if it depends on any arguments.
         """

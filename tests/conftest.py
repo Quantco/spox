@@ -7,10 +7,13 @@ import pytest
 
 from spox import _value_prop
 from spox._debug import show_construction_tracebacks
-from spox._future import set_type_warning_level
+from spox._future import (
+    ValuePropBackend,
+    set_type_warning_level,
+    set_value_prop_backend,
+)
 from spox._graph import Graph
 from spox._node import TypeWarningLevel
-from spox._future import set_value_prop_backend, ValuePropBackend
 
 set_value_prop_backend(ValuePropBackend.ONNXRUNTIME)
 
