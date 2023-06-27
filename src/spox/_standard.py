@@ -239,7 +239,7 @@ def _strip_dim_symbol(typ: Type, pred: Callable[[str], bool]) -> Type:
 
 def _make_actual_subgraph(_node: Node, _key: str, graph: "Graph") -> onnx.GraphProto:
     """
-    Just build the graph without any extra hastle.
+    Just build the graph without any extra hassle.
     This is slow, as it has to run the whole build process.
     """
     return graph.to_onnx()

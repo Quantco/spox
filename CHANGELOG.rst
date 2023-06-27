@@ -22,7 +22,7 @@ Change log
 **Other changes**
 
 - Inlining now no longer adds redundant ``Identity`` nodes and supports subgraphs, thanks to reimplementing the ONNX renaming routine.
-- Return value-propagation for subgraphs.
+- Value-propagation now works for ``op.if_``.
 
 0.8.1 (2023-05-xx)
 ------------------
