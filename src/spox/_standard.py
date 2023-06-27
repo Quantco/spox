@@ -17,6 +17,7 @@ from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValueType
+from ._attributes import AttrGraph
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -78,7 +79,7 @@ class StandardNode(Node):
             # Subgraphs are not fully built for possibly significant performance gains.
             # However, this uses a trick so that they type correctly.
             # This may throw if we are building ``not with_subgraphs``.
-            build_subgraph = _make_dummy_subgraph if with_dummy_subgraphs else None
+            build_subgraph = _make_dummy_subgraph if with_dummy_subgraphs else _make_actual_subgraph
             (node_proto,) = self.to_onnx(scope, build_subgraph=build_subgraph)
         finally:
             self.attrs = self_attrs
@@ -154,19 +155,29 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
+    def attrs_ready_for_value_propagation(self):
+        """ Checks if all attribute subgraphs' results have been propagated. """
+        ret = True
+        for attr in vars(self.attrs).values():
+            if not isinstance(attr, AttrGraph):
+                continue
+            ret &= not any(x.type is None or x._value is None for x in attr._value._results.values())
+        return ret
+
+    def ready_for_value_propagation(self):
+        """ Checks if value propagation can be performed. """
+        return all(
+            var.type is not None or var._value is not None
+            for var in self.inputs.get_vars().values()
+        ) and self.attrs_ready_for_value_propagation()
+
     def propagate_values_onnx(self) -> Dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
         """
         # Cannot do propagation when some inputs were not propagated/inferred
-        if any(
-            var.type is None or var._value is None
-            for var in self.inputs.get_vars().values()
-        ):
-            return {}
-        if next(iter(self.subgraphs), None) is not None:
-            # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
+        if not self.ready_for_value_propagation():
             return {}
         model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False)
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
@@ -224,6 +235,14 @@ def _strip_dim_symbol(typ: Type, pred: Callable[[str], bool]) -> Type:
         return Optional(_strip_dim_symbol(typ.elem_type, pred))
     else:
         return typ
+
+
+def _make_actual_subgraph(_node: Node, _key: str, graph: "Graph") -> onnx.GraphProto:
+    """
+    Just build the graph without any extra hastle.
+    This is slow, as it has to run the whole build process.
+    """
+    return graph.to_onnx()
 
 
 def _make_dummy_subgraph(_node: Node, key: str, graph: "Graph") -> onnx.GraphProto:
