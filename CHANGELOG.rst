@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.9.1 (2023-xx-xx)
+------------------
+
+**Bug fix**
+
+- The node-adaption no longer fails if faced with a node that has repeating inputs.
+
+
 0.9.0 (2023-06-12)
 ------------------
 
