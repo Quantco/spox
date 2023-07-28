@@ -6,14 +6,14 @@ import onnx
 import onnx.parser
 import pytest
 
+import spox.opset.ai.onnx.v18 as op18
+import spox.opset.ai.onnx.v19 as op19
+from spox import Tensor, Var, argument, build, inline
 from spox._attributes import AttrInt64s
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
 from spox._node import OpType
-from spox._public import inline
 from spox._standard import StandardNode
-from spox._type_system import Tensor
-from spox._var import Var
 
 
 @pytest.fixture
@@ -141,3 +141,11 @@ def test_adapts_singleton_old_squeeze(onnx_helper, old_squeeze_graph):
         ),
         [1, 2, 3, 4],
     )
+
+
+def test_adapt_node_with_repeating_input_names():
+    a = argument(Tensor(numpy.float32, ("N",)))
+    b = op18.equal(a, a)
+    c = op19.identity(a)
+
+    build({"a": a}, {"b": b, "c": c})

@@ -25,12 +25,14 @@ def adapt_node(
         return None
 
     try:
-        input_info = [
-            var.unwrap_type()._to_onnx_value_info(
+        # By using a dictionary we ensure that we only have a single
+        # ValueInfo per (possibly repeated) input name.
+        input_info = {
+            var_names[var]: var.unwrap_type()._to_onnx_value_info(
                 var_names[var], _traceback_name=f"adapt-input {key}"
             )
             for key, var in node.inputs.get_vars().items()
-        ]
+        }
         output_info = [
             var.unwrap_type()._to_onnx_value_info(
                 var_names[var], _traceback_name=f"adapt-output {key}"
@@ -49,7 +51,7 @@ def adapt_node(
         onnx.helper.make_graph(
             [proto],
             "spox__singleton_adapter_graph",
-            input_info,
+            list(input_info.values()),
             output_info,
             initializers,
         ),
