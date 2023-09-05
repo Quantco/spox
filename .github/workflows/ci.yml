@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Python 3.8
         uses: actions/setup-python@v4
         with:
@@ -35,7 +35,7 @@ jobs:
         PYTHON_VERSION: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
       - uses: conda-incubator/setup-miniconda@v2
@@ -63,7 +63,7 @@ jobs:
         PYTHON_VERSION: ['3.8']
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
       - uses: conda-incubator/setup-miniconda@v2
