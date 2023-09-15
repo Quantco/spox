@@ -149,3 +149,42 @@ def test_adapt_node_with_repeating_input_names():
     c = op19.identity(a)
 
     build({"a": a}, {"b": b, "c": c})
+
+
+def test_inline_model_custom_node_only():
+    """Inline a model which only consists of a custom node.
+
+    Such models do not import from the default domain.
+    """
+    domain = "foo.ai"
+    node = onnx.helper.make_node("FooOp", ["a"], ["b"], domain=domain)
+    value_infos_input = [
+        onnx.helper.make_value_info(
+            "a", onnx.helper.make_tensor_type_proto(onnx.TensorProto.STRING, ("N",))
+        ),
+    ]
+    value_infos_output = [
+        onnx.helper.make_value_info(
+            "b", onnx.helper.make_tensor_type_proto(onnx.TensorProto.STRING, ("N",))
+        )
+    ]
+
+    model = onnx.helper.make_model(
+        onnx.helper.make_graph(
+            [node],
+            "graph",
+            value_infos_input,
+            value_infos_output,
+        ),
+        opset_imports=[onnx.helper.make_opsetid(domain, 1)],
+    )
+
+    # Ensure that our model is valid
+    onnx.checker.check_model(model, full_check=True)
+
+    (a,) = arguments(data=Tensor(numpy.str_, ("N",)))
+    (b,) = inline(model)(a).values()
+
+    # Add another node to the model to trigger the adaption logic
+    c = op18.identity(b)
+    build({"a": a}, {"c": c})
