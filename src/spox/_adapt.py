@@ -73,6 +73,10 @@ def adapt_inline(
     source_version = max({v for d, v in node.opset_req if d in ("", "ai.onnx")})
     target_version = target_opsets[""]
 
+    # convert_version fails if the inlined model does not import the default domain
+    seen_domains = {prot.domain for prot in protos}
+    if not seen_domains & {"", "ai.onnx"}:
+        return protos
     if source_version != target_version:
         target_model = onnx.version_converter.convert_version(
             node.model, target_version
