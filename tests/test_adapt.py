@@ -188,3 +188,48 @@ def test_inline_model_custom_node_only():
     # Add another node to the model to trigger the adaption logic
     c = op18.identity(b)
     build({"a": a}, {"c": c})
+
+
+@pytest.mark.skip(
+    reason="Adapting custom nodes (including their subgraphs) is currently not supported"
+)
+def test_inline_model_custom_node_nested(old_squeeze: onnx.ModelProto):
+    """A singleton custom node with a old standard node in its attribute."""
+    domain = "foo.ai"
+
+    node = onnx.helper.make_node(
+        "FooOp", ["a"], ["b"], domain=domain, **{"nested_graph": old_squeeze.graph}
+    )
+    value_infos_input = [
+        onnx.helper.make_value_info(
+            "a", onnx.helper.make_tensor_type_proto(onnx.TensorProto.FLOAT, ("N",))
+        ),
+    ]
+    value_infos_output = [
+        onnx.helper.make_value_info(
+            "b", onnx.helper.make_tensor_type_proto(onnx.TensorProto.FLOAT, ("N",))
+        )
+    ]
+
+    model = onnx.helper.make_model(
+        onnx.helper.make_graph(
+            [node],
+            "graph",
+            value_infos_input,
+            value_infos_output,
+        ),
+        opset_imports=[
+            onnx.helper.make_opsetid(domain, 1),
+            onnx.helper.make_opsetid("", 12),
+        ],
+    )
+
+    # Ensure that our model is valid
+    onnx.checker.check_model(model, full_check=True)
+
+    (a,) = arguments(data=Tensor(numpy.float32, ("N",)))
+    (b,) = inline(model)(a).values()
+
+    # Add another node to the model to trigger the adaption logic
+    c = op18.identity(b)
+    build({"a": a}, {"c": c})
