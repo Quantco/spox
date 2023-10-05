@@ -13,7 +13,7 @@ Change log
 **Bug fix**
 
 - The node-adaption no longer fails if faced with a node that has repeating inputs.
-- Forego version adaption of inlined models if no nodes are from the default domain
+- Forego version adaption of inlined models if no nodes are from the default domain.
 
 
 0.9.0 (2023-06-12)
