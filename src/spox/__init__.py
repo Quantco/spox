@@ -1,4 +1,4 @@
-import pkg_resources
+import importlib.metadata
 
 from spox._public import argument, build, inline
 from spox._type_system import Optional, Sequence, Tensor, Type
@@ -16,6 +16,6 @@ __all__ = [
 ]
 
 try:
-    __version__ = pkg_resources.get_distribution(__name__).version
+    __version__ = importlib.metadata.distribution(__name__).version
 except Exception:
     __version__ = "unknown"
