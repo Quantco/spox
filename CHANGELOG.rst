@@ -7,6 +7,13 @@
 Change log
 ==========
 
+0.9.2 (2023-10-18)
+------------------
+
+**Other changes**
+
+- Fix a deprecation warning from one of Spox's dependencies.
+
 0.9.1 (2023-10-05)
 ------------------
 
@@ -19,7 +26,7 @@ Change log
 0.9.0 (2023-06-12)
 ------------------
 
-**New features**
+**New feature**
 
 - The opset ``ai.onnx@19`` (ONNX 1.14) is now shipped with Spox.
 
@@ -36,7 +43,7 @@ Change log
 0.8.1 (2023-05-xx)
 ------------------
 
-**Bug fixes**
+**Bug fixe**
 
 - An explicit error is now raised when local subgraph arguments are leaked to an outer scope. This may happen when the subgraph callback uses side effects saving local variables, which would produce later a confusing error message.
 
