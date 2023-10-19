@@ -99,11 +99,11 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
     """
     if not all(isinstance(var, Var) for var in inputs.values()):
         raise TypeError(
-            f"Build inputs must be Vars, not {set(type(obj) for obj in inputs.values()) - {Var} }."
+            f"Build inputs must be Vars, not {set(type(obj) for obj in inputs.values()) - {Var}}."
         )
     if not all(isinstance(var, Var) for var in outputs.values()):
         raise TypeError(
-            f"Build outputs must be Vars, not {set(type(obj) for obj in outputs.values()) - {Var} }."
+            f"Build outputs must be Vars, not {set(type(obj) for obj in outputs.values()) - {Var}}."
         )
     if not all(isinstance(var._op, Argument) for var in inputs.values()):
         raise TypeError(

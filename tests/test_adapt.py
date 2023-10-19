@@ -26,7 +26,7 @@ def old_squeeze() -> onnx.ModelProto:
 >
 agraph (float[1, N] A) => (float[N] B)
 {
-    B = Squeeze<axes: floats = [0]>(A)
+    B = Squeeze(A)
 }
 """
     )
