@@ -156,7 +156,7 @@ class Graph:
             not isinstance(var, Var) for var in self._arguments
         ):
             seen_types = {type(obj) for obj in self._arguments}
-            raise TypeError(f"Build outputs must be Vars, not {seen_types - {Var} }.")
+            raise TypeError(f"Build outputs must be Vars, not {seen_types - {Var}}.")
 
     def with_name(self, name: str) -> "Graph":
         """Return a Graph with its name set to ``name``."""
