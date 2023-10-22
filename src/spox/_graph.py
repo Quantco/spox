@@ -150,13 +150,13 @@ class Graph:
 
     def __post_init__(self):
         if any(not isinstance(var, Var) for var in self._results.values()):
-            types = {type(obj) for obj in self._results.values()}
-            raise TypeError(f"Graph results must be Vars, not {types - {Var}}.")
+            types = {type(obj) for obj in self._results.values()} - {Var}
+            raise TypeError(f"Graph results must be Vars, not {types}.")
         if self._arguments is not None and any(
             not isinstance(var, Var) for var in self._arguments
         ):
-            types = {type(obj) for obj in self._arguments}
-            raise TypeError(f"Graph results must be Vars, not {types - {Var}}.")
+            types = {type(obj) for obj in self._arguments} - {Var}
+            raise TypeError(f"Graph results must be Vars, not {types}.")
 
     def with_name(self, name: str) -> "Graph":
         """Return a Graph with its name set to ``name``."""
