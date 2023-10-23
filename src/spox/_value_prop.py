@@ -180,7 +180,7 @@ def _run_onnxruntime(
         output_feed = dict(zip(output_names, session.run(None, input_feed)))
     except Exception as e:
         logging.debug(
-            f"Value propagation in {model} on the ONNX reference implementation failed with - "
+            f"Value propagation in {model} on the onnxruntime failed with - "
             f"{type(e).__name__}: {e}"
         )
         return {}
