@@ -138,6 +138,7 @@ class _Inline(_InternalNode):
         return {
             f"outputs_{k}": unwrap_feed(var.unwrap_type(), output_feed[o.name]).value
             for k, (o, var) in enumerate(zip(self.graph.output, self.outputs.outputs))
+            if o.name in output_feed
         }
 
     def to_onnx(

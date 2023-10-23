@@ -10,9 +10,10 @@ Change log
 0.9.3 (Unreleased)
 ------------------
 
-**Bug fix**
+**Bug fixes**
 
 - Address missing Value Infos when building singleton model for shape inference.
+- Fix issue where Value Propagation failure prevents model creation/inlining.
 
 
 0.9.2 (2023-10-20)
