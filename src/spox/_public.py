@@ -98,11 +98,11 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
     >>> model = build({'a': a, 'b': b, 'c': c}, {'r': q})
     """
     if not all(isinstance(var, Var) for var in inputs.values()):
-        input_types = {type(obj) for obj in inputs.values()} - {Var}
-        raise TypeError(f"Build inputs must be Vars, not {input_types}.")
+        seen_types = {type(obj) for obj in inputs.values()}
+        raise TypeError(f"Build inputs must be Vars, not {seen_types - {Var}}.")
     if not all(isinstance(var, Var) for var in outputs.values()):
-        output_types = {type(obj) for obj in outputs.values()} - {Var}
-        raise TypeError(f"Build outputs must be Vars, not {output_types}.")
+        seen_types = {type(obj) for obj in outputs.values()}
+        raise TypeError(f"Build outputs must be Vars, not {seen_types - {Var}}.")
     if not all(isinstance(var._op, Argument) for var in inputs.values()):
         raise TypeError(
             "Build inputs must be `Var`s constructed using the `spox.argument` function. "
