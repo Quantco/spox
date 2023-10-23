@@ -244,12 +244,16 @@ def _make_dummy_subgraph(_node: Node, key: str, graph: "Graph") -> onnx.GraphPro
     inputs = []
     for i, arr in enumerate(graph.requested_arguments):
         inputs.append(arr.unwrap_type()._to_onnx_value_info(f"__dummy_input{i}"))
+
+    value_infos = []
     nodes = []
     outputs = []
     for i, arr in enumerate(graph.requested_results.values()):
         outer = f"__dummy_outer_output{i}"
+        value_infos.append(arr.unwrap_type()._to_onnx_value_info(outer))
         out = f"__dummy_output{i}"
         outputs.append(arr.unwrap_type()._to_onnx_value_info(out))
         nodes.append(onnx.helper.make_node("Identity", [outer], [out]))
-
-    return onnx.helper.make_graph(nodes, f"__dummy_{key}", inputs, outputs)
+    return onnx.helper.make_graph(
+        nodes, f"__dummy_{key}", inputs, outputs, value_info=value_infos
+    )

@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.9.3 (Unreleased)
+------------------
+
+**Bug fix**
+
+- Address missing Value Infos when building singleton model for shape inference.
+
+
 0.9.2 (2023-10-20)
 ------------------
 
@@ -17,7 +25,7 @@ Change log
 0.9.1 (2023-10-05)
 ------------------
 
-**Bug fix**
+**Bug fixes**
 
 - The node-adaption no longer fails if faced with a node that has repeating inputs.
 - Forego version adaption of inlined models if no nodes are from the default domain.
