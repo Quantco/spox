@@ -687,6 +687,18 @@ if __name__ == "__main__":
         gen_docstrings=gen_all_docstrings,
         inherited_schemas={s: ai_onnx_v18_module for s in ai_onnx_v18_schemas},
     )
+    ai_onnx_v20_schemas, ai_onnx_v20_module = main(
+        "ai.onnx",
+        20,
+        extras=["const"],
+        # type_inference={"Compress": "compress11"},
+        value_propagation={"Constant": "constant13"},
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v19_module for s in ai_onnx_v19_schemas},
+    )
     ai_onnx_ml_v3_schemas, ai_onnx_ml_v3_module = main(
         "ai.onnx.ml",
         3,

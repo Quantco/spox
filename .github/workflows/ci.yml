@@ -45,6 +45,7 @@ jobs:
       - name: Run unit tests
         shell: bash -l {0}
         run: |
+          pip install -i https://test.pypi.org/simple/ onnx==1.15.0rc1
           pip install .
           pytest
 
@@ -73,6 +74,7 @@ jobs:
       - name: Run code generation
         shell: bash -l {0}
         run: |
+          pip install -i https://test.pypi.org/simple/ onnx==1.15.0rc1
           pip install .
           pip install pandoc
           python tools/generate_opset.py

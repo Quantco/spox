@@ -23,6 +23,7 @@ Change log
 
 - Fix a deprecation warning from one of Spox's dependencies.
 
+
 0.9.1 (2023-10-05)
 ------------------
 
