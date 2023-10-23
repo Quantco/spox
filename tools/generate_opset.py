@@ -717,3 +717,17 @@ if __name__ == "__main__":
         },
         gen_docstrings=gen_all_docstrings,
     )
+    ai_onnx_ml_v4_schemas, ai_onnx_ml_v4_module = main(
+        "ai.onnx.ml",
+        4,
+        attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
+        type_inference={
+            "Binarizer": "binarizer1",
+            "Imputer": "imputer1",
+            "LinearRegressor": "linearregressor1",
+            "Normalizer": "normalizer1",
+            "Scaler": "scaler1",
+        },
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_ml_v3_module for s in ai_onnx_ml_v3_schemas},
+    )
