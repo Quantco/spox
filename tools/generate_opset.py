@@ -691,7 +691,6 @@ if __name__ == "__main__":
         "ai.onnx",
         20,
         extras=["const"],
-        # type_inference={"Compress": "compress11"},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
