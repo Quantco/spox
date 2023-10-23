@@ -178,7 +178,7 @@ def _run_onnxruntime(
         session = onnxruntime.InferenceSession(model.SerializeToString(), options)
         output_names = [output.name for output in session.get_outputs()]
         output_feed = dict(zip(output_names, session.run(None, input_feed)))
-    except (onnxruntime.capi.onnxruntime_pybind11_state.Fail, Exception) as e:
+    except Exception as e:
         logging.debug(
             f"Value propagation in {model} on the ONNX reference implementation failed with - "
             f"{type(e).__name__}: {e}"
