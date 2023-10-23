@@ -169,9 +169,12 @@ def _run_onnxruntime(
     # Silence possible warnings during execution (especially constant folding)
     options = onnxruntime.SessionOptions()
     options.log_severity_level = 3
-    session = onnxruntime.InferenceSession(model.SerializeToString(), options)
-    output_names = [output.name for output in session.get_outputs()]
-    output_feed = dict(zip(output_names, session.run(None, input_feed)))
+    try:
+        session = onnxruntime.InferenceSession(model.SerializeToString(), options)
+        output_names = [output.name for output in session.get_outputs()]
+        output_feed = dict(zip(output_names, session.run(None, input_feed)))
+    except onnxruntime.capi.onnxruntime_pybind11_state.Fail:
+        return {}
     return output_feed
 
 

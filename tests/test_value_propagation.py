@@ -1,11 +1,25 @@
 import numpy
+import onnx
+import pytest
 
+import spox
+import spox._future
 import spox.opset.ai.onnx.ml.v3 as ml
 import spox.opset.ai.onnx.v17 as op
 from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
 from spox._value_prop import ORTValue, PropValue
+
+
+@pytest.fixture(
+    params=[
+        spox._future.ValuePropBackend.ONNXRUNTIME,
+        spox._future.ValuePropBackend.REFERENCE,
+    ]
+)
+def value_prop_backend(request):
+    return request.param
 
 
 def dummy_var(typ=None, value=None):
@@ -158,3 +172,38 @@ def test_propagated_value_does_not_alias_dtype():
     x = numpy.iinfo(numpy.int64).max + 1
     # Without the explicit astype(uint64), x actually ends up being ulonglong
     assert_equal_value(op.const(x), numpy.array(x).astype(numpy.uint64))
+
+
+def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
+    spox._future.set_value_prop_backend(value_prop_backend)
+
+    model_input = [onnx.helper.make_tensor_value_info("X", elem_type=8, shape=("X",))]
+    model_output = [
+        onnx.helper.make_tensor_value_info("y", elem_type=8, shape=("y", "max_words"))
+    ]
+
+    nodes = [
+        onnx.helper.make_node(
+            "RandomNode",
+            inputs=["X"],
+            outputs=["y"],
+            domain="com.hello",
+        )
+    ]
+
+    graph = onnx.helper.make_graph(
+        nodes,
+        "RandomNode",
+        model_input,
+        model_output,
+    )
+
+    model = onnx.helper.make_model(
+        graph,
+        opset_imports=[
+            onnx.helper.make_opsetid("", 18),
+            onnx.helper.make_opsetid("com.hello", 1),
+        ],
+    )
+
+    spox.inline(model)(X=op.const(["Test Test"], dtype=numpy.str_))
