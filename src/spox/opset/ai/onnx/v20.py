@@ -742,8 +742,8 @@ def affine_grid(
     =======
     grid : Var
         Type T1.
-        output tensor of shape (N, C, H, W, 2) of 2D sample coordinates or (N,
-        C, D, H, W, 3) of 3D sample coordinates.
+        output tensor of shape (N, H, W, 2) of 2D sample coordinates or (N, D,
+        H, W, 3) of 3D sample coordinates.
 
     Notes
     =====
