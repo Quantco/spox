@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/Quantco/pre-commit-mirrors-black
-    rev: 23.9.1
+    rev: 23.10.1
     hooks:
       - id: black-conda
         args:
@@ -16,12 +16,12 @@ repos:
       - id: isort-conda
         additional_dependencies: [-c, conda-forge, toml=0.10.2]
   - repo: https://github.com/Quantco/pre-commit-mirrors-mypy
-    rev: "1.5.1"
+    rev: "1.6.1"
     hooks:
       - id: mypy-conda
         additional_dependencies: [-c, conda-forge, types-setuptools]
   - repo: https://github.com/Quantco/pre-commit-mirrors-pyupgrade
-    rev: 3.13.0
+    rev: 3.15.0
     hooks:
       - id: pyupgrade-conda
         args:
