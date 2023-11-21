@@ -29,7 +29,7 @@ def test_one_hot_inference_checks_axis_in_range():
     x, y, z = arguments(
         x=Tensor(int, ("N", "M")), y=Tensor(int, ()), z=Tensor(float, (2,))
     )
-    with pytest.raises(InferenceError):
+    with pytest.raises((InferenceError, RuntimeError), match="InferenceError"):
         assert op.one_hot(x, y, z, axis=-4)
-    with pytest.raises(InferenceError):
+    with pytest.raises((InferenceError, RuntimeError), match="InferenceError"):
         assert op.one_hot(x, y, z, axis=3)
