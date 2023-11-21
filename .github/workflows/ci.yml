@@ -76,4 +76,5 @@ jobs:
           pip install .
           pip install pandoc
           python tools/generate_opset.py
+          pre-commit run -a
           git diff --exit-code
