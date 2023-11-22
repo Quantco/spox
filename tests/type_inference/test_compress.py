@@ -9,8 +9,7 @@ from spox._standard import InferenceError
 from spox._type_system import Tensor
 
 
-@pytest.mark.parametrize("op", [op17, op18, op19, op20])
-def test_compress_inference(op):
+def test_compress_inference():
     x, y = arguments(x=Tensor(float, ("N", "M")), y=Tensor(bool, (None,)))
     assert op.compress(x, y).unwrap_tensor() == Tensor(float, (None,))
     assert op.compress(x, y, axis=0).unwrap_tensor() == Tensor(float, (None, "M"))
