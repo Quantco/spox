@@ -7,12 +7,16 @@
 Change log
 ==========
 
-0.9.3 (2023-10-23)
-------------------
+0.10.0 (2023-xx-xx)
+-------------------
 
 **New feature**
 
 - The opsets ``ai.onnx`` version 20 and ``ai.onnx.ml`` version 4 (ONNX 1.15) are now shipped with Spox.
+
+
+0.9.3 (2023-10-23)
+------------------
 
 **Bug fixes**
 
