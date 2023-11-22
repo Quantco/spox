@@ -28,8 +28,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        OS: ["ubuntu-latest", "macos-latest"]
+        OS: ["ubuntu-latest"]
         PYTHON_VERSION: ['3.8', '3.9', '3.10', '3.11']
+        include:
+          - OS: macos-latest-xlarge
+            PYTHON_VERSION: "3.11"
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
