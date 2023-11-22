@@ -3942,7 +3942,7 @@ def abs(
 ) -> Var:
     r"""
     Absolute takes one input data (Tensor<T>) and produces one output data
-    (Tensor<T>) where the absolute is, y = abs(x), is applied to the tensor
+    (Tensor<T>) where absolute value, y = abs(x), is applied to the tensor
     elementwise.
 
     Parameters
@@ -4424,12 +4424,19 @@ def average_pool(
        * pad_shape[i] is sum of pads along axis i
 
     ``auto_pad`` is a DEPRECATED attribute. If you are using them currently,
-    the output spatial shape will be following:
+    the output spatial shape will be following when ceil_mode is enabled:
 
     ::
 
        VALID: output_spatial_shape[i] = ceil((input_spatial_shape[i] - ((kernel_spatial_shape[i] - 1) * dilations[i] + 1) + 1) / strides_spatial_shape[i])
        SAME_UPPER or SAME_LOWER: output_spatial_shape[i] = ceil(input_spatial_shape[i] / strides_spatial_shape[i])
+
+    or when ceil_mode is disabled:
+
+    ::
+
+       VALID: output_spatial_shape[i] = floor((input_spatial_shape[i] - ((kernel_spatial_shape[i] - 1) * dilations[i] + 1) + 1) / strides_spatial_shape[i])
+       SAME_UPPER or SAME_LOWER: output_spatial_shape[i] = floor(input_spatial_shape[i] / strides_spatial_shape[i])
 
     And pad shape will be following if ``SAME_UPPER`` or ``SAME_LOWER``:
 
@@ -5688,7 +5695,9 @@ def conv_transpose(
         Attribute.
         The shape of the output can be explicitly set which will cause pads
         values to be auto generated. If output_shape is specified pads values
-        are ignored. See doc for details for equations to generate pads
+        are ignored. See doc for details for equations to generate pads. Note
+        that the output_shape attribute value should not include dimensions for
+        batch size and channels, which are automatically inferred.
     pads
         Attribute.
         Padding for the beginning and ending along each spatial axis, it can
@@ -5903,19 +5912,23 @@ def dft(
         [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][1]. For complex
         input, the following shape is expected:
         [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][2]. The first
-        dimension is the batch dimension. The following N dimentions correspond
+        dimension is the batch dimension. The following N dimensions correspond
         to the signal's dimensions. The final dimension represents the real and
         imaginary parts of the value in that order.
     dft_length
         Type T2.
-        The length of the signal.If greater than the axis dimension, the signal
-        will be zero-padded up to dft_length. If less than the axis dimension,
-        only the first dft_length values will be used as the signal. It's an
-        optional value.
+        The length of the signal as a scalar. If greater than the axis
+        dimension, the signal will be zero-padded up to dft_length. If less than
+        the axis dimension, only the first dft_length values will be used as the
+        signal. It's an optional value.
     axis
         Attribute.
         The axis on which to perform the DFT. By default this value is set to 1,
-        which corresponds to the first dimension after the batch index.
+        which corresponds to the first dimension after the batch index. Negative
+        value means counting dimensions from the back. Accepted range is
+        :math:`[-r, -2] \cup [0, r-2]` where ``r = rank(input)``. The last
+        dimension is for representing complex numbers and thus is an invalid
+        axis.
     inverse
         Attribute.
         Whether to perform the inverse discrete fourier transform. By default
@@ -5924,8 +5937,8 @@ def dft(
         Attribute.
         If onesided is 1, only values for w in [0, 1, 2, ..., floor(n_fft/2) +
         1] are returned because the real-to-complex Fourier transform satisfies
-        the conjugate symmetry, i.e., X[m, w] = X[m,w]=X[m,n_fft-w]\*. Note if
-        the input or window tensors are complex, then onesided output is not
+        the conjugate symmetry, i.e., X[m, w] = X[m, n_fft-w]\*. Note if the
+        input or window tensors are complex, then onesided output is not
         possible. Enabling onesided with real inputs performs a Real-valued fast
         Fourier transform (RFFT). When invoked with real or complex valued
         input, the default value is 0. Values can be 0 or 1.
@@ -5934,7 +5947,7 @@ def dft(
     =======
     output : Var
         Type T1.
-        The Fourier Transform of the input vector.If onesided is 0, the
+        The Fourier Transform of the input vector. If onesided is 0, the
         following shape is expected:
         [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][2]. If axis=1 and
         onesided is 1, the following shape is expected:
@@ -6278,15 +6291,15 @@ def dynamic_quantize_linear(
 ) -> Tuple[Var, Var, Var]:
     r"""
     A Function to fuse calculation for Scale, Zero Point and FP32->8Bit
-    convertion of FP32 Input data. Outputs Scale, ZeroPoint and Quantized
+    conversion of FP32 Input data. Outputs Scale, ZeroPoint and Quantized
     Input for a given FP32 Input. Scale is calculated as:
 
     ::
 
-       y_scale = (max(x) - min(x))/(qmax - qmin)
+       y_scale = (maximum(0, max(x)) - minimum(0, min(x))) / (qmax - qmin)
 
     -  where qmax and qmin are max and min values for quantization range
-       .i.e [0, 255] in case of uint8
+       i.e. [0, 255] in case of uint8
     -  data range is adjusted to include 0.
 
     Zero point is calculated as:
@@ -6359,7 +6372,7 @@ def einsum(
 
     ::
 
-       output[output-term] = reduce-sum( input1[term1] * input2[term] )
+       output[output-term] = reduce-sum( input1[term1] * input2[term2] )
 
     where the reduce-sum performs a summation over all the indices occurring
     in the input terms (term1, term2) that do not occur in the output-term.
@@ -7228,55 +7241,50 @@ def gather_nd(
 
     This operator is the inverse of ``ScatterND``.
 
-    ``Example 1``
+    **Example 1**
 
-    batch_dims = 0
+    ::
 
-    data = [[0,1],[2,3]] # data_shape = [2, 2]
+       batch_dims = 0
+       data    = [[0,1],[2,3]]   # data_shape    = [2, 2]
+       indices = [[0,0],[1,1]]   # indices_shape = [2, 2]
+       output  = [0,3]           # output_shape  = [2]
 
-    indices = [[0,0],[1,1]] # indices_shape = [2, 2]
+    **Example 2**
 
-    output = [0,3] # output_shape = [2]
+    ::
 
-    ``Example 2``
+       batch_dims = 0
+       data    = [[0,1],[2,3]]  # data_shape    = [2, 2]
+       indices = [[1],[0]]      # indices_shape = [2, 1]
+       output  = [[2,3],[0,1]]  # output_shape  = [2, 2]
 
-    batch_dims = 0
+    **Example 3**
 
-    data = [[0,1],[2,3]] # data_shape = [2, 2]
+    ::
 
-    indices = [[1],[0]] # indices_shape = [2, 1]
+       batch_dims = 0
+       data    = [[[0,1],[2,3]],[[4,5],[6,7]]] # data_shape    = [2, 2, 2]
+       indices = [[0,1],[1,0]]                 # indices_shape = [2, 2]
+       output  = [[2,3],[4,5]]                 # output_shape  = [2, 2]
 
-    output = [[2,3],[0,1]] # output_shape = [2, 2]
+    **Example 4**
 
-    ``Example 3``
+    ::
 
-    batch_dims = 0
+       batch_dims = 0
+       data    = [[[0,1],[2,3]],[[4,5],[6,7]]] # data_shape    = [2, 2, 2]
+       indices = [[[0,1]],[[1,0]]]             # indices_shape = [2, 1, 2]
+       output  = [[[2,3]],[[4,5]]]             # output_shape  = [2, 1, 2]
 
-    data = [[[0,1],[2,3]],[[4,5],[6,7]]] # data_shape = [2, 2, 2]
+    **Example 5**
 
-    indices = [[0,1],[1,0]] # indices_shape = [2, 2]
+    ::
 
-    output = [[2,3],[4,5]] # output_shape = [2, 2]
-
-    ``Example 4``
-
-    batch_dims = 0
-
-    data = [[[0,1],[2,3]],[[4,5],[6,7]]] # data_shape = [2, 2, 2]
-
-    indices = [[[0,1]],[[1,0]]] # indices_shape = [2, 1, 2]
-
-    output = [[[2,3]],[[4,5]]] # output_shape = [2, 1, 2]
-
-    ``Example 5``
-
-    batch_dims = 1
-
-    data = [[[0,1],[2,3]],[[4,5],[6,7]]] # data_shape = [2, 2, 2]
-
-    indices = [[1],[0]] # indices_shape = [2, 1]
-
-    output = [[2,3],[4,5]] # output_shape = [2, 2]
+       batch_dims = 1
+       data    = [[[0,1],[2,3]],[[4,5],[6,7]]] # data_shape    = [2, 2, 2]
+       indices = [[1],[0]]                     # indices_shape = [2, 1]
+       output  = [[2,3],[4,5]]                 # output_shape  = [2, 2]
 
     Parameters
     ==========
@@ -8005,7 +8013,7 @@ def if_(
     ==========
     cond
         Type B.
-        Condition for the if
+        Condition for the if. The tensor must contain a single element.
     else_branch
         Attribute.
         Graph to run if condition is false. Has N outputs: values you wish to be
@@ -8539,7 +8547,7 @@ def layer_normalization(
     axis
         Attribute.
         The first normalization dimension. If rank(X) is r, axis' allowed range
-        is [-r, r]. Negative value means counting dimensions from the back.
+        is [-r, r). Negative value means counting dimensions from the back.
     epsilon
         Attribute.
         The epsilon value to use to avoid division by zero.
@@ -9276,29 +9284,40 @@ def max_pool(
     tensor according to kernel sizes, stride sizes, and pad lengths. max
     pooling consisting of computing the max on all values of a subset of the
     input tensor according to the kernel size and downsampling the data into
-    the output tensor Y for further processing. The output spatial shape
-    will be following:
+    the output tensor Y for further processing. The output spatial shape is
+    calculated differently depending on whether explicit padding is used,
+    where pads is employed, or auto padding is used, where auto_pad is
+    utilized. With explicit padding
+    (https://pytorch.org/docs/stable/generated/torch.nn.MaxPool2d.html?highlight=maxpool#torch.nn.MaxPool2d):
 
     ::
 
-       output_spatial_shape[i] = floor((input_spatial_shape[i] + pad_shape[i] - ((kernel_spatial_shape[i] - 1) * dilations[i] + 1)) / strides_spatial_shape[i] + 1)
+       output_spatial_shape[i] = floor((input_spatial_shape[i] + pad_shape[i] - dilation[i] * (kernel_shape[i] - 1) - 1) / strides_spatial_shape[i] + 1)
 
     or
 
     ::
 
-       output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - ((kernel_spatial_shape[i] - 1) * dilations[i] + 1)) / strides_spatial_shape[i] + 1)
+       output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - dilation[i] * (kernel_shape[i] - 1) - 1) / strides_spatial_shape[i] + 1)
 
-    if ceil_mode is enabled ``pad_shape[i]`` is the sum of pads along axis
+    if ceil_mode is enabled. ``pad_shape[i]`` is the sum of pads along axis
     ``i``.
 
     ``auto_pad`` is a DEPRECATED attribute. If you are using them currently,
-    the output spatial shape will be following:
+    the output spatial shape will be following when ceil_mode is enabled:
 
     ::
 
        VALID: output_spatial_shape[i] = ceil((input_spatial_shape[i] - ((kernel_spatial_shape[i] - 1) * dilations[i] + 1) + 1) / strides_spatial_shape[i])
        SAME_UPPER or SAME_LOWER: output_spatial_shape[i] = ceil(input_spatial_shape[i] / strides_spatial_shape[i])
+
+    or when ceil_mode is disabled
+    (https://www.tensorflow.org/api_docs/python/tf/keras/layers/AveragePooling2D):
+
+    ::
+
+       VALID: output_spatial_shape[i] = floor((input_spatial_shape[i] - ((kernel_spatial_shape[i] - 1) * dilations[i] + 1)) / strides_spatial_shape[i]) + 1
+       SAME_UPPER or SAME_LOWER: output_spatial_shape[i] = floor((input_spatial_shape[i] - 1) / strides_spatial_shape[i]) + 1
 
     And pad shape will be following if ``SAME_UPPER`` or ``SAME_LOWER``:
 
@@ -9473,7 +9492,7 @@ def max_unpool(
     from a MaxPool op. The first input tensor X is the tensor that needs to
     be unpooled, which is typically the pooled tensor (first output) from
     MaxPool. The second input tensor, I, contains the indices to the
-    (locally maximal) elements corrsponding to the elements in the first
+    (locally maximal) elements corresponding to the elements in the first
     input tensor X. Input tensor I is typically the second output of the
     MaxPool op. The third (optional) input is a tensor that specifies the
     output size of the unpooling operation.
@@ -9491,7 +9510,7 @@ def max_unpool(
 
     In addition to the inputs, MaxUnpool takes three attributes, namely
     kernel_shape, strides, and pads, which define the exact unpooling op.
-    The attributes typically have the same values as the corrsponding
+    The attributes typically have the same values as the corresponding
     pooling op that the unpooling op is trying to invert.
 
     Parameters
@@ -9622,7 +9641,7 @@ def mean_variance_normalization(
         Input tensor
     axes
         Attribute.
-        A list of integers, along which to reduce. The default is to caculate
+        A list of integers, along which to reduce. The default is to calculate
         along axes [0,2,3] for calculating mean and variance along each channel.
         Two variables with the same C-coordinate are associated with the same
         mean and variance.
@@ -10341,11 +10360,12 @@ def one_hot(
         casted to int64 before use.
     depth
         Type T2.
-        Scalar specifying the number of classes in one-hot tensor. This is also
-        the size of the one-hot dimension (specified by 'axis' attribute) added
-        on in the output tensor. The values in the 'indices' input tensor are
-        expected to be in the range [-depth, depth-1]. In case 'depth' is of
-        non-integer type, it will be casted to int64 before use.
+        Scalar or Rank 1 tensor containing exactly one element, specifying the
+        number of classes in one-hot tensor. This is also the size of the
+        one-hot dimension (specified by 'axis' attribute) added on in the output
+        tensor. The values in the 'indices' input tensor are expected to be in
+        the range [-depth, depth-1]. In case 'depth' is of non-integer type, it
+        will be casted to int64 before use.
     values
         Type T3.
         Rank 1 tensor containing exactly two elements, in the format [off_value,
@@ -10570,7 +10590,7 @@ def prelu(
         Input tensor
     slope
         Type T.
-        Slope tensor. The shape of slope can be smaller then first input X; if
+        Slope tensor. The shape of slope can be smaller than first input X; if
         so, its shape must be unidirectional broadcastable to X
 
     Returns
@@ -11608,12 +11628,13 @@ def reduce_l1(
 ) -> Var:
     r"""
     Computes the L1 norm of the input tensor's elements along the provided
-    axes. The resulting tensor has the same rank as the input if keepdims
-    equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned. Input tensors of rank zero are valid.
+    axes. The resulting tensor has the same rank as the input if
+    ``keepdims`` equals 1. If ``keepdims`` equals 0, then the resulting
+    tensor has the reduced dimension pruned. Input tensors of rank zero are
+    valid. Reduction over an empty set of values yields 0.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -11662,12 +11683,13 @@ def reduce_l2(
 ) -> Var:
     r"""
     Computes the L2 norm of the input tensor's elements along the provided
-    axes. The resulting tensor has the same rank as the input if keepdims
-    equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned. Input tensors of rank zero are valid.
+    axes. The resulting tensor has the same rank as the input if
+    ``keepdims`` equals 1. If ``keepdims`` equals 0, then the resulting
+    tensor has the reduced dimension pruned. Input tensors of rank zero are
+    valid. Reduction over an empty set of values yields 0.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -11716,12 +11738,14 @@ def reduce_log_sum(
 ) -> Var:
     r"""
     Computes the log sum of the input tensor's elements along the provided
-    axes. The resulting tensor has the same rank as the input if keepdims
-    equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned. Input tensors of rank zero are valid.
+    axes. The resulting tensor has the same rank as the input if
+    ``keepdims`` equals 1. If ``keepdims`` equals 0, then the resulting
+    tensor has the reduced dimension pruned. Input tensors of rank zero are
+    valid. Reduction over an empty set of values yields minus infinity (if
+    supported by the datatype) or undefined otherwise.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -11771,11 +11795,13 @@ def reduce_log_sum_exp(
     r"""
     Computes the log sum exponent of the input tensor's elements along the
     provided axes. The resulting tensor has the same rank as the input if
-    keepdims equals 1. If keepdims equals 0, then the resulting tensor has
-    the reduced dimension pruned. Input tensors of rank zero are valid.
+    ``keepdims`` equals 1. If ``keepdims`` equals 0, then the resulting
+    tensor has the reduced dimension pruned. Input tensors of rank zero are
+    valid. Reduction over an empty set of values yields minus infinity (if
+    supported by the datatype) or undefined otherwise.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -11824,12 +11850,15 @@ def reduce_max(
 ) -> Var:
     r"""
     Computes the max of the input tensor's elements along the provided axes.
-    The resulting tensor has the same rank as the input if keepdims equals
-    1. If keepdims equals 0, then the resulting tensor has the reduced
-    dimension pruned. Input tensors of rank zero are valid.
+    The resulting tensor has the same rank as the input if ``keepdims``
+    equals 1. If ``keepdims`` equals 0, then the resulting tensor has the
+    reduced dimension pruned. Input tensors of rank zero are valid.
+    Reduction over an empty set of values yields minus infinity (if
+    supported by the datatype) or the minimum value of the data type
+    otherwise.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -11878,12 +11907,13 @@ def reduce_mean(
 ) -> Var:
     r"""
     Computes the mean of the input tensor's elements along the provided
-    axes. The resulting tensor has the same rank as the input if keepdims
-    equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned. Input tensors of rank zero are valid.
+    axes. The resulting tensor has the same rank as the input if
+    ``keepdims`` equals 1. If ``keepdims`` equals 0, then the resulting
+    tensor has the reduced dimension pruned. Input tensors of rank zero are
+    valid. Reduction over an empty set of values yields undefined.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -11932,12 +11962,14 @@ def reduce_min(
 ) -> Var:
     r"""
     Computes the min of the input tensor's elements along the provided axes.
-    The resulting tensor has the same rank as the input if keepdims equals
-    1. If keepdims equals 0, then the resulting tensor has the reduced
-    dimension pruned. Input tensors of rank zero are valid.
+    The resulting tensor has the same rank as the input if ``keepdims``
+    equals 1. If ``keepdims`` equals 0, then the resulting tensor has the
+    reduced dimension pruned. Input tensors of rank zero are valid.
+    Reduction over an empty set of values yields plus infinity (if supported
+    by the datatype) or the maximum value of the data type otherwise.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -11986,12 +12018,13 @@ def reduce_prod(
 ) -> Var:
     r"""
     Computes the product of the input tensor's elements along the provided
-    axes. The resulting tensor has the same rank as the input if keepdims
-    equals 1. If keepdims equals 0, then the resulting tensor has the
-    reduced dimension pruned. Input tensors of rank zero are valid.
+    axes. The resulting tensor has the same rank as the input if
+    ``keepdims`` equals 1. If ``keepdims`` equals 0, then the resulting
+    tensor has the reduced dimension pruned. Input tensors of rank zero are
+    valid. Reduction over an empty set of values yields 1.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -12041,12 +12074,13 @@ def reduce_sum(
 ) -> Var:
     r"""
     Computes the sum of the input tensor's elements along the provided axes.
-    The resulting tensor has the same rank as the input if keepdims equals
-    1. If keepdims equals 0, then the resulting tensor has the reduced
-    dimension pruned. Input tensors of rank zero are valid.
+    The resulting tensor has the same rank as the input if ``keepdims``
+    equals 1. If ``keepdims`` equals 0, then the resulting tensor has the
+    reduced dimension pruned. Input tensors of rank zero are valid.
+    Reduction over an empty set of values yields 0.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -12105,11 +12139,12 @@ def reduce_sum_square(
     r"""
     Computes the sum square of the input tensor's elements along the
     provided axes. The resulting tensor has the same rank as the input if
-    keepdims equals 1. If keepdims equals 0, then the resulting tensor has
-    the reduced dimension pruned. Input tensors of rank zero are valid.
+    ``keepdims`` equals 1. If ``keepdims`` equals 0, then the resulting
+    tensor has the reduced dimension pruned. Input tensors of rank zero are
+    valid. Reduction over an empty set of values yields 0.
 
     The above behavior is similar to numpy, with the exception that numpy
-    defaults keepdims to False instead of True.
+    defaults ``keepdims`` to ``False`` instead of ``True``.
 
     Parameters
     ==========
@@ -12567,7 +12602,7 @@ def round(
 ) -> Var:
     r"""
     Round takes one input Tensor and rounds the values, element-wise,
-    meaning it finds the nearest integer for each value. In case of halfs,
+    meaning it finds the nearest integer for each value. In case of halves,
     the rule is to round them to the nearest even integer. If input x is
     integral, +0, -0, NaN, or infinite, x itself is returned. The output
     tensor has the same shape and type as the input.
@@ -13871,17 +13906,18 @@ def slice(
     Slice uses the ``starts``, ``ends``, ``axes`` and ``steps`` inputs to
     select a sub-tensor of its input ``data`` tensor.
 
-    An effective ``start[i]``, ``end[i]``, and ``step[i]`` must be computed
-    for each ``i`` in ``[0, ... r-1]`` where ``r = rank(input)`` as follows:
+    An effective ``starts[i]``, ``ends[i]``, and ``steps[i]`` must be
+    computed for each ``i`` in ``[0, ... r-1]`` where ``r = rank(input)`` as
+    follows:
 
     If ``axes`` are omitted, they are set to ``[0, ..., r-1]``. If ``steps``
     are omitted, they are set to ``[1, ..., 1]`` of length ``len(starts)``
 
     The effective values are initialized as ``start[i] = 0``,
-    ``end[i] = dims[i]`` where ``dims`` are the dimensions of ``input`` and
-    ``step[i] =``\ 1.
+    ``ends[i] = dims[i]`` where ``dims`` are the dimensions of ``input`` and
+    ``steps[i] = 1``.
 
-    All negative elements of ``axes`` are made non-negatve by adding ``r``
+    All negative elements of ``axes`` are made non-negative by adding ``r``
     to them, where ``r =rank(input)``.
 
     All negative values in ``starts[i]`` and ``ends[i]`` have
@@ -13892,11 +13928,11 @@ def slice(
 
     The clamping for the adjusted ``ends[i]`` depends on the sign of
     ``steps[i]`` and must accommodate copying 0 through ``dims[axes[i]]``
-    elements, so for positive stepping ``end[axes[i]]`` is clamped to
+    elements, so for positive stepping ``ends[axes[i]]`` is clamped to
     ``[0, dims[axes[i]]]``, while for negative stepping it is clamped to
     ``[-1, dims[axes[i]]-1]``.
 
-    Finally, ``step[axes[i]] = steps[i]``.
+    Finally, ``steps[axes[i]] = steps[i]``.
 
     For slicing to the end of a dimension with unknown size, it is
     recommended to pass in ``INT_MAX`` when slicing forward and 'INT_MIN'
@@ -14053,7 +14089,7 @@ def softmax_cross_entropy_loss(
     -  shape(labels): (N) where each value is 0 <= labels[i] <= C-1, or (N,
        D1, D2,..., Dk), with K >= 1 in case of K-dimensional loss.
 
-    The loss for one sample, l_i, can caculated as follows:
+    The loss for one sample, l_i, can calculated as follows:
 
     ::
 
@@ -15123,8 +15159,8 @@ def unique(
     the input tensor and three optional outputs. The first output tensor 'Y'
     contains all unique values or subtensors of the input. The second
     optional output tensor 'indices' contains indices of 'Y' elements' first
-    occurance in 'X'.. The third optional output tensor 'inverse_indices'
-    contains, for elements of 'X', its corresponding indices in 'Y'. ". The
+    occurrence in 'X'. The third optional output tensor 'inverse_indices'
+    contains, for elements of 'X', its corresponding indices in 'Y'. The
     fourth optional output tensor 'counts' contains the count of each
     element of 'Y' in the input.
 
@@ -15254,7 +15290,7 @@ def unique(
         maintained in the same order they occur in input 'X'
     indices : Var
         Type tensor(int64).
-        A 1-D INT64 tensor containing indices of 'Y' elements' first occurance
+        A 1-D INT64 tensor containing indices of 'Y' elements' first occurrence
         in 'X'. When 'axis' is provided, it contains indices to subtensors in
         input 'X' on the 'axis'. When 'axis' is not provided, it contains
         indices to values in the flattened input tensor.

@@ -922,7 +922,7 @@ def feature_vectorizer(
 ) -> Var:
     r"""
     Concatenates input tensors into one continuous output. All input shapes
-    are 2-D and are concatenated along the second dimention. 1-D tensors are
+    are 2-D and are concatenated along the second dimension. 1-D tensors are
     treated as [1,C]. Inputs are copied to the output maintaining the order
     of the input arguments. All inputs must be integers or floats, while the
     output will be all floating point values.
@@ -1685,8 +1685,8 @@ def tree_ensemble_classifier(
         Attribute.
         For each node, define what to do in the presence of a missing value: if
         a value is missing (NaN), use the 'true' or 'false' branch based on the
-        value in this array.This attribute may be left undefined, and the defalt
-        value is false (0) for all nodes.
+        value in this array.This attribute may be left undefined, and the
+        default value is false (0) for all nodes.
     nodes_modes
         Attribute.
         The node kind, that is, the comparison to make at the node. There is no
@@ -1837,7 +1837,7 @@ def tree_ensemble_regressor(
         For each node, define what to do in the presence of a NaN: use the
         'true' (if the attribute value is 1) or 'false' (if the attribute value
         is 0) branch based on the value in this array.This attribute may be left
-        undefined and the defalt value is false (0) for all nodes.
+        undefined and the default value is false (0) for all nodes.
     nodes_modes
         Attribute.
         The node kind, that is, the comparison to make at the node. There is no
