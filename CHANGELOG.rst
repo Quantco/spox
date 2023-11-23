@@ -18,6 +18,10 @@ Change log
 0.9.3 (2023-10-23)
 ------------------
 
+**New feature**
+
+- The opsets ``ai.onnx`` version 20 and ``ai.onnx.ml`` version 4 (ONNX 1.15) are now shipped with Spox.
+
 **Bug fixes**
 
 - Address missing Value Infos when building singleton model for shape inference.

@@ -21,14 +21,18 @@ jobs:
         uses: pre-commit/action@v3.0.0
 
   tests:
-    name: "Linux - unit tests - Python ${{ matrix.PYTHON_VERSION }}"
-    runs-on: ubuntu-latest
+    name: "Linux - unit tests - ${{ matrix.OS }} - Python ${{ matrix.PYTHON_VERSION }}"
+    runs-on: ${{ matrix.OS }}
     env:
       CI: True
     strategy:
       fail-fast: true
       matrix:
+        OS: ["ubuntu-latest"]
         PYTHON_VERSION: ['3.8', '3.9', '3.10', '3.11']
+        include:
+          - OS: macos-latest-xlarge
+            PYTHON_VERSION: "3.11"
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
@@ -49,13 +53,14 @@ jobs:
           pytest
 
   opset-generation:
-    name: "Linux - opset generation - Python ${{ matrix.PYTHON_VERSION }}"
-    runs-on: ubuntu-latest
+    name: "Linux - opset generation - ${{ matrix.OS }} - Python ${{ matrix.PYTHON_VERSION }}"
+    runs-on: ${{ matrix.OS }}
     env:
       CI: True
     strategy:
       fail-fast: true
       matrix:
+        OS: ["ubuntu-latest", "macos-latest"]
         PYTHON_VERSION: ['3.8']
     steps:
       - name: Checkout branch

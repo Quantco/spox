@@ -44,13 +44,13 @@ def test_function_body_inference():
 
 def test_inference_fails():
     a, b = arguments(a=Tensor(numpy.float32, (2,)), b=Tensor(numpy.float32, (3,)))
-    with pytest.raises(InferenceError):
+    with pytest.raises((InferenceError, RuntimeError), match="InferenceError"):
         op.add(a, b)
 
 
 def test_inference_validation_fails():
     a, b = arguments(a=Tensor(numpy.float32, (2,)), b=Tensor(numpy.float64, (2,)))
-    with pytest.raises(InferenceError):
+    with pytest.raises((InferenceError, RuntimeError), match="InferenceError"):
         op.add(a, b)
 
 
