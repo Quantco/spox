@@ -120,7 +120,10 @@ class AttrTensor(Attr[np.ndarray]):
         super().__init__(value.copy())
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, from_array(self.value))
+        return make_attribute(
+            key,
+            from_array(self.value),
+        )
 
 
 class AttrType(Attr[_type_system.Type]):
@@ -188,21 +191,23 @@ class AttrFloat32s(_AttrIterable[float]):
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         # ensure values are all floats
         values = [float(v) for v in self.value]
-        return make_attribute(key, values)
+        return make_attribute(key, values, attr_type=AttributeProto.FLOATS)
 
 
 class AttrInt64s(_AttrIterable[int]):
     _attribute_proto_type_int = AttributeProto.INTS
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, self.value)
+        return make_attribute(key, self.value, attr_type=AttributeProto.INTS)
 
 
 class AttrStrings(_AttrIterable[str]):
     _attribute_proto_type_int = AttributeProto.STRINGS
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, [v.encode() for v in self.value])
+        return make_attribute(
+            key, [v.encode() for v in self.value], attr_type=AttributeProto.STRINGS
+        )
 
 
 class AttrTensors(_AttrIterable[np.ndarray]):
@@ -210,7 +215,7 @@ class AttrTensors(_AttrIterable[np.ndarray]):
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         tensors = [from_array(t) for t in self.value]
-        return make_attribute(key, tensors)
+        return make_attribute(key, tensors, attr_type=AttributeProto.TENSORS)
 
 
 def _deref(ref: _Ref[T]) -> T:
