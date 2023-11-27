@@ -1,3 +1,5 @@
+import collections.abc
+import numbers
 from abc import ABC
 from typing import (
     Any,
@@ -13,7 +15,7 @@ from typing import (
 
 import numpy as np
 import numpy.typing as npt
-from onnx import AttributeProto
+from onnx import AttributeProto, GraphProto, SparseTensorProto, TensorProto, TypeProto
 from onnx.helper import (
     make_attribute,
     make_optional_type_proto,
@@ -50,7 +52,7 @@ class Attr(ABC, Generic[T]):
         return self._value
 
     def _validate(self):
-        if self._to_onnx("dummy").type != self._attribute_proto_type_int:
+        if _deduce_type(self.value) != self._attribute_proto_type_int:
             raise TypeError(
                 f"Unable to instantiate `{type(self).__name__}` with value of type `{type(self.value).__name__}`."
             )
@@ -222,3 +224,46 @@ def _deref(ref: _Ref[T]) -> T:
     if isinstance(ref._concrete._value, _Ref):
         return _deref(ref._concrete._value)
     return ref._concrete._value
+
+
+# With some simplifying modifications, this is a shameless copy from
+# https://github.com/onnx/onnx/blob/b60f69412abb5393ab819b936b473f83867f6c87/onnx/helper.py#L838
+# we should probably abstract this in onnx and reuse it in onnx's make_attribute.
+def _deduce_type(value: Any) -> AttributeProto.AttributeType:
+    # Singular cases
+    if isinstance(value, numbers.Integral):
+        return AttributeProto.INT
+    elif isinstance(value, numbers.Real):
+        return AttributeProto.FLOAT
+    elif isinstance(value, (str, bytes)):
+        return AttributeProto.STRING
+    elif isinstance(value, TensorProto):
+        return AttributeProto.TENSOR
+    elif isinstance(value, SparseTensorProto):
+        return AttributeProto.SPARSE_TENSOR
+    elif isinstance(value, GraphProto):
+        return AttributeProto.GRAPH
+    elif isinstance(value, TypeProto):
+        return AttributeProto.TYPE_PROTO
+    # Iterable cases
+    elif isinstance(value, collections.abc.Iterable):
+        value = list(value)
+        if len(value) == 0:
+            raise ValueError("Could not infer attribute value type from empty iterator")
+        types = {type(v) for v in value}
+        for exp_t, exp_enum in (
+            (numbers.Integral, AttributeProto.INTS),
+            (numbers.Real, AttributeProto.FLOATS),
+            ((str, bytes), AttributeProto.STRINGS),
+            (TensorProto, AttributeProto.TENSORS),
+            (SparseTensorProto, AttributeProto.SPARSE_TENSORS),
+            (GraphProto, AttributeProto.GRAPHS),
+            (TypeProto, AttributeProto.TYPE_PROTOS),
+        ):
+            if all(issubclass(t, exp_t) for t in types):  # type: ignore[arg-type]
+                return exp_enum
+        raise ValueError(
+            "Could not infer the attribute type from the elements of the passed Iterable value."
+        )
+    else:
+        raise TypeError(f"'{value}' is not an accepted attribute value.")
