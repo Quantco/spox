@@ -1,6 +1,9 @@
+import re
+
 import numpy
 import pytest
 
+import spox.opset.ai.onnx.ml.v3 as ml
 import spox.opset.ai.onnx.v17 as op
 from spox._exceptions import InferenceError
 from spox._graph import arguments
@@ -61,3 +64,37 @@ def test_multiple_outputs():
     values, indices = op.top_k(x, k)
     assert values.unwrap_type()._subtype(Tensor(numpy.float32, ("N", "M", None)))
     assert indices.unwrap_type()._subtype(Tensor(numpy.int64, ("N", "M", None)))
+
+
+def test_passing_wrong_type():
+    with pytest.raises(TypeError):
+        ml.label_encoder(
+            X=op.constant(value_ints=["a"]),  # type: ignore
+            keys_int64s=[0],
+            values_strings=["a"],
+            default_string="?",
+        )
+
+    with pytest.raises(TypeError):
+        ml.label_encoder(
+            op.constant(value_ints=[0]),
+            keys_int64s=["a"],  # type: ignore
+            values_strings=["a"],
+            default_string="?",
+        )
+
+    with pytest.raises(AttributeError, match=re.escape("has no attribute 'encode'")):
+        ml.label_encoder(
+            op.constant(value_ints=[0]),
+            keys_int64s=[0],
+            values_strings=[0],  # type: ignore
+            default_string="?",
+        )
+
+    with pytest.raises(AttributeError, match=re.escape("has no attribute 'encode'")):
+        ml.label_encoder(
+            op.constant(value_ints=[0]),
+            keys_int64s=[0],
+            values_strings=["a"],
+            default_string=0,  # type: ignore
+        )
