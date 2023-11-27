@@ -38,14 +38,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: mamba-org/setup-micromamba@v1 
         with:
-          python-version: ${{ matrix.PYTHON_VERSION }}
-          miniforge-variant: Mambaforge
-          miniforge-version: 4.11.0-2
-          use-mamba: true
           environment-file: environment.yml
-          activate-environment: spox
+          create-args: >-
+            python=${{ matrix.PYTHON_VERSION }}
       - name: Run unit tests
         shell: bash -l {0}
         run: |
