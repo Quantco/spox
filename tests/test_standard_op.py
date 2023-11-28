@@ -1,10 +1,9 @@
-import re
-
 import numpy
 import pytest
 
 import spox.opset.ai.onnx.ml.v3 as ml
 import spox.opset.ai.onnx.v17 as op
+from spox._attributes import AttributeTypeError
 from spox._exceptions import InferenceError
 from spox._graph import arguments
 from spox._type_system import Tensor
@@ -67,7 +66,7 @@ def test_multiple_outputs():
 
 
 def test_passing_wrong_type():
-    with pytest.raises(TypeError):
+    with pytest.raises(AttributeTypeError):
         ml.label_encoder(
             X=op.constant(value_ints=["a"]),  # type: ignore
             keys_int64s=[0],
@@ -75,7 +74,7 @@ def test_passing_wrong_type():
             default_string="?",
         )
 
-    with pytest.raises(TypeError):
+    with pytest.raises(AttributeTypeError):
         ml.label_encoder(
             op.constant(value_ints=[0]),
             keys_int64s=["a"],  # type: ignore
@@ -83,7 +82,7 @@ def test_passing_wrong_type():
             default_string="?",
         )
 
-    with pytest.raises(AttributeError, match=re.escape("has no attribute 'encode'")):
+    with pytest.raises(AttributeTypeError):
         ml.label_encoder(
             op.constant(value_ints=[0]),
             keys_int64s=[0],
@@ -91,7 +90,7 @@ def test_passing_wrong_type():
             default_string="?",
         )
 
-    with pytest.raises(AttributeError, match=re.escape("has no attribute 'encode'")):
+    with pytest.raises(AttributeTypeError):
         ml.label_encoder(
             op.constant(value_ints=[0]),
             keys_int64s=[0],
