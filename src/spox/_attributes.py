@@ -2,17 +2,7 @@ import abc
 import collections.abc
 import numbers
 from abc import ABC
-from typing import (
-    Any,
-    ClassVar,
-    Generic,
-    Iterable,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -41,7 +31,6 @@ class AttributeTypeError(TypeError):
 
 class Attr(ABC, Generic[T]):
     _value: Union[T, "_Ref[T]"]
-    _attribute_proto_type_int: ClassVar[int]
 
     def __init__(self, value: Union[T, "_Ref[T]"]):
         self._value = value
@@ -60,8 +49,13 @@ class Attr(ABC, Generic[T]):
 
     def _validate(self):
         if self._to_onnx_type_deref() != self._attribute_proto_type_int:
+            if isinstance(self.value, tuple) and len(self.value):
+                tuple_types = ", ".join({type(v).__name__ for v in self.value})
+                value_type = f"tuple[{tuple_types}, ...]"
+            else:
+                value_type = type(self.value).__name__
             raise AttributeTypeError(
-                f"Unable to instantiate `{type(self).__name__}` with value of type `{type(self.value).__name__}`."
+                f"Unable to instantiate `{type(self).__name__}` with value of type `{value_type}`."
             )
 
     def _to_onnx(self, key: str) -> AttributeProto:
@@ -75,9 +69,14 @@ class Attr(ABC, Generic[T]):
         return self._to_onnx_type_deref()
 
     def _to_onnx_type_deref(self) -> AttributeProto.AttributeType:
-        """Conversion method that only computes the type for the dereferenced case. It should match the type produced
-        by _to_onnx_deref"""
+        """Conversion method that only computes the type for the dereferenced case. It must match the type produced
+        by _to_onnx_deref, but could be more efficient."""
         return self._to_onnx_deref("dummy").type
+
+    @property
+    @abc.abstractmethod
+    def _attribute_proto_type_int(self) -> int:
+        raise NotImplementedError
 
     @abc.abstractmethod
     def _to_onnx_deref(self, key: str) -> AttributeProto:
@@ -132,7 +131,6 @@ class AttrString(Attr[str]):
     _attribute_proto_type_int = AttributeProto.STRING
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        # Strings are bytes on the onnx side
         return make_attribute(key, self.value)
 
 
@@ -207,60 +205,74 @@ class _AttrIterable(Attr[Tuple[S, ...]], ABC):
     ) -> Optional[AttrIterableT]:
         return cls(tuple(value)) if value is not None else None
 
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        return make_attribute(key, self.value, attr_type=self._attribute_proto_type_int)
+
+    def _to_onnx_type_deref(self) -> AttributeProto.AttributeType:
+        return _deduce_type(self.value)
+
 
 class AttrFloat32s(_AttrIterable[float]):
     _attribute_proto_type_int = AttributeProto.FLOATS
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        # ensure values are all floats
-        values = [float(v) for v in self.value]
-        return make_attribute(key, values, attr_type=AttributeProto.FLOATS)
+        return make_attribute(
+            key, self._transformed(), attr_type=self._attribute_proto_type_int
+        )
 
     def _to_onnx_type_deref(self) -> AttributeProto.AttributeType:
-        values = [float(v) for v in self.value]
-        return _deduce_type(values)
+        return _deduce_type(self._transformed())
+
+    def _transformed(self) -> Tuple[float, ...]:
+        try:
+            return tuple(float(v) for v in self.value)
+        except ValueError as e:
+            raise AttributeTypeError("Attribute values don't seem to be floats.") from e
 
 
 class AttrInt64s(_AttrIterable[int]):
     _attribute_proto_type_int = AttributeProto.INTS
-
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, self.value, attr_type=AttributeProto.INTS)
-
-    def _to_onnx_type_deref(self) -> AttributeProto.AttributeType:
-        return _deduce_type(self.value)
 
 
 class AttrStrings(_AttrIterable[str]):
     _attribute_proto_type_int = AttributeProto.STRINGS
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, self.value, attr_type=AttributeProto.STRINGS)
+        return make_attribute(
+            key, self._transformed(), attr_type=self._attribute_proto_type_int
+        )
 
     def _to_onnx_type_deref(self) -> AttributeProto.AttributeType:
-        return _deduce_type(self.value)
+        return _deduce_type(self._transformed())
+
+    def _transformed(self) -> Tuple[bytes, ...]:
+        try:
+            return tuple(v.encode() for v in self.value)
+        except AttributeError as e:
+            raise AttributeTypeError(
+                "Attribute values don't seem to be strings."
+            ) from e
 
 
 class AttrTensors(_AttrIterable[np.ndarray]):
     _attribute_proto_type_int = AttributeProto.TENSORS
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        tensors = [from_array(t) for t in self.value]
-        return make_attribute(key, tensors, attr_type=AttributeProto.TENSORS)
+        return make_attribute(
+            key, self._transformed(), attr_type=self._attribute_proto_type_int
+        )
 
     def _to_onnx_type_deref(self) -> AttributeProto.AttributeType:
-        tensors = [from_array(t) for t in self.value]
-        return _deduce_type(tensors)
+        return _deduce_type(self._transformed())
+
+    def _transformed(self) -> Tuple[TensorProto, ...]:
+        return tuple(from_array(v) for v in self.value)
 
 
 def _deref(ref: _Ref[T]) -> T:
     if isinstance(ref._concrete._value, _Ref):
         return _deref(ref._concrete._value)
     return ref._concrete._value
-
-
-def _make_attribute_type(value: Any) -> AttributeProto:
-    return AttributeProto(type=_deduce_type(value))
 
 
 # With some simplifying modifications, this is a shameless copy from
