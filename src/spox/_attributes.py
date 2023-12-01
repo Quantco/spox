@@ -23,9 +23,12 @@ AttrIterableT = TypeVar("AttrIterableT", bound="_AttrIterable")
 
 class Attr(ABC, Generic[T]):
     _value: Union[T, "_Ref[T]"]
+    _cached_onnx: Optional[AttributeProto]
 
     def __init__(self, value: Union[T, "_Ref[T]"]):
         self._value = value
+        self._cached_onnx = None
+
         self._validate()
 
     @classmethod
@@ -55,7 +58,10 @@ class Attr(ABC, Generic[T]):
     def _to_onnx(self, key: str) -> AttributeProto:
         if isinstance(self._value, _Ref):
             return self._value._to_onnx(key)
-        return self._to_onnx_deref(key)
+        if self._cached_onnx is None:
+            self._cached_onnx = self._to_onnx_deref(key)
+        self._cached_onnx.name = key
+        return self._cached_onnx
 
     @property
     @abc.abstractmethod
