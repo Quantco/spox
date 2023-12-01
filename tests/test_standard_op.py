@@ -5,7 +5,7 @@ import numpy
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
-from spox._attributes import AttributeTypeError
+from spox._attributes import AttributeTypeError, AttrTensors
 from spox._exceptions import InferenceError
 from spox._graph import arguments
 from spox._type_system import Tensor
@@ -87,3 +87,11 @@ def test_multiple_outputs():
 def test_passing_wrong_type(key: str, values: Any, match: str):
     with pytest.raises(AttributeTypeError, match=re.escape(match)):
         op.constant(**{key: values})
+
+
+def test_passing_wrong_type_tensors():
+    with pytest.raises(
+        AttributeTypeError,
+        match=re.escape("Attribute values don't seem to be numpy arrays."),
+    ):
+        AttrTensors([1])  # type: ignore
