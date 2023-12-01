@@ -13,6 +13,7 @@ Change log
 **New feature**
 
 - The opsets ``ai.onnx`` version 20 and ``ai.onnx.ml`` version 4 (ONNX 1.15) are now shipped with Spox.
+- More consistent exceptions thrown for type errors with node attributes - now we raise AttributeTypeError (a subclass of TypeError).
 
 
 0.9.3 (2023-10-23)
