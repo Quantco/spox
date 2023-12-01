@@ -8,6 +8,7 @@ import onnx.shape_inference
 from onnx.defs import OpSchema
 
 from . import _value_prop
+from ._attributes import AttrGraph, AttrType, _Ref
 from ._exceptions import InferenceError
 from ._node import Node
 from ._schemas import SCHEMAS
@@ -65,13 +66,26 @@ class StandardNode(Node):
         # We inject the evaluated attribute values here and then substitute back
         self_attrs = self.attrs
         try:
+            current_fields = self_attrs.get_fields().items()
+            non_cachable_attributes_recreated = {
+                k: type(v)(v.value) if v is not None else v
+                for k, v in current_fields
+                if v is not None
+                and (
+                    isinstance(v, (AttrGraph, AttrType, _Ref))
+                    or isinstance(v._value, _Ref)
+                )
+            }
+            cached_attributes_persisted = {
+                k: v
+                for k, v in current_fields
+                if k not in non_cachable_attributes_recreated
+            }
             # Get exact attribute values to run inference (as
             # otherwise refs aren't handled properly).
             self.attrs = self.Attributes(
-                **{
-                    k: type(v)(v.value) if v is not None else v
-                    for k, v in self.attrs.get_fields().items()
-                }
+                **non_cachable_attributes_recreated,
+                **cached_attributes_persisted,
             )
             node_proto: onnx.NodeProto
             # Subgraphs are not fully built for possibly significant performance gains.
