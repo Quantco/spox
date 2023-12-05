@@ -75,8 +75,16 @@ def test_multiple_outputs():
             ["a"],
             "Unable to instantiate `AttrInt64s` with value of type `tuple[str, ...]`",
         ),
-        ("value_strings", [1], "Attribute values don't seem to be strings."),
-        ("value_floats", ["a"], "Attribute values don't seem to be floats."),
+        (
+            "value_strings",
+            [1],
+            "Unable to instantiate `AttrStrings` with value of type `tuple[int, ...]",
+        ),
+        (
+            "value_floats",
+            ["a"],
+            "Unable to instantiate `AttrFloat32s` with value of type `tuple[str, ...]",
+        ),
         (
             "value_int",
             "a",
@@ -92,6 +100,8 @@ def test_passing_wrong_type(key: str, values: Any, match: str):
 def test_passing_wrong_type_tensors():
     with pytest.raises(
         AttributeTypeError,
-        match=re.escape("Attribute values don't seem to be numpy arrays."),
+        match=re.escape(
+            "Unable to instantiate `AttrTensors` with value of type `tuple[int, ...]"
+        ),
     ):
         AttrTensors([1])  # type: ignore

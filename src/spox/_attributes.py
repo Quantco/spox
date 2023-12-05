@@ -48,13 +48,12 @@ class Attr(ABC, Generic[T]):
     def _validate(self):
         try:
             type_in_onnx = self._to_onnx_deref("dummy").type
-        except TypeError as e:
-            # TypeError: 'a' has type str, but expected one of: int -- this is raised from within protobuf
+        except Exception as e:
+            # Likely an error from within onnx/protobuf, such as:
+            # 1) AttributeError: 'int' object has no attribute 'encode'
+            # 2) TypeError: 'a' has type str, but expected one of: int -- this is raised from within protobuf
             # when .extend()-ing with the wrong type.
-            if "but expected one of" in str(e):
-                raise self._get_pretty_type_exception() from e
-            else:
-                raise
+            raise self._get_pretty_type_exception() from e
 
         if type_in_onnx != self._attribute_proto_type:
             raise self._get_pretty_type_exception()
@@ -207,13 +206,6 @@ class _AttrIterable(Attr[Tuple[S, ...]], ABC):
 class AttrFloat32s(_AttrIterable[float]):
     _attribute_proto_type = AttributeProto.FLOATS
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        try:
-            transformed = [float(v) for v in self.value]
-        except (ValueError, TypeError) as e:
-            raise AttributeTypeError("Attribute values don't seem to be floats.") from e
-        return make_attribute(key, transformed, attr_type=self._attribute_proto_type)
-
 
 class AttrInt64s(_AttrIterable[int]):
     _attribute_proto_type = AttributeProto.INTS
@@ -222,28 +214,9 @@ class AttrInt64s(_AttrIterable[int]):
 class AttrStrings(_AttrIterable[str]):
     _attribute_proto_type = AttributeProto.STRINGS
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        try:
-            transformed = [v.encode() for v in self.value]
-        except AttributeError as e:
-            raise AttributeTypeError(
-                "Attribute values don't seem to be strings."
-            ) from e
-        return make_attribute(key, transformed, attr_type=self._attribute_proto_type)
-
 
 class AttrTensors(_AttrIterable[np.ndarray]):
     _attribute_proto_type = AttributeProto.TENSORS
-
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        try:
-            transformed = [from_array(v) for v in self.value]
-        except AttributeError as e:
-            raise AttributeTypeError(
-                "Attribute values don't seem to be numpy arrays."
-            ) from e
-
-        return make_attribute(key, transformed, attr_type=self._attribute_proto_type)
 
 
 def _deref(ref: _Ref[T]) -> T:
