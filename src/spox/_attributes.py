@@ -76,7 +76,7 @@ class Attr(ABC, Generic[T]):
 
     def _get_pretty_type_exception(self):
         if isinstance(self.value, tuple) and len(self.value):
-            tuple_types = ", ".join({type(v).__name__ for v in self.value})
+            tuple_types = " | ".join(sorted({type(v).__name__ for v in self.value}))
             value_type = f"tuple[{tuple_types}, ...]"
         else:
             value_type = type(self.value).__name__
