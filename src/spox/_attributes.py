@@ -21,7 +21,7 @@ AttrT = TypeVar("AttrT", bound="Attr")
 AttrIterableT = TypeVar("AttrIterableT", bound="_AttrIterable")
 
 
-class AttributeTypeError(TypeError):
+class OnnxAttributeTypeError(TypeError):
     """Raised upon encountering type errors in node attributes."""
 
     pass
@@ -79,7 +79,7 @@ class Attr(ABC, Generic[T]):
             value_type = f"tuple[{tuple_types}, ...]"
         else:
             value_type = type(self.value).__name__
-        return AttributeTypeError(
+        return OnnxAttributeTypeError(
             f"Unable to instantiate `{type(self).__name__}` with value of type `{value_type}`."
         )
 
