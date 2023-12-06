@@ -73,17 +73,17 @@ def test_multiple_outputs():
         (
             "value_ints",
             ["a"],
-            "Unable to instantiate `AttrInt64s` with value of type `tuple[str, ...]`",
+            "Unable to instantiate `AttrInt64s` from items of type(s) `str`.",
         ),
         (
             "value_strings",
-            [1],
-            "Unable to instantiate `AttrStrings` with value of type `tuple[int, ...]",
+            [1, 2.3],
+            "Unable to instantiate `AttrStrings` from items of type(s) `float, int`.",
         ),
         (
             "value_floats",
             ["a"],
-            "Unable to instantiate `AttrFloat32s` with value of type `tuple[str, ...]",
+            "Unable to instantiate `AttrFloat32s` from items of type(s) `str`.",
         ),
         (
             "value_int",
@@ -101,7 +101,7 @@ def test_passing_wrong_type_tensors():
     with pytest.raises(
         TypeError,
         match=re.escape(
-            "Unable to instantiate `AttrTensors` with value of type `tuple[int, ...]"
+            "Unable to instantiate `AttrTensors` from items of type(s) `int`."
         ),
     ):
         AttrTensors([1])  # type: ignore

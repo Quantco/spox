@@ -69,13 +69,12 @@ class Attr(ABC, Generic[T]):
 
     def _get_pretty_type_exception(self):
         if isinstance(self.value, tuple) and len(self.value):
-            tuple_types = " | ".join(sorted({type(v).__name__ for v in self.value}))
-            value_type = f"tuple[{tuple_types}, ...]"
+            types = ", ".join(sorted({type(v).__name__ for v in self.value}))
+            msg = f"Unable to instantiate `{type(self).__name__}` from items of type(s) `{types}`."
         else:
-            value_type = type(self.value).__name__
-        return TypeError(
-            f"Unable to instantiate `{type(self).__name__}` with value of type `{value_type}`."
-        )
+            ty = type(self.value).__name__
+            msg = f"Unable to instantiate `{type(self).__name__}` with value of type `{ty}`."
+        return TypeError(msg)
 
 
 class _Ref(Generic[T]):
