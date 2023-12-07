@@ -31,13 +31,13 @@ def test_float_instead_of_int_attr():
     ],
 )
 def test_tensor_does_not_use_raw_data(vals, field, expected):
-    attr = AttrTensor(np.array(vals))
-    pb = attr._to_onnx_deref("foo")
+    attr = AttrTensor(np.array(vals), "foo")
+    pb = attr._to_onnx_deref()
     assert pb.t.raw_data == b""
     assert getattr(pb.t, field) == expected
     assert pb.t.dims == list(np.array(vals).shape)
 
 
 def test_non_ascii_string_attr():
-    AttrString("🐍")._to_onnx(key="foo")
-    AttrStrings(["🐍"])._to_onnx(key="foo")
+    AttrString("🐍", "foo")._to_onnx()
+    AttrStrings(["🐍"], "foo")._to_onnx()

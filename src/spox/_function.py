@@ -39,7 +39,7 @@ class Function(_InternalNode):
     """
 
     func_args: Dict[str, Var]
-    func_attrs: Dict[str, _attributes._Ref]
+    func_attrs: Dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
     func_graph: "_graph.Graph"
@@ -64,14 +64,13 @@ class Function(_InternalNode):
             **{name: var.type for name, var in self.inputs.get_vars().items()}
         )
 
-        func_attrs = {}
+        self.func_attrs = {}
         for name, attr in self.attrs.get_fields().items():
             if attr is None:
                 raise TypeError(
                     f"Function attributes is not optional, but {name} is None."
                 )
-            func_attrs[name] = _attributes._Ref(concrete=attr, outer_name=name)
-        self.func_attrs = func_attrs
+            self.func_attrs[name] = attr
 
         self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)

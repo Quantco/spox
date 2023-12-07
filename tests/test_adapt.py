@@ -94,7 +94,7 @@ def old_squeeze_graph(old_squeeze):
 
     def squeeze11(_data: Var, _axes: Iterable[int]):
         return Squeeze11(
-            Squeeze11.Attributes(AttrInt64s(_axes)), Squeeze11.Inputs(_data)
+            Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
         ).outputs.squeezed
 
     (data,) = arguments(

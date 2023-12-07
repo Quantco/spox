@@ -68,7 +68,7 @@ class StandardNode(Node):
         try:
             current_fields = self_attrs.get_fields().items()
             non_cachable_attributes_recreated = {
-                k: type(v)(v.value) if v is not None else v
+                k: type(v)(v.value, k) if v is not None else v
                 for k, v in current_fields
                 if v is not None
                 and (

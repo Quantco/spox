@@ -33,7 +33,7 @@ def argument(typ: Type) -> Var:
         a model input to build a graph.
     """
     return _internal_op.Argument(
-        _internal_op.Argument.Attributes(type=AttrType(typ), default=None)
+        _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
     ).outputs.arg
 
 

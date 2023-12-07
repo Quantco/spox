@@ -32,18 +32,20 @@ AttrIterableT = TypeVar("AttrIterableT", bound="_AttrIterable")
 
 class Attr(ABC, Generic[T]):
     _value: Union[T, "_Ref[T]"]
+    _name: str
     _attribute_proto_type_int: ClassVar[int]
     _cached_onnx: Optional[AttributeProto]
 
-    def __init__(self, value: Union[T, "_Ref[T]"]):
+    def __init__(self, value: Union[T, "_Ref[T]"], name: str):
         self._value = value
+        self._name = name
         self._cached_onnx = None
 
         self._validate()
 
     @classmethod
-    def maybe(cls: Type[AttrT], value: Optional[T]) -> Optional[AttrT]:
-        return cls(value) if value is not None else None
+    def maybe(cls: Type[AttrT], value: Optional[T], name: str) -> Optional[AttrT]:
+        return cls(value, name) if value is not None else None
 
     @property
     def value(self) -> T:
@@ -53,20 +55,19 @@ class Attr(ABC, Generic[T]):
         return self._value
 
     def _validate(self):
-        if self._to_onnx("dummy").type != self._attribute_proto_type_int:
+        if self._to_onnx().type != self._attribute_proto_type_int:
             raise TypeError(
                 f"Unable to instantiate `{type(self).__name__}` with value of type `{type(self.value).__name__}`."
             )
 
-    def _to_onnx(self, key: str) -> AttributeProto:
+    def _to_onnx(self) -> AttributeProto:
         if isinstance(self._value, _Ref):
-            return self._value._to_onnx(key)
+            return self._value._to_onnx()
         if self._cached_onnx is None:
-            self._cached_onnx = self._to_onnx_deref(key)
-        self._cached_onnx.name = key
+            self._cached_onnx = self._to_onnx_deref()
         return self._cached_onnx
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _to_onnx_deref(self) -> AttributeProto:
         """Conversion method for the dereferenced case."""
         raise NotImplementedError
 
@@ -81,58 +82,59 @@ class _Ref(Generic[T]):
 
     _concrete: Attr[T]
 
-    def __init__(self, concrete: Attr[T], outer_name: str):
+    def __init__(self, concrete: Attr[T], outer_name: str, name: str):
         self._concrete = concrete
         self._outer_name = outer_name
+        self._name = name
 
     def copy(self) -> "_Ref[T]":
         return self
 
-    def _to_onnx(self, key: str) -> AttributeProto:
-        parent_type = self._concrete._to_onnx(key).type
+    def _to_onnx(self) -> AttributeProto:
+        parent_type = self._concrete._to_onnx().type
         return AttributeProto(
-            name=key, ref_attr_name=self._outer_name, type=parent_type
+            name=self._name, ref_attr_name=self._outer_name, type=parent_type
         )
 
 
 class AttrFloat32(Attr[float]):
     _attribute_proto_type_int = AttributeProto.FLOAT
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _to_onnx_deref(self) -> AttributeProto:
         if isinstance(self.value, int):
-            return make_attribute(key, float(self.value))
-        return make_attribute(key, self.value)
+            return make_attribute(self._name, float(self.value))
+        return make_attribute(self._name, self.value)
 
 
 class AttrInt64(Attr[int]):
     _attribute_proto_type_int = AttributeProto.INT
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, self.value)
+    def _to_onnx_deref(self) -> AttributeProto:
+        return make_attribute(self._name, self.value)
 
 
 class AttrString(Attr[str]):
     _attribute_proto_type_int = AttributeProto.STRING
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _to_onnx_deref(self) -> AttributeProto:
         # Strings are bytes on the onnx side
-        return make_attribute(key, self.value.encode())
+        return make_attribute(self._name, self.value.encode())
 
 
 class AttrTensor(Attr[np.ndarray]):
     _attribute_proto_type_int = AttributeProto.TENSOR
 
-    def __init__(self, value: Union[np.ndarray, _Ref[np.ndarray]]):
-        super().__init__(value.copy())
+    def __init__(self, value: Union[np.ndarray, _Ref[np.ndarray]], name: str):
+        super().__init__(value.copy(), name)
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, from_array(self.value))
+    def _to_onnx_deref(self) -> AttributeProto:
+        return make_attribute(self._name, from_array(self.value))
 
 
 class AttrType(Attr[_type_system.Type]):
     _attribute_proto_type_int = AttributeProto.TYPE_PROTO
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _to_onnx_deref(self) -> AttributeProto:
         value = self.value  # for type-checkers with limited property support
         if isinstance(value, _type_system.Tensor):
             type_proto = make_tensor_type_proto(
@@ -145,7 +147,7 @@ class AttrType(Attr[_type_system.Type]):
             type_proto = make_optional_type_proto(value.elem_type._to_onnx())
         else:
             raise NotImplementedError
-        return make_attribute(key, type_proto)
+        return make_attribute(self._name, type_proto)
 
 
 class AttrDtype(Attr[npt.DTypeLike]):
@@ -156,8 +158,8 @@ class AttrDtype(Attr[npt.DTypeLike]):
     def _validate(self):
         dtype_to_tensor_type(self.value)
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, dtype_to_tensor_type(self.value))
+    def _to_onnx_deref(self) -> AttributeProto:
+        return make_attribute(self._name, dtype_to_tensor_type(self.value))
 
 
 class AttrGraph(Attr[Any]):
@@ -171,52 +173,56 @@ class AttrGraph(Attr[Any]):
                 f"Expected value of type `spox.graph.Graph found `{type(self.value)}`"
             )
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _to_onnx_deref(self) -> AttributeProto:
         raise TypeError(
             "Graph attributes must be built using the `build_subgraph` callback in `Node.to_onnx`."
         )
 
 
 class _AttrIterable(Attr[Tuple[S, ...]], ABC):
-    def __init__(self, value: Union[Iterable[S], _Ref[Tuple[S, ...]]]):
-        super().__init__(value if isinstance(value, _Ref) else tuple(value))
+    def __init__(self, value: Union[Iterable[S], _Ref[Tuple[S, ...]]], name: str):
+        super().__init__(
+            value=value if isinstance(value, _Ref) else tuple(value), name=name
+        )
 
     @classmethod
     def maybe(
-        cls: Type[AttrIterableT], value: Optional[Iterable[S]]
+        cls: Type[AttrIterableT],
+        value: Optional[Iterable[S]],
+        name: str,
     ) -> Optional[AttrIterableT]:
-        return cls(tuple(value)) if value is not None else None
+        return cls(tuple(value), name) if value is not None else None
 
 
 class AttrFloat32s(_AttrIterable[float]):
     _attribute_proto_type_int = AttributeProto.FLOATS
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _to_onnx_deref(self) -> AttributeProto:
         # ensure values are all floats
         values = [float(v) for v in self.value]
-        return make_attribute(key, values)
+        return make_attribute(self._name, values)
 
 
 class AttrInt64s(_AttrIterable[int]):
     _attribute_proto_type_int = AttributeProto.INTS
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, self.value)
+    def _to_onnx_deref(self) -> AttributeProto:
+        return make_attribute(self._name, self.value)
 
 
 class AttrStrings(_AttrIterable[str]):
     _attribute_proto_type_int = AttributeProto.STRINGS
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, [v.encode() for v in self.value])
+    def _to_onnx_deref(self) -> AttributeProto:
+        return make_attribute(self._name, [v.encode() for v in self.value])
 
 
 class AttrTensors(_AttrIterable[np.ndarray]):
     _attribute_proto_type_int = AttributeProto.TENSORS
 
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
+    def _to_onnx_deref(self) -> AttributeProto:
         tensors = [from_array(t) for t in self.value]
-        return make_attribute(key, tensors)
+        return make_attribute(self._name, tensors)
 
 
 def _deref(ref: _Ref[T]) -> T:
