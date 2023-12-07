@@ -14,6 +14,10 @@ Change log
 
 - The opsets ``ai.onnx`` version 20 and ``ai.onnx.ml`` version 4 (ONNX 1.15) are now shipped with Spox.
 
+**Other changes**
+
+- The validation of Node attributes has been improved and more consistent exceptions are raised if needed.
+
 
 0.9.3 (2023-10-23)
 ------------------

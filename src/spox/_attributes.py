@@ -1,15 +1,6 @@
+import abc
 from abc import ABC
-from typing import (
-    Any,
-    ClassVar,
-    Generic,
-    Iterable,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -32,7 +23,6 @@ AttrIterableT = TypeVar("AttrIterableT", bound="_AttrIterable")
 
 class Attr(ABC, Generic[T]):
     _value: Union[T, "_Ref[T]"]
-    _attribute_proto_type_int: ClassVar[int]
 
     def __init__(self, value: Union[T, "_Ref[T]"]):
         self._value = value
@@ -50,19 +40,41 @@ class Attr(ABC, Generic[T]):
         return self._value
 
     def _validate(self):
-        if self._to_onnx("dummy").type != self._attribute_proto_type_int:
-            raise TypeError(
-                f"Unable to instantiate `{type(self).__name__}` with value of type `{type(self.value).__name__}`."
-            )
+        try:
+            type_in_onnx = self._to_onnx_deref("dummy").type
+        except Exception as e:
+            # Likely an error from within onnx/protobuf, such as:
+            # 1) AttributeError: 'int' object has no attribute 'encode'
+            # 2) TypeError: 'a' has type str, but expected one of: int -- this is raised from within protobuf
+            # when .extend()-ing with the wrong type.
+            raise self._get_pretty_type_exception() from e
+
+        if type_in_onnx != self._attribute_proto_type:
+            raise self._get_pretty_type_exception()
 
     def _to_onnx(self, key: str) -> AttributeProto:
         if isinstance(self._value, _Ref):
             return self._value._to_onnx(key)
         return self._to_onnx_deref(key)
 
+    @property
+    @abc.abstractmethod
+    def _attribute_proto_type(self) -> int:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         """Conversion method for the dereferenced case."""
-        raise NotImplementedError
+        raise NotImplementedError()
+
+    def _get_pretty_type_exception(self):
+        if isinstance(self.value, tuple) and len(self.value):
+            types = ", ".join(sorted({type(v).__name__ for v in self.value}))
+            msg = f"Unable to instantiate `{type(self).__name__}` from items of type(s) `{types}`."
+        else:
+            ty = type(self.value).__name__
+            msg = f"Unable to instantiate `{type(self).__name__}` with value of type `{ty}`."
+        return TypeError(msg)
 
 
 class _Ref(Generic[T]):
@@ -90,7 +102,7 @@ class _Ref(Generic[T]):
 
 
 class AttrFloat32(Attr[float]):
-    _attribute_proto_type_int = AttributeProto.FLOAT
+    _attribute_proto_type = AttributeProto.FLOAT
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         if isinstance(self.value, int):
@@ -99,22 +111,21 @@ class AttrFloat32(Attr[float]):
 
 
 class AttrInt64(Attr[int]):
-    _attribute_proto_type_int = AttributeProto.INT
+    _attribute_proto_type = AttributeProto.INT
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         return make_attribute(key, self.value)
 
 
 class AttrString(Attr[str]):
-    _attribute_proto_type_int = AttributeProto.STRING
+    _attribute_proto_type = AttributeProto.STRING
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
-        # Strings are bytes on the onnx side
-        return make_attribute(key, self.value.encode())
+        return make_attribute(key, self.value)
 
 
 class AttrTensor(Attr[np.ndarray]):
-    _attribute_proto_type_int = AttributeProto.TENSOR
+    _attribute_proto_type = AttributeProto.TENSOR
 
     def __init__(self, value: Union[np.ndarray, _Ref[np.ndarray]]):
         super().__init__(value.copy())
@@ -124,7 +135,7 @@ class AttrTensor(Attr[np.ndarray]):
 
 
 class AttrType(Attr[_type_system.Type]):
-    _attribute_proto_type_int = AttributeProto.TYPE_PROTO
+    _attribute_proto_type = AttributeProto.TYPE_PROTO
 
     def _to_onnx_deref(self, key: str) -> AttributeProto:
         value = self.value  # for type-checkers with limited property support
@@ -138,14 +149,14 @@ class AttrType(Attr[_type_system.Type]):
         elif isinstance(value, _type_system.Optional):
             type_proto = make_optional_type_proto(value.elem_type._to_onnx())
         else:
-            raise NotImplementedError
+            raise NotImplementedError()
         return make_attribute(key, type_proto)
 
 
 class AttrDtype(Attr[npt.DTypeLike]):
     """Special attribute for specifying data types as ``numpy.dtype``s, for example in ``Cast``."""
 
-    _attribute_proto_type_int = AttributeProto.INT
+    _attribute_proto_type = AttributeProto.INT
 
     def _validate(self):
         dtype_to_tensor_type(self.value)
@@ -155,7 +166,7 @@ class AttrDtype(Attr[npt.DTypeLike]):
 
 
 class AttrGraph(Attr[Any]):
-    _attribute_proto_type_int = AttributeProto.GRAPH
+    _attribute_proto_type = AttributeProto.GRAPH
 
     def _validate(self):
         from spox._graph import Graph
@@ -181,36 +192,24 @@ class _AttrIterable(Attr[Tuple[S, ...]], ABC):
     ) -> Optional[AttrIterableT]:
         return cls(tuple(value)) if value is not None else None
 
+    def _to_onnx_deref(self, key: str) -> AttributeProto:
+        return make_attribute(key, self.value, attr_type=self._attribute_proto_type)
+
 
 class AttrFloat32s(_AttrIterable[float]):
-    _attribute_proto_type_int = AttributeProto.FLOATS
-
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        # ensure values are all floats
-        values = [float(v) for v in self.value]
-        return make_attribute(key, values)
+    _attribute_proto_type = AttributeProto.FLOATS
 
 
 class AttrInt64s(_AttrIterable[int]):
-    _attribute_proto_type_int = AttributeProto.INTS
-
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, self.value)
+    _attribute_proto_type = AttributeProto.INTS
 
 
 class AttrStrings(_AttrIterable[str]):
-    _attribute_proto_type_int = AttributeProto.STRINGS
-
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        return make_attribute(key, [v.encode() for v in self.value])
+    _attribute_proto_type = AttributeProto.STRINGS
 
 
 class AttrTensors(_AttrIterable[np.ndarray]):
-    _attribute_proto_type_int = AttributeProto.TENSORS
-
-    def _to_onnx_deref(self, key: str) -> AttributeProto:
-        tensors = [from_array(t) for t in self.value]
-        return make_attribute(key, tensors)
+    _attribute_proto_type = AttributeProto.TENSORS
 
 
 def _deref(ref: _Ref[T]) -> T:
