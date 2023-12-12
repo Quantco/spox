@@ -373,7 +373,6 @@ class Node(ABC):
                     subgraph = build_subgraph(self, key, attr.value)
                     attr_proto = onnx.helper.make_attribute(key, subgraph)
                 else:
-                    assert attr._name == key  # TODO-in-this-PR: remove
                     attr_proto = attr._to_onnx()
                 node_proto.attribute.append(attr_proto)
 
