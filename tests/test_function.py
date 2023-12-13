@@ -1,6 +1,6 @@
 import functools
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import numpy
 import onnx
@@ -10,7 +10,7 @@ import onnxruntime
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
-from spox._attributes import AttrFloat32, _Ref
+from spox._attributes import Attr, AttrFloat32, _Ref
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._function import Function, to_function
 from spox._graph import arguments, results
@@ -24,8 +24,8 @@ def linear():
     class LinearFunction(Function):
         @dataclass
         class Attributes(BaseAttributes):
-            slope: AttrFloat32
-            shift: AttrFloat32
+            slope_outer: AttrFloat32
+            shift_outer: AttrFloat32
 
         @dataclass
         class Inputs(BaseInputs):
@@ -41,16 +41,21 @@ def linear():
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: Dict[str, Attr], inputs: Inputs) -> Outputs:
             # FIXME: At some point, attribute references should be properly type-hinted.
-            a = op.constant(value_float=attrs["slope"])  # type: ignore
-            b = op.constant(value_float=attrs["shift"])  # type: ignore
+            a = op.constant(value_float=_Ref(attrs["slope_outer"], outer_name="slope_outer", name="value_float"))  # type: ignore
+            b = op.constant(value_float=_Ref(attrs["shift_outer"], outer_name="shift_outer", name="value_float"))  # type: ignore
             x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b))
 
-    def linear_inner(x: Var, a: float, b: float) -> Var:
+    def linear_inner(
+        x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
+    ) -> Var:
         return LinearFunction(
-            LinearFunction.Attributes(AttrFloat32(a), AttrFloat32(b)),
+            LinearFunction.Attributes(
+                slope_outer=AttrFloat32(a, "slope_outer"),
+                shift_outer=AttrFloat32(b, "shift_outer"),
+            ),
             LinearFunction.Inputs(x),
         ).outputs.Y
 
@@ -79,12 +84,22 @@ def linear2(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
-            return self.Outputs(linear(inputs.X, attrs["slope1"], attrs["shift1"]))  # type: ignore
+        def constructor(self, attrs: Dict[str, Attr], inputs: Inputs) -> Outputs:
+            return self.Outputs(
+                linear(
+                    inputs.X,
+                    _Ref(attrs["slope1"], outer_name="slope1", name="slope_outer"),
+                    _Ref(attrs["shift1"], outer_name="shift1", name="shift_outer"),
+                )
+            )
 
-    def linear_inner(x: Var, a: float, b: float) -> Var:
+    def linear_inner(
+        x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
+    ) -> Var:
         return LinearFunction2(
-            LinearFunction2.Attributes(AttrFloat32(a), AttrFloat32(b)),
+            LinearFunction2.Attributes(
+                slope1=AttrFloat32(a, name="slope1"), shift1=AttrFloat32(b, "shift1")
+            ),
             LinearFunction2.Inputs(x),
         ).outputs.Y
 
@@ -115,12 +130,24 @@ def cubic(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Dict[str, _Ref], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: Dict[str, Attr], inputs: Inputs) -> Outputs:
             x = inputs.X
-            a = op.mul(linear(x, attrs["a3"], attrs["a2"]), op.mul(x, x))  # type: ignore
+            a = op.mul(
+                linear(
+                    x,
+                    _Ref(attrs["a3"], outer_name="a3", name="slope_outer"),
+                    _Ref(attrs["a2"], outer_name="a2", name="shift_outer"),
+                ),
+                op.mul(x, x),
+            )
             b = op.add(
-                op.mul(x, op.constant(value_float=attrs["a1"])),  # type: ignore
-                op.constant(value_float=attrs["a0"]),  # type: ignore
+                op.mul(
+                    x,
+                    op.constant(value_float=_Ref(attrs["a1"], outer_name="a1", name="value_float")),  # type: ignore
+                ),
+                op.constant(
+                    value_float=_Ref(attrs["a0"], outer_name="a0", name="value_float"),  # type: ignore
+                ),
             )
             y = op.add(a, b)
             return self.Outputs(y)
@@ -128,10 +155,10 @@ def cubic(linear):
     def cubic_inner(x: Var, a3: float, a2: float, a1: float, a0: float) -> Var:
         return CubicFunction(
             CubicFunction.Attributes(
-                a3=AttrFloat32(a3),
-                a2=AttrFloat32(a2),
-                a1=AttrFloat32(a1),
-                a0=AttrFloat32(a0),
+                a3=AttrFloat32(a3, name="a3"),
+                a2=AttrFloat32(a2, name="a2"),
+                a1=AttrFloat32(a1, name="a1"),
+                a0=AttrFloat32(a0, name="a0"),
             ),
             CubicFunction.Inputs(X=x),
         ).outputs.Y

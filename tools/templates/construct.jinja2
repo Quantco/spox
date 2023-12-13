@@ -23,9 +23,9 @@ return _{{ schema.name }}(
         {% set method = "" %}
     {% endif %}
     {% if attr.attr_constructor == "AttrGraph" %}
-        {% set expr = "AttrGraph{}(_{}_subgraph)".format(method, attr.name) %}
+        {% set expr = 'AttrGraph{}(_{}_subgraph, name="{}")'.format(method, attr.name, attr.name) %}
     {% else %}
-        {% set expr = "{}{}({})".format(attr.attr_constructor, method, attr.name) %}
+        {% set expr = '{}{}({}, name="{}")'.format(attr.attr_constructor, method, attr.name, attr.name) %}
     {% endif %}
     {{ attr.name }}={{ expr }},
 {% endfor %}
