@@ -33,6 +33,14 @@ class Attr(ABC, Generic[T]):
 
         self._validate()
 
+    def recreate_if_not_cachable(self, name: str) -> "Attr":
+        if isinstance(self, (AttrGraph, AttrType, _Ref)) or isinstance(
+            self._value, _Ref
+        ):
+            return type(self)(self.value, name)
+        else:
+            return self
+
     @classmethod
     def maybe(cls: Type[AttrT], value: Optional[T], name: str) -> Optional[AttrT]:
         return cls(value, name) if value is not None else None
