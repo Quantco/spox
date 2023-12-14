@@ -17,6 +17,7 @@ Change log
 **Other changes**
 
 - The validation of Node attributes has been improved and more consistent exceptions are raised if needed.
+- ONNX node attributes are now computed only once and then cached so that the values are reused for validation and building the model.
 
 
 0.9.3 (2023-10-23)
