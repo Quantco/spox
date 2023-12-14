@@ -67,10 +67,7 @@ class StandardNode(Node):
         try:
             current_fields = self_attrs.get_fields().items()
             self.attrs = self.Attributes(
-                **{
-                    k: v.recreate_if_not_cachable(k) if v is not None else None
-                    for k, v in current_fields
-                }
+                **{k: v.deref() if v is not None else None for k, v in current_fields}
             )
             node_proto: onnx.NodeProto
             # Subgraphs are not fully built for possibly significant performance gains.

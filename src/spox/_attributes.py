@@ -33,11 +33,9 @@ class Attr(ABC, Generic[T]):
 
         self._validate()
 
-    def recreate_if_not_cachable(self, name: str) -> "Attr":
-        if isinstance(self, (AttrGraph, AttrType, _Ref)) or isinstance(
-            self._value, _Ref
-        ):
-            return type(self)(self.value, name)
+    def deref(self) -> "Attr":
+        if isinstance(self._value, _Ref):
+            return type(self)(self.value, self._name)
         else:
             return self
 
