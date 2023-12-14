@@ -104,4 +104,4 @@ def test_passing_wrong_type_tensors():
             "Unable to instantiate `AttrTensors` from items of type(s) `int`."
         ),
     ):
-        AttrTensors([1])  # type: ignore
+        AttrTensors([1], "dummy")  # type: ignore
