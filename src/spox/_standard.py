@@ -65,13 +65,9 @@ class StandardNode(Node):
         # We inject the evaluated attribute values here and then substitute back
         self_attrs = self.attrs
         try:
-            # Get exact attribute values to run inference (as
-            # otherwise refs aren't handled properly).
+            current_fields = self_attrs.get_fields().items()
             self.attrs = self.Attributes(
-                **{
-                    k: type(v)(v.value) if v is not None else v
-                    for k, v in self.attrs.get_fields().items()
-                }
+                **{k: v.deref() if v is not None else None for k, v in current_fields}
             )
             node_proto: onnx.NodeProto
             # Subgraphs are not fully built for possibly significant performance gains.

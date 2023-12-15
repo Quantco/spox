@@ -755,7 +755,7 @@ def affine_grid(
     """
     return _AffineGrid(
         _AffineGrid.Attributes(
-            align_corners=AttrInt64(align_corners),
+            align_corners=AttrInt64(align_corners, name="align_corners"),
         ),
         _AffineGrid.Inputs(
             theta=theta,
@@ -803,7 +803,7 @@ def constant_of_shape(
     """
     return _ConstantOfShape(
         _ConstantOfShape.Attributes(
-            value=AttrTensor.maybe(value),
+            value=AttrTensor.maybe(value, name="value"),
         ),
         _ConstantOfShape.Inputs(
             input=input,
@@ -903,8 +903,8 @@ def dft(
     """
     return _DFT(
         _DFT.Attributes(
-            inverse=AttrInt64(inverse),
-            onesided=AttrInt64(onesided),
+            inverse=AttrInt64(inverse, name="inverse"),
+            onesided=AttrInt64(onesided, name="onesided"),
         ),
         _DFT.Inputs(
             input=input,
@@ -954,7 +954,7 @@ def gelu(
     """
     return _Gelu(
         _Gelu.Attributes(
-            approximate=AttrString(approximate),
+            approximate=AttrString(approximate, name="approximate"),
         ),
         _Gelu.Inputs(
             X=X,
@@ -1066,9 +1066,9 @@ def grid_sample(
     """
     return _GridSample(
         _GridSample.Attributes(
-            align_corners=AttrInt64(align_corners),
-            mode=AttrString(mode),
-            padding_mode=AttrString(padding_mode),
+            align_corners=AttrInt64(align_corners, name="align_corners"),
+            mode=AttrString(mode, name="mode"),
+            padding_mode=AttrString(padding_mode, name="padding_mode"),
         ),
         _GridSample.Inputs(
             X=X,
@@ -1137,7 +1137,7 @@ def image_decoder(
     """
     return _ImageDecoder(
         _ImageDecoder.Attributes(
-            pixel_format=AttrString(pixel_format),
+            pixel_format=AttrString(pixel_format, name="pixel_format"),
         ),
         _ImageDecoder.Inputs(
             encoded_stream=encoded_stream,
@@ -1186,8 +1186,8 @@ def isinf(
     """
     return _IsInf(
         _IsInf.Attributes(
-            detect_negative=AttrInt64(detect_negative),
-            detect_positive=AttrInt64(detect_positive),
+            detect_negative=AttrInt64(detect_negative, name="detect_negative"),
+            detect_positive=AttrInt64(detect_positive, name="detect_positive"),
         ),
         _IsInf.Inputs(
             X=X,
@@ -1289,8 +1289,10 @@ def reduce_max(
     """
     return _ReduceMax(
         _ReduceMax.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceMax.Inputs(
             data=data,
@@ -1358,8 +1360,10 @@ def reduce_min(
     """
     return _ReduceMin(
         _ReduceMin.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceMin.Inputs(
             data=data,
@@ -1406,7 +1410,7 @@ def regex_full_match(
     """
     return _RegexFullMatch(
         _RegexFullMatch.Attributes(
-            pattern=AttrString.maybe(pattern),
+            pattern=AttrString.maybe(pattern, name="pattern"),
         ),
         _RegexFullMatch.Inputs(
             X=X,
@@ -1524,8 +1528,8 @@ def string_split(
     """
     return _StringSplit(
         _StringSplit.Attributes(
-            delimiter=AttrString.maybe(delimiter),
-            maxsplit=AttrInt64.maybe(maxsplit),
+            delimiter=AttrString.maybe(delimiter, name="delimiter"),
+            maxsplit=AttrInt64.maybe(maxsplit, name="maxsplit"),
         ),
         _StringSplit.Inputs(
             X=X,

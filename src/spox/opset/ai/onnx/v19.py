@@ -925,13 +925,13 @@ def average_pool(
     """
     return _AveragePool(
         _AveragePool.Attributes(
-            auto_pad=AttrString(auto_pad),
-            ceil_mode=AttrInt64(ceil_mode),
-            count_include_pad=AttrInt64(count_include_pad),
-            dilations=AttrInt64s.maybe(dilations),
-            kernel_shape=AttrInt64s(kernel_shape),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+            count_include_pad=AttrInt64(count_include_pad, name="count_include_pad"),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _AveragePool.Inputs(
             X=X,
@@ -1062,8 +1062,8 @@ def cast(
     """
     return _Cast(
         _Cast.Attributes(
-            saturate=AttrInt64(saturate),
-            to=AttrDtype(to),
+            saturate=AttrInt64(saturate, name="saturate"),
+            to=AttrDtype(to, name="to"),
         ),
         _Cast.Inputs(
             input=input,
@@ -1116,7 +1116,7 @@ def cast_like(
     """
     return _CastLike(
         _CastLike.Attributes(
-            saturate=AttrInt64(saturate),
+            saturate=AttrInt64(saturate, name="saturate"),
         ),
         _CastLike.Inputs(
             input=input,
@@ -1182,13 +1182,13 @@ def constant(
     """
     return _Constant(
         _Constant.Attributes(
-            value=AttrTensor.maybe(value),
-            value_float=AttrFloat32.maybe(value_float),
-            value_floats=AttrFloat32s.maybe(value_floats),
-            value_int=AttrInt64.maybe(value_int),
-            value_ints=AttrInt64s.maybe(value_ints),
-            value_string=AttrString.maybe(value_string),
-            value_strings=AttrStrings.maybe(value_strings),
+            value=AttrTensor.maybe(value, name="value"),
+            value_float=AttrFloat32.maybe(value_float, name="value_float"),
+            value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
+            value_int=AttrInt64.maybe(value_int, name="value_int"),
+            value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
+            value_string=AttrString.maybe(value_string, name="value_string"),
+            value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
         ),
         _Constant.Inputs(),
     ).outputs.output
@@ -1292,12 +1292,12 @@ def deform_conv(
     """
     return _DeformConv(
         _DeformConv.Attributes(
-            dilations=AttrInt64s.maybe(dilations),
-            group=AttrInt64(group),
-            kernel_shape=AttrInt64s.maybe(kernel_shape),
-            offset_group=AttrInt64(offset_group),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            group=AttrInt64(group, name="group"),
+            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+            offset_group=AttrInt64(offset_group, name="offset_group"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _DeformConv.Inputs(
             X=X,
@@ -1366,7 +1366,7 @@ def dequantize_linear(
     """
     return _DequantizeLinear(
         _DequantizeLinear.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _DequantizeLinear.Inputs(
             x=x,
@@ -1510,8 +1510,8 @@ def if_(
     _then_branch_subgraph: Graph = subgraph((), then_branch)
     return _If(
         _If.Attributes(
-            else_branch=AttrGraph(_else_branch_subgraph),
-            then_branch=AttrGraph(_then_branch_subgraph),
+            else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
+            then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
         ),
         _If.Inputs(
             cond=cond,
@@ -1703,7 +1703,7 @@ def loop(
     )
     return _Loop(
         _Loop.Attributes(
-            body=AttrGraph(_body_subgraph),
+            body=AttrGraph(_body_subgraph, name="body"),
         ),
         _Loop.Inputs(
             M=M,
@@ -1876,7 +1876,7 @@ def pad(
     """
     return _Pad(
         _Pad.Attributes(
-            mode=AttrString(mode),
+            mode=AttrString(mode, name="mode"),
         ),
         _Pad.Inputs(
             data=data,
@@ -1955,8 +1955,8 @@ def quantize_linear(
     """
     return _QuantizeLinear(
         _QuantizeLinear.Attributes(
-            axis=AttrInt64(axis),
-            saturate=AttrInt64(saturate),
+            axis=AttrInt64(axis, name="axis"),
+            saturate=AttrInt64(saturate, name="saturate"),
         ),
         _QuantizeLinear.Inputs(
             x=x,
@@ -2019,7 +2019,7 @@ def reshape(
     """
     return _Reshape(
         _Reshape.Attributes(
-            allowzero=AttrInt64(allowzero),
+            allowzero=AttrInt64(allowzero, name="allowzero"),
         ),
         _Reshape.Inputs(
             data=data,
@@ -2238,15 +2238,21 @@ def resize(
     """
     return _Resize(
         _Resize.Attributes(
-            antialias=AttrInt64(antialias),
-            axes=AttrInt64s.maybe(axes),
-            coordinate_transformation_mode=AttrString(coordinate_transformation_mode),
-            cubic_coeff_a=AttrFloat32(cubic_coeff_a),
-            exclude_outside=AttrInt64(exclude_outside),
-            extrapolation_value=AttrFloat32(extrapolation_value),
-            keep_aspect_ratio_policy=AttrString(keep_aspect_ratio_policy),
-            mode=AttrString(mode),
-            nearest_mode=AttrString(nearest_mode),
+            antialias=AttrInt64(antialias, name="antialias"),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            coordinate_transformation_mode=AttrString(
+                coordinate_transformation_mode, name="coordinate_transformation_mode"
+            ),
+            cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
+            exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
+            extrapolation_value=AttrFloat32(
+                extrapolation_value, name="extrapolation_value"
+            ),
+            keep_aspect_ratio_policy=AttrString(
+                keep_aspect_ratio_policy, name="keep_aspect_ratio_policy"
+            ),
+            mode=AttrString(mode, name="mode"),
+            nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
         ),
         _Resize.Inputs(
             X=X,
@@ -2480,12 +2486,18 @@ def scan(
     )
     return _Scan(
         _Scan.Attributes(
-            body=AttrGraph(_body_subgraph),
-            num_scan_inputs=AttrInt64(num_scan_inputs),
-            scan_input_axes=AttrInt64s.maybe(scan_input_axes),
-            scan_input_directions=AttrInt64s.maybe(scan_input_directions),
-            scan_output_axes=AttrInt64s.maybe(scan_output_axes),
-            scan_output_directions=AttrInt64s.maybe(scan_output_directions),
+            body=AttrGraph(_body_subgraph, name="body"),
+            num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
+            scan_input_axes=AttrInt64s.maybe(scan_input_axes, name="scan_input_axes"),
+            scan_input_directions=AttrInt64s.maybe(
+                scan_input_directions, name="scan_input_directions"
+            ),
+            scan_output_axes=AttrInt64s.maybe(
+                scan_output_axes, name="scan_output_axes"
+            ),
+            scan_output_directions=AttrInt64s.maybe(
+                scan_output_directions, name="scan_output_directions"
+            ),
         ),
         _Scan.Inputs(
             initial_state_and_scan_inputs=initial_state_and_scan_inputs,
@@ -2572,8 +2584,8 @@ def shape(
     """
     return _Shape(
         _Shape.Attributes(
-            end=AttrInt64.maybe(end),
-            start=AttrInt64(start),
+            end=AttrInt64.maybe(end, name="end"),
+            start=AttrInt64(start, name="start"),
         ),
         _Shape.Inputs(
             data=data,

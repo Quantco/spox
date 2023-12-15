@@ -719,7 +719,7 @@ def binarizer(
     """
     return _Binarizer(
         _Binarizer.Attributes(
-            threshold=AttrFloat32(threshold),
+            threshold=AttrFloat32(threshold, name="threshold"),
         ),
         _Binarizer.Inputs(
             X=X,
@@ -776,9 +776,9 @@ def cast_map(
     """
     return _CastMap(
         _CastMap.Attributes(
-            cast_to=AttrString(cast_to),
-            map_form=AttrString(map_form),
-            max_map=AttrInt64(max_map),
+            cast_to=AttrString(cast_to, name="cast_to"),
+            map_form=AttrString(map_form, name="map_form"),
+            max_map=AttrInt64(max_map, name="max_map"),
         ),
         _CastMap.Inputs(
             X=X,
@@ -843,10 +843,10 @@ def category_mapper(
     """
     return _CategoryMapper(
         _CategoryMapper.Attributes(
-            cats_int64s=AttrInt64s.maybe(cats_int64s),
-            cats_strings=AttrStrings.maybe(cats_strings),
-            default_int64=AttrInt64(default_int64),
-            default_string=AttrString(default_string),
+            cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
+            cats_strings=AttrStrings.maybe(cats_strings, name="cats_strings"),
+            default_int64=AttrInt64(default_int64, name="default_int64"),
+            default_string=AttrString(default_string, name="default_string"),
         ),
         _CategoryMapper.Inputs(
             X=X,
@@ -906,8 +906,12 @@ def dict_vectorizer(
     """
     return _DictVectorizer(
         _DictVectorizer.Attributes(
-            int64_vocabulary=AttrInt64s.maybe(int64_vocabulary),
-            string_vocabulary=AttrStrings.maybe(string_vocabulary),
+            int64_vocabulary=AttrInt64s.maybe(
+                int64_vocabulary, name="int64_vocabulary"
+            ),
+            string_vocabulary=AttrStrings.maybe(
+                string_vocabulary, name="string_vocabulary"
+            ),
         ),
         _DictVectorizer.Inputs(
             X=X,
@@ -951,7 +955,7 @@ def feature_vectorizer(
     """
     return _FeatureVectorizer(
         _FeatureVectorizer.Attributes(
-            inputdimensions=AttrInt64s.maybe(inputdimensions),
+            inputdimensions=AttrInt64s.maybe(inputdimensions, name="inputdimensions"),
         ),
         _FeatureVectorizer.Inputs(
             X=X,
@@ -1016,10 +1020,18 @@ def imputer(
     """
     return _Imputer(
         _Imputer.Attributes(
-            imputed_value_floats=AttrFloat32s.maybe(imputed_value_floats),
-            imputed_value_int64s=AttrInt64s.maybe(imputed_value_int64s),
-            replaced_value_float=AttrFloat32(replaced_value_float),
-            replaced_value_int64=AttrInt64(replaced_value_int64),
+            imputed_value_floats=AttrFloat32s.maybe(
+                imputed_value_floats, name="imputed_value_floats"
+            ),
+            imputed_value_int64s=AttrInt64s.maybe(
+                imputed_value_int64s, name="imputed_value_int64s"
+            ),
+            replaced_value_float=AttrFloat32(
+                replaced_value_float, name="replaced_value_float"
+            ),
+            replaced_value_int64=AttrInt64(
+                replaced_value_int64, name="replaced_value_int64"
+            ),
         ),
         _Imputer.Inputs(
             X=X,
@@ -1109,15 +1121,15 @@ def label_encoder(
     """
     return _LabelEncoder(
         _LabelEncoder.Attributes(
-            default_float=AttrFloat32(default_float),
-            default_int64=AttrInt64(default_int64),
-            default_string=AttrString(default_string),
-            keys_floats=AttrFloat32s.maybe(keys_floats),
-            keys_int64s=AttrInt64s.maybe(keys_int64s),
-            keys_strings=AttrStrings.maybe(keys_strings),
-            values_floats=AttrFloat32s.maybe(values_floats),
-            values_int64s=AttrInt64s.maybe(values_int64s),
-            values_strings=AttrStrings.maybe(values_strings),
+            default_float=AttrFloat32(default_float, name="default_float"),
+            default_int64=AttrInt64(default_int64, name="default_int64"),
+            default_string=AttrString(default_string, name="default_string"),
+            keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
+            keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
+            keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),
+            values_floats=AttrFloat32s.maybe(values_floats, name="values_floats"),
+            values_int64s=AttrInt64s.maybe(values_int64s, name="values_int64s"),
+            values_strings=AttrStrings.maybe(values_strings, name="values_strings"),
         ),
         _LabelEncoder.Inputs(
             X=X,
@@ -1184,12 +1196,16 @@ def linear_classifier(
     """
     return _LinearClassifier(
         _LinearClassifier.Attributes(
-            classlabels_ints=AttrInt64s.maybe(classlabels_ints),
-            classlabels_strings=AttrStrings.maybe(classlabels_strings),
-            coefficients=AttrFloat32s(coefficients),
-            intercepts=AttrFloat32s.maybe(intercepts),
-            multi_class=AttrInt64(multi_class),
-            post_transform=AttrString(post_transform),
+            classlabels_ints=AttrInt64s.maybe(
+                classlabels_ints, name="classlabels_ints"
+            ),
+            classlabels_strings=AttrStrings.maybe(
+                classlabels_strings, name="classlabels_strings"
+            ),
+            coefficients=AttrFloat32s(coefficients, name="coefficients"),
+            intercepts=AttrFloat32s.maybe(intercepts, name="intercepts"),
+            multi_class=AttrInt64(multi_class, name="multi_class"),
+            post_transform=AttrString(post_transform, name="post_transform"),
         ),
         _LinearClassifier.Inputs(
             X=X,
@@ -1248,10 +1264,10 @@ def linear_regressor(
     """
     return _LinearRegressor(
         _LinearRegressor.Attributes(
-            coefficients=AttrFloat32s.maybe(coefficients),
-            intercepts=AttrFloat32s.maybe(intercepts),
-            post_transform=AttrString(post_transform),
-            targets=AttrInt64(targets),
+            coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
+            intercepts=AttrFloat32s.maybe(intercepts, name="intercepts"),
+            post_transform=AttrString(post_transform, name="post_transform"),
+            targets=AttrInt64(targets, name="targets"),
         ),
         _LinearRegressor.Inputs(
             X=X,
@@ -1297,7 +1313,7 @@ def normalizer(
     """
     return _Normalizer(
         _Normalizer.Attributes(
-            norm=AttrString(norm),
+            norm=AttrString(norm, name="norm"),
         ),
         _Normalizer.Inputs(
             X=X,
@@ -1356,9 +1372,9 @@ def one_hot_encoder(
     """
     return _OneHotEncoder(
         _OneHotEncoder.Attributes(
-            cats_int64s=AttrInt64s.maybe(cats_int64s),
-            cats_strings=AttrStrings.maybe(cats_strings),
-            zeros=AttrInt64(zeros),
+            cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
+            cats_strings=AttrStrings.maybe(cats_strings, name="cats_strings"),
+            zeros=AttrInt64(zeros, name="zeros"),
         ),
         _OneHotEncoder.Inputs(
             X=X,
@@ -1450,17 +1466,23 @@ def svmclassifier(
     """
     return _SVMClassifier(
         _SVMClassifier.Attributes(
-            classlabels_ints=AttrInt64s.maybe(classlabels_ints),
-            classlabels_strings=AttrStrings.maybe(classlabels_strings),
-            coefficients=AttrFloat32s.maybe(coefficients),
-            kernel_params=AttrFloat32s.maybe(kernel_params),
-            kernel_type=AttrString(kernel_type),
-            post_transform=AttrString(post_transform),
-            prob_a=AttrFloat32s.maybe(prob_a),
-            prob_b=AttrFloat32s.maybe(prob_b),
-            rho=AttrFloat32s.maybe(rho),
-            support_vectors=AttrFloat32s.maybe(support_vectors),
-            vectors_per_class=AttrInt64s.maybe(vectors_per_class),
+            classlabels_ints=AttrInt64s.maybe(
+                classlabels_ints, name="classlabels_ints"
+            ),
+            classlabels_strings=AttrStrings.maybe(
+                classlabels_strings, name="classlabels_strings"
+            ),
+            coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
+            kernel_params=AttrFloat32s.maybe(kernel_params, name="kernel_params"),
+            kernel_type=AttrString(kernel_type, name="kernel_type"),
+            post_transform=AttrString(post_transform, name="post_transform"),
+            prob_a=AttrFloat32s.maybe(prob_a, name="prob_a"),
+            prob_b=AttrFloat32s.maybe(prob_b, name="prob_b"),
+            rho=AttrFloat32s.maybe(rho, name="rho"),
+            support_vectors=AttrFloat32s.maybe(support_vectors, name="support_vectors"),
+            vectors_per_class=AttrInt64s.maybe(
+                vectors_per_class, name="vectors_per_class"
+            ),
         ),
         _SVMClassifier.Inputs(
             X=X,
@@ -1531,14 +1553,14 @@ def svmregressor(
     """
     return _SVMRegressor(
         _SVMRegressor.Attributes(
-            coefficients=AttrFloat32s.maybe(coefficients),
-            kernel_params=AttrFloat32s.maybe(kernel_params),
-            kernel_type=AttrString(kernel_type),
-            n_supports=AttrInt64(n_supports),
-            one_class=AttrInt64(one_class),
-            post_transform=AttrString(post_transform),
-            rho=AttrFloat32s.maybe(rho),
-            support_vectors=AttrFloat32s.maybe(support_vectors),
+            coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
+            kernel_params=AttrFloat32s.maybe(kernel_params, name="kernel_params"),
+            kernel_type=AttrString(kernel_type, name="kernel_type"),
+            n_supports=AttrInt64(n_supports, name="n_supports"),
+            one_class=AttrInt64(one_class, name="one_class"),
+            post_transform=AttrString(post_transform, name="post_transform"),
+            rho=AttrFloat32s.maybe(rho, name="rho"),
+            support_vectors=AttrFloat32s.maybe(support_vectors, name="support_vectors"),
         ),
         _SVMRegressor.Inputs(
             X=X,
@@ -1587,8 +1609,8 @@ def scaler(
     """
     return _Scaler(
         _Scaler.Attributes(
-            offset=AttrFloat32s.maybe(offset),
-            scale=AttrFloat32s.maybe(scale),
+            offset=AttrFloat32s.maybe(offset, name="offset"),
+            scale=AttrFloat32s.maybe(scale, name="scale"),
         ),
         _Scaler.Inputs(
             X=X,
@@ -1732,29 +1754,47 @@ def tree_ensemble_classifier(
     """
     return _TreeEnsembleClassifier(
         _TreeEnsembleClassifier.Attributes(
-            base_values=AttrFloat32s.maybe(base_values),
-            base_values_as_tensor=AttrTensor.maybe(base_values_as_tensor),
-            class_ids=AttrInt64s.maybe(class_ids),
-            class_nodeids=AttrInt64s.maybe(class_nodeids),
-            class_treeids=AttrInt64s.maybe(class_treeids),
-            class_weights=AttrFloat32s.maybe(class_weights),
-            class_weights_as_tensor=AttrTensor.maybe(class_weights_as_tensor),
-            classlabels_int64s=AttrInt64s.maybe(classlabels_int64s),
-            classlabels_strings=AttrStrings.maybe(classlabels_strings),
-            nodes_falsenodeids=AttrInt64s.maybe(nodes_falsenodeids),
-            nodes_featureids=AttrInt64s.maybe(nodes_featureids),
-            nodes_hitrates=AttrFloat32s.maybe(nodes_hitrates),
-            nodes_hitrates_as_tensor=AttrTensor.maybe(nodes_hitrates_as_tensor),
-            nodes_missing_value_tracks_true=AttrInt64s.maybe(
-                nodes_missing_value_tracks_true
+            base_values=AttrFloat32s.maybe(base_values, name="base_values"),
+            base_values_as_tensor=AttrTensor.maybe(
+                base_values_as_tensor, name="base_values_as_tensor"
             ),
-            nodes_modes=AttrStrings.maybe(nodes_modes),
-            nodes_nodeids=AttrInt64s.maybe(nodes_nodeids),
-            nodes_treeids=AttrInt64s.maybe(nodes_treeids),
-            nodes_truenodeids=AttrInt64s.maybe(nodes_truenodeids),
-            nodes_values=AttrFloat32s.maybe(nodes_values),
-            nodes_values_as_tensor=AttrTensor.maybe(nodes_values_as_tensor),
-            post_transform=AttrString(post_transform),
+            class_ids=AttrInt64s.maybe(class_ids, name="class_ids"),
+            class_nodeids=AttrInt64s.maybe(class_nodeids, name="class_nodeids"),
+            class_treeids=AttrInt64s.maybe(class_treeids, name="class_treeids"),
+            class_weights=AttrFloat32s.maybe(class_weights, name="class_weights"),
+            class_weights_as_tensor=AttrTensor.maybe(
+                class_weights_as_tensor, name="class_weights_as_tensor"
+            ),
+            classlabels_int64s=AttrInt64s.maybe(
+                classlabels_int64s, name="classlabels_int64s"
+            ),
+            classlabels_strings=AttrStrings.maybe(
+                classlabels_strings, name="classlabels_strings"
+            ),
+            nodes_falsenodeids=AttrInt64s.maybe(
+                nodes_falsenodeids, name="nodes_falsenodeids"
+            ),
+            nodes_featureids=AttrInt64s.maybe(
+                nodes_featureids, name="nodes_featureids"
+            ),
+            nodes_hitrates=AttrFloat32s.maybe(nodes_hitrates, name="nodes_hitrates"),
+            nodes_hitrates_as_tensor=AttrTensor.maybe(
+                nodes_hitrates_as_tensor, name="nodes_hitrates_as_tensor"
+            ),
+            nodes_missing_value_tracks_true=AttrInt64s.maybe(
+                nodes_missing_value_tracks_true, name="nodes_missing_value_tracks_true"
+            ),
+            nodes_modes=AttrStrings.maybe(nodes_modes, name="nodes_modes"),
+            nodes_nodeids=AttrInt64s.maybe(nodes_nodeids, name="nodes_nodeids"),
+            nodes_treeids=AttrInt64s.maybe(nodes_treeids, name="nodes_treeids"),
+            nodes_truenodeids=AttrInt64s.maybe(
+                nodes_truenodeids, name="nodes_truenodeids"
+            ),
+            nodes_values=AttrFloat32s.maybe(nodes_values, name="nodes_values"),
+            nodes_values_as_tensor=AttrTensor.maybe(
+                nodes_values_as_tensor, name="nodes_values_as_tensor"
+            ),
+            post_transform=AttrString(post_transform, name="post_transform"),
         ),
         _TreeEnsembleClassifier.Inputs(
             X=X,
@@ -1894,29 +1934,45 @@ def tree_ensemble_regressor(
     """
     return _TreeEnsembleRegressor(
         _TreeEnsembleRegressor.Attributes(
-            aggregate_function=AttrString(aggregate_function),
-            base_values=AttrFloat32s.maybe(base_values),
-            base_values_as_tensor=AttrTensor.maybe(base_values_as_tensor),
-            n_targets=AttrInt64.maybe(n_targets),
-            nodes_falsenodeids=AttrInt64s.maybe(nodes_falsenodeids),
-            nodes_featureids=AttrInt64s.maybe(nodes_featureids),
-            nodes_hitrates=AttrFloat32s.maybe(nodes_hitrates),
-            nodes_hitrates_as_tensor=AttrTensor.maybe(nodes_hitrates_as_tensor),
-            nodes_missing_value_tracks_true=AttrInt64s.maybe(
-                nodes_missing_value_tracks_true
+            aggregate_function=AttrString(
+                aggregate_function, name="aggregate_function"
             ),
-            nodes_modes=AttrStrings.maybe(nodes_modes),
-            nodes_nodeids=AttrInt64s.maybe(nodes_nodeids),
-            nodes_treeids=AttrInt64s.maybe(nodes_treeids),
-            nodes_truenodeids=AttrInt64s.maybe(nodes_truenodeids),
-            nodes_values=AttrFloat32s.maybe(nodes_values),
-            nodes_values_as_tensor=AttrTensor.maybe(nodes_values_as_tensor),
-            post_transform=AttrString(post_transform),
-            target_ids=AttrInt64s.maybe(target_ids),
-            target_nodeids=AttrInt64s.maybe(target_nodeids),
-            target_treeids=AttrInt64s.maybe(target_treeids),
-            target_weights=AttrFloat32s.maybe(target_weights),
-            target_weights_as_tensor=AttrTensor.maybe(target_weights_as_tensor),
+            base_values=AttrFloat32s.maybe(base_values, name="base_values"),
+            base_values_as_tensor=AttrTensor.maybe(
+                base_values_as_tensor, name="base_values_as_tensor"
+            ),
+            n_targets=AttrInt64.maybe(n_targets, name="n_targets"),
+            nodes_falsenodeids=AttrInt64s.maybe(
+                nodes_falsenodeids, name="nodes_falsenodeids"
+            ),
+            nodes_featureids=AttrInt64s.maybe(
+                nodes_featureids, name="nodes_featureids"
+            ),
+            nodes_hitrates=AttrFloat32s.maybe(nodes_hitrates, name="nodes_hitrates"),
+            nodes_hitrates_as_tensor=AttrTensor.maybe(
+                nodes_hitrates_as_tensor, name="nodes_hitrates_as_tensor"
+            ),
+            nodes_missing_value_tracks_true=AttrInt64s.maybe(
+                nodes_missing_value_tracks_true, name="nodes_missing_value_tracks_true"
+            ),
+            nodes_modes=AttrStrings.maybe(nodes_modes, name="nodes_modes"),
+            nodes_nodeids=AttrInt64s.maybe(nodes_nodeids, name="nodes_nodeids"),
+            nodes_treeids=AttrInt64s.maybe(nodes_treeids, name="nodes_treeids"),
+            nodes_truenodeids=AttrInt64s.maybe(
+                nodes_truenodeids, name="nodes_truenodeids"
+            ),
+            nodes_values=AttrFloat32s.maybe(nodes_values, name="nodes_values"),
+            nodes_values_as_tensor=AttrTensor.maybe(
+                nodes_values_as_tensor, name="nodes_values_as_tensor"
+            ),
+            post_transform=AttrString(post_transform, name="post_transform"),
+            target_ids=AttrInt64s.maybe(target_ids, name="target_ids"),
+            target_nodeids=AttrInt64s.maybe(target_nodeids, name="target_nodeids"),
+            target_treeids=AttrInt64s.maybe(target_treeids, name="target_treeids"),
+            target_weights=AttrFloat32s.maybe(target_weights, name="target_weights"),
+            target_weights_as_tensor=AttrTensor.maybe(
+                target_weights_as_tensor, name="target_weights_as_tensor"
+            ),
         ),
         _TreeEnsembleRegressor.Inputs(
             X=X,
@@ -1966,8 +2022,12 @@ def zip_map(
     """
     return _ZipMap(
         _ZipMap.Attributes(
-            classlabels_int64s=AttrInt64s.maybe(classlabels_int64s),
-            classlabels_strings=AttrStrings.maybe(classlabels_strings),
+            classlabels_int64s=AttrInt64s.maybe(
+                classlabels_int64s, name="classlabels_int64s"
+            ),
+            classlabels_strings=AttrStrings.maybe(
+                classlabels_strings, name="classlabels_strings"
+            ),
         ),
         _ZipMap.Inputs(
             X=X,

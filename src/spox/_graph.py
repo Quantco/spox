@@ -37,17 +37,23 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
     """
     result = {}
     for name, info in kwargs.items():
-        attr_name = AttrString(name)
+        attr_name = AttrString(value=name, name="dummy")
         if isinstance(info, Type):
             result[name] = Argument(
-                Argument.Attributes(name=attr_name, type=AttrType(info), default=None),
+                Argument.Attributes(
+                    name=attr_name,
+                    type=AttrType(value=info, name="dummy"),
+                    default=None,
+                ),
                 BaseInputs(),
             ).outputs.arg
         elif isinstance(info, numpy.ndarray):
             ty = Tensor(info.dtype, info.shape)
             result[name] = Argument(
                 Argument.Attributes(
-                    name=attr_name, type=AttrType(ty), default=AttrTensor(info)
+                    name=attr_name,
+                    type=AttrType(value=ty, name="dummy"),
+                    default=AttrTensor(value=info, name="dummy"),
                 ),
                 BaseInputs(),
             ).outputs.arg
@@ -101,7 +107,7 @@ def initializer(arr: numpy.ndarray) -> Var:
         Var which is always equal to the respective value provided by `arr`.
     """
     return _Initializer(
-        _Initializer.Attributes(value=AttrTensor(arr)),
+        _Initializer.Attributes(value=AttrTensor(value=arr, name="dummy")),
         BaseInputs(),
     ).outputs.arg
 

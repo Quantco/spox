@@ -1131,7 +1131,7 @@ def center_crop_pad(
     """
     return _CenterCropPad(
         _CenterCropPad.Attributes(
-            axes=AttrInt64s.maybe(axes),
+            axes=AttrInt64s.maybe(axes, name="axes"),
         ),
         _CenterCropPad.Inputs(
             input_data=input_data,
@@ -1222,9 +1222,9 @@ def col2_im(
     """
     return _Col2Im(
         _Col2Im.Attributes(
-            dilations=AttrInt64s.maybe(dilations),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _Col2Im.Inputs(
             input=input,
@@ -1301,8 +1301,8 @@ def group_normalization(
     """
     return _GroupNormalization(
         _GroupNormalization.Attributes(
-            epsilon=AttrFloat32(epsilon),
-            num_groups=AttrInt64(num_groups),
+            epsilon=AttrFloat32(epsilon, name="epsilon"),
+            num_groups=AttrInt64(num_groups, name="num_groups"),
         ),
         _GroupNormalization.Inputs(
             X=X,
@@ -1422,13 +1422,13 @@ def lp_pool(
     """
     return _LpPool(
         _LpPool.Attributes(
-            auto_pad=AttrString(auto_pad),
-            ceil_mode=AttrInt64(ceil_mode),
-            dilations=AttrInt64s.maybe(dilations),
-            kernel_shape=AttrInt64s(kernel_shape),
-            p=AttrInt64(p),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+            p=AttrInt64(p, name="p"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _LpPool.Inputs(
             X=X,
@@ -1686,7 +1686,7 @@ def pad(
     """
     return _Pad(
         _Pad.Attributes(
-            mode=AttrString(mode),
+            mode=AttrString(mode, name="mode"),
         ),
         _Pad.Inputs(
             data=data,
@@ -1752,8 +1752,10 @@ def reduce_l1(
     """
     return _ReduceL1(
         _ReduceL1.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceL1.Inputs(
             data=data,
@@ -1817,8 +1819,10 @@ def reduce_l2(
     """
     return _ReduceL2(
         _ReduceL2.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceL2.Inputs(
             data=data,
@@ -1883,8 +1887,10 @@ def reduce_log_sum(
     """
     return _ReduceLogSum(
         _ReduceLogSum.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceLogSum.Inputs(
             data=data,
@@ -1949,8 +1955,10 @@ def reduce_log_sum_exp(
     """
     return _ReduceLogSumExp(
         _ReduceLogSumExp.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceLogSumExp.Inputs(
             data=data,
@@ -2016,8 +2024,10 @@ def reduce_max(
     """
     return _ReduceMax(
         _ReduceMax.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceMax.Inputs(
             data=data,
@@ -2081,8 +2091,10 @@ def reduce_mean(
     """
     return _ReduceMean(
         _ReduceMean.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceMean.Inputs(
             data=data,
@@ -2147,8 +2159,10 @@ def reduce_min(
     """
     return _ReduceMin(
         _ReduceMin.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceMin.Inputs(
             data=data,
@@ -2212,8 +2226,10 @@ def reduce_prod(
     """
     return _ReduceProd(
         _ReduceProd.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceProd.Inputs(
             data=data,
@@ -2277,8 +2293,10 @@ def reduce_sum_square(
     """
     return _ReduceSumSquare(
         _ReduceSumSquare.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceSumSquare.Inputs(
             data=data,
@@ -2459,15 +2477,21 @@ def resize(
     """
     return _Resize(
         _Resize.Attributes(
-            antialias=AttrInt64(antialias),
-            axes=AttrInt64s.maybe(axes),
-            coordinate_transformation_mode=AttrString(coordinate_transformation_mode),
-            cubic_coeff_a=AttrFloat32(cubic_coeff_a),
-            exclude_outside=AttrInt64(exclude_outside),
-            extrapolation_value=AttrFloat32(extrapolation_value),
-            keep_aspect_ratio_policy=AttrString(keep_aspect_ratio_policy),
-            mode=AttrString(mode),
-            nearest_mode=AttrString(nearest_mode),
+            antialias=AttrInt64(antialias, name="antialias"),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            coordinate_transformation_mode=AttrString(
+                coordinate_transformation_mode, name="coordinate_transformation_mode"
+            ),
+            cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
+            exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
+            extrapolation_value=AttrFloat32(
+                extrapolation_value, name="extrapolation_value"
+            ),
+            keep_aspect_ratio_policy=AttrString(
+                keep_aspect_ratio_policy, name="keep_aspect_ratio_policy"
+            ),
+            mode=AttrString(mode, name="mode"),
+            nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
         ),
         _Resize.Inputs(
             X=X,
@@ -2603,8 +2627,8 @@ def scatter_elements(
     """
     return _ScatterElements(
         _ScatterElements.Attributes(
-            axis=AttrInt64(axis),
-            reduction=AttrString(reduction),
+            axis=AttrInt64(axis, name="axis"),
+            reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterElements.Inputs(
             data=data,
@@ -2741,7 +2765,7 @@ def scatter_nd(
     """
     return _ScatterND(
         _ScatterND.Attributes(
-            reduction=AttrString(reduction),
+            reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterND.Inputs(
             data=data,
@@ -2800,8 +2824,8 @@ def split(
     """
     return _Split(
         _Split.Attributes(
-            axis=AttrInt64(axis),
-            num_outputs=AttrInt64.maybe(num_outputs),
+            axis=AttrInt64(axis, name="axis"),
+            num_outputs=AttrInt64.maybe(num_outputs, name="num_outputs"),
         ),
         _Split.Inputs(
             input=input,

@@ -4182,9 +4182,9 @@ def arg_max(
     """
     return _ArgMax(
         _ArgMax.Attributes(
-            axis=AttrInt64(axis),
-            keepdims=AttrInt64(keepdims),
-            select_last_index=AttrInt64(select_last_index),
+            axis=AttrInt64(axis, name="axis"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            select_last_index=AttrInt64(select_last_index, name="select_last_index"),
         ),
         _ArgMax.Inputs(
             data=data,
@@ -4242,9 +4242,9 @@ def arg_min(
     """
     return _ArgMin(
         _ArgMin.Attributes(
-            axis=AttrInt64(axis),
-            keepdims=AttrInt64(keepdims),
-            select_last_index=AttrInt64(select_last_index),
+            axis=AttrInt64(axis, name="axis"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            select_last_index=AttrInt64(select_last_index, name="select_last_index"),
         ),
         _ArgMin.Inputs(
             data=data,
@@ -4512,12 +4512,12 @@ def average_pool(
     """
     return _AveragePool(
         _AveragePool.Attributes(
-            auto_pad=AttrString(auto_pad),
-            ceil_mode=AttrInt64(ceil_mode),
-            count_include_pad=AttrInt64(count_include_pad),
-            kernel_shape=AttrInt64s(kernel_shape),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+            count_include_pad=AttrInt64(count_include_pad, name="count_include_pad"),
+            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _AveragePool.Inputs(
             X=X,
@@ -4647,9 +4647,9 @@ def batch_normalization(
     """
     return _BatchNormalization(
         _BatchNormalization.Attributes(
-            epsilon=AttrFloat32(epsilon),
-            momentum=AttrFloat32(momentum),
-            training_mode=AttrInt64(training_mode),
+            epsilon=AttrFloat32(epsilon, name="epsilon"),
+            momentum=AttrFloat32(momentum, name="momentum"),
+            training_mode=AttrInt64(training_mode, name="training_mode"),
         ),
         _BatchNormalization.Inputs(
             X=X,
@@ -4708,8 +4708,8 @@ def bernoulli(
     """
     return _Bernoulli(
         _Bernoulli.Attributes(
-            dtype=AttrDtype.maybe(dtype),
-            seed=AttrFloat32.maybe(seed),
+            dtype=AttrDtype.maybe(dtype, name="dtype"),
+            seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _Bernoulli.Inputs(
             input=input,
@@ -4769,7 +4769,7 @@ def bit_shift(
     """
     return _BitShift(
         _BitShift.Attributes(
-            direction=AttrString(direction),
+            direction=AttrString(direction, name="direction"),
         ),
         _BitShift.Inputs(
             X=X,
@@ -4821,8 +4821,8 @@ def blackman_window(
     """
     return _BlackmanWindow(
         _BlackmanWindow.Attributes(
-            output_datatype=AttrInt64(output_datatype),
-            periodic=AttrInt64(periodic),
+            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
+            periodic=AttrInt64(periodic, name="periodic"),
         ),
         _BlackmanWindow.Inputs(
             size=size,
@@ -4914,7 +4914,7 @@ def cast(
     """
     return _Cast(
         _Cast.Attributes(
-            to=AttrDtype(to),
+            to=AttrDtype(to, name="to"),
         ),
         _Cast.Inputs(
             input=input,
@@ -5039,7 +5039,7 @@ def celu(
     """
     return _Celu(
         _Celu.Attributes(
-            alpha=AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _Celu.Inputs(
             X=X,
@@ -5142,7 +5142,7 @@ def compress(
     """
     return _Compress(
         _Compress.Attributes(
-            axis=AttrInt64.maybe(axis),
+            axis=AttrInt64.maybe(axis, name="axis"),
         ),
         _Compress.Inputs(
             input=input,
@@ -5186,7 +5186,7 @@ def concat(
     """
     return _Concat(
         _Concat.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _Concat.Inputs(
             inputs=inputs,
@@ -5238,8 +5238,8 @@ def concat_from_sequence(
     """
     return _ConcatFromSequence(
         _ConcatFromSequence.Attributes(
-            axis=AttrInt64(axis),
-            new_axis=AttrInt64(new_axis),
+            axis=AttrInt64(axis, name="axis"),
+            new_axis=AttrInt64(new_axis, name="new_axis"),
         ),
         _ConcatFromSequence.Inputs(
             input_sequence=input_sequence,
@@ -5304,13 +5304,13 @@ def constant(
     """
     return _Constant(
         _Constant.Attributes(
-            value=AttrTensor.maybe(value),
-            value_float=AttrFloat32.maybe(value_float),
-            value_floats=AttrFloat32s.maybe(value_floats),
-            value_int=AttrInt64.maybe(value_int),
-            value_ints=AttrInt64s.maybe(value_ints),
-            value_string=AttrString.maybe(value_string),
-            value_strings=AttrStrings.maybe(value_strings),
+            value=AttrTensor.maybe(value, name="value"),
+            value_float=AttrFloat32.maybe(value_float, name="value_float"),
+            value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
+            value_int=AttrInt64.maybe(value_int, name="value_int"),
+            value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
+            value_string=AttrString.maybe(value_string, name="value_string"),
+            value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
         ),
         _Constant.Inputs(),
     ).outputs.output
@@ -5355,7 +5355,7 @@ def constant_of_shape(
     """
     return _ConstantOfShape(
         _ConstantOfShape.Attributes(
-            value=AttrTensor.maybe(value),
+            value=AttrTensor.maybe(value, name="value"),
         ),
         _ConstantOfShape.Inputs(
             input=input,
@@ -5462,12 +5462,12 @@ def conv(
     """
     return _Conv(
         _Conv.Attributes(
-            auto_pad=AttrString(auto_pad),
-            dilations=AttrInt64s.maybe(dilations),
-            group=AttrInt64(group),
-            kernel_shape=AttrInt64s.maybe(kernel_shape),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            group=AttrInt64(group, name="group"),
+            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _Conv.Inputs(
             X=X,
@@ -5587,12 +5587,12 @@ def conv_integer(
     """
     return _ConvInteger(
         _ConvInteger.Attributes(
-            auto_pad=AttrString(auto_pad),
-            dilations=AttrInt64s.maybe(dilations),
-            group=AttrInt64(group),
-            kernel_shape=AttrInt64s.maybe(kernel_shape),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            group=AttrInt64(group, name="group"),
+            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _ConvInteger.Inputs(
             x=x,
@@ -5733,14 +5733,14 @@ def conv_transpose(
     """
     return _ConvTranspose(
         _ConvTranspose.Attributes(
-            auto_pad=AttrString(auto_pad),
-            dilations=AttrInt64s.maybe(dilations),
-            group=AttrInt64(group),
-            kernel_shape=AttrInt64s.maybe(kernel_shape),
-            output_padding=AttrInt64s.maybe(output_padding),
-            output_shape=AttrInt64s.maybe(output_shape),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            group=AttrInt64(group, name="group"),
+            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+            output_padding=AttrInt64s.maybe(output_padding, name="output_padding"),
+            output_shape=AttrInt64s.maybe(output_shape, name="output_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _ConvTranspose.Inputs(
             X=X,
@@ -5883,8 +5883,8 @@ def cumsum(
     """
     return _CumSum(
         _CumSum.Attributes(
-            exclusive=AttrInt64(exclusive),
-            reverse=AttrInt64(reverse),
+            exclusive=AttrInt64(exclusive, name="exclusive"),
+            reverse=AttrInt64(reverse, name="reverse"),
         ),
         _CumSum.Inputs(
             x=x,
@@ -5968,9 +5968,9 @@ def dft(
     """
     return _DFT(
         _DFT.Attributes(
-            axis=AttrInt64(axis),
-            inverse=AttrInt64(inverse),
-            onesided=AttrInt64(onesided),
+            axis=AttrInt64(axis, name="axis"),
+            inverse=AttrInt64(inverse, name="inverse"),
+            onesided=AttrInt64(onesided, name="onesided"),
         ),
         _DFT.Inputs(
             input=input,
@@ -6043,8 +6043,8 @@ def depth_to_space(
     """
     return _DepthToSpace(
         _DepthToSpace.Attributes(
-            blocksize=AttrInt64(blocksize),
-            mode=AttrString(mode),
+            blocksize=AttrInt64(blocksize, name="blocksize"),
+            mode=AttrString(mode, name="mode"),
         ),
         _DepthToSpace.Inputs(
             input=input,
@@ -6104,7 +6104,7 @@ def dequantize_linear(
     """
     return _DequantizeLinear(
         _DequantizeLinear.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _DequantizeLinear.Inputs(
             x=x,
@@ -6276,7 +6276,7 @@ def dropout(
     """
     return _Dropout(
         _Dropout.Attributes(
-            seed=AttrInt64.maybe(seed),
+            seed=AttrInt64.maybe(seed, name="seed"),
         ),
         _Dropout.Inputs(
             data=data,
@@ -6425,7 +6425,7 @@ def einsum(
     """
     return _Einsum(
         _Einsum.Attributes(
-            equation=AttrString(equation),
+            equation=AttrString(equation, name="equation"),
         ),
         _Einsum.Inputs(
             Inputs=Inputs,
@@ -6468,7 +6468,7 @@ def elu(
     """
     return _Elu(
         _Elu.Attributes(
-            alpha=AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _Elu.Inputs(
             X=X,
@@ -6685,8 +6685,8 @@ def eye_like(
     """
     return _EyeLike(
         _EyeLike.Attributes(
-            dtype=AttrDtype.maybe(dtype),
-            k=AttrInt64(k),
+            dtype=AttrDtype.maybe(dtype, name="dtype"),
+            k=AttrInt64(k, name="k"),
         ),
         _EyeLike.Inputs(
             input=input,
@@ -6735,7 +6735,7 @@ def flatten(
     """
     return _Flatten(
         _Flatten.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _Flatten.Inputs(
             input=input,
@@ -6953,14 +6953,18 @@ def gru(
     """
     return _GRU(
         _GRU.Attributes(
-            activation_alpha=AttrFloat32s.maybe(activation_alpha),
-            activation_beta=AttrFloat32s.maybe(activation_beta),
-            activations=AttrStrings.maybe(activations),
-            clip=AttrFloat32.maybe(clip),
-            direction=AttrString(direction),
-            hidden_size=AttrInt64.maybe(hidden_size),
-            layout=AttrInt64(layout),
-            linear_before_reset=AttrInt64(linear_before_reset),
+            activation_alpha=AttrFloat32s.maybe(
+                activation_alpha, name="activation_alpha"
+            ),
+            activation_beta=AttrFloat32s.maybe(activation_beta, name="activation_beta"),
+            activations=AttrStrings.maybe(activations, name="activations"),
+            clip=AttrFloat32.maybe(clip, name="clip"),
+            direction=AttrString(direction, name="direction"),
+            hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
+            layout=AttrInt64(layout, name="layout"),
+            linear_before_reset=AttrInt64(
+                linear_before_reset, name="linear_before_reset"
+            ),
         ),
         _GRU.Inputs(
             X=X,
@@ -7061,7 +7065,7 @@ def gather(
     """
     return _Gather(
         _Gather.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _Gather.Inputs(
             data=data,
@@ -7166,7 +7170,7 @@ def gather_elements(
     """
     return _GatherElements(
         _GatherElements.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _GatherElements.Inputs(
             data=data,
@@ -7316,7 +7320,7 @@ def gather_nd(
     """
     return _GatherND(
         _GatherND.Attributes(
-            batch_dims=AttrInt64(batch_dims),
+            batch_dims=AttrInt64(batch_dims, name="batch_dims"),
         ),
         _GatherND.Inputs(
             data=data,
@@ -7400,10 +7404,10 @@ def gemm(
     """
     return _Gemm(
         _Gemm.Attributes(
-            alpha=AttrFloat32(alpha),
-            beta=AttrFloat32(beta),
-            transA=AttrInt64(transA),
-            transB=AttrInt64(transB),
+            alpha=AttrFloat32(alpha, name="alpha"),
+            beta=AttrFloat32(beta, name="beta"),
+            transA=AttrInt64(transA, name="transA"),
+            transB=AttrInt64(transB, name="transB"),
         ),
         _Gemm.Inputs(
             A=A,
@@ -7496,7 +7500,7 @@ def global_lp_pool(
     """
     return _GlobalLpPool(
         _GlobalLpPool.Attributes(
-            p=AttrInt64(p),
+            p=AttrInt64(p, name="p"),
         ),
         _GlobalLpPool.Inputs(
             X=X,
@@ -7720,9 +7724,9 @@ def grid_sample(
     """
     return _GridSample(
         _GridSample.Attributes(
-            align_corners=AttrInt64(align_corners),
-            mode=AttrString(mode),
-            padding_mode=AttrString(padding_mode),
+            align_corners=AttrInt64(align_corners, name="align_corners"),
+            mode=AttrString(mode, name="mode"),
+            padding_mode=AttrString(padding_mode, name="padding_mode"),
         ),
         _GridSample.Inputs(
             X=X,
@@ -7774,8 +7778,8 @@ def hamming_window(
     """
     return _HammingWindow(
         _HammingWindow.Attributes(
-            output_datatype=AttrInt64(output_datatype),
-            periodic=AttrInt64(periodic),
+            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
+            periodic=AttrInt64(periodic, name="periodic"),
         ),
         _HammingWindow.Inputs(
             size=size,
@@ -7826,8 +7830,8 @@ def hann_window(
     """
     return _HannWindow(
         _HannWindow.Attributes(
-            output_datatype=AttrInt64(output_datatype),
-            periodic=AttrInt64(periodic),
+            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
+            periodic=AttrInt64(periodic, name="periodic"),
         ),
         _HannWindow.Inputs(
             size=size,
@@ -7873,8 +7877,8 @@ def hard_sigmoid(
     """
     return _HardSigmoid(
         _HardSigmoid.Attributes(
-            alpha=AttrFloat32(alpha),
-            beta=AttrFloat32(beta),
+            alpha=AttrFloat32(alpha, name="alpha"),
+            beta=AttrFloat32(beta, name="beta"),
         ),
         _HardSigmoid.Inputs(
             X=X,
@@ -7959,7 +7963,7 @@ def hardmax(
     """
     return _Hardmax(
         _Hardmax.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _Hardmax.Inputs(
             input=input,
@@ -8056,8 +8060,8 @@ def if_(
     _then_branch_subgraph: Graph = subgraph((), then_branch)
     return _If(
         _If.Attributes(
-            else_branch=AttrGraph(_else_branch_subgraph),
-            then_branch=AttrGraph(_then_branch_subgraph),
+            else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
+            then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
         ),
         _If.Inputs(
             cond=cond,
@@ -8114,7 +8118,7 @@ def instance_normalization(
     """
     return _InstanceNormalization(
         _InstanceNormalization.Attributes(
-            epsilon=AttrFloat32(epsilon),
+            epsilon=AttrFloat32(epsilon, name="epsilon"),
         ),
         _InstanceNormalization.Inputs(
             input=input,
@@ -8165,8 +8169,8 @@ def isinf(
     """
     return _IsInf(
         _IsInf.Attributes(
-            detect_negative=AttrInt64(detect_negative),
-            detect_positive=AttrInt64(detect_positive),
+            detect_negative=AttrInt64(detect_negative, name="detect_negative"),
+            detect_positive=AttrInt64(detect_positive, name="detect_positive"),
         ),
         _IsInf.Inputs(
             X=X,
@@ -8269,10 +8273,10 @@ def lrn(
     """
     return _LRN(
         _LRN.Attributes(
-            alpha=AttrFloat32(alpha),
-            beta=AttrFloat32(beta),
-            bias=AttrFloat32(bias),
-            size=AttrInt64(size),
+            alpha=AttrFloat32(alpha, name="alpha"),
+            beta=AttrFloat32(beta, name="beta"),
+            bias=AttrFloat32(bias, name="bias"),
+            size=AttrInt64(size, name="size"),
         ),
         _LRN.Inputs(
             X=X,
@@ -8476,14 +8480,16 @@ def lstm(
     """
     return _LSTM(
         _LSTM.Attributes(
-            activation_alpha=AttrFloat32s.maybe(activation_alpha),
-            activation_beta=AttrFloat32s.maybe(activation_beta),
-            activations=AttrStrings.maybe(activations),
-            clip=AttrFloat32.maybe(clip),
-            direction=AttrString(direction),
-            hidden_size=AttrInt64.maybe(hidden_size),
-            input_forget=AttrInt64(input_forget),
-            layout=AttrInt64(layout),
+            activation_alpha=AttrFloat32s.maybe(
+                activation_alpha, name="activation_alpha"
+            ),
+            activation_beta=AttrFloat32s.maybe(activation_beta, name="activation_beta"),
+            activations=AttrStrings.maybe(activations, name="activations"),
+            clip=AttrFloat32.maybe(clip, name="clip"),
+            direction=AttrString(direction, name="direction"),
+            hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
+            input_forget=AttrInt64(input_forget, name="input_forget"),
+            layout=AttrInt64(layout, name="layout"),
         ),
         _LSTM.Inputs(
             X=X,
@@ -8579,9 +8585,9 @@ def layer_normalization(
     """
     return _LayerNormalization(
         _LayerNormalization.Attributes(
-            axis=AttrInt64(axis),
-            epsilon=AttrFloat32(epsilon),
-            stash_type=AttrInt64(stash_type),
+            axis=AttrInt64(axis, name="axis"),
+            epsilon=AttrFloat32(epsilon, name="epsilon"),
+            stash_type=AttrInt64(stash_type, name="stash_type"),
         ),
         _LayerNormalization.Inputs(
             X=X,
@@ -8626,7 +8632,7 @@ def leaky_relu(
     """
     return _LeakyRelu(
         _LeakyRelu.Attributes(
-            alpha=AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _LeakyRelu.Inputs(
             X=X,
@@ -8797,7 +8803,7 @@ def log_softmax(
     """
     return _LogSoftmax(
         _LogSoftmax.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _LogSoftmax.Inputs(
             input=input,
@@ -8988,7 +8994,7 @@ def loop(
     )
     return _Loop(
         _Loop.Attributes(
-            body=AttrGraph(_body_subgraph),
+            body=AttrGraph(_body_subgraph, name="body"),
         ),
         _Loop.Inputs(
             M=M,
@@ -9035,8 +9041,8 @@ def lp_normalization(
     """
     return _LpNormalization(
         _LpNormalization.Attributes(
-            axis=AttrInt64(axis),
-            p=AttrInt64(p),
+            axis=AttrInt64(axis, name="axis"),
+            p=AttrInt64(p, name="p"),
         ),
         _LpNormalization.Inputs(
             input=input,
@@ -9117,11 +9123,11 @@ def lp_pool(
     """
     return _LpPool(
         _LpPool.Attributes(
-            auto_pad=AttrString(auto_pad),
-            kernel_shape=AttrInt64s(kernel_shape),
-            p=AttrInt64(p),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+            p=AttrInt64(p, name="p"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _LpPool.Inputs(
             X=X,
@@ -9406,13 +9412,13 @@ def max_pool(
     """
     return _MaxPool(
         _MaxPool.Attributes(
-            auto_pad=AttrString(auto_pad),
-            ceil_mode=AttrInt64(ceil_mode),
-            dilations=AttrInt64s.maybe(dilations),
-            kernel_shape=AttrInt64s(kernel_shape),
-            pads=AttrInt64s.maybe(pads),
-            storage_order=AttrInt64(storage_order),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            storage_order=AttrInt64(storage_order, name="storage_order"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _MaxPool.Inputs(
             X=X,
@@ -9467,8 +9473,8 @@ def max_roi_pool(
     """
     return _MaxRoiPool(
         _MaxRoiPool.Attributes(
-            pooled_shape=AttrInt64s(pooled_shape),
-            spatial_scale=AttrFloat32(spatial_scale),
+            pooled_shape=AttrInt64s(pooled_shape, name="pooled_shape"),
+            spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
         ),
         _MaxRoiPool.Inputs(
             X=X,
@@ -9575,9 +9581,9 @@ def max_unpool(
     """
     return _MaxUnpool(
         _MaxUnpool.Attributes(
-            kernel_shape=AttrInt64s(kernel_shape),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _MaxUnpool.Inputs(
             X=X,
@@ -9661,7 +9667,7 @@ def mean_variance_normalization(
     """
     return _MeanVarianceNormalization(
         _MeanVarianceNormalization.Attributes(
-            axes=AttrInt64s(axes),
+            axes=AttrInt64s(axes, name="axes"),
         ),
         _MeanVarianceNormalization.Inputs(
             X=X,
@@ -9745,7 +9751,7 @@ def mel_weight_matrix(
     """
     return _MelWeightMatrix(
         _MelWeightMatrix.Attributes(
-            output_datatype=AttrInt64(output_datatype),
+            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
         ),
         _MelWeightMatrix.Inputs(
             num_mel_bins=num_mel_bins,
@@ -9848,7 +9854,7 @@ def mod(
     """
     return _Mod(
         _Mod.Attributes(
-            fmod=AttrInt64(fmod),
+            fmod=AttrInt64(fmod, name="fmod"),
         ),
         _Mod.Inputs(
             A=A,
@@ -9952,9 +9958,9 @@ def multinomial(
     """
     return _Multinomial(
         _Multinomial.Attributes(
-            dtype=AttrDtype(dtype),
-            sample_size=AttrInt64(sample_size),
-            seed=AttrFloat32.maybe(seed),
+            dtype=AttrDtype(dtype, name="dtype"),
+            sample_size=AttrInt64(sample_size, name="sample_size"),
+            seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _Multinomial.Inputs(
             input=input,
@@ -10156,8 +10162,8 @@ def negative_log_likelihood_loss(
     """
     return _NegativeLogLikelihoodLoss(
         _NegativeLogLikelihoodLoss.Attributes(
-            ignore_index=AttrInt64.maybe(ignore_index),
-            reduction=AttrString(reduction),
+            ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
+            reduction=AttrString(reduction, name="reduction"),
         ),
         _NegativeLogLikelihoodLoss.Inputs(
             input=input,
@@ -10235,7 +10241,7 @@ def non_max_suppression(
     """
     return _NonMaxSuppression(
         _NonMaxSuppression.Attributes(
-            center_point_box=AttrInt64(center_point_box),
+            center_point_box=AttrInt64(center_point_box, name="center_point_box"),
         ),
         _NonMaxSuppression.Inputs(
             boxes=boxes,
@@ -10400,7 +10406,7 @@ def one_hot(
     """
     return _OneHot(
         _OneHot.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _OneHot.Inputs(
             indices=indices,
@@ -10445,7 +10451,7 @@ def optional(
     """
     return _Optional(
         _Optional.Attributes(
-            type=AttrType.maybe(type),
+            type=AttrType.maybe(type, name="type"),
         ),
         _Optional.Inputs(
             input=input,
@@ -10711,7 +10717,7 @@ def pad(
     """
     return _Pad(
         _Pad.Attributes(
-            mode=AttrString(mode),
+            mode=AttrString(mode, name="mode"),
         ),
         _Pad.Inputs(
             data=data,
@@ -10907,12 +10913,12 @@ def qlinear_conv(
     """
     return _QLinearConv(
         _QLinearConv.Attributes(
-            auto_pad=AttrString(auto_pad),
-            dilations=AttrInt64s.maybe(dilations),
-            group=AttrInt64(group),
-            kernel_shape=AttrInt64s.maybe(kernel_shape),
-            pads=AttrInt64s.maybe(pads),
-            strides=AttrInt64s.maybe(strides),
+            auto_pad=AttrString(auto_pad, name="auto_pad"),
+            dilations=AttrInt64s.maybe(dilations, name="dilations"),
+            group=AttrInt64(group, name="group"),
+            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+            pads=AttrInt64s.maybe(pads, name="pads"),
+            strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _QLinearConv.Inputs(
             x=x,
@@ -11071,7 +11077,7 @@ def quantize_linear(
     """
     return _QuantizeLinear(
         _QuantizeLinear.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _QuantizeLinear.Inputs(
             x=x,
@@ -11235,13 +11241,15 @@ def rnn(
     """
     return _RNN(
         _RNN.Attributes(
-            activation_alpha=AttrFloat32s.maybe(activation_alpha),
-            activation_beta=AttrFloat32s.maybe(activation_beta),
-            activations=AttrStrings(activations),
-            clip=AttrFloat32.maybe(clip),
-            direction=AttrString(direction),
-            hidden_size=AttrInt64.maybe(hidden_size),
-            layout=AttrInt64(layout),
+            activation_alpha=AttrFloat32s.maybe(
+                activation_alpha, name="activation_alpha"
+            ),
+            activation_beta=AttrFloat32s.maybe(activation_beta, name="activation_beta"),
+            activations=AttrStrings(activations, name="activations"),
+            clip=AttrFloat32.maybe(clip, name="clip"),
+            direction=AttrString(direction, name="direction"),
+            hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
+            layout=AttrInt64(layout, name="layout"),
         ),
         _RNN.Inputs(
             X=X,
@@ -11307,11 +11315,11 @@ def random_normal(
     """
     return _RandomNormal(
         _RandomNormal.Attributes(
-            dtype=AttrDtype(dtype),
-            mean=AttrFloat32(mean),
-            scale=AttrFloat32(scale),
-            seed=AttrFloat32.maybe(seed),
-            shape=AttrInt64s(shape),
+            dtype=AttrDtype(dtype, name="dtype"),
+            mean=AttrFloat32(mean, name="mean"),
+            scale=AttrFloat32(scale, name="scale"),
+            seed=AttrFloat32.maybe(seed, name="seed"),
+            shape=AttrInt64s(shape, name="shape"),
         ),
         _RandomNormal.Inputs(),
     ).outputs.output
@@ -11372,10 +11380,10 @@ def random_normal_like(
     """
     return _RandomNormalLike(
         _RandomNormalLike.Attributes(
-            dtype=AttrDtype.maybe(dtype),
-            mean=AttrFloat32(mean),
-            scale=AttrFloat32(scale),
-            seed=AttrFloat32.maybe(seed),
+            dtype=AttrDtype.maybe(dtype, name="dtype"),
+            mean=AttrFloat32(mean, name="mean"),
+            scale=AttrFloat32(scale, name="scale"),
+            seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _RandomNormalLike.Inputs(
             input=input,
@@ -11435,11 +11443,11 @@ def random_uniform(
     """
     return _RandomUniform(
         _RandomUniform.Attributes(
-            dtype=AttrDtype(dtype),
-            high=AttrFloat32(high),
-            low=AttrFloat32(low),
-            seed=AttrFloat32.maybe(seed),
-            shape=AttrInt64s(shape),
+            dtype=AttrDtype(dtype, name="dtype"),
+            high=AttrFloat32(high, name="high"),
+            low=AttrFloat32(low, name="low"),
+            seed=AttrFloat32.maybe(seed, name="seed"),
+            shape=AttrInt64s(shape, name="shape"),
         ),
         _RandomUniform.Inputs(),
     ).outputs.output
@@ -11500,10 +11508,10 @@ def random_uniform_like(
     """
     return _RandomUniformLike(
         _RandomUniformLike.Attributes(
-            dtype=AttrDtype.maybe(dtype),
-            high=AttrFloat32(high),
-            low=AttrFloat32(low),
-            seed=AttrFloat32.maybe(seed),
+            dtype=AttrDtype.maybe(dtype, name="dtype"),
+            high=AttrFloat32(high, name="high"),
+            low=AttrFloat32(low, name="low"),
+            seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _RandomUniformLike.Inputs(
             input=input,
@@ -11666,8 +11674,8 @@ def reduce_l1(
     """
     return _ReduceL1(
         _ReduceL1.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceL1.Inputs(
             data=data,
@@ -11721,8 +11729,8 @@ def reduce_l2(
     """
     return _ReduceL2(
         _ReduceL2.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceL2.Inputs(
             data=data,
@@ -11777,8 +11785,8 @@ def reduce_log_sum(
     """
     return _ReduceLogSum(
         _ReduceLogSum.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceLogSum.Inputs(
             data=data,
@@ -11833,8 +11841,8 @@ def reduce_log_sum_exp(
     """
     return _ReduceLogSumExp(
         _ReduceLogSumExp.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceLogSumExp.Inputs(
             data=data,
@@ -11890,8 +11898,8 @@ def reduce_max(
     """
     return _ReduceMax(
         _ReduceMax.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMax.Inputs(
             data=data,
@@ -11945,8 +11953,8 @@ def reduce_mean(
     """
     return _ReduceMean(
         _ReduceMean.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMean.Inputs(
             data=data,
@@ -12001,8 +12009,8 @@ def reduce_min(
     """
     return _ReduceMin(
         _ReduceMin.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMin.Inputs(
             data=data,
@@ -12056,8 +12064,8 @@ def reduce_prod(
     """
     return _ReduceProd(
         _ReduceProd.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceProd.Inputs(
             data=data,
@@ -12120,8 +12128,10 @@ def reduce_sum(
     """
     return _ReduceSum(
         _ReduceSum.Attributes(
-            keepdims=AttrInt64(keepdims),
-            noop_with_empty_axes=AttrInt64(noop_with_empty_axes),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
+            noop_with_empty_axes=AttrInt64(
+                noop_with_empty_axes, name="noop_with_empty_axes"
+            ),
         ),
         _ReduceSum.Inputs(
             data=data,
@@ -12176,8 +12186,8 @@ def reduce_sum_square(
     """
     return _ReduceSumSquare(
         _ReduceSumSquare.Attributes(
-            axes=AttrInt64s.maybe(axes),
-            keepdims=AttrInt64(keepdims),
+            axes=AttrInt64s.maybe(axes, name="axes"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceSumSquare.Inputs(
             data=data,
@@ -12273,7 +12283,7 @@ def reshape(
     """
     return _Reshape(
         _Reshape.Attributes(
-            allowzero=AttrInt64(allowzero),
+            allowzero=AttrInt64(allowzero, name="allowzero"),
         ),
         _Reshape.Inputs(
             data=data,
@@ -12403,12 +12413,16 @@ def resize(
     """
     return _Resize(
         _Resize.Attributes(
-            coordinate_transformation_mode=AttrString(coordinate_transformation_mode),
-            cubic_coeff_a=AttrFloat32(cubic_coeff_a),
-            exclude_outside=AttrInt64(exclude_outside),
-            extrapolation_value=AttrFloat32(extrapolation_value),
-            mode=AttrString(mode),
-            nearest_mode=AttrString(nearest_mode),
+            coordinate_transformation_mode=AttrString(
+                coordinate_transformation_mode, name="coordinate_transformation_mode"
+            ),
+            cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
+            exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
+            extrapolation_value=AttrFloat32(
+                extrapolation_value, name="extrapolation_value"
+            ),
+            mode=AttrString(mode, name="mode"),
+            nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
         ),
         _Resize.Inputs(
             X=X,
@@ -12483,8 +12497,8 @@ def reverse_sequence(
     """
     return _ReverseSequence(
         _ReverseSequence.Attributes(
-            batch_axis=AttrInt64(batch_axis),
-            time_axis=AttrInt64(time_axis),
+            batch_axis=AttrInt64(batch_axis, name="batch_axis"),
+            time_axis=AttrInt64(time_axis, name="time_axis"),
         ),
         _ReverseSequence.Inputs(
             input=input,
@@ -12582,12 +12596,14 @@ def roi_align(
     """
     return _RoiAlign(
         _RoiAlign.Attributes(
-            coordinate_transformation_mode=AttrString(coordinate_transformation_mode),
-            mode=AttrString(mode),
-            output_height=AttrInt64(output_height),
-            output_width=AttrInt64(output_width),
-            sampling_ratio=AttrInt64(sampling_ratio),
-            spatial_scale=AttrFloat32(spatial_scale),
+            coordinate_transformation_mode=AttrString(
+                coordinate_transformation_mode, name="coordinate_transformation_mode"
+            ),
+            mode=AttrString(mode, name="mode"),
+            output_height=AttrInt64(output_height, name="output_height"),
+            output_width=AttrInt64(output_width, name="output_width"),
+            sampling_ratio=AttrInt64(sampling_ratio, name="sampling_ratio"),
+            spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
         ),
         _RoiAlign.Inputs(
             X=X,
@@ -12707,7 +12723,7 @@ def stft(
     """
     return _STFT(
         _STFT.Attributes(
-            onesided=AttrInt64(onesided),
+            onesided=AttrInt64(onesided, name="onesided"),
         ),
         _STFT.Inputs(
             signal=signal,
@@ -12941,12 +12957,18 @@ def scan(
     )
     return _Scan(
         _Scan.Attributes(
-            body=AttrGraph(_body_subgraph),
-            num_scan_inputs=AttrInt64(num_scan_inputs),
-            scan_input_axes=AttrInt64s.maybe(scan_input_axes),
-            scan_input_directions=AttrInt64s.maybe(scan_input_directions),
-            scan_output_axes=AttrInt64s.maybe(scan_output_axes),
-            scan_output_directions=AttrInt64s.maybe(scan_output_directions),
+            body=AttrGraph(_body_subgraph, name="body"),
+            num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
+            scan_input_axes=AttrInt64s.maybe(scan_input_axes, name="scan_input_axes"),
+            scan_input_directions=AttrInt64s.maybe(
+                scan_input_directions, name="scan_input_directions"
+            ),
+            scan_output_axes=AttrInt64s.maybe(
+                scan_output_axes, name="scan_output_axes"
+            ),
+            scan_output_directions=AttrInt64s.maybe(
+                scan_output_directions, name="scan_output_directions"
+            ),
         ),
         _Scan.Inputs(
             initial_state_and_scan_inputs=initial_state_and_scan_inputs,
@@ -13077,8 +13099,8 @@ def scatter_elements(
     """
     return _ScatterElements(
         _ScatterElements.Attributes(
-            axis=AttrInt64(axis),
-            reduction=AttrString(reduction),
+            axis=AttrInt64(axis, name="axis"),
+            reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterElements.Inputs(
             data=data,
@@ -13199,7 +13221,7 @@ def scatter_nd(
     """
     return _ScatterND(
         _ScatterND.Attributes(
-            reduction=AttrString(reduction),
+            reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterND.Inputs(
             data=data,
@@ -13250,8 +13272,8 @@ def selu(
     """
     return _Selu(
         _Selu.Attributes(
-            alpha=AttrFloat32(alpha),
-            gamma=AttrFloat32(gamma),
+            alpha=AttrFloat32(alpha, name="alpha"),
+            gamma=AttrFloat32(gamma, name="gamma"),
         ),
         _Selu.Inputs(
             X=X,
@@ -13370,7 +13392,7 @@ def sequence_empty(
     """
     return _SequenceEmpty(
         _SequenceEmpty.Attributes(
-            dtype=AttrDtype.maybe(dtype),
+            dtype=AttrDtype.maybe(dtype, name="dtype"),
         ),
         _SequenceEmpty.Inputs(),
     ).outputs.output
@@ -13575,7 +13597,7 @@ def sequence_map(
     )
     return _SequenceMap(
         _SequenceMap.Attributes(
-            body=AttrGraph(_body_subgraph),
+            body=AttrGraph(_body_subgraph, name="body"),
         ),
         _SequenceMap.Inputs(
             input_sequence=input_sequence,
@@ -13663,8 +13685,8 @@ def shape(
     """
     return _Shape(
         _Shape.Attributes(
-            end=AttrInt64.maybe(end),
-            start=AttrInt64(start),
+            end=AttrInt64.maybe(end, name="end"),
+            start=AttrInt64(start, name="start"),
         ),
         _Shape.Inputs(
             data=data,
@@ -13711,8 +13733,8 @@ def shrink(
     """
     return _Shrink(
         _Shrink.Attributes(
-            bias=AttrFloat32(bias),
-            lambd=AttrFloat32(lambd),
+            bias=AttrFloat32(bias, name="bias"),
+            lambd=AttrFloat32(lambd, name="lambd"),
         ),
         _Shrink.Inputs(
             input=input,
@@ -14058,7 +14080,7 @@ def softmax(
     """
     return _Softmax(
         _Softmax.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _Softmax.Inputs(
             input=input,
@@ -14177,8 +14199,8 @@ def softmax_cross_entropy_loss(
     """
     return _SoftmaxCrossEntropyLoss(
         _SoftmaxCrossEntropyLoss.Attributes(
-            ignore_index=AttrInt64.maybe(ignore_index),
-            reduction=AttrString(reduction),
+            ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
+            reduction=AttrString(reduction, name="reduction"),
         ),
         _SoftmaxCrossEntropyLoss.Inputs(
             scores=scores,
@@ -14294,7 +14316,7 @@ def space_to_depth(
     """
     return _SpaceToDepth(
         _SpaceToDepth.Attributes(
-            blocksize=AttrInt64(blocksize),
+            blocksize=AttrInt64(blocksize, name="blocksize"),
         ),
         _SpaceToDepth.Inputs(
             input=input,
@@ -14346,7 +14368,7 @@ def split(
     """
     return _Split(
         _Split.Attributes(
-            axis=AttrInt64(axis),
+            axis=AttrInt64(axis, name="axis"),
         ),
         _Split.Inputs(
             input=input,
@@ -14413,8 +14435,8 @@ def split_to_sequence(
     """
     return _SplitToSequence(
         _SplitToSequence.Attributes(
-            axis=AttrInt64(axis),
-            keepdims=AttrInt64(keepdims),
+            axis=AttrInt64(axis, name="axis"),
+            keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _SplitToSequence.Inputs(
             input=input,
@@ -14556,10 +14578,12 @@ def string_normalizer(
     """
     return _StringNormalizer(
         _StringNormalizer.Attributes(
-            case_change_action=AttrString(case_change_action),
-            is_case_sensitive=AttrInt64(is_case_sensitive),
-            locale=AttrString.maybe(locale),
-            stopwords=AttrStrings.maybe(stopwords),
+            case_change_action=AttrString(
+                case_change_action, name="case_change_action"
+            ),
+            is_case_sensitive=AttrInt64(is_case_sensitive, name="is_case_sensitive"),
+            locale=AttrString.maybe(locale, name="locale"),
+            stopwords=AttrStrings.maybe(stopwords, name="stopwords"),
         ),
         _StringNormalizer.Inputs(
             X=X,
@@ -14848,15 +14872,15 @@ def tf_idf_vectorizer(
     """
     return _TfIdfVectorizer(
         _TfIdfVectorizer.Attributes(
-            max_gram_length=AttrInt64(max_gram_length),
-            max_skip_count=AttrInt64(max_skip_count),
-            min_gram_length=AttrInt64(min_gram_length),
-            mode=AttrString(mode),
-            ngram_counts=AttrInt64s(ngram_counts),
-            ngram_indexes=AttrInt64s(ngram_indexes),
-            pool_int64s=AttrInt64s.maybe(pool_int64s),
-            pool_strings=AttrStrings.maybe(pool_strings),
-            weights=AttrFloat32s.maybe(weights),
+            max_gram_length=AttrInt64(max_gram_length, name="max_gram_length"),
+            max_skip_count=AttrInt64(max_skip_count, name="max_skip_count"),
+            min_gram_length=AttrInt64(min_gram_length, name="min_gram_length"),
+            mode=AttrString(mode, name="mode"),
+            ngram_counts=AttrInt64s(ngram_counts, name="ngram_counts"),
+            ngram_indexes=AttrInt64s(ngram_indexes, name="ngram_indexes"),
+            pool_int64s=AttrInt64s.maybe(pool_int64s, name="pool_int64s"),
+            pool_strings=AttrStrings.maybe(pool_strings, name="pool_strings"),
+            weights=AttrFloat32s.maybe(weights, name="weights"),
         ),
         _TfIdfVectorizer.Inputs(
             X=X,
@@ -14898,7 +14922,7 @@ def thresholded_relu(
     """
     return _ThresholdedRelu(
         _ThresholdedRelu.Attributes(
-            alpha=AttrFloat32(alpha),
+            alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _ThresholdedRelu.Inputs(
             X=X,
@@ -15025,9 +15049,9 @@ def top_k(
     """
     return _TopK(
         _TopK.Attributes(
-            axis=AttrInt64(axis),
-            largest=AttrInt64(largest),
-            sorted=AttrInt64(sorted),
+            axis=AttrInt64(axis, name="axis"),
+            largest=AttrInt64(largest, name="largest"),
+            sorted=AttrInt64(sorted, name="sorted"),
         ),
         _TopK.Inputs(
             X=X,
@@ -15071,7 +15095,7 @@ def transpose(
     """
     return _Transpose(
         _Transpose.Attributes(
-            perm=AttrInt64s.maybe(perm),
+            perm=AttrInt64s.maybe(perm, name="perm"),
         ),
         _Transpose.Inputs(
             data=data,
@@ -15134,7 +15158,7 @@ def trilu(
     """
     return _Trilu(
         _Trilu.Attributes(
-            upper=AttrInt64(upper),
+            upper=AttrInt64(upper, name="upper"),
         ),
         _Trilu.Inputs(
             input=input,
@@ -15314,8 +15338,8 @@ def unique(
     """
     return _Unique(
         _Unique.Attributes(
-            axis=AttrInt64.maybe(axis),
-            sorted=AttrInt64(sorted),
+            axis=AttrInt64.maybe(axis, name="axis"),
+            sorted=AttrInt64(sorted, name="sorted"),
         ),
         _Unique.Inputs(
             X=X,

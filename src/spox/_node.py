@@ -373,7 +373,7 @@ class Node(ABC):
                     subgraph = build_subgraph(self, key, attr.value)
                     attr_proto = onnx.helper.make_attribute(key, subgraph)
                 else:
-                    attr_proto = attr._to_onnx(key)
+                    attr_proto = attr._to_onnx()
                 node_proto.attribute.append(attr_proto)
 
         return [node_proto]
