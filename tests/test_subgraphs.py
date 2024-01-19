@@ -4,9 +4,8 @@ import numpy
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
-from spox import Var
+from spox import Var, initializer
 from spox._exceptions import BuildError
-from spox._future import initializer
 from spox._graph import arguments, results
 from spox._type_system import Sequence, Tensor
 

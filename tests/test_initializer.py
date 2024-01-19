@@ -4,7 +4,7 @@ from typing import Any, List
 import numpy
 import pytest
 
-from spox._future import initializer
+from spox import initializer
 
 TESTED_INITIALIZER_ROWS: List[List[Any]] = [
     [0, 1, 2],

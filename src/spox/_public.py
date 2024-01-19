@@ -5,12 +5,15 @@ import itertools
 from typing import Dict, List, Optional, Protocol
 
 import numpy as np
+import numpy.typing as npt
 import onnx
 from onnx.numpy_helper import to_array
 
 from . import _internal_op
 from ._attributes import AttrType
-from ._graph import Argument, initializer, results
+from ._graph import Argument
+from ._graph import initializer as _initializer
+from ._graph import results
 from ._inline import _Inline
 from ._standard import _strip_dim_symbol
 from ._type_system import Type
@@ -35,6 +38,32 @@ def argument(typ: Type) -> Var:
     return _internal_op.Argument(
         _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
     ).outputs.arg
+
+
+def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+    """
+    Create a Var with a constant value.
+
+    Parameters
+    ----------
+    value
+        Array-like value for the variable.
+    dtype
+        Data type for the given value. If ``None``, it is inferred from the value
+        using numpy rules (``numpy.array(value)``).
+
+    Returns
+    -------
+    Var
+        Variable with the given constant ``value``.
+
+    Notes
+    -----
+    When the model is built, constants created by this function become initializers.
+    As such, they are independent of an opset version and are listed separately
+    in the model. Initializers are also used internally in Spox.
+    """
+    return _initializer(np.array(value, dtype))
 
 
 @contextlib.contextmanager
@@ -284,4 +313,4 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     return inline_inner
 
 
-__all__ = ["argument", "build", "inline"]
+__all__ = ["argument", "initializer", "build", "inline"]

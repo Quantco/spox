@@ -1,6 +1,6 @@
 import importlib.metadata
 
-from spox._public import argument, build, inline
+from spox._public import argument, build, initializer, inline
 from spox._type_system import Optional, Sequence, Tensor, Type
 from spox._var import Var
 
@@ -11,6 +11,7 @@ __all__ = [
     "Sequence",
     "Optional",
     "argument",
+    "initializer",
     "build",
     "inline",
 ]

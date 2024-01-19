@@ -4,11 +4,9 @@ from contextlib import contextmanager
 from typing import Iterable, List, Optional, Union
 
 import numpy as np
-import numpy.typing as npt
 
 import spox._node
 import spox._value_prop
-from spox._graph import initializer as _initializer
 from spox._type_system import Tensor
 from spox._var import Var
 
@@ -40,32 +38,6 @@ def value_prop_backend(backend: ValuePropBackend):
     set_value_prop_backend(backend)
     yield
     set_value_prop_backend(prev_backend)
-
-
-def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
-    """
-    Create a Var with a constant value.
-
-    Parameters
-    ----------
-    value
-        Array-like value for the variable.
-    dtype
-        Data type for the given value. If ``None``, it is inferred from the value
-        using numpy rules (``numpy.array(value)``).
-
-    Returns
-    -------
-    Var
-        Variable with the given constant ``value``.
-
-    Notes
-    -----
-    When the model is built, constants created by this function become initializers.
-    As such, they are independent of an opset version and are listed separately
-    in the model. Initializers are also used internally in Spox.
-    """
-    return _initializer(np.array(value, dtype))
 
 
 class _NumpyLikeOperatorDispatcher:
@@ -210,8 +182,6 @@ __all__ = [
     "TypeWarningLevel",
     "set_type_warning_level",
     "type_warning_level",
-    # Initializer-backed constants
-    "initializer",
     # Value propagation backend
     "ValuePropBackend",
     "set_value_prop_backend",
