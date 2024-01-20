@@ -4,7 +4,8 @@ from typing import Any, List
 import numpy
 import pytest
 
-from spox import initializer
+from spox import build, initializer
+from spox.opset.ai.onnx import v17 as op
 
 TESTED_INITIALIZER_ROWS: List[List[Any]] = [
     [0, 1, 2],
@@ -36,3 +37,15 @@ def test_initializer_iter(row):
 @pytest.mark.parametrize("row", TESTED_INITIALIZER_ROWS)
 def test_initializer_matrix(row):
     assert_expected_initializer(initializer([row, row]), [row, row])
+
+
+@pytest.mark.parametrize("row", TESTED_INITIALIZER_ROWS)
+def test_initializer_subgraph(row):
+    if_ret = op.if_(
+        op.const(True),
+        then_branch=lambda: [initializer(row)],
+        else_branch=lambda: [initializer(row)],
+    )[0]
+
+    model = build({}, {"if_ret": if_ret})
+    assert len(model.graph.initializer) == 0
