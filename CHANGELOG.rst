@@ -13,6 +13,7 @@ Change log
 **New feature**
 
 - The opsets ``ai.onnx`` version 20 and ``ai.onnx.ml`` version 4 (ONNX 1.15) are now shipped with Spox.
+- The ``initializer`` primitive has been exposed.
 
 **Other changes**
 
