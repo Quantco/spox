@@ -4,8 +4,8 @@ from typing import Any, List
 import numpy
 import pytest
 
-from spox import build, initializer
-from spox.opset.ai.onnx import v17 as op
+from spox import Tensor, argument, build, initializer
+from spox.opset.ai.onnx import v19 as op
 
 TESTED_INITIALIZER_ROWS: List[List[Any]] = [
     [0, 1, 2],
@@ -40,6 +40,23 @@ def test_initializer_matrix(row):
 
 
 @pytest.mark.parametrize("row", TESTED_INITIALIZER_ROWS)
+def test_initializer_naming(row):
+    # Get default name for initializer
+    init = initializer(row)
+    model = build({}, {"init": init})
+    init_name = model.graph.initializer[0].name
+
+    # Create some sample model
+    arg = argument(Tensor(numpy.array(row).dtype, tuple()))
+
+    # Check if we can create a model with the same name
+    # as the initializer
+    model1 = build({init_name: arg}, {"ret": op.equal(arg, init)})
+
+    assert len(model1.graph.input) == 1
+
+
+@pytest.mark.parametrize("row", TESTED_INITIALIZER_ROWS)
 def test_initializer_subgraph(row):
     if_ret = op.if_(
         op.const(True),
@@ -49,3 +66,18 @@ def test_initializer_subgraph(row):
 
     model = build({}, {"if_ret": if_ret})
     assert len(model.graph.initializer) == 0
+
+
+@pytest.mark.parametrize("row", TESTED_INITIALIZER_ROWS)
+def test_initializer_both_subgraphs(row):
+    init = initializer(row)
+    if_ret = op.if_(
+        op.const(True),
+        then_branch=lambda: [init],
+        else_branch=lambda: [init],
+    )[0]
+
+    model = build({}, {"if_ret": if_ret})
+
+    # The initializer should have been defined in the outer-most scope
+    assert len(model.graph.initializer) == 1

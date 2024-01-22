@@ -61,7 +61,8 @@ def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
     -----
     When the model is built, constants created by this function become initializers.
     As such, they are independent of an opset version and are listed separately
-    in the model. Initializers are also used internally in Spox.
+    in the model. Initializers are also used internally in Spox. Currently it is not
+    possible for initializers to be named the same as arguments in the graph.
     """
     return _initializer(np.array(value, dtype))
 
