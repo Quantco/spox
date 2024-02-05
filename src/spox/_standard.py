@@ -1,4 +1,5 @@
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
+
 from typing import TYPE_CHECKING, Callable, Dict, Tuple
 
 import numpy

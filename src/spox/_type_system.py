@@ -40,9 +40,11 @@ class Type:
         if proto.HasField("tensor_type"):
             return Tensor(
                 tensor_type_to_dtype(proto.tensor_type.elem_type),
-                Shape.from_onnx(proto.tensor_type.shape).to_simple()
-                if proto.tensor_type.HasField("shape")
-                else None,
+                (
+                    Shape.from_onnx(proto.tensor_type.shape).to_simple()
+                    if proto.tensor_type.HasField("shape")
+                    else None
+                ),
             )
         elif proto.HasField("sequence_type"):
             return Sequence(Type._from_onnx(proto.sequence_type.elem_type))

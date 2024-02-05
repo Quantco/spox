@@ -5,6 +5,7 @@ Of these, only defining the ``Attributes/Inputs/Outputs`` classes as members is 
 for the respective fields ``attrs/inputs/outputs`` and ``infer_output_types`` will be useful as well.
 Of these, ``propagate_values`` is probably least common.
 """
+
 from dataclasses import dataclass
 from typing import Dict
 
