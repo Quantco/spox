@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.10.1 (2023-02-07)
+-------------------
+
+**Other changes**
+
+- Spox's compatibility with older versions of onnx has been improved.
+
+
 0.10.0 (2023-02-02)
 -------------------
 

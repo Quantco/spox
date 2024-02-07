@@ -4,6 +4,7 @@ from typing import Any, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
 import numpy.typing as npt
+import onnx
 from onnx import AttributeProto
 from onnx.helper import (
     make_attribute,
@@ -11,6 +12,7 @@ from onnx.helper import (
     make_sequence_type_proto,
     make_tensor_type_proto,
 )
+from packaging import version
 
 from spox import _type_system
 from spox._utils import dtype_to_tensor_type, from_array
@@ -210,9 +212,13 @@ class _AttrIterable(Attr[Tuple[S, ...]], ABC):
         return cls(tuple(value), name) if value is not None else None
 
     def _to_onnx_deref(self) -> AttributeProto:
-        return make_attribute(
-            self._name, self.value, attr_type=self._attribute_proto_type
-        )
+        # 1.15 introduced attr_type which provides much better performance
+        if version.parse(onnx.__version__) >= version.parse("1.15"):
+            return make_attribute(
+                self._name, self.value, attr_type=self._attribute_proto_type
+            )
+        else:
+            return make_attribute(self._name, self.value)
 
 
 class AttrFloat32s(_AttrIterable[float]):
