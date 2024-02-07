@@ -210,9 +210,16 @@ class _AttrIterable(Attr[Tuple[S, ...]], ABC):
         return cls(tuple(value), name) if value is not None else None
 
     def _to_onnx_deref(self) -> AttributeProto:
-        return make_attribute(
-            self._name, self.value, attr_type=self._attribute_proto_type
-        )
+        # the attr_type argument was only added in onnx>=1.15. It is a
+        # performance optimization for which we don't want to
+        # introduce a version bound. If we fail, we try again without
+        # it.
+        try:
+            return make_attribute(
+                self._name, self.value, attr_type=self._attribute_proto_type
+            )
+        except TypeError:
+            return make_attribute(self._name, self.value)
 
 
 class AttrFloat32s(_AttrIterable[float]):
