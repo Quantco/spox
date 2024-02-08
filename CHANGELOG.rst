@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.10.2 (2023-02-08)
+-------------------
+
+**Other changes**
+
+- Added ``packaging`` as an explicit dependency.
+
+
 0.10.1 (2023-02-07)
 -------------------
 
