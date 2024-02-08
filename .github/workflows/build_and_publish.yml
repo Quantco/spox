@@ -1,6 +1,7 @@
 name: Build and upload to PyPI
 
 on:
+  push:
   pull_request:
   release:
     types:
@@ -23,6 +24,13 @@ jobs:
         run: |
           pip install build
           python -m build
+
+      - name: Test install and import
+        run: |
+          python -m venv ./env
+          . ./env/bin/activate
+          pip install dist/*.whl
+          python -c "import spox"
 
       - uses: actions/upload-artifact@v4
         with:
