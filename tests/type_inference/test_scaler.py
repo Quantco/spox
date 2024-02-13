@@ -16,4 +16,4 @@ def test_scaler_inference():
 def test_scaler_inference_fails_mismatched_lengths():
     (x,) = arguments(x=Tensor(np.float64, ("N", 3)))
     with pytest.raises(InferenceError):
-        op_ml.scaler(x, offset=[0.0, 0.1], scale=[1])
+        op_ml.scaler(x, offset=[0.0, 0.1], scale=[1.0])

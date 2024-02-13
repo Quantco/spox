@@ -6,6 +6,7 @@ dependencies:
   # Runtime
   - numpy
   - onnx>=1.14.0
+  - packaging
   - python>=3.8
 
   # Development

@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Run pre-commit checks
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
 
   tests:
     name: "Linux - unit tests - ${{ matrix.OS }} - Python ${{ matrix.PYTHON_VERSION }}"
