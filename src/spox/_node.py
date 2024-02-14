@@ -11,6 +11,7 @@ from typing import ClassVar, Dict, Iterable, List, Optional, Sequence, Set, Tupl
 import onnx
 
 from ._attributes import AttrGraph
+from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
 from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
 from ._type_system import Type
@@ -79,7 +80,7 @@ class Node(ABC):
     outputs: BaseOutputs
 
     out_variadic: Optional[int]
-    _traceback: List[str]
+    _traceback: Union[List[str], None]
 
     def __init__(
         self,
@@ -128,7 +129,10 @@ class Node(ABC):
             self.inference(infer_types, propagate_values)
         else:
             self.outputs = outputs
-        self._traceback = traceback.format_stack()
+
+        # Optionally store debug information about where this node was created
+        self._traceback = traceback.format_stack() if STORE_TRACEBACK else None
+
         # Performs type checking using known flags (like type_members)
         # and warns if type inference failed (some types are None).
         if validate:

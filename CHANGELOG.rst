@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.10.3 (unreleased)
+-------------------
+
+**Other changes**
+
+- Improved performance
+
+
 0.10.2 (2023-02-08)
 -------------------
 
