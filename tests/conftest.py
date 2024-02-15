@@ -5,14 +5,14 @@ import numpy
 import onnxruntime
 import pytest
 
-from spox import _value_prop
-from spox._debug import show_construction_tracebacks
+from spox import _debug, _value_prop
 from spox._future import set_type_warning_level
 from spox._graph import Graph
 from spox._node import TypeWarningLevel
 
 set_type_warning_level(TypeWarningLevel.CRITICAL)
 _value_prop.VALUE_PROP_STRICT_CHECK = True
+_debug.STORE_TRACEBACK = True
 
 
 class ONNXRuntimeHelper:
@@ -37,12 +37,12 @@ class ONNXRuntimeHelper:
                 self._build_cache[graph] = model_bytes
             else:
                 model_bytes = self._build_cache[graph]
-            with show_construction_tracebacks(debug_index):
+            with _debug.show_construction_tracebacks(debug_index):
                 session = onnxruntime.InferenceSession(model_bytes)
         self._last_graph = graph
         self._last_session = session
         assert isinstance(session, onnxruntime.InferenceSession)
-        with show_construction_tracebacks(debug_index):
+        with _debug.show_construction_tracebacks(debug_index):
             result = {
                 output.name: result
                 for output, result in zip(
