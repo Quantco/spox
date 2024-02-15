@@ -1,4 +1,8 @@
 repos:
+  - repo: https://github.com/Quantco/pre-commit-mirrors-ruff
+    rev: 0.2.1
+    hooks:
+      - id: ruff-conda
   - repo: https://github.com/Quantco/pre-commit-mirrors-black
     rev: 24.1.1
     hooks:
@@ -6,15 +10,6 @@ repos:
         args:
           - --safe
           - --target-version=py38
-  - repo: https://github.com/Quantco/pre-commit-mirrors-flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8-conda
-  - repo: https://github.com/Quantco/pre-commit-mirrors-isort
-    rev: 5.13.2
-    hooks:
-      - id: isort-conda
-        additional_dependencies: [-c, conda-forge, toml=0.10.2]
   - repo: https://github.com/Quantco/pre-commit-mirrors-mypy
     rev: "1.8.0"
     hooks:
