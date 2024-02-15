@@ -12,7 +12,7 @@ Change log
 
 **Other changes**
 
-- Improved performance
+- Improved node creation speed by skipping the storing of the traceback
 
 
 0.10.2 (2023-02-08)
