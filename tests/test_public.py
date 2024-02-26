@@ -86,3 +86,11 @@ def test_simple_inline_bad_types(simple_model):
         inline(simple_model)(b, a)
     with pytest.raises(TypeError):
         inline(simple_model)(a, c)
+
+
+def test_copy_vars():
+    from copy import copy
+
+    a = argument(Tensor(float, ()))
+    b = op.add(a, copy(a))
+    build({"a": a}, {"b": b})
