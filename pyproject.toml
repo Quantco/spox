@@ -57,27 +57,12 @@ package-dir = {"" = "src"}
 where = ["src"]
 namespaces = false
 
-[tool.black]
-target-version = ['py38']
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.venv
-  | build
-  | dist
-)/
-'''
+[tool.ruff.lint]
+# Enable the isort rules.
+extend-select = ["I"]
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-include_trailing_comma = true
-ensure_newline_before_comments = true
-line_length = 88
-known_first_party = "spox"
-skip_glob = '\.eggs/*,\.git/*,\.venv/*,build/*,dist/*'
-default_section = 'THIRDPARTY'
+[tool.ruff.lint.isort]
+known-first-party = ["spox"]
 
 [tool.mypy]
 python_version = "3.8"

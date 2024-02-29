@@ -1,44 +1,25 @@
-# flake8: noqa
-import typing  # noqa: F401
-import warnings  # noqa: F401
+# ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
-from typing import (  # noqa: F401
-    Any,
-    Callable,
-    Dict,
+from typing import (
     Iterable,
-    List,
     Optional,
-    Sequence,
-    Tuple,
-    Union,
 )
-from typing import cast as typing_cast  # noqa: F401
 
-import numpy as np  # noqa: F401
-import numpy.typing as npt  # noqa: F401
+import numpy as np
 
 from spox._attributes import (
-    AttrDtype,
     AttrFloat32,
     AttrFloat32s,
-    AttrGraph,
     AttrInt64,
     AttrInt64s,
     AttrString,
     AttrStrings,
     AttrTensor,
-    AttrType,
 )
-from spox._fields import BaseAttributes, BaseInputs, BaseOutputs  # noqa: F401
-from spox._graph import Graph, subgraph  # noqa: F401
-from spox._internal_op import intro  # noqa: F401
-from spox._node import OpType  # noqa: F401
-from spox._standard import InferenceError, StandardNode  # noqa: F401
-from spox._type_system import Sequence as SpoxSequence  # noqa: F401
-from spox._type_system import Tensor, Type
-from spox._value_prop import PropValueType  # noqa: F401
-from spox._var import Var, result_type  # noqa: F401
+from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
+from spox._node import OpType
+from spox._standard import StandardNode
+from spox._var import Var
 from spox.opset.ai.onnx.ml.v3 import (
     _ArrayFeatureExtractor,
     _Binarizer,

@@ -1,9 +1,6 @@
-# flake8: noqa
-import typing  # noqa: F401
-import warnings  # noqa: F401
+# ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
-from typing import (  # noqa: F401
-    Any,
+from typing import (
     Callable,
     Dict,
     Iterable,
@@ -11,12 +8,11 @@ from typing import (  # noqa: F401
     Optional,
     Sequence,
     Tuple,
-    Union,
 )
-from typing import cast as typing_cast  # noqa: F401
+from typing import cast as typing_cast
 
-import numpy as np  # noqa: F401
-import numpy.typing as npt  # noqa: F401
+import numpy as np
+import numpy.typing as npt
 
 from spox._attributes import (
     AttrDtype,
@@ -30,15 +26,14 @@ from spox._attributes import (
     AttrTensor,
     AttrType,
 )
-from spox._fields import BaseAttributes, BaseInputs, BaseOutputs  # noqa: F401
-from spox._graph import Graph, subgraph  # noqa: F401
-from spox._internal_op import intro  # noqa: F401
-from spox._node import OpType  # noqa: F401
-from spox._standard import InferenceError, StandardNode  # noqa: F401
-from spox._type_system import Sequence as SpoxSequence  # noqa: F401
+from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
+from spox._graph import Graph, subgraph
+from spox._node import OpType
+from spox._standard import InferenceError, StandardNode
+from spox._type_system import Sequence as SpoxSequence
 from spox._type_system import Tensor, Type
-from spox._value_prop import PropValueType  # noqa: F401
-from spox._var import Var, result_type  # noqa: F401
+from spox._value_prop import PropValueType
+from spox._var import Var
 
 
 class _Abs(StandardNode):
