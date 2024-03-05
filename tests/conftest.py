@@ -29,7 +29,7 @@ class ONNXRuntimeHelper:
         debug_index = {
             **graph._get_build_result().scope.var.of_name,
             **graph._get_build_result().scope.node.of_name,
-        }  # type: ignore
+        }
         if self._last_graph is graph:
             print("[ONNXRuntimeHelper] Reusing previous session.", file=sys.stderr)
             session = self._last_session
