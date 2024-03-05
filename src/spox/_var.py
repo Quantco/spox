@@ -131,6 +131,14 @@ class Var:
         """Equivalent to ``self.unwrap_type().unwrap_optional()``."""
         return self.unwrap_type().unwrap_optional()
 
+    def __copy__(self) -> "Var":
+        # Simply return `self` to ensure that "copies" are still equal
+        # during the build process
+        return self
+
+    def __deepcopy__(self, _) -> "Var":
+        raise ValueError("'Var' objects cannot be deepcopied.")
+
     def __add__(self, other) -> "Var":
         return Var._operator_dispatcher.add(self, other)
 
