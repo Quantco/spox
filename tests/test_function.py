@@ -43,8 +43,16 @@ def linear():
 
         def constructor(self, attrs: Dict[str, Attr], inputs: Inputs) -> Outputs:
             # FIXME: At some point, attribute references should be properly type-hinted.
-            a = op.constant(value_float=_Ref(attrs["slope_outer"], outer_name="slope_outer", name="value_float"))  # type: ignore
-            b = op.constant(value_float=_Ref(attrs["shift_outer"], outer_name="shift_outer", name="value_float"))  # type: ignore
+            a = op.constant(
+                value_float=_Ref(
+                    attrs["slope_outer"], outer_name="slope_outer", name="value_float"
+                )  # type: ignore
+            )
+            b = op.constant(
+                value_float=_Ref(
+                    attrs["shift_outer"], outer_name="shift_outer", name="value_float"
+                )  # type: ignore
+            )
             x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b))
 
@@ -143,7 +151,11 @@ def cubic(linear):
             b = op.add(
                 op.mul(
                     x,
-                    op.constant(value_float=_Ref(attrs["a1"], outer_name="a1", name="value_float")),  # type: ignore
+                    op.constant(
+                        value_float=_Ref(
+                            attrs["a1"], outer_name="a1", name="value_float"
+                        )  # type: ignore
+                    ),
                 ),
                 op.constant(
                     value_float=_Ref(attrs["a0"], outer_name="a0", name="value_float"),  # type: ignore

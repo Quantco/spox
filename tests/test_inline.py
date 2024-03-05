@@ -143,8 +143,9 @@ def larger_graph(lin_fun_proto):
 
 
 def test_larger(onnx_helper, larger_graph):
-    a, b = numpy.random.random(5).astype(numpy.float32), numpy.random.random(5).astype(
-        numpy.float32
+    a, b = (
+        numpy.random.random(5).astype(numpy.float32),
+        numpy.random.random(5).astype(numpy.float32),
     )
     onnx_helper.assert_close(
         onnx_helper.run(larger_graph, "final", first=a, second=b), (2 * (a + b) + b) / a

@@ -174,9 +174,9 @@ class StandardNode(Node):
         output_feed = run(model, input_feed)
 
         results = {
-            scope.var[str(name)]
-            ._which_output: unwrap_feed(scope.var[str(name)].unwrap_type(), result)
-            .value
+            scope.var[str(name)]._which_output: unwrap_feed(
+                scope.var[str(name)].unwrap_type(), result
+            ).value
             for name, result in output_feed.items()
         }
         return {k: v for k, v in results.items() if k is not None}
