@@ -13,6 +13,7 @@ Change log
 **Other changes**
 
 - Improved node creation speed by skipping the storing of the traceback
+- :class:`spox.Var` objects may now be shallow copied. Deep copies are explicitly prohibited.
 
 
 0.10.2 (2023-02-08)

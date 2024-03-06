@@ -1,3 +1,5 @@
+from copy import copy, deepcopy
+
 import numpy as np
 import onnx
 import onnxruntime
@@ -86,3 +88,15 @@ def test_simple_inline_bad_types(simple_model):
         inline(simple_model)(b, a)
     with pytest.raises(TypeError):
         inline(simple_model)(a, c)
+
+
+def test_shallow_copy_var():
+    a = argument(Tensor(float, ()))
+    b = op.add(a, copy(a))
+    build({"a": a}, {"b": b})
+
+
+def test_shallow_deepcopy_var_raises():
+    a = argument(Tensor(float, ()))
+    with pytest.raises(ValueError):
+        deepcopy(a)
