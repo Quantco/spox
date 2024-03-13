@@ -5,6 +5,7 @@ import numpy
 import onnx
 import onnx.version_converter
 
+from ._attributes import AttrGraph
 from ._inline import _Inline
 from ._internal_op import _InternalNode
 from ._node import Node
@@ -107,6 +108,8 @@ def adapt_best_effort(
             node_names[node],
         )
     if isinstance(node, _InternalNode) or len(protos) != 1:
+        return None
+    if any(isinstance(attr, AttrGraph) for attr in node.attrs.get_fields().values()):
         return None
     proto: onnx.NodeProto
     (proto,) = protos

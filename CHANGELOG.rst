@@ -15,6 +15,10 @@ Change log
 - Improved node creation speed by skipping the storing of the traceback
 - :class:`spox.Var` objects may now be shallow copied. Deep copies are explicitly prohibited.
 
+**Bug fix**
+
+- Addresses node adaptation failure when referencing a non-input name from inside a subgraph by aborting opset adaptation.
+
 
 0.10.2 (2023-02-08)
 -------------------
