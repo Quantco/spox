@@ -1,4 +1,5 @@
 """Exposes information related to reference ONNX operator schemas, used by StandardOpNode."""
+
 import itertools
 from typing import (
     Callable,
@@ -16,11 +17,9 @@ from onnx.defs import OpSchema, get_all_schemas_with_history
 
 
 class _Comparable(Protocol):
-    def __lt__(self, other):
-        ...
+    def __lt__(self, other): ...
 
-    def __gt__(self, other):
-        ...
+    def __gt__(self, other): ...
 
 
 S = TypeVar("S")
