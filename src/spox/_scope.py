@@ -59,12 +59,10 @@ class ScopeSpace(Generic[H]):
         )
 
     @overload
-    def __getitem__(self, item: H) -> str:
-        ...
+    def __getitem__(self, item: H) -> str: ...
 
     @overload
-    def __getitem__(self, item: str) -> H:
-        ...
+    def __getitem__(self, item: str) -> H: ...
 
     def __getitem__(self, item: Union[str, H]):
         """Access the name of an object or an object with a given name in this (or outer) namespace."""
@@ -76,12 +74,10 @@ class ScopeSpace(Generic[H]):
             return self.name_of[item]
 
     @overload
-    def __setitem__(self, key: str, value: H):
-        ...
+    def __setitem__(self, key: str, value: H): ...
 
     @overload
-    def __setitem__(self, key: H, value: str):
-        ...
+    def __setitem__(self, key: H, value: str): ...
 
     def __setitem__(self, _key, _value):
         """Set the name of an object in exactly this namespace. Both ``[name] = obj`` and ``[obj] = name`` work."""

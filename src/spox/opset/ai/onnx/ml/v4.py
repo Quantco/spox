@@ -64,7 +64,7 @@ class _LabelEncoder(StandardNode):
         default_float: AttrFloat32
         default_int64: AttrInt64
         default_string: AttrString
-        default_tensor: AttrTensor
+        default_tensor: Optional[AttrTensor]
         keys_floats: Optional[AttrFloat32s]
         keys_int64s: Optional[AttrInt64s]
         keys_strings: Optional[AttrStrings]
@@ -95,7 +95,7 @@ def label_encoder(
     default_float: float = -0.0,
     default_int64: int = -1,
     default_string: str = "_Unused",
-    default_tensor: np.ndarray,
+    default_tensor: Optional[np.ndarray] = None,
     keys_floats: Optional[Iterable[float]] = None,
     keys_int64s: Optional[Iterable[int]] = None,
     keys_strings: Optional[Iterable[str]] = None,
@@ -144,7 +144,8 @@ def label_encoder(
         A string.
     default_tensor
         Attribute.
-        A default tensor.
+        A default tensor. {"*Unused"} if values*\ \* has string type, {-1} if
+        values\_\* has integral type, and {-0.f} if values\_\* has float type.
     keys_floats
         Attribute.
         A list of floats.
@@ -192,7 +193,7 @@ def label_encoder(
             default_float=AttrFloat32(default_float, name="default_float"),
             default_int64=AttrInt64(default_int64, name="default_int64"),
             default_string=AttrString(default_string, name="default_string"),
-            default_tensor=AttrTensor(default_tensor, name="default_tensor"),
+            default_tensor=AttrTensor.maybe(default_tensor, name="default_tensor"),
             keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
             keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
             keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),

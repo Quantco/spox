@@ -1836,12 +1836,14 @@ def tree_ensemble_regressor(
         'SUM,' 'MIN,' 'MAX.'
     base_values
         Attribute.
-        Base values for classification, added to final class score; the size
-        must be the same as the classes or can be left unassigned (assumed 0)
+        Base values for regression, added to final prediction after applying
+        aggregate_function; the size must be the same as the classes or can be
+        left unassigned (assumed 0)
     base_values_as_tensor
         Attribute.
-        Base values for classification, added to final class score; the size
-        must be the same as the classes or can be left unassigned (assumed 0)
+        Base values for regression, added to final prediction after applying
+        aggregate_function; the size must be the same as the classes or can be
+        left unassigned (assumed 0)
     n_targets
         Attribute.
         The total number of targets.
