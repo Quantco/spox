@@ -698,6 +698,17 @@ if __name__ == "__main__":
         gen_docstrings=gen_all_docstrings,
         inherited_schemas={s: ai_onnx_v19_module for s in ai_onnx_v19_schemas},
     )
+    ai_onnx_v21_schemas, ai_onnx_v21_module = main(
+        "ai.onnx",
+        21,
+        extras=["const"],
+        value_propagation={"Constant": "constant13"},
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v20_module for s in ai_onnx_v20_schemas},
+    )
     ai_onnx_ml_v3_schemas, ai_onnx_ml_v3_module = main(
         "ai.onnx.ml",
         3,
@@ -729,4 +740,18 @@ if __name__ == "__main__":
         },
         gen_docstrings=gen_all_docstrings,
         inherited_schemas={s: ai_onnx_ml_v3_module for s in ai_onnx_ml_v3_schemas},
+    )
+    ai_onnx_ml_v5_schemas, ai_onnx_ml_v5_module = main(
+        "ai.onnx.ml",
+        5,
+        attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
+        type_inference={
+            "Binarizer": "binarizer1",
+            "Imputer": "imputer1",
+            "LinearRegressor": "linearregressor1",
+            "Normalizer": "normalizer1",
+            "Scaler": "scaler1",
+        },
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_ml_v4_module for s in ai_onnx_ml_v4_schemas},
     )
