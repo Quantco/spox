@@ -12,7 +12,7 @@ Change log
 
 **New feature**
 
-- The opsets ``ai.onnx`` version 21 and ``ai.onnx.ml`` version 5 (ONNX 1.16) are now shipped with Spox.
+- The opsets ``ai.onnx`` version 21 and ``ai.onnx.ml`` version 5 (released with ONNX 1.16) are now shipped with Spox.
 
 
 0.10.3 (2024-03-14)
