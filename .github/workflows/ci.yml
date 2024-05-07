@@ -71,6 +71,8 @@ jobs:
             python=${{ matrix.PYTHON_VERSION }}
       - name: Run code generation
         shell: bash -l {0}
+        env:
+          PRE_COMMIT_USE_MICROMAMBA: 1
         run: |
           pip install .
           pip install pandoc
