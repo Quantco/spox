@@ -75,7 +75,6 @@ jobs:
           PRE_COMMIT_USE_MICROMAMBA: 1
         run: |
           pip install .
-          pip install pandoc
           pre-commit install
           python tools/generate_opset.py
           git diff --exit-code
