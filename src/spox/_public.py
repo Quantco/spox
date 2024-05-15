@@ -54,7 +54,9 @@ def _temporary_renames(**kwargs: Var):
             arg._rename(name)
 
 
-def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
+def build(
+    inputs: Dict[str, Var], outputs: Dict[str, Var], *, drop_unused_inputs=False
+) -> onnx.ModelProto:
     """
     Builds an ONNX Model with given model inputs and outputs.
 
@@ -71,6 +73,11 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
         Model outputs. Keys are names, values may be any ``Var``.
         Building will resolve what nodes were used in the construction
         of output variables.
+    drop_unused_inputs
+        If ``False``, only inputs that are needed for the computation
+        of the ``outputs`` will appear as inputs of the returned
+        ``ModelProto``. Otherwise, all inputs are required by the
+        returned object (default).
 
     Returns
     -------
@@ -80,6 +87,11 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
         ``ai.onnx`` domain are present, the nodes are all converted to
         the newest one. The minimum ``ai.onnx`` version is set to 14 to
         avoid tooling issues with legacy versions.
+
+    Raises
+    ------
+    KeyError
+        If the ``outputs`` cannot be build from the given ``inputs``.
 
     Examples
     --------
@@ -113,8 +125,18 @@ def build(inputs: Dict[str, Var], outputs: Dict[str, Var]) -> onnx.ModelProto:
 
     with _temporary_renames(**inputs):
         graph = results(**outputs)
-        graph = graph.with_arguments(*inputs.values())
-        return graph.to_onnx_model()
+        if not drop_unused_inputs:
+            graph = graph.with_arguments(*inputs.values())
+        model_proto = graph.to_onnx_model()
+
+    # Validate that no further inputs were required.
+    unspecified_inputs = [
+        inp.name for inp in model_proto.graph.input if inp.name not in inputs
+    ]
+    if unspecified_inputs:
+        raise KeyError("Model requires additional inputs not provided in 'inputs'.")
+
+    return model_proto
 
 
 class _InlineCall(Protocol):

@@ -100,3 +100,22 @@ def test_shallow_deepcopy_var_raises():
     a = argument(Tensor(float, ()))
     with pytest.raises(ValueError):
         deepcopy(a)
+
+
+def test_build_drop_unused_arguments():
+    a = argument(Tensor(float, ()))
+    unused = argument(Tensor(float, ()))
+    c = op.add(a, a)
+    model_proto = build({"a": a, "unused": unused}, {"c": c}, drop_unused_inputs=True)
+    actual_inputs = [el.name for el in model_proto.graph.input]
+
+    assert actual_inputs == ["a"]
+
+
+@pytest.mark.parametrize("drop_unused", [True, False])
+def test_raise_missing_input(drop_unused):
+    a = argument(Tensor(float, ()))
+    b = argument(Tensor(float, ()))
+
+    with pytest.raises(KeyError):
+        build({"a": a}, {"c": op.add(a, b)}, drop_unused_inputs=drop_unused)
