@@ -73,3 +73,7 @@ check_untyped_defs = true
 [tool.pytest.ini_options]
 # This will be pytest's future default.
 addopts = "--import-mode=importlib"
+filterwarnings = [
+    # Protobuf warning seen when running the test suite
+    "ignore:.*Type google.protobuf.pyext.*:DeprecationWarning:.*",
+]

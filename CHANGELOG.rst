@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.12.0 (2024-05-16)
+-------------------
+
+**New feature**
+
+- The :func:`spox.build` function gained the ``drop_unused_inputs`` argument.
+
+
 0.11.0 (2024-04-23)
 -------------------
 
