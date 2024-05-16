@@ -130,10 +130,7 @@ def build(
         model_proto = graph.to_onnx_model()
 
     # Validate that no further inputs were required.
-    unspecified_inputs = [
-        inp.name for inp in model_proto.graph.input if inp.name not in inputs
-    ]
-    if unspecified_inputs:
+    if any(inp.name not in inputs for inp in model_proto.graph.input):
         raise KeyError("Model requires additional inputs not provided in 'inputs'.")
 
     return model_proto
