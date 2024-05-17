@@ -19,8 +19,9 @@ class Suffix(ABC):
 
 
 class DefaultSuffix(Suffix):
+    suffix_fmt = "_{}"
+
     def __init__(self):
-        self.format = "_{}"
         self.i = -1
 
     def __iter__(self):
@@ -30,7 +31,7 @@ class DefaultSuffix(Suffix):
         if self.i == -1:
             self.i += 1
             return ""
-        next = self.format.format(self.i)
+        next = self.suffix_fmt.format(self.i)
         self.i += 1
 
         return next
