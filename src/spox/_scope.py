@@ -22,16 +22,14 @@ class DefaultSuffix(Suffix):
     suffix_fmt = "_{}"
 
     def __init__(self):
-        self.i = 0
+        self.i = -1
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        next = self.suffix_fmt.format(self.i)
         self.i += 1
-
-        return next
+        return self.suffix_fmt.format(self.i)
 
 
 class ScopeSpace(Generic[H]):
