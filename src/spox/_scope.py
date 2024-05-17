@@ -22,15 +22,12 @@ class DefaultSuffix(Suffix):
     suffix_fmt = "_{}"
 
     def __init__(self):
-        self.i = -1
+        self.i = 0
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.i == -1:
-            self.i += 1
-            return ""
         next = self.suffix_fmt.format(self.i)
         self.i += 1
 
@@ -159,6 +156,10 @@ class ScopeSpace(Generic[H]):
 
     def maybe_enum(self, base: str, suffix: Optional[Suffix] = None) -> str:
         """Attempt to use ``base`` as a name, or return the result of ``self.enum`` for it otherwise."""
+        existing_suffix = self._get_suffix(base)
+        if existing_suffix is None:
+            self.name_resolution[base] = suffix or DefaultSuffix()
+            return base
         return self.enum(base, suffix)
 
     def reserve(self, name: str) -> str:
