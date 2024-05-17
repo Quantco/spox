@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Dict, Generic, Hashable, Optional, Set, TypeVar, Union, overload
 
 from ._node import Node
@@ -12,6 +13,29 @@ class ScopeError(Exception):
     pass
 
 
+class Suffix(ABC):
+    def __next__(self):
+        raise NotImplementedError
+
+
+class DefaultSuffix(Suffix):
+    def __init__(self):
+        self.format = "_{}"
+        self.i = -1
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.i == -1:
+            self.i += 1
+            return ""
+        next = self.format.format(self.i)
+        self.i += 1
+
+        return next
+
+
 class ScopeSpace(Generic[H]):
     """
     Represents the namespace of a scope for some type H, like Node or Var.
@@ -23,6 +47,7 @@ class ScopeSpace(Generic[H]):
     name_of: Dict[H, str]
     of_name: Dict[str, H]
     reserved: Set[str]
+    name_resolution: Dict[str, Suffix]
     parent: "Optional[ScopeSpace[H]]"
 
     def __init__(
@@ -47,6 +72,7 @@ class ScopeSpace(Generic[H]):
         self.name_of = name_of.copy() if name_of is not None else {}
         self.of_name = of_name.copy() if of_name is not None else {}
         self.reserved = reserved.copy() if reserved is not None else set()
+        self.name_resolution = dict()
         self.parent = parent
 
     def __contains__(self, item: Union[str, H]) -> bool:
@@ -72,6 +98,13 @@ class ScopeSpace(Generic[H]):
             return self.of_name[item]
         else:
             return self.name_of[item]
+
+    def _get_suffix(self, base: str) -> Optional[Suffix]:
+        """Access the suffix of a base name in this (or outer) namespace."""
+        suffix = None
+        if self.parent is not None:
+            suffix = suffix or self.parent._get_suffix(base)
+        return suffix or self.name_resolution.get(base, None)
 
     @overload
     def __setitem__(self, key: str, value: H): ...
@@ -114,17 +147,17 @@ class ScopeSpace(Generic[H]):
         del self.of_name[key]
         del self.name_of[value]
 
-    def enum(self, base: str, suffix: str = "_{}") -> str:
+    def enum(self, base: str, suffix: Optional[Suffix] = None) -> str:
         """Find an unused name by enumerating the pattern ``base + suffix.format(i)`` through `i = 0, 1, ...`"""
-        i = 0
-        while (name := f"{base}{suffix.format(i)}") in self:
-            i += 1
-        return name
+        default_suffix = suffix or DefaultSuffix()
+        existing_suffix = self._get_suffix(base)
+        actual_suffix: Suffix = existing_suffix or default_suffix
+        if existing_suffix is None:
+            self.name_resolution[base] = actual_suffix
+        return f"{base}{next(actual_suffix)}"
 
-    def maybe_enum(self, base: str, suffix: str = "_{}") -> str:
+    def maybe_enum(self, base: str, suffix: Optional[Suffix] = None) -> str:
         """Attempt to use ``base`` as a name, or return the result of ``self.enum`` for it otherwise."""
-        if base not in self:
-            return base
         return self.enum(base, suffix)
 
     def reserve(self, name: str) -> str:
