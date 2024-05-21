@@ -122,8 +122,7 @@ class ScopeSpace(Generic[H]):
 
     def enum(self, base: str) -> str:
         """Find an unused name by enumerating the pattern ``base + suffix.format(i)`` through `i = 0, 1, ...`"""
-        if base not in self.name_resolution:
-            self.name_resolution[base] = 0
+        self.name_resolution.setdefault(base, 0)
 
         name = f"{base}_{self.name_resolution[base]}"
         self.name_resolution[base] = self.name_resolution[base] + 1
