@@ -23,7 +23,7 @@ class ScopeSpace(Generic[H]):
     name_of: Dict[H, str]
     of_name: Dict[str, H]
     reserved: Set[str]
-    name_resolution: Dict[str, int]
+    base_name_counters: Dict[str, int]
     parent: "Optional[ScopeSpace[H]]"
 
     def __init__(
@@ -53,7 +53,9 @@ class ScopeSpace(Generic[H]):
         # all scopes.
         # While the standard is more lenient in this respect, we
         # simply don't allow any name reuse across the entire model.
-        self.name_resolution = parent.name_resolution if parent is not None else dict()
+        self.base_name_counters = (
+            parent.base_name_counters if parent is not None else dict()
+        )
 
     def __contains__(self, item: Union[str, H]) -> bool:
         """Checks if a given name or object is declared in this (or outer) namespace."""
@@ -122,16 +124,16 @@ class ScopeSpace(Generic[H]):
 
     def enum(self, base: str) -> str:
         """Find an unused name by enumerating the pattern ``base + suffix.format(i)`` through `i = 0, 1, ...`"""
-        self.name_resolution.setdefault(base, 0)
+        self.base_name_counters.setdefault(base, 0)
 
-        name = f"{base}_{self.name_resolution[base]}"
-        self.name_resolution[base] = self.name_resolution[base] + 1
+        name = f"{base}_{self.base_name_counters[base]}"
+        self.base_name_counters[base] = self.base_name_counters[base] + 1
         return name
 
     def maybe_enum(self, base: str) -> str:
         """Attempt to use ``base`` as a name, or return the result of ``self.enum`` for it otherwise."""
-        if base not in self.name_resolution:
-            self.name_resolution[base] = 0
+        if base not in self.base_name_counters:
+            self.base_name_counters[base] = 0
             return base
         return self.enum(base)
 
