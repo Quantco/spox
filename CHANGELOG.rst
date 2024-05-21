@@ -7,7 +7,7 @@
 Change log
 ==========
 
-0.12.1 (2024-XX-XX)
+(unreleased)
 -------------------
 
 **Other changes**
