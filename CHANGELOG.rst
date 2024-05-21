@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.12.1 (2024-XX-XX)
+-------------------
+
+**Other changes**
+
+- Imporved quadratic complexity of the naming algorithm in the build process, by keeping track of how many times a base name was used in current and all containing scopes.
+
+
 0.12.0 (2024-05-16)
 -------------------
 
