@@ -49,6 +49,10 @@ class ScopeSpace(Generic[H]):
         self.of_name = of_name.copy() if of_name is not None else {}
         self.reserved = reserved.copy() if reserved is not None else set()
         self.parent = parent
+        # Reference to a single `base_name_counters` object across
+        # all scopes.
+        # While the standard is more lenient in this respect, we
+        # simply don't allow any name reuse across the entire model.
         self.name_resolution = parent.name_resolution if parent is not None else dict()
 
     def __contains__(self, item: Union[str, H]) -> bool:
