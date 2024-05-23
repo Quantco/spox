@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.12.1 (unreleased)
+-------------------
+
+**Other changes**
+
+- The node-naming algorithm now has constant rather than quadratic time complexity.
+
+
 0.12.0 (2024-05-16)
 -------------------
 
