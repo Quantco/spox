@@ -123,7 +123,7 @@ class ScopeSpace(Generic[H]):
         del self.name_of[value]
 
     def enum(self, base: str) -> str:
-        """Find an unused name by enumerating the pattern ``base + suffix.format(i)`` through `i = 0, 1, ...`"""
+        """Find an unused name by enumerating the pattern ``f"{base}_{i}"`` through `i = 0, 1, ...`"""
         self.base_name_counters.setdefault(base, 0)
 
         name = f"{base}_{self.base_name_counters[base]}"
