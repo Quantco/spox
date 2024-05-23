@@ -7,12 +7,12 @@
 Change log
 ==========
 
-(unreleased)
+0.12.1 (unreleased)
 -------------------
 
 **Other changes**
 
-- Imporved quadratic complexity of the naming algorithm in the build process, by keeping track of how many times a base name was used in current and all containing scopes.
+- The node-naming algorithm now has constant rather than quadratic time complexity.
 
 
 0.12.0 (2024-05-16)
