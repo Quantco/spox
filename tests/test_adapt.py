@@ -91,14 +91,14 @@ class Squeeze11(StandardNode):
     inputs: Inputs
     outputs: Outputs
 
-
-@pytest.fixture
-def old_squeeze_graph(old_squeeze):
     def squeeze11(_data: Var, _axes: Iterable[int]):
         return Squeeze11(
             Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
         ).outputs.squeezed
 
+
+@pytest.fixture
+def old_squeeze_graph(old_squeeze):
     (data,) = arguments(
         data=Tensor(
             numpy.float32,
@@ -108,7 +108,7 @@ def old_squeeze_graph(old_squeeze):
             ),
         )
     )
-    result = squeeze11(data, [0])
+    result = Squeeze11.squeeze11(data, [0])
     return results(final=result).with_opset(("ai.onnx", 17))
 
 
