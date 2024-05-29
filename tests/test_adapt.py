@@ -4,6 +4,7 @@ from typing import Iterable
 import numpy
 import onnx
 import onnx.parser
+import onnxruntime as ort
 import pytest
 
 import spox.opset.ai.onnx.v18 as op18
@@ -71,27 +72,28 @@ def inline_old_identity_twice_graph(old_identity):
     return results(final=z).with_opset(("ai.onnx", 17))
 
 
+class Squeeze11(StandardNode):
+    @dataclass
+    class Attributes(BaseAttributes):
+        axes: AttrInt64s
+
+    @dataclass
+    class Inputs(BaseInputs):
+        data: Var
+
+    @dataclass
+    class Outputs(BaseOutputs):
+        squeezed: Var
+
+    op_type = OpType("Squeeze", "", 11)
+
+    attrs: Attributes
+    inputs: Inputs
+    outputs: Outputs
+
+
 @pytest.fixture
 def old_squeeze_graph(old_squeeze):
-    class Squeeze11(StandardNode):
-        @dataclass
-        class Attributes(BaseAttributes):
-            axes: AttrInt64s
-
-        @dataclass
-        class Inputs(BaseInputs):
-            data: Var
-
-        @dataclass
-        class Outputs(BaseOutputs):
-            squeezed: Var
-
-        op_type = OpType("Squeeze", "", 11)
-
-        attrs: Attributes
-        inputs: Inputs
-        outputs: Outputs
-
     def squeeze11(_data: Var, _axes: Iterable[int]):
         return Squeeze11(
             Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
@@ -233,3 +235,22 @@ def test_inline_model_custom_node_nested(old_squeeze: onnx.ModelProto):
     # Add another node to the model to trigger the adaption logic
     c = op18.identity(b)
     build({"a": a}, {"c": c})
+
+
+def test_if_adaptation_const():
+    cond = argument(Tensor(numpy.bool_, ()))
+    b = argument(Tensor(numpy.float32, (1,)))
+    squeezed = Squeeze11.squeeze11(b, [0])
+    out = op18.if_(
+        cond,
+        then_branch=lambda: [squeezed],
+        else_branch=lambda: [Squeeze11.squeeze11(b, [0])],
+    )
+    model = build({"b": b, "cond": cond}, {"out": out[0]})
+
+    # predict on model
+    b = numpy.array([1.1], dtype=numpy.float32)
+    cond = numpy.array(True, dtype=numpy.bool_)
+    out = ort.InferenceSession(model.SerializeToString()).run(
+        None, {"b": b, "cond": cond}
+    )
