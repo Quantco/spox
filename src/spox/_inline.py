@@ -154,6 +154,8 @@ class _Inline(_InternalNode):
         inner_node_renames: Dict[str, str] = {}
 
         def reserve_prefixed(name: str) -> str:
+            if not name:
+                return name
             return scope.var.reserve(
                 scope.var.maybe_enum(f"{scope.node[self]}__{name}")
             )
