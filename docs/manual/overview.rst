@@ -10,7 +10,7 @@ Like its name suggests, is represents a variable (a placeholder, lazy value, ...
 
 A ``Var`` object does not have a concrete value, but it does have an explicit type. For instance, it may have type Tensor, which is parametrised by the element type (like ``numpy.float32``) and shape (a tuple like ``('N', 2)`` - meaning *N x 2*).
 
-For example, given ``a: Var`` and ``b: Var``, ``c: Var = add(a, b)`` is the ``Var`` representing the sum of ``a`` and ``b``.
+Considering two ``Var`` objects ``a`` and ``b`` one may represent their sum as ``c: Var = add(a, b)``.
 The type and shape information of ``c`` is automatically derived from the inputs following the ONNX type inference implementation.
 The ``add`` function is an *operator constructor*, which internally constructs an ``Add`` node and returns a variable representing its output.
 
