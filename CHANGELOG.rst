@@ -7,6 +7,19 @@
 Change log
 ==========
 
+0.12.1 (2024-06-18)
+-------------------
+
+**Bug fix**
+
+- Unset optional inputs are no longer erroneously prefixed by :func:`~spox.inline`.
+
+
+**Other changes**
+
+- The node-naming algorithm now has constant rather than quadratic time complexity.
+
+
 0.12.0 (2024-05-16)
 -------------------
 

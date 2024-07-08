@@ -23,6 +23,7 @@ class ScopeSpace(Generic[H]):
     name_of: Dict[H, str]
     of_name: Dict[str, H]
     reserved: Set[str]
+    base_name_counters: Dict[str, int]
     parent: "Optional[ScopeSpace[H]]"
 
     def __init__(
@@ -48,6 +49,13 @@ class ScopeSpace(Generic[H]):
         self.of_name = of_name.copy() if of_name is not None else {}
         self.reserved = reserved.copy() if reserved is not None else set()
         self.parent = parent
+        # Reference to a single `base_name_counters` object across
+        # all scopes.
+        # While the standard is more lenient in this respect, we
+        # simply don't allow any name reuse across the entire model.
+        self.base_name_counters = (
+            parent.base_name_counters if parent is not None else dict()
+        )
 
     def __contains__(self, item: Union[str, H]) -> bool:
         """Checks if a given name or object is declared in this (or outer) namespace."""
@@ -114,18 +122,20 @@ class ScopeSpace(Generic[H]):
         del self.of_name[key]
         del self.name_of[value]
 
-    def enum(self, base: str, suffix: str = "_{}") -> str:
-        """Find an unused name by enumerating the pattern ``base + suffix.format(i)`` through `i = 0, 1, ...`"""
-        i = 0
-        while (name := f"{base}{suffix.format(i)}") in self:
-            i += 1
+    def enum(self, base: str) -> str:
+        """Find an unused name by enumerating the pattern ``f"{base}_{i}"`` through `i = 0, 1, ...`"""
+        self.base_name_counters.setdefault(base, 0)
+
+        name = f"{base}_{self.base_name_counters[base]}"
+        self.base_name_counters[base] = self.base_name_counters[base] + 1
         return name
 
-    def maybe_enum(self, base: str, suffix: str = "_{}") -> str:
+    def maybe_enum(self, base: str) -> str:
         """Attempt to use ``base`` as a name, or return the result of ``self.enum`` for it otherwise."""
-        if base not in self:
+        if base not in self.base_name_counters:
+            self.base_name_counters[base] = 0
             return base
-        return self.enum(base, suffix)
+        return self.enum(base)
 
     def reserve(self, name: str) -> str:
         if name in self:

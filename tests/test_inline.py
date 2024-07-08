@@ -6,12 +6,10 @@ import onnx.parser
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
+from spox import Tensor, Var, argument, build, inline
 from spox._graph import arguments, results
 from spox._inline import rename_in_graph
-from spox._public import inline
-from spox._type_system import Tensor
 from spox._utils import from_array
-from spox._var import Var
 
 
 @pytest.fixture
@@ -342,3 +340,21 @@ def test_subgraph_list_rename(relu_proto):
         _duplicate_subgraphs_to_list(relu_proto.graph), example_rename
     )
     assert rename_then_duplicate.node == duplicate_then_rename.node
+
+
+def test_subgraph_with_nodes_with_optional_inputs():
+    """Unset optional inputs must not be prefixed by `inline`."""
+
+    def inline_model() -> onnx.ModelProto:
+        a = argument(Tensor(numpy.float64, ("N",)))
+        return build({"a": a}, {"b": op.clip(a, None, op.const(1.0, numpy.float64))})
+
+    foo = argument(Tensor(numpy.float64, ("N",)))
+    (bar,) = inline(inline_model())(foo).values()
+
+    model_proto = build({"foo": foo}, {"bar": bar})
+
+    (clip_node,) = (n for n in model_proto.graph.node if n.op_type == "Clip")
+    assert len(clip_node.input) == 3
+    assert clip_node.input[1] == ""
+    assert clip_node.input[2] != ""
