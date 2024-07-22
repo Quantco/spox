@@ -612,6 +612,20 @@ class _Loop(StandardNode):
     class Outputs(BaseOutputs):
         v_final_and_scan_outputs: Sequence[Var]
 
+    def infer_output_types(self) -> Dict[str, Type]:
+        output_types = super().infer_output_types()
+
+        body = self.attrs.body.value
+        n = len(body.requested_arguments) - 2
+
+        carried_names = list(self.outputs.get_vars())[:n]
+        carried_types = [v.type for v in list(body.requested_results.values())[1:][:n]]
+
+        for name, typ in zip(carried_names, carried_types):
+            output_types[name] = typ
+
+        return output_types
+
     op_type = OpType("Loop", "", 21)
 
     attrs: Attributes
