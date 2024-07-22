@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.12.2 (2024-07-22)
+-------------------
+
+**Bug fix**
+
+- Apply custom shape inference logic in :func:`spox.opsets.ai.onnx.v19.loop` and :func:`spox.opsets.ai.onnx.v21.loop`.
+
+
 0.12.1 (2024-06-18)
 -------------------
 
