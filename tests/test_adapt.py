@@ -264,3 +264,7 @@ def test_if_adaptation_const():
     out = op18.if_(cond, then_branch=lambda: [sq], else_branch=lambda: [sq])
     model = build({"b": b}, {"out": out[0]})
     assert model.domain == "" or model.domain == "ai.onnx"
+    assert (
+        model.opset_import[0].domain == "ai.onnx" or model.opset_import[0].domain == ""
+    )
+    assert model.opset_import[0].version > 11
