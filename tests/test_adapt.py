@@ -262,4 +262,5 @@ def test_if_adaptation_const():
     b = argument(Tensor(numpy.float32, ("N",)))
     cond = op18.equal(sq, b)
     out = op18.if_(cond, then_branch=lambda: [sq], else_branch=lambda: [sq])
-    build({"b": b}, {"out": out[0]})
+    model = build({"b": b}, {"out": out[0]})
+    assert model.domain == "" or model.domain == "ai.onnx"
