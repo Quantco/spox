@@ -5,7 +5,7 @@ import itertools
 from dataclasses import dataclass, replace
 from typing import Callable, Dict, Iterable, List, Literal, Optional, Set, Tuple, Union
 
-import numpy
+import numpy as np
 import onnx
 import onnx.shape_inference
 
@@ -21,7 +21,7 @@ from ._utils import from_array
 from ._var import Var
 
 
-def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, Var]:
+def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> Dict[str, Var]:
     """
     Parameters
     ----------
@@ -47,7 +47,7 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
                 ),
                 BaseInputs(),
             ).outputs.arg
-        elif isinstance(info, numpy.ndarray):
+        elif isinstance(info, np.ndarray):
             ty = Tensor(info.dtype, info.shape)
             result[name] = Argument(
                 Argument.Attributes(
@@ -62,13 +62,13 @@ def arguments_dict(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Dict[str, 
     return result
 
 
-def arguments(**kwargs: Optional[Union[Type, numpy.ndarray]]) -> Tuple[Var, ...]:
+def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> Tuple[Var, ...]:
     """This function is a shorthand for a respective call to ``arguments_dict``, unpacking the Vars from the dict."""
     return tuple(arguments_dict(**kwargs).values())
 
 
 def enum_arguments(
-    *infos: Union[Type, numpy.ndarray], prefix: str = "in"
+    *infos: Union[Type, np.ndarray], prefix: str = "in"
 ) -> Tuple[Var, ...]:
     """
     Convenience function for creating an enumeration of arguments, prefixed with ``prefix``.
@@ -91,7 +91,7 @@ def enum_arguments(
     return arguments(**{f"{prefix}{i}": info for i, info in enumerate(infos)})
 
 
-def initializer(arr: numpy.ndarray) -> Var:
+def initializer(arr: np.ndarray) -> Var:
     """
     Create a single initializer (frozen argument) with a given array value.
 
@@ -260,7 +260,7 @@ class Graph:
             self._extra_opset_req if self._extra_opset_req is not None else set()
         )
 
-    def _get_initializers_by_name(self) -> Dict[str, numpy.ndarray]:
+    def _get_initializers_by_name(self) -> Dict[str, np.ndarray]:
         """Internal function for accessing the initializers by name in the build."""
         return {
             self._get_build_result().scope.var[var]: init

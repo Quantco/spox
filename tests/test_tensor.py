@@ -1,11 +1,11 @@
-import numpy
+import numpy as np
 import pytest
 
 from spox._shape import Constant, Natural, Shape, ShapeError, Unknown
 from spox._type_system import Tensor
 
 
-@pytest.fixture(params=[numpy.float64, numpy.int32, numpy.bool_])
+@pytest.fixture(params=[np.float64, np.int32, np.bool_])
 def scalar_type(request):
     return request.param
 
@@ -66,7 +66,7 @@ def test_tensor_shorthand(scalar_type, shape_pair):
 
 
 def test_bad_tensor_type():
-    assert Tensor(numpy.float32) != Tensor(numpy.float64)  # sanity check
-    for typ in (numpy.object_, object, None):
+    assert Tensor(np.float32) != Tensor(np.float64)  # sanity check
+    for typ in (np.object_, object, None):
         with pytest.raises(TypeError):
             Tensor(typ)

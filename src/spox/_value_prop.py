@@ -4,7 +4,7 @@ import warnings
 from dataclasses import dataclass
 from typing import Dict, List, Union
 
-import numpy
+import numpy as np
 import onnx
 import onnx.reference
 
@@ -20,9 +20,9 @@ The internal representation for runtime values.
 - PropValue -> Optional, Some (has value)
 - None -> Optional, Nothing (no value)
 """
-PropValueType = Union[numpy.ndarray, List["PropValue"], "PropValue", None]
-ORTValue = Union[numpy.ndarray, list, None]
-RefValue = Union[numpy.ndarray, list, float, None]
+PropValueType = Union[np.ndarray, List["PropValue"], "PropValue", None]
+ORTValue = Union[np.ndarray, list, None]
+RefValue = Union[np.ndarray, list, float, None]
 
 VALUE_PROP_STRICT_CHECK: bool = False
 
@@ -56,12 +56,12 @@ class PropValue:
         # platform-dependent dtype - such as ulonglong.
         # Though very similar, it does not compare equal to the usual sized dtype.
         # (for example ulonglong is not uint64)
-        if isinstance(self.value, numpy.ndarray) and numpy.issubdtype(
-            self.value.dtype, numpy.number
+        if isinstance(self.value, np.ndarray) and np.issubdtype(
+            self.value.dtype, np.number
         ):
             # We normalize by reconstructing the dtype through its name
             object.__setattr__(
-                self, "value", self.value.astype(numpy.dtype(self.value.dtype.name))
+                self, "value", self.value.astype(np.dtype(self.value.dtype.name))
             )
 
         if VALUE_PROP_STRICT_CHECK and not self.check():
@@ -76,7 +76,7 @@ class PropValue:
     def check(self) -> bool:
         if isinstance(self.type, Tensor):
             return (
-                isinstance(self.value, numpy.ndarray)
+                isinstance(self.value, np.ndarray)
                 and self.value.dtype.type is self.type.dtype.type
                 and Shape.from_simple(self.value.shape) <= self.type._shape
             )
@@ -110,7 +110,7 @@ class PropValue:
             elem_type = typ.unwrap_sequence().elem_type
             return cls(typ, [cls.from_ref_value(elem_type, elem) for elem in value])
         else:  # otherwise must have Tensor (sometimes this is just a scalar)
-            return cls(typ, numpy.array(value))
+            return cls(typ, np.array(value))
         # No fail branch because representations of Tensor are inconsistent
 
     @classmethod
@@ -122,9 +122,9 @@ class PropValue:
         elif isinstance(value, list):  # Sequence
             elem_type = typ.unwrap_sequence().elem_type
             return cls(typ, [cls.from_ort_value(elem_type, elem) for elem in value])
-        elif isinstance(value, numpy.ndarray):  # Tensor
+        elif isinstance(value, np.ndarray):  # Tensor
             # Normalise the dtype in case we got an alias (like longlong)
-            if value.dtype == numpy.dtype(object):
+            if value.dtype == np.dtype(object):
                 value = value.astype(str)
             return cls(typ, value)
         raise TypeError(f"No handler for ORT value: {value}")

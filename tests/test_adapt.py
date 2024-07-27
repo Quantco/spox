@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable
 
-import numpy
+import numpy as np
 import onnx
 import onnx.parser
 import pytest
@@ -52,7 +52,7 @@ agraph (float[N] A) => (float[N] B)
 def inline_old_squeeze_graph(old_squeeze):
     (data,) = arguments(
         data=Tensor(
-            numpy.float32,
+            np.float32,
             (
                 1,
                 None,
@@ -65,7 +65,7 @@ def inline_old_squeeze_graph(old_squeeze):
 
 @pytest.fixture
 def inline_old_identity_twice_graph(old_identity):
-    (x,) = arguments(data=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(data=Tensor(np.float32, (None,)))
     (y,) = inline(old_identity)(A=x).values()
     (z,) = inline(old_identity)(A=y).values()
     return results(final=z).with_opset(("ai.onnx", 17))
@@ -99,7 +99,7 @@ def old_squeeze_graph(old_squeeze):
 
     (data,) = arguments(
         data=Tensor(
-            numpy.float32,
+            np.float32,
             (
                 1,
                 None,
@@ -115,7 +115,7 @@ def test_adapts_inline_old_squeeze(onnx_helper, inline_old_squeeze_graph):
         onnx_helper.run(
             inline_old_squeeze_graph,
             "final",
-            data=numpy.array([[1, 2, 3, 4]], dtype=numpy.float32),
+            data=np.array([[1, 2, 3, 4]], dtype=np.float32),
         ),
         [1, 2, 3, 4],
     )
@@ -126,7 +126,7 @@ def test_adapts_inline_old_identity_twice(onnx_helper, inline_old_identity_twice
         onnx_helper.run(
             inline_old_identity_twice_graph,
             "final",
-            data=numpy.array([1, 2, 3, 4], dtype=numpy.float32),
+            data=np.array([1, 2, 3, 4], dtype=np.float32),
         ),
         [1, 2, 3, 4],
     )
@@ -137,14 +137,14 @@ def test_adapts_singleton_old_squeeze(onnx_helper, old_squeeze_graph):
         onnx_helper.run(
             old_squeeze_graph,
             "final",
-            data=numpy.array([[1, 2, 3, 4]], dtype=numpy.float32),
+            data=np.array([[1, 2, 3, 4]], dtype=np.float32),
         ),
         [1, 2, 3, 4],
     )
 
 
 def test_adapt_node_with_repeating_input_names():
-    a = argument(Tensor(numpy.float32, ("N",)))
+    a = argument(Tensor(np.float32, ("N",)))
     b = op18.equal(a, a)
     c = op19.identity(a)
 
@@ -182,7 +182,7 @@ def test_inline_model_custom_node_only():
     # Ensure that our model is valid
     onnx.checker.check_model(model, full_check=True)
 
-    (a,) = arguments(data=Tensor(numpy.str_, ("N",)))
+    (a,) = arguments(data=Tensor(np.str_, ("N",)))
     (b,) = inline(model)(a).values()
 
     # Add another node to the model to trigger the adaption logic
@@ -227,7 +227,7 @@ def test_inline_model_custom_node_nested(old_squeeze: onnx.ModelProto):
     # Ensure that our model is valid
     onnx.checker.check_model(model, full_check=True)
 
-    (a,) = arguments(data=Tensor(numpy.float32, ("N",)))
+    (a,) = arguments(data=Tensor(np.float32, ("N",)))
     (b,) = inline(model)(a).values()
 
     # Add another node to the model to trigger the adaption logic

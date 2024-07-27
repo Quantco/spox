@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Callable, Dict, Tuple
 
-import numpy
+import numpy as np
 import onnx
 import onnx.reference
 import onnx.shape_inference
@@ -99,7 +99,7 @@ class StandardNode(Node):
         initializers = [
             from_array(var._value.value, key)
             for key, var in self.inputs.get_vars().items()
-            if var._value and isinstance(var._value.value, numpy.ndarray)
+            if var._value and isinstance(var._value.value, np.ndarray)
         ]
         #  Graph and model
         graph = onnx.helper.make_graph(

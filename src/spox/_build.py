@@ -13,7 +13,7 @@ from typing import (
     TypeVar,
 )
 
-import numpy
+import numpy as np
 import onnx
 
 from . import _function
@@ -63,7 +63,7 @@ class BuildResult:
     results: Tuple[Var, ...]
     opset_req: Set[Tuple[str, int]]
     functions: Tuple["_function.Function", ...]
-    initializers: Dict[Var, numpy.ndarray]
+    initializers: Dict[Var, np.ndarray]
 
 
 class Builder:
@@ -433,7 +433,7 @@ class Builder:
         # A bunch of model metadata we're collecting
         opset_req: Set[Tuple[str, int]] = set()
         functions: List[_function.Function] = []
-        initializers: Dict[Var, numpy.ndarray] = {}
+        initializers: Dict[Var, np.ndarray] = {}
 
         # Add arguments to our scope
         for arg in self.arguments_of[graph]:

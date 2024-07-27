@@ -1,6 +1,5 @@
 import operator
 
-import numpy
 import numpy as np
 import pytest
 
@@ -125,4 +124,4 @@ def test_var_operator_promotion_like_numpy(bin_op, lhs, rhs):
         assert (
             spox_value.dtype == numpy_value.dtype
         ), f"{lhs!r}: {type(lhs)} | {rhs!r}: {type(rhs)}"
-        assert numpy.isclose(spox_value, numpy_value).all()
+        assert np.isclose(spox_value, numpy_value).all()

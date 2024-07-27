@@ -1,7 +1,7 @@
 import warnings
 from typing import Dict, List, Optional
 
-import numpy
+import numpy as np
 import onnx
 import onnx.version_converter
 
@@ -43,7 +43,7 @@ def adapt_node(
         initializers = [
             from_array(var._value, name)
             for name, var in node.inputs.get_vars().items()
-            if isinstance(var._value, numpy.ndarray)
+            if isinstance(var._value, np.ndarray)
         ]
     except ValueError:
         return None
