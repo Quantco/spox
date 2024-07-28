@@ -2,7 +2,7 @@ import functools
 from dataclasses import dataclass
 from typing import Dict, List, Union
 
-import numpy
+import numpy as np
 import onnx
 import onnx.parser
 import onnx.shape_inference
@@ -180,54 +180,54 @@ def cubic(linear):
 
 @pytest.fixture
 def min_fun_graph(linear):
-    (start,) = arguments(start=Tensor(numpy.float32, (None,)))
+    (start,) = arguments(start=Tensor(np.float32, (None,)))
     return results(final=linear(start, 3, 2))
 
 
 @pytest.fixture
 def big_fun_graph(linear):
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float32, (None,))
     )
     return results(final=op.div(linear(op.add(first, second), 3, 2), second))
 
 
 @pytest.fixture
 def double_fun_graph(linear):
-    (start,) = arguments(start=Tensor(numpy.float32, (None,)))
+    (start,) = arguments(start=Tensor(np.float32, (None,)))
     return results(final=linear(linear(start, 3, 2), 5, 3))
 
 
 @pytest.fixture
 def wrapped_linear_graph(linear2):
-    (start,) = arguments(start=Tensor(numpy.float32, (None,)))
+    (start,) = arguments(start=Tensor(np.float32, (None,)))
     return results(final=linear2(start, 3, 2))
 
 
 @pytest.fixture
 def cubic_graph(cubic):
-    (x,) = arguments(x=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(x=Tensor(np.float32, (None,)))
     return results(y=cubic(x, 5, 3, 2, 1))
 
 
 @pytest.fixture
 def cubic_rational_graph(cubic):
-    (x,) = arguments(x=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(x=Tensor(np.float32, (None,)))
     return results(y=op.div(cubic(x, 5, 3, 2, 1), cubic(x, 3, 4, 2, 3)))
 
 
 @pytest.fixture
 def cubic_rational_graph_2x3(linear, cubic):
-    (x,) = arguments(x=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(x=Tensor(np.float32, (None,)))
     return results(y=linear(op.div(cubic(x, 5, 3, 2, 1), cubic(x, 3, 4, 2, 3)), 2, 3))
 
 
 @pytest.fixture
 def isnan_graph():
     x, y, z = arguments(
-        x=Tensor(numpy.float64, ()),
-        y=Tensor(numpy.float64, ()),
-        z=Tensor(numpy.float64, ()),
+        x=Tensor(np.float64, ()),
+        y=Tensor(np.float64, ()),
+        z=Tensor(np.float64, ()),
     )
 
     @to_function("IsNaN", "spox.test")
@@ -236,21 +236,21 @@ def isnan_graph():
 
     return results(
         count=functools.reduce(
-            op.add, (op.cast(*isnan(w), to=numpy.int64) for w in (x, y, z))
+            op.add, (op.cast(*isnan(w), to=np.int64) for w in (x, y, z))
         )
     )
 
 
 def test_minimal(onnx_helper, min_fun_graph):
-    a = numpy.random.rand(8).astype(numpy.float32)
+    a = np.random.rand(8).astype(np.float32)
     onnx_helper.assert_close(
         onnx_helper.run(min_fun_graph, "final", start=a), 3 * a + 2
     )
 
 
 def test_bigger(onnx_helper, big_fun_graph):
-    a = numpy.random.rand(8).astype(numpy.float32)
-    b = numpy.random.rand(8).astype(numpy.float32) + 1
+    a = np.random.rand(8).astype(np.float32)
+    b = np.random.rand(8).astype(np.float32) + 1
     onnx_helper.assert_close(
         onnx_helper.run(big_fun_graph, "final", first=a, second=b),
         (3 * (a + b) + 2) / b,
@@ -258,7 +258,7 @@ def test_bigger(onnx_helper, big_fun_graph):
 
 
 def test_double_application(onnx_helper, double_fun_graph):
-    a = numpy.random.rand(8).astype(numpy.float32)
+    a = np.random.rand(8).astype(np.float32)
     onnx_helper.assert_close(
         onnx_helper.run(double_fun_graph, "final", start=a), 5 * (3 * a + 2) + 3
     )
@@ -356,13 +356,13 @@ def test_onnxruntime_nested_function_attr_support():
     onnx.checker.check_model(m)
     session = onnxruntime.InferenceSession(m.SerializeToString())
 
-    x = numpy.array([0, 0, 0], dtype=numpy.int64)
-    y = numpy.array([1, 1, 1], dtype=numpy.int64)
+    x = np.array([0, 0, 0], dtype=np.int64)
+    y = np.array([1, 1, 1], dtype=np.int64)
     assert (session.run(None, {"x": x})[0] == y).all()
 
 
 def test_minimal_wrapped(onnx_helper, wrapped_linear_graph):
-    a = numpy.random.rand(8).astype(numpy.float32)
+    a = np.random.rand(8).astype(np.float32)
     onnx_helper.assert_close(
         onnx_helper.run(wrapped_linear_graph, "final", start=a), 3 * a + 2
     )
@@ -374,7 +374,7 @@ def test_simple_nested_calls_session(onnx_helper, cubic_graph):
 
 
 def test_simple_nested_calls(onnx_helper, cubic_graph):
-    a = numpy.random.rand(8).astype(numpy.float32)
+    a = np.random.rand(8).astype(np.float32)
     # increase rtol due to small *non-deterministic* discrepancies
     onnx_helper.assert_close(
         onnx_helper.run(cubic_graph, "y", x=a), (1 + 2 * a) + a * a * (3 + a * 5)
@@ -385,7 +385,7 @@ def test_simple_nested_calls(onnx_helper, cubic_graph):
     "ONNX Runtime generates colliding internal identifiers for nested function nodes."
 )
 def test_nested_calls(onnx_helper, cubic_rational_graph):
-    a = numpy.random.rand(8).astype(numpy.float32)
+    a = np.random.rand(8).astype(np.float32)
     onnx_helper.assert_close(
         onnx_helper.run(cubic_rational_graph, "y", x=a),
         (1 + a * (2 + a * (3 + a * 5))) / (3 + a * (2 + a * (4 + a * 3))),
@@ -396,7 +396,7 @@ def test_nested_calls(onnx_helper, cubic_rational_graph):
     "ONNX Runtime generates colliding internal identifiers for function nodes."
 )
 def test_complex_nested_calls(onnx_helper, cubic_rational_graph_2x3):
-    a = numpy.random.rand(8).astype(numpy.float32)
+    a = np.random.rand(8).astype(np.float32)
     onnx_helper.assert_close(
         onnx_helper.run(cubic_rational_graph_2x3, "y", x=a),
         2 * (1 + a * (2 + a * (3 + a * 5))) / (3 + a * (2 + a * (4 + a * 3))) + 3,
@@ -404,18 +404,18 @@ def test_complex_nested_calls(onnx_helper, cubic_rational_graph_2x3):
 
 
 def test_to_function_isnan(onnx_helper, isnan_graph):
-    nan = numpy.array(numpy.nan, dtype=numpy.float64)
+    nan = np.array(np.nan, dtype=np.float64)
     onnx_helper.assert_close(
         onnx_helper.run(
             isnan_graph,
             "count",
-            x=numpy.array(0.0),
-            y=numpy.array(1.0),
-            z=numpy.array(2.0),
+            x=np.array(0.0),
+            y=np.array(1.0),
+            z=np.array(2.0),
         ),
         0,
     )
     onnx_helper.assert_close(
-        onnx_helper.run(isnan_graph, "count", x=nan, y=numpy.array(3.0), z=nan),
+        onnx_helper.run(isnan_graph, "count", x=nan, y=np.array(3.0), z=nan),
         2,
     )
