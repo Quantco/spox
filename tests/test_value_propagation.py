@@ -5,7 +5,7 @@ import pytest
 import spox
 import spox._future
 import spox.opset.ai.onnx.ml.v3 as ml
-import spox.opset.ai.onnx.v17 as op
+import spox.opset.ai.onnx.v20 as op
 from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
@@ -205,3 +205,11 @@ def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
     )
 
     spox.inline(model)(X=op.const(["Test Test"], dtype=np.str_))
+
+
+def test_strings(value_prop_backend):
+    x, y = op.const("foo"), op.const("bar")
+    assert op.string_concat(x, y)._value.value == "foobar"  # type: ignore
+
+    x, y = op.const(["foo"]), op.const(["bar"])
+    np.testing.assert_equal(op.string_concat(x, y)._value.value, np.array(["foobar"]))  # type: ignore
