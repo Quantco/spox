@@ -75,11 +75,15 @@ class PropValue:
 
     def check(self) -> bool:
         if isinstance(self.type, Tensor):
-            return (
+            if not (
                 isinstance(self.value, np.ndarray)
-                and self.value.dtype.type is self.type.dtype.type
                 and Shape.from_simple(self.value.shape) <= self.type._shape
-            )
+            ):
+                return False
+            # Strings need some special handling
+            if self.value.dtype == object and self.type.dtype == str:
+                return True
+            return self.value.dtype.type is self.type.dtype.type
         elif isinstance(self.type, Sequence):
             return isinstance(self.value, list) and all(
                 elem.type._subtype(self.type.elem_type) for elem in self.value
