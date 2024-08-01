@@ -239,8 +239,8 @@ def test_inline_model_custom_node_nested(old_squeeze: onnx.ModelProto):
 
 
 def test_if_adapatation_squeeze():
-    cond = argument(Tensor(numpy.bool_, ()))
-    b = argument(Tensor(numpy.float32, (1,)))
+    cond = argument(Tensor(np.bool_, ()))
+    b = argument(Tensor(np.float32, (1,)))
     squeezed = squeeze11(b, [0])
     out = op18.if_(
         cond,
@@ -250,16 +250,16 @@ def test_if_adapatation_squeeze():
     model = build({"b": b, "cond": cond}, {"out": out[0]})
 
     # predict on model
-    b = numpy.array([1.1], dtype=numpy.float32)
-    cond = numpy.array(True, dtype=numpy.bool_)
+    b = np.array([1.1], dtype=np.float32)
+    cond = np.array(True, dtype=np.bool_)
     out = ort.InferenceSession(model.SerializeToString()).run(
         None, {"b": b, "cond": cond}
     )
 
 
 def test_if_adaptation_const():
-    sq = op19.const(1.1453, dtype=numpy.float32)
-    b = argument(Tensor(numpy.float32, ("N",)))
+    sq = op19.const(1.1453, dtype=np.float32)
+    b = argument(Tensor(np.float32, ("N",)))
     cond = op18.equal(sq, b)
     out = op18.if_(cond, then_branch=lambda: [sq], else_branch=lambda: [sq])
     model = build({"b": b}, {"out": out[0]})
