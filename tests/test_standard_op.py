@@ -1,7 +1,7 @@
 import re
 from typing import Any
 
-import numpy
+import numpy as np
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
@@ -12,59 +12,57 @@ from spox._type_system import Tensor
 
 
 def test_basic_inference():
-    a, b = arguments(a=Tensor(numpy.float32, ("N",)), b=Tensor(numpy.float32, (2, "N")))
-    assert op.add(a, b).type == Tensor(numpy.float32, (2, "N"))
+    a, b = arguments(a=Tensor(np.float32, ("N",)), b=Tensor(np.float32, (2, "N")))
+    assert op.add(a, b).type == Tensor(np.float32, (2, "N"))
 
 
 def test_variadic_input_inference():
-    typ = Tensor(numpy.float32, ("N",))
+    typ = Tensor(np.float32, ("N",))
     a, b, c = arguments(a=typ, b=typ, c=typ)
     assert op.max([a, b, c]).type == typ
 
 
 def test_variadic_output_inference():
-    (x,) = arguments(x=Tensor(numpy.float32, (3, "N")))
+    (x,) = arguments(x=Tensor(np.float32, (3, "N")))
     x1, x2, x3 = op.split(x, op.const([1, 1, 1]), outputs_count=3)
-    assert x1.type == x2.type == x3.type == Tensor(numpy.float32, (1, "N"))
+    assert x1.type == x2.type == x3.type == Tensor(np.float32, (1, "N"))
 
 
 def test_optional_input_inference():
-    (x,) = arguments(x=Tensor(numpy.float32, ("N",)))
+    (x,) = arguments(x=Tensor(np.float32, ("N",)))
     assert op.clip(x, max=op.constant(value_float=1.0)).type == Tensor(
-        numpy.float32, ("N",)
+        np.float32, ("N",)
     )
     assert op.clip(x, min=op.constant(value_float=0.0)).type == Tensor(
-        numpy.float32, ("N",)
+        np.float32, ("N",)
     )
     assert op.clip(
         x, min=op.constant(value_float=0.0), max=op.constant(value_float=1.0)
-    ).type == Tensor(numpy.float32, ("N",))
+    ).type == Tensor(np.float32, ("N",))
 
 
 def test_function_body_inference():
-    a, b = arguments(a=Tensor(numpy.float32, ("N",)), b=Tensor(numpy.float32, ("N",)))
-    assert op.greater_or_equal(a, b).type == Tensor(numpy.bool_, ("N",))
+    a, b = arguments(a=Tensor(np.float32, ("N",)), b=Tensor(np.float32, ("N",)))
+    assert op.greater_or_equal(a, b).type == Tensor(np.bool_, ("N",))
 
 
 def test_inference_fails():
-    a, b = arguments(a=Tensor(numpy.float32, (2,)), b=Tensor(numpy.float32, (3,)))
+    a, b = arguments(a=Tensor(np.float32, (2,)), b=Tensor(np.float32, (3,)))
     with pytest.raises((InferenceError, RuntimeError), match="InferenceError"):
         op.add(a, b)
 
 
 def test_inference_validation_fails():
-    a, b = arguments(a=Tensor(numpy.float32, (2,)), b=Tensor(numpy.float64, (2,)))
+    a, b = arguments(a=Tensor(np.float32, (2,)), b=Tensor(np.float64, (2,)))
     with pytest.raises((InferenceError, RuntimeError), match="InferenceError"):
         op.add(a, b)
 
 
 def test_multiple_outputs():
-    x, k = arguments(
-        a=Tensor(numpy.float32, ("N", "M", "K")), b=Tensor(numpy.int64, (1,))
-    )
+    x, k = arguments(a=Tensor(np.float32, ("N", "M", "K")), b=Tensor(np.int64, (1,)))
     values, indices = op.top_k(x, k)
-    assert values.unwrap_type()._subtype(Tensor(numpy.float32, ("N", "M", None)))
-    assert indices.unwrap_type()._subtype(Tensor(numpy.int64, ("N", "M", None)))
+    assert values.unwrap_type()._subtype(Tensor(np.float32, ("N", "M", None)))
+    assert indices.unwrap_type()._subtype(Tensor(np.int64, ("N", "M", None)))
 
 
 @pytest.mark.parametrize(

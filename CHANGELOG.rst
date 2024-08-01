@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.12.2 (unreleased)
+-------------------
+
+**Bug fix**
+
+- Value propagation of string tensors no longer raises an erroneous ``ValueError`` in some instances.
+
+
 0.12.1 (2024-06-18)
 -------------------
 

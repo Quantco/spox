@@ -1,7 +1,7 @@
 import sys
 from typing import Dict, Optional
 
-import numpy
+import numpy as np
 import onnxruntime
 import pytest
 
@@ -63,12 +63,12 @@ class ONNXRuntimeHelper:
         else:
             if isinstance(given, list):
                 for subarray in given:
-                    numpy.testing.assert_allclose(
-                        given, numpy.array(expected, dtype=subarray.dtype), rtol=rtol
+                    np.testing.assert_allclose(
+                        given, np.array(expected, dtype=subarray.dtype), rtol=rtol
                     )
             else:
-                numpy.testing.assert_allclose(
-                    given, numpy.array(expected, dtype=given.dtype), rtol=rtol
+                np.testing.assert_allclose(
+                    given, np.array(expected, dtype=given.dtype), rtol=rtol
                 )
 
 

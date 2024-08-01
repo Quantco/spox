@@ -1,6 +1,6 @@
 from typing import List
 
-import numpy
+import numpy as np
 import pytest
 
 from spox._shape import Shape
@@ -20,7 +20,7 @@ def shape_clique(request) -> List[Shape]:
 
 @pytest.fixture(
     params=[
-        [Tensor(numpy.int32, (2, 3, 4)), Tensor(numpy.int32, None), Type()],
+        [Tensor(np.int32, (2, 3, 4)), Tensor(np.int32, None), Type()],
     ]
 )
 def weak_type_clique(request) -> List[Type]:
@@ -51,7 +51,7 @@ def test_incompatible_shapes(first, second):
 
 @pytest.mark.parametrize(
     "first,second",
-    [(Tensor(numpy.int32, (2, 3)), Tensor(numpy.int64, (2, 3)))],
+    [(Tensor(np.int32, (2, 3)), Tensor(np.int64, (2, 3)))],
 )
 def test_incompatible_types(first, second):
     assert not (first._subtype(second) or second._subtype(first))

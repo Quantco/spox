@@ -1,11 +1,11 @@
-import numpy
+import numpy as np
 import onnx
 import pytest
 
 import spox
 import spox._future
 import spox.opset.ai.onnx.ml.v3 as ml
-import spox.opset.ai.onnx.v17 as op
+import spox.opset.ai.onnx.v20 as op
 from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
@@ -39,10 +39,10 @@ def assert_equal_value(var: Var, expected: ORTValue):
     assert var._value is not None, "var.value expected to be known"
     value = var._value.to_ort_value()
     if isinstance(var.type, _type_system.Tensor):
-        expected = numpy.array(expected)
+        expected = np.array(expected)
         assert var.type.dtype.type == expected.dtype.type, "element type must match"
         assert Shape.from_simple(expected.shape) <= var.type._shape, "shape must match"
-        numpy.testing.assert_allclose(value, expected)
+        np.testing.assert_allclose(value, expected)
     elif isinstance(var.type, _type_system.Optional):
         if expected is None:
             assert value is None, "value must be Nothing when optional is empty"
@@ -68,22 +68,22 @@ def assert_equal_value(var: Var, expected: ORTValue):
 
 
 def test_sanity_no_prop():
-    (x,) = arguments(x=_type_system.Tensor(numpy.int64, ()))
+    (x,) = arguments(x=_type_system.Tensor(np.int64, ()))
     op.add(x, x)
 
 
 def test_sanity_const():
-    assert_equal_value(op.const(2), numpy.int64(2))
+    assert_equal_value(op.const(2), np.int64(2))
 
 
 def test_add():
-    assert_equal_value(op.add(op.const(2), op.const(2)), numpy.int64(4))
+    assert_equal_value(op.add(op.const(2), op.const(2)), np.int64(4))
 
 
 def test_div():
     assert_equal_value(
-        op.div(op.const(numpy.float32(5.0)), op.const(numpy.float32(2.0))),
-        numpy.float32(2.5),
+        op.div(op.const(np.float32(5.0)), op.const(np.float32(2.0))),
+        np.float32(2.5),
     )
 
 
@@ -91,8 +91,8 @@ def test_identity():
     for x in [
         5,
         [1, 2, 3],
-        numpy.array([[1, 2], [3, 4], [5, 6]]),
-        numpy.array(0.5, dtype=numpy.float32),
+        np.array([[1, 2], [3, 4], [5, 6]]),
+        np.array(0.5, dtype=np.float32),
     ]:
         assert_equal_value(op.const(x), x)
 
@@ -104,28 +104,26 @@ def test_reshape():
 
 
 def test_optional():
-    assert_equal_value(op.optional(op.const(numpy.float32(2.0))), numpy.float32(2.0))
+    assert_equal_value(op.optional(op.const(np.float32(2.0))), np.float32(2.0))
 
 
 def test_empty_optional():
-    assert_equal_value(op.optional(type=_type_system.Tensor(numpy.float32, ())), None)
+    assert_equal_value(op.optional(type=_type_system.Tensor(np.float32, ())), None)
 
 
 def test_empty_optional_has_no_element():
     assert_equal_value(
-        op.optional_has_element(
-            op.optional(type=_type_system.Tensor(numpy.float32, ()))
-        ),
+        op.optional_has_element(op.optional(type=_type_system.Tensor(np.float32, ()))),
         False,
     )
 
 
 def test_sequence_empty():
-    assert_equal_value(op.sequence_empty(dtype=numpy.float32), [])
+    assert_equal_value(op.sequence_empty(dtype=np.float32), [])
 
 
 def test_sequence_append():
-    emp = op.sequence_empty(dtype=numpy.int64)
+    emp = op.sequence_empty(dtype=np.int64)
     assert_equal_value(
         op.sequence_insert(op.sequence_insert(emp, op.const(2)), op.const(1)), [2, 1]
     )
@@ -133,8 +131,8 @@ def test_sequence_append():
 
 def test_with_reconstruct():
     a, b = arguments(
-        a=_type_system.Tensor(numpy.int64, ()),
-        b=_type_system.Tensor(numpy.int64, ()),
+        a=_type_system.Tensor(np.int64, ()),
+        b=_type_system.Tensor(np.int64, ()),
     )
     c = op.add(a, b)
     graph = (
@@ -156,7 +154,7 @@ def test_bad_reshape_fails(caplog):
 def test_give_up_silently():
     # The LabelEncoder currently has no reference implementation.
     ml.label_encoder(
-        op.const(numpy.array(["foo"])),
+        op.const(np.array(["foo"])),
         keys_strings=["foo"],
         values_int64s=[42],
         default_int64=-1,
@@ -169,9 +167,9 @@ def test_non_ascii_characters_in_string_tensor():
 
 def test_propagated_value_does_not_alias_dtype():
     # Ensures that platform-dependent dtypes aren't accidentally propagated
-    x = numpy.iinfo(numpy.int64).max + 1
+    x = np.iinfo(np.int64).max + 1
     # Without the explicit astype(uint64), x actually ends up being ulonglong
-    assert_equal_value(op.const(x), numpy.array(x).astype(numpy.uint64))
+    assert_equal_value(op.const(x), np.array(x).astype(np.uint64))
 
 
 def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
@@ -206,4 +204,12 @@ def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
         ],
     )
 
-    spox.inline(model)(X=op.const(["Test Test"], dtype=numpy.str_))
+    spox.inline(model)(X=op.const(["Test Test"], dtype=np.str_))
+
+
+def test_strings(value_prop_backend):
+    x, y = op.const("foo"), op.const("bar")
+    assert op.string_concat(x, y)._value.value == "foobar"  # type: ignore
+
+    x, y = op.const(["foo"]), op.const(["bar"])
+    np.testing.assert_equal(op.string_concat(x, y)._value.value, np.array(["foobar"]))  # type: ignore
