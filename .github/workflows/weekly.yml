@@ -1,4 +1,4 @@
-name: Nightly CI on onnx-weekly
+name: onnx-weekly
 
 on:
   # Run Tuesday morning (onnx-weekly appears to drop on Mondays)
