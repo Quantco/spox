@@ -54,9 +54,9 @@ jobs:
                 github.rest.issues.create({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  title: "Daily run failure",
-                  body: "The daily unit tests failed. See https://github.com/Quantco/spox/actions/runs/${{github.run_id}} for details.",
-                  labels: ["[bot] Daily run"]
+                  title: "CI failure for onnx-weekly",
+                  body: "The weekly CI run with `onnx-weekly` failed. See https://github.com/Quantco/spox/actions/runs/${{github.run_id}} for details.",
+                  labels: ["[bot] onnx-weekly run"]
                 })
               }
             });
