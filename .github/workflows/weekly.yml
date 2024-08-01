@@ -22,7 +22,7 @@ jobs:
       fail-fast: true
       matrix:
         OS: ["ubuntu-latest"]
-        PYTHON_VERSION: ['3.12' ]
+        PYTHON_VERSION: ['3.12']
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
