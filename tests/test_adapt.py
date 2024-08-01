@@ -91,10 +91,11 @@ class Squeeze11(StandardNode):
     inputs: Inputs
     outputs: Outputs
 
-    def squeeze11(self, _data: Var, _axes: Iterable[int]):
-        return Squeeze11(
-            Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
-        ).outputs.squeezed
+
+def squeeze11(_data: Var, _axes: Iterable[int]):
+    return Squeeze11(
+        Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
+    ).outputs.squeezed
 
 
 @pytest.fixture
@@ -108,7 +109,7 @@ def old_squeeze_graph(old_squeeze):
             ),
         )
     )
-    result = Squeeze11.squeeze11(data, [0])
+    result = squeeze11(data, [0])
     return results(final=result).with_opset(("ai.onnx", 17))
 
 
@@ -240,11 +241,11 @@ def test_inline_model_custom_node_nested(old_squeeze: onnx.ModelProto):
 def test_if_adapatation_squeeze():
     cond = argument(Tensor(numpy.bool_, ()))
     b = argument(Tensor(numpy.float32, (1,)))
-    squeezed = Squeeze11.squeeze11(b, [0])
+    squeezed = squeeze11(b, [0])
     out = op18.if_(
         cond,
         then_branch=lambda: [squeezed],
-        else_branch=lambda: [Squeeze11.squeeze11(b, [0])],
+        else_branch=lambda: [squeeze11(b, [0])],
     )
     model = build({"b": b, "cond": cond}, {"out": out[0]})
 
