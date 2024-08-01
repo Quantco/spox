@@ -91,7 +91,6 @@ class Squeeze11(StandardNode):
     inputs: Inputs
     outputs: Outputs
 
-    @classmethod
     def squeeze11(cls, _data: Var, _axes: Iterable[int]):
         return Squeeze11(
             Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
