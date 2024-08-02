@@ -1,0 +1,62 @@
+name: onnx-weekly
+
+on:
+  # Run Tuesday morning (onnx-weekly appears to drop on Mondays)
+  schedule:
+    - cron: "0 5 * * 2"
+  push:
+    paths:
+      - ".github/workflows/weekly.yml"
+
+defaults:
+  run:
+    shell: bash -el {0}
+
+jobs:
+  tests:
+    name: "Linux - unit tests - ${{ matrix.OS }} - Python ${{ matrix.PYTHON_VERSION }}"
+    runs-on: ${{ matrix.OS }}
+    env:
+      CI: True
+    strategy:
+      fail-fast: true
+      matrix:
+        OS: ["ubuntu-latest"]
+        PYTHON_VERSION: ['3.12']
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: mamba-org/setup-micromamba@v1 
+        with:
+          environment-file: environment.yml
+          create-args: >-
+            python=${{ matrix.PYTHON_VERSION }}
+      - name: Run unit tests
+        shell: bash -l {0}
+        run: |
+          pip install onnx-weekly --pre
+          pip install .
+          pytest
+      - name: Issue on failure
+        uses: actions/github-script@v7
+        if: ${{ failure() && github.ref == 'refs/heads/main' }}
+        with:
+          script: |
+            github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: "[bot] onnx-weekly run"
+            }).then((issues) => {
+              if (issues.data.length === 0){
+                github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: "CI failure for onnx-weekly",
+                  body: "The weekly CI run with `onnx-weekly` failed. See https://github.com/Quantco/spox/actions/runs/${{github.run_id}} for details.",
+                  labels: ["[bot] onnx-weekly run"]
+                })
+              }
+            });
