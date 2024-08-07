@@ -225,7 +225,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     Build behaviour should be treated as an implementation detail and
     may change.
 
-    Currently, inlining models with subgraphs or functions is not supported
+    Currently, inlining models with functions is not supported
     as it cannot be performed in most cases due to lack of upstream support.
     """
     in_names = [i.name for i in model.graph.input]
