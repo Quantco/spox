@@ -289,7 +289,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
                 array = array.astype(str)
             kwargs[name] = initializer(array)
 
-        if set(kwargs) != set(in_names):
+        if not set(in_names).issubset(set(kwargs)):
             raise TypeError(
                 f"Error processing arguments, got {set(kwargs)}, expected {set(in_names)}."
             )
