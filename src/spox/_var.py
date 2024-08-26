@@ -110,6 +110,7 @@ class Var:
         -------
         _type_system.Type
             The type of the Var.
+
         Raises
         ------
         TypeError
