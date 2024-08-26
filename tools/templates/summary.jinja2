@@ -10,4 +10,4 @@ _CONSTRUCTORS = {
 {% endfor %}
 }
 
-__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()]
+__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()] {% if domain == "ai.onnx" %} + ["const"] {% endif %}
