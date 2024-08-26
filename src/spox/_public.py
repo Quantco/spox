@@ -197,7 +197,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
 
         Unspecified arguments are replaced by an initializer of the
         same name in the model, if one exists. This essentially
-        uses them as a _default argument_.
+        uses them as a default argument.
 
         Input types are expected to be compatible with the model's
         graph input types.  Output types produced are copied from the
