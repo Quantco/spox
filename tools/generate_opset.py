@@ -496,7 +496,8 @@ def write_schemas_code(
 
     print(
         env.get_template("summary.jinja2").render(
-            built_names=sorted({schema.name for schema in schemas})
+            built_names=sorted({schema.name for schema in schemas}),
+            domain=domain,
         ),
         file=file,
         end="\n",

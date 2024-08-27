@@ -3010,4 +3010,4 @@ _CONSTRUCTORS = {
     "Xor": xor,
 }
 
-__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()]
+__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()] + ["const"]
