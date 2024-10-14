@@ -45,6 +45,7 @@ pandoc = "*"
 jinja2 = "*"
 python = "3.9.*"
 onnx = "*"
+pre-commit = "*"
 
 [feature.opset-generation.tasks]
 generate-opset = "./tools/generate_opset.sh"

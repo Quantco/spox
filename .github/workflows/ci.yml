@@ -1,80 +1,68 @@
 name: CI
+on: [push]
 
-on: push
-
-defaults:
-  run:
-    shell: bash -el {0}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   pre-commit-checks:
-    name: "Linux - pre-commit hooks - Python 3.8"
+    name: Pre-commit Checks
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
-      - name: Install Python 3.8
-        uses: actions/setup-python@v5
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
         with:
-          python-version: 3.8
-      - name: Run pre-commit checks
-        uses: pre-commit/action@v3.0.1
+          environments: default lint
+      - name: pre-commit
+        run: pixi run pre-commit-run --color=always --show-diff-on-failure
 
-  tests:
-    name: "Linux - unit tests - ${{ matrix.OS }} - Python ${{ matrix.PYTHON_VERSION }}"
-    runs-on: ${{ matrix.OS }}
-    env:
-      CI: True
+  unit-tests:
+    name: pytest
+    timeout-minutes: 30
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        OS: ["ubuntu-latest"]
-        PYTHON_VERSION: ['3.8', '3.9', '3.10', '3.11']
-        include:
-          - OS: macos-latest-xlarge
-            PYTHON_VERSION: "3.11"
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        environment:
+          - py310
+          - py311
+          - py312
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-      - uses: mamba-org/setup-micromamba@v1 
+          fetch-depth: 0
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
         with:
-          environment-file: environment.yml
-          create-args: >-
-            python=${{ matrix.PYTHON_VERSION }}
-      - name: Run unit tests
-        shell: bash -l {0}
-        run: |
-          pip install .
-          pytest
+          environments: ${{ matrix.environment }}
+      - name: Install repository
+        run: pixi run -e ${{ matrix.environment }} postinstall
+      - name: Run pytest
+        run: pixi run -e ${{ matrix.environment }} test
 
   opset-generation:
-    name: "Linux - opset generation - ${{ matrix.OS }} - Python ${{ matrix.PYTHON_VERSION }}"
-    runs-on: ${{ matrix.OS }}
+    name: "Linux - opset generation"
+    runs-on: "ubuntu-latest"
     env:
       CI: True
-    strategy:
-      fail-fast: true
-      matrix:
-        OS: ["ubuntu-latest", "macos-latest"]
-        PYTHON_VERSION: ['3.8']
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-      - uses: mamba-org/setup-micromamba@v1 
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
         with:
-          environment-file: environment.yml
-          create-args: >-
-            python=${{ matrix.PYTHON_VERSION }}
+          environments: opset-generation
       - name: Run code generation
-        shell: bash -l {0}
-        env:
-          PRE_COMMIT_USE_MICROMAMBA: 1
-        run: |
-          pip install .
-          pre-commit install
-          python tools/generate_opset.py
-          git diff --exit-code
+        run: pixi run -e opset-generation generate-opset

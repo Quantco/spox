@@ -821,8 +821,7 @@ def average_pool(
        output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - dilation[i] * (kernel_shape[i] - 1) - 1) / strides_spatial_shape[i] + 1)
 
     if ceil_mode is enabled. ``pad_shape[i]`` is the sum of pads along axis
-    ``i``. Sliding windows that would start in the right padded region are
-    ignored.
+    ``i``.
 
     ``auto_pad`` is a DEPRECATED attribute. If you are using them currently,
     the output spatial shape will be following when ceil_mode is enabled:
@@ -1339,9 +1338,11 @@ def dequantize_linear(
     axis
         Attribute.
         (Optional) The axis of the dequantizing dimension of the input tensor.
-        Ignored for per-tensor quantization. Negative value means counting
-        dimensions from the back. Accepted range is [-r, r-1] where r =
-        rank(input).
+        Used only for per-axis quantization. Negative value means counting
+        dimensions from the back. Accepted range is ``[-r, r-1]`` where
+        ``r = rank(input)``. When the rank of the input is 1, per-tensor
+        quantization is applied, rendering the axis unnecessary in this
+        scenario.
 
     Returns
     =======
