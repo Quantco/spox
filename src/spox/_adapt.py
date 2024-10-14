@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import warnings
 from typing import Dict, List, Optional
 
@@ -41,7 +44,7 @@ def adapt_node(
             for key, var in node.outputs.get_vars().items()
         ]
         initializers = [
-            from_array(var._value, name)
+            from_array(var._value, name)  # type: ignore
             for name, var in node.inputs.get_vars().items()
             if isinstance(var._value, np.ndarray)
         ]

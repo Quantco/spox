@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 Module for Spox operators that implement special internal behaviour that does not fit into the ONNX IR.
 They behave like a normal Node, but their inference, building and translation behaviour may be overriden.

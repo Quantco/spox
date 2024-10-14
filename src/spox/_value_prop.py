@@ -1,10 +1,14 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import enum
 import logging
 import warnings
 from dataclasses import dataclass
-from typing import Dict, List, Union
+from typing import Callable, Dict, List, Union
 
 import numpy as np
+import numpy.typing as npt
 import onnx
 import onnx.reference
 
@@ -147,7 +151,7 @@ class PropValue:
         if self.value is None:  # Optional, Nothing
             return None
         elif isinstance(self.value, PropValue):  # Optional, Some
-            return self.value.to_ref_value()
+            return self.value.to_ref_value()  # type: ignore
         elif isinstance(self.value, list):  # Sequence
             return [elem.to_ref_value() for elem in self.value]
         else:  # Tensor
@@ -192,6 +196,8 @@ def _run_onnxruntime(
 
 
 def get_backend_calls():
+    run: Callable[..., Dict[str, npt.ArrayLike]]
+    unwrap_feed: Callable[..., PropValue]
     if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
         wrap_feed = PropValue.to_ref_value
         run = _run_reference_implementation
