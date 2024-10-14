@@ -22,6 +22,7 @@ pre-commit = "*"
 insert-license-header = "*"
 mypy = "*"
 prettier = "*"
+ruff = "*"
 
 [feature.lint.tasks]
 pre-commit-install = "pre-commit install"
@@ -37,7 +38,7 @@ jupyterlab = "*"
 matplotlib = "*"
 make = "*"
 onnxruntime = "*"
-numpydoc = ">=1.8.0,<2"
+numpydoc = "*"
 
 [feature.docs.tasks]
 build-docs = "cd docs && make html"

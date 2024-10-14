@@ -1,4 +1,4 @@
-exclude: ^(\.copier-answers\.yml)|.pixi$
+exclude: ^.pixi$
 repos:
   - repo: local
     hooks:

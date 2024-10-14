@@ -5,5 +5,4 @@
 *.{py,yaml,yml,sh} text eol=lf
 *.bat text eol=crlf
 
-src/spox/opset/** linguist-vendored# GitHub syntax highlighting
-pixi.lock linguist-language=YAML linguist-generated=true
+src/spox/opset/** linguist-vendored

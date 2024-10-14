@@ -518,7 +518,9 @@ def run_pre_commit_hooks(filenames: Union[str, Iterable[str]]):
     if isinstance(filenames, str):
         filenames = [filenames]
     return subprocess.run(
-        f"pre-commit run --files {' '.join(filenames)} --color always", shell=True
+        f"pre-commit run --files {' '.join(filenames)} --color always",
+        shell=True,
+        capture_output=True,
     )
 
 
