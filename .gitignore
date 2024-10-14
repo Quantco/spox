@@ -124,3 +124,6 @@ mlruns
 
 # MacOS
 .DS_Store
+# pixi environments
+.pixi
+*.egg-info
