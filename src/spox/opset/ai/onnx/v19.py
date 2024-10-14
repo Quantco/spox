@@ -969,26 +969,26 @@ def cast(
     In more detail, the conversion among numerical types should follow these
     rules if the destination type is not a float 8 type.
 
-    -  Casting from floating point to:
+    - Casting from floating point to:
 
-       -  floating point: +/- infinity if OOR (out of range).
-       -  fixed point: undefined if OOR.
-       -  bool: +/- 0.0 to False; all else to True.
+      - floating point: +/- infinity if OOR (out of range).
+      - fixed point: undefined if OOR.
+      - bool: +/- 0.0 to False; all else to True.
 
-    -  Casting from fixed point to:
+    - Casting from fixed point to:
 
-       -  floating point: +/- infinity if OOR. (+ infinity in the case of
-          uint)
-       -  fixed point: when OOR, discard higher bits and reinterpret (with
-          respect to two's complement representation for signed types). For
-          example, 200 (int16) -> -56 (int8).
-       -  bool: zero to False; nonzero to True.
+      - floating point: +/- infinity if OOR. (+ infinity in the case of
+        uint)
+      - fixed point: when OOR, discard higher bits and reinterpret (with
+        respect to two's complement representation for signed types). For
+        example, 200 (int16) -> -56 (int8).
+      - bool: zero to False; nonzero to True.
 
-    -  Casting from bool to:
+    - Casting from bool to:
 
-       -  floating point: ``{1.0, 0.0}``.
-       -  fixed point: ``{1, 0}``.
-       -  bool: no change.
+      - floating point: ``{1.0, 0.0}``.
+      - fixed point: ``{1, 0}``.
+      - bool: no change.
 
     Float 8 type were introduced to speed up the training of deep models. By
     default the conversion of a float *x* obeys to the following rules.
@@ -1538,21 +1538,21 @@ def loop(
 
     Operator inputs defined as (max_trip_count, condition_var).
 
-    -  input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
-       is ignored, but is required in the body }
+    - input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
+      is ignored, but is required in the body }
 
-    -  input ("", cond) // Note this is analogous to a while loop bool cond
-       = ...; for (int i=0; cond; ++i) { cond = ...; }
+    - input ("", cond) // Note this is analogous to a while loop bool cond =
+      ...; for (int i=0; cond; ++i) { cond = ...; }
 
-    -  input ("", 1) // Note this is analogous to a do-while loop bool cond
-       = true for (int i=0; cond; ++i) { cond = ...; }
+    - input ("", 1) // Note this is analogous to a do-while loop bool cond =
+      true for (int i=0; cond; ++i) { cond = ...; }
 
-    -  input (trip_count, "") // Note this is analogous to a for loop int
-       trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
-       ignored }
+    - input (trip_count, "") // Note this is analogous to a for loop int
+      trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
+      ignored }
 
-    -  input (trip_count, cond) int trip_count = ...; bool cond = ...; for
-       (int i=0; i < trip_count && cond; ++i) { cond = ...; }
+    - input (trip_count, cond) int trip_count = ...; bool cond = ...; for
+      (int i=0; i < trip_count && cond; ++i) { cond = ...; }
 
     *Sample usage - cond as well as trip count*
 
