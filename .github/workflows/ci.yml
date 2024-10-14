@@ -1,5 +1,5 @@
 name: CI
-on: [push]
+on: push
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,7 +25,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os:
           - ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
 
   opset-generation:
     name: "Linux - opset generation"
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-latest
     env:
       CI: True
     steps:

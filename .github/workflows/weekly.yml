@@ -14,14 +14,10 @@ defaults:
 
 jobs:
   tests:
-    name: "Linux - weekly unit tests - ${{ matrix.OS }}"
-    runs-on: ${{ matrix.OS }}
+    name: "Linux - weekly unit tests - ubuntu-latest"
+    runs-on: ubuntu-latest
     env:
       CI: True
-    strategy:
-      fail-fast: true
-      matrix:
-        OS: ["ubuntu-latest"]
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4

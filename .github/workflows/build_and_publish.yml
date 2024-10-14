@@ -8,46 +8,41 @@ on:
       - published
 
 jobs:
-  build_sdist_and_wheel:
-    name: Build sdist and wheel on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04]
-
+  build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.ref }}
           fetch-depth: 0
-
-      - name: Build
-        run: |
-          pip install build
-          python -m build
-
-      - name: Test install and import
-        run: |
-          python -m venv ./env
-          . ./env/bin/activate
-          pip install dist/*.whl
-          python -c "import spox"
-
-      - uses: actions/upload-artifact@v4
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
         with:
+          environments: build
+      - name: Build project
+        run: pixi run -e build build-wheel
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact
           path: dist/*
 
-  upload_pypi:
-    name: Upload to PyPI
-    needs: [build_sdist_and_wheel]
+  publish:
+    name: Publish package
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'published'
+    permissions:
+      id-token: write
+    environment: pypi
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: artifact
           path: dist
-
-      - uses: pypa/gh-action-pypi-publish@v1.10.3
+      - name: Publish package on TestPyPi
+        uses: pypa/gh-action-pypi-publish@897895f1e160c830e369f9779632ebc134688e1b
         with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+      - name: Publish package on PyPi
+        uses: pypa/gh-action-pypi-publish@897895f1e160c830e369f9779632ebc134688e1b
