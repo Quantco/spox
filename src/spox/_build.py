@@ -7,12 +7,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
     Generic,
-    List,
     Optional,
-    Set,
-    Tuple,
     TypeVar,
 )
 
@@ -61,12 +57,12 @@ class BuildResult:
     """
 
     scope: Scope
-    nodes: Dict[Node, Tuple[onnx.NodeProto, ...]]
-    arguments: Tuple[Var, ...]
-    results: Tuple[Var, ...]
-    opset_req: Set[Tuple[str, int]]
-    functions: Tuple["_function.Function", ...]
-    initializers: Dict[Var, np.ndarray]
+    nodes: dict[Node, tuple[onnx.NodeProto, ...]]
+    arguments: tuple[Var, ...]
+    results: tuple[Var, ...]
+    opset_req: set[tuple[str, int]]
+    functions: tuple["_function.Function", ...]
+    initializers: dict[Var, np.ndarray]
 
 
 class Builder:
@@ -125,8 +121,8 @@ class Builder:
         (lowest common ancestor), which is a common operation on trees.
         """
 
-        subgraph_owner: Dict["Graph", Node]
-        scope_of: Dict[Node, "Graph"]
+        subgraph_owner: dict["Graph", Node]
+        scope_of: dict[Node, "Graph"]
 
         def __init__(self):
             self.subgraph_owner = {}
@@ -165,18 +161,18 @@ class Builder:
 
     # Graphs needed in the build
     main: "Graph"
-    graphs: Set["Graph"]
-    graph_topo: List["Graph"]
+    graphs: set["Graph"]
+    graph_topo: list["Graph"]
     # Arguments, results
-    arguments_of: Dict["Graph", List[Var]]
-    results_of: Dict["Graph", List[Var]]
-    source_of: Dict["Graph", Node]
+    arguments_of: dict["Graph", list[Var]]
+    results_of: dict["Graph", list[Var]]
+    source_of: dict["Graph", Node]
     # Arguments found by traversal
-    all_arguments_in: Dict["Graph", Set[Var]]
-    claimed_arguments_in: Dict["Graph", Set[Var]]
+    all_arguments_in: dict["Graph", set[Var]]
+    claimed_arguments_in: dict["Graph", set[Var]]
     # Scopes
     scope_tree: ScopeTree
-    scope_own: Dict["Graph", List[Node]]
+    scope_own: dict["Graph", list[Node]]
 
     def __init__(self, main: "Graph"):
         self.main = main
@@ -207,8 +203,8 @@ class Builder:
 
     @staticmethod
     def get_intro_results(
-        request_results: Dict[str, Var], set_names: bool
-    ) -> List[Var]:
+        request_results: dict[str, Var], set_names: bool
+    ) -> list[Var]:
         """
         Helper method for wrapping all requested results into a single Introduce and possibly naming them.
 
@@ -222,7 +218,7 @@ class Builder:
                 var._rename(key)
         return vars
 
-    def discover(self, graph: "Graph") -> Tuple[Set[Var], Set[Var]]:
+    def discover(self, graph: "Graph") -> tuple[set[Var], set[Var]]:
         """
         Run the discovery step of the build process. Resolves arguments and results for the involved graphs.
         Finds the topological ordering between (sub)graphs and sets their owners (nodes of which they are attributes).
@@ -359,7 +355,7 @@ class Builder:
         - this is slightly higher quality than a normal topological sorting which attempts to be "parallel",
         while a DFS' postorder is more "localised".
         """
-        graph_scope_set: Dict[Any, Set[Node]] = {ctx: set() for ctx in self.graphs}
+        graph_scope_set: dict[Any, set[Node]] = {ctx: set() for ctx in self.graphs}
         for node, owner in self.scope_tree.scope_of.items():
             graph_scope_set[owner].add(node)
 
@@ -392,7 +388,7 @@ class Builder:
 
     def get_build_subgraph_callback(
         self, scope: Scope
-    ) -> Tuple[Callable, Set[Tuple[str, int]]]:
+    ) -> tuple[Callable, set[tuple[str, int]]]:
         """Create a callback for building subgraphs for ``Node.to_onnx``."""
 
         subgraph_opset_req = set()  # Keeps track of all opset imports in subgraphs
@@ -432,11 +428,11 @@ class Builder:
             See the definition for the exact contents of the BuildResult dataclass. Used to build GraphProto/ModelProto
             from a Spox Graph.
         """
-        nodes: Dict[Node, Tuple[onnx.NodeProto, ...]] = {}
+        nodes: dict[Node, tuple[onnx.NodeProto, ...]] = {}
         # A bunch of model metadata we're collecting
-        opset_req: Set[Tuple[str, int]] = set()
-        functions: List[_function.Function] = []
-        initializers: Dict[Var, np.ndarray] = {}
+        opset_req: set[tuple[str, int]] = set()
+        functions: list[_function.Function] = []
+        initializers: dict[Var, np.ndarray] = {}
 
         # Add arguments to our scope
         for arg in self.arguments_of[graph]:

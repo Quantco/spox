@@ -10,7 +10,6 @@ Of these, ``propagate_values`` is probably least common.
 """
 
 from dataclasses import dataclass
-from typing import Dict
 
 import numpy as np
 
@@ -44,7 +43,7 @@ class Inverse(Node):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         # This is technically optional, but using an operator without type inference may be inconvenient.
         if self.inputs.X.type is None:
             return {}
@@ -55,7 +54,7 @@ class Inverse(Node):
             )
         return {"Y": t}
 
-    def propagate_values(self) -> Dict[str, np.ndarray]:
+    def propagate_values(self) -> dict[str, np.ndarray]:
         # This is optional and implements value propagation ('partial data propagation' in ONNX).
         # In essence constant folding carried through for purposes of type inference.
         return (

@@ -8,8 +8,9 @@ import traceback
 import typing
 import warnings
 from abc import ABC
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import ClassVar, Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union
+from typing import ClassVar, Optional, Union
 
 import onnx
 
@@ -74,16 +75,16 @@ class Node(ABC):
 
     op_type: ClassVar[OpType] = OpType("", "", 0)
 
-    Attributes: ClassVar[typing.Type[BaseAttributes]]
-    Inputs: ClassVar[typing.Type[BaseInputs]]
-    Outputs: ClassVar[typing.Type[BaseOutputs]]
+    Attributes: ClassVar[type[BaseAttributes]]
+    Inputs: ClassVar[type[BaseInputs]]
+    Outputs: ClassVar[type[BaseOutputs]]
 
     attrs: BaseAttributes
     inputs: BaseInputs
     outputs: BaseOutputs
 
     out_variadic: Optional[int]
-    _traceback: Union[List[str], None]
+    _traceback: Union[list[str], None]
 
     def __init__(
         self,
@@ -143,7 +144,7 @@ class Node(ABC):
         self.post_init(**kwargs)
 
     @property
-    def opset_req(self) -> Set[Tuple[str, int]]:
+    def opset_req(self) -> set[tuple[str, int]]:
         """
         Set of the opset requirements -- (domain, version) -- brought in by this node.
         Does not include subgraphs.
@@ -211,7 +212,7 @@ class Node(ABC):
     def post_init(self, **kwargs):
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
-    def propagate_values(self) -> Dict[str, PropValueType]:
+    def propagate_values(self) -> dict[str, PropValueType]:
         """
         Propagate values from inputs, and, if possible, compute values for outputs as well.
         This method is used to implement ONNX partial data propagation - for example so that
@@ -219,7 +220,7 @@ class Node(ABC):
         """
         return {}
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         """
         Inference routine for output types. Often overriden by inheriting Node types.
 
@@ -308,7 +309,7 @@ class Node(ABC):
             (variadic,) = variadics
         else:
             variadic = None
-        outputs: Dict[str, Union[Var, Sequence[Var]]] = {
+        outputs: dict[str, Union[Var, Sequence[Var]]] = {
             field.name: Var(self, None, None)
             for field in dataclasses.fields(self.Outputs)
             if field.name != variadic
@@ -351,7 +352,7 @@ class Node(ABC):
         build_subgraph: Optional[
             typing.Callable[["Node", str, "Graph"], onnx.GraphProto]
         ] = None,
-    ) -> List[onnx.NodeProto]:
+    ) -> list[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""
         assert self.op_type.identifier
         input_names = [scope.var[var] if var is not None else "" for var in self.inputs]

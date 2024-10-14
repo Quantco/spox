@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import itertools
-from typing import Any, List
+from typing import Any
 
 import numpy as np
 import pytest
 
 from spox._future import initializer
 
-TESTED_INITIALIZER_ROWS: List[List[Any]] = [
+TESTED_INITIALIZER_ROWS: list[list[Any]] = [
     [0, 1, 2],
     [0.0, 1.0, 2.0],
     [np.float16(3.14), np.float16(5.3)],

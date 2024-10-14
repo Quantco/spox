@@ -5,8 +5,9 @@
 
 import dataclasses
 import itertools
+from collections.abc import Iterable
 from dataclasses import dataclass, replace
-from typing import Callable, Dict, Iterable, List, Literal, Optional, Set, Tuple, Union
+from typing import Callable, Literal, Optional, Union
 
 import numpy as np
 import onnx
@@ -24,7 +25,7 @@ from ._utils import from_array
 from ._var import Var
 
 
-def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> Dict[str, Var]:
+def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var]:
     """
     Parameters
     ----------
@@ -65,14 +66,14 @@ def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> Dict[str, Var
     return result
 
 
-def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> Tuple[Var, ...]:
+def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> tuple[Var, ...]:
     """This function is a shorthand for a respective call to ``arguments_dict``, unpacking the Vars from the dict."""
     return tuple(arguments_dict(**kwargs).values())
 
 
 def enum_arguments(
     *infos: Union[Type, np.ndarray], prefix: str = "in"
-) -> Tuple[Var, ...]:
+) -> tuple[Var, ...]:
     """
     Convenience function for creating an enumeration of arguments, prefixed with ``prefix``.
     Calls ``arguments`` internally.
@@ -132,11 +133,11 @@ class Graph:
     Note: building a Graph is cached, so changing it in-place without the setters will invalidate the build.
     """
 
-    _results: Dict[str, Var]
+    _results: dict[str, Var]
     _name: Optional[str] = None
     _doc_string: Optional[str] = None
-    _arguments: Optional[Tuple[Var, ...]] = None
-    _extra_opset_req: Optional[Set[Tuple[str, int]]] = None
+    _arguments: Optional[tuple[Var, ...]] = None
+    _extra_opset_req: Optional[set[tuple[str, int]]] = None
     _constructor: Optional[Callable[..., Iterable[Var]]] = None
     _build_result: "_build.Cached[_build.BuildResult]" = dataclasses.field(
         default_factory=_build.Cached
@@ -150,7 +151,7 @@ class Graph:
             else "..."
         )
         res_repr = f"{', '.join(f'{k}: {a}' for k, a in self._results.items())}"
-        comments: List[str] = []
+        comments: list[str] = []
         if self._doc_string is not None:
             comments.append(f'"{self._doc_string[:10]}..."')
         if self._extra_opset_req is not None:
@@ -182,7 +183,7 @@ class Graph:
         """
         return replace(self, _arguments=args)
 
-    def with_opset(self, *args: Tuple[str, int]) -> "Graph":
+    def with_opset(self, *args: tuple[str, int]) -> "Graph":
         """
         Add the given minimum opset requirements to the graph.
         Useful when the graph is using legacy nodes, but Spox should attempt to convert them to a required version.
@@ -217,11 +218,11 @@ class Graph:
         return self._arguments
 
     @property
-    def requested_results(self) -> Dict[str, Var]:
+    def requested_results(self) -> dict[str, Var]:
         """Results (named) requested by this Graph (for building)."""
         return self._results
 
-    def get_arguments(self) -> Dict[str, Var]:
+    def get_arguments(self) -> dict[str, Var]:
         """
         Get the effective named arguments (after build) of this Graph.
 
@@ -232,7 +233,7 @@ class Graph:
             for var in self._get_build_result().arguments
         }
 
-    def get_results(self) -> Dict[str, Var]:
+    def get_results(self) -> dict[str, Var]:
         """
         Get the effective named results (after build) of this Graph.
 
@@ -243,7 +244,7 @@ class Graph:
             for var in self._get_build_result().results
         }
 
-    def get_opsets(self) -> Dict[str, int]:
+    def get_opsets(self) -> dict[str, int]:
         """
         Get the effective opsets used by this Graph. The used policy for mixed versions is maximum-requested.
 
@@ -257,20 +258,20 @@ class Graph:
             self._build_result.value = _build.Builder(self).build_main()
         return self._build_result.value
 
-    def _get_opset_req(self) -> Set[Tuple[str, int]]:
+    def _get_opset_req(self) -> set[tuple[str, int]]:
         """Internal function for accessing the opset requirements, including extras requested by the Graph itself."""
         return self._get_build_result().opset_req | (
             self._extra_opset_req if self._extra_opset_req is not None else set()
         )
 
-    def _get_initializers_by_name(self) -> Dict[str, np.ndarray]:
+    def _get_initializers_by_name(self) -> dict[str, np.ndarray]:
         """Internal function for accessing the initializers by name in the build."""
         return {
             self._get_build_result().scope.var[var]: init
             for var, init in self._get_build_result().initializers.items()
         }
 
-    def get_adapted_nodes(self) -> Dict[Node, Tuple[onnx.NodeProto, ...]]:
+    def get_adapted_nodes(self) -> dict[Node, tuple[onnx.NodeProto, ...]]:
         """
         Do a best-effort at generating NodeProtos of consistent versions, matching ``self.opsets``.
         In essence, the policy is to upgrade to the highest used version.
@@ -398,8 +399,8 @@ class Graph:
                 "Consider adding an Identity operator if you are just copying arguments."
             )
 
-        opset_req: List[tuple[str, int]] = list(opsets.items())  # type: ignore
-        function_protos: Dict[Tuple[str, str], onnx.FunctionProto] = {}
+        opset_req: list[tuple[str, int]] = list(opsets.items())  # type: ignore
+        function_protos: dict[tuple[str, str], onnx.FunctionProto] = {}
         for fun in self._get_build_result().functions:
             proto = fun.to_onnx_function(extra_opset_req=opset_req)
             if proto is None:

@@ -3,8 +3,9 @@
 
 import dataclasses
 import enum
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, Iterator, Optional, Sequence, Tuple, Union
+from typing import Any, Optional, Union
 
 from ._attributes import Attr
 from ._var import Var
@@ -17,7 +18,7 @@ class BaseFields:
 
 @dataclass
 class BaseAttributes(BaseFields):
-    def get_fields(self) -> Dict[str, Union[None, Attr]]:
+    def get_fields(self) -> dict[str, Union[None, Attr]]:
         """Return a mapping of all fields stored in this object by name."""
         return self.__dict__.copy()
 
@@ -68,7 +69,7 @@ class BaseVars(BaseFields):
             return VarFieldKind.VARIADIC
         raise ValueError(f"Bad field type: '{field.type}'.")
 
-    def _flatten(self) -> Iterable[Tuple[str, Optional[Var]]]:
+    def _flatten(self) -> Iterable[tuple[str, Optional[Var]]]:
         """Iterate over the pairs of names and values of fields in this object."""
         for key, value in self.__dict__.items():
             if value is None or isinstance(value, Var):
@@ -84,11 +85,11 @@ class BaseVars(BaseFields):
         """Count the number of fields in this object (should be same as declared in the class)."""
         return sum(1 for _ in self)
 
-    def get_vars(self) -> Dict[str, Var]:
+    def get_vars(self) -> dict[str, Var]:
         """Return a flat mapping by name of all the Vars in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
-    def get_fields(self) -> Dict[str, Union[None, Var, Sequence[Var]]]:
+    def get_fields(self) -> dict[str, Union[None, Var, Sequence[Var]]]:
         """Return a mapping of all fields stored in this object by name."""
         return self.__dict__.copy()
 

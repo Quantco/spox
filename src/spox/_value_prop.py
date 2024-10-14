@@ -5,7 +5,7 @@ import enum
 import logging
 import warnings
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Union
+from typing import Callable, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -24,7 +24,7 @@ The internal representation for runtime values.
 - PropValue -> Optional, Some (has value)
 - None -> Optional, Nothing (no value)
 """
-PropValueType = Union[np.ndarray, List["PropValue"], "PropValue", None]
+PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
 ORTValue = Union[np.ndarray, list, None]
 RefValue = Union[np.ndarray, list, float, None]
 
@@ -159,8 +159,8 @@ class PropValue:
 
 
 def _run_reference_implementation(
-    model: onnx.ModelProto, input_feed: Dict[str, RefValue]
-) -> Dict[str, RefValue]:
+    model: onnx.ModelProto, input_feed: dict[str, RefValue]
+) -> dict[str, RefValue]:
     try:
         session = onnx.reference.ReferenceEvaluator(model)
         output_feed = dict(zip(session.output_names, session.run(None, input_feed)))
@@ -175,8 +175,8 @@ def _run_reference_implementation(
 
 
 def _run_onnxruntime(
-    model: onnx.ModelProto, input_feed: Dict[str, ORTValue]
-) -> Dict[str, ORTValue]:
+    model: onnx.ModelProto, input_feed: dict[str, ORTValue]
+) -> dict[str, ORTValue]:
     import onnxruntime
 
     # Silence possible warnings during execution (especially constant folding)
@@ -196,7 +196,7 @@ def _run_onnxruntime(
 
 
 def get_backend_calls():
-    run: Callable[..., Dict[str, npt.ArrayLike]]
+    run: Callable[..., dict[str, npt.ArrayLike]]
     unwrap_feed: Callable[..., PropValue]
     if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
         wrap_feed = PropValue.to_ref_value

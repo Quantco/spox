@@ -5,7 +5,6 @@
 from dataclasses import dataclass
 from typing import (
     Optional,
-    Tuple,
 )
 
 import numpy as np
@@ -1443,7 +1442,7 @@ def string_split(
     *,
     delimiter: Optional[str] = None,
     maxsplit: Optional[int] = None,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     StringSplit splits a string tensor's elements into substrings based on a
     delimiter attribute and a maxsplit attribute.

@@ -200,7 +200,7 @@ class Var:
 
 def result_type(
     *types: Union[Var, np.generic, int, float],
-) -> typing.Type[np.generic]:
+) -> type[np.generic]:
     """Promote type for all given element types/values using ``np.result_type``."""
     return np.dtype(
         np.result_type(

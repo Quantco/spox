@@ -1,7 +1,6 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Dict
 
 import numpy as np
 import onnx
@@ -328,7 +327,7 @@ def _duplicate_subgraphs_to_list(
 def test_subgraph_list_rename(relu_proto):
     # This is a simple property test that ensures renaming
     # in lists of subgraphs is the same as in just subgraphs
-    renames: Dict[str, str] = {}
+    renames: dict[str, str] = {}
 
     def example_rename(n: str) -> str:
         if n not in renames:

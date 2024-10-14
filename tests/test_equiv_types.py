@@ -1,7 +1,6 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import List
 
 import numpy as np
 import pytest
@@ -17,7 +16,7 @@ from spox._type_system import Tensor, Type
         [("x", "y", "z"), ("x", "y", None), (None, None, None), None],
     ]
 )
-def shape_clique(request) -> List[Shape]:
+def shape_clique(request) -> list[Shape]:
     return [Shape.from_simple(sh) for sh in request.param]
 
 
@@ -26,7 +25,7 @@ def shape_clique(request) -> List[Shape]:
         [Tensor(np.int32, (2, 3, 4)), Tensor(np.int32, None), Type()],
     ]
 )
-def weak_type_clique(request) -> List[Type]:
+def weak_type_clique(request) -> list[Type]:
     return request.param
 
 

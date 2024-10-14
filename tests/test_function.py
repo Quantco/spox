@@ -3,7 +3,7 @@
 
 import functools
 from dataclasses import dataclass
-from typing import Dict, List, Union
+from typing import Union
 
 import numpy as np
 import onnx
@@ -44,7 +44,7 @@ def linear():
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
             # FIXME: At some point, attribute references should be properly type-hinted.
             a = op.constant(
                 value_float=_Ref(
@@ -95,7 +95,7 @@ def linear2(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
             return self.Outputs(
                 linear(
                     inputs.X,
@@ -141,7 +141,7 @@ def cubic(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: Dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
             x = inputs.X
             a = op.mul(
                 linear(
@@ -234,7 +234,7 @@ def isnan_graph():
     )
 
     @to_function("IsNaN", "spox.test")
-    def isnan(v: Var) -> List[Var]:
+    def isnan(v: Var) -> list[Var]:
         return [op.not_(op.equal(v, v))]
 
     return results(

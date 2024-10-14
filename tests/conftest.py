@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import sys
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
 import onnxruntime
@@ -19,7 +19,7 @@ _debug.STORE_TRACEBACK = True
 
 
 class ONNXRuntimeHelper:
-    _build_cache: Dict[Graph, bytes]
+    _build_cache: dict[Graph, bytes]
     _last_graph: Optional[Graph]
     _last_session: Optional[onnxruntime.InferenceSession]
 
