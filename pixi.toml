@@ -67,6 +67,8 @@ python-build = "*"
 [feature.build.tasks]
 build-wheel = "python -m build --no-isolation ."
 
+[feature.py39.dependencies]
+python = "3.9.*"
 [feature.py310.dependencies]
 python = "3.10.*"
 [feature.py311.dependencies]
@@ -78,11 +80,12 @@ onnx-weekly = "*"
 
 [environments]
 default = ["test", "lint"]
+py39 = ["py39", "test"]
 py310 = ["py310", "test"]
 py311 = ["py311", "test"]
 py312 = ["py312", "test"]
 weekly = ["weekly", "py312", "test"]
 docs = ["docs"]
 build = ["build"]
-lint = ["lint"]
+lint = ["lint", "py310"]
 opset-generation = ["opset-generation", "lint"]
