@@ -1,13 +1,13 @@
 [project]
 name = "spox"
 channels = ["conda-forge"]
-platforms = ["osx-arm64", "osx-64", "linux-64", "win-64"]
+platforms = ["osx-arm64", "osx-64", "linux-64", "linux-aarch64", "win-64"]
 
 [tasks]
 postinstall = "pip install --no-build-isolation --no-deps --disable-pip-version-check -e ."
 
 [dependencies]
-python = ">=3.8"
+python = ">=3.9"
 numpy = "*"
 onnx = "*"
 packaging = "*"
@@ -41,10 +41,9 @@ numpydoc = ">=1.8.0,<2"
 build-docs = "cd docs && make html"
 
 [feature.opset-generation.dependencies]
-pre-commit = "*"
 pandoc = "*"
 jinja2 = "*"
-python = "3.8.*"
+python = "3.9.*"
 onnx = "*"
 
 [feature.opset-generation.tasks]
