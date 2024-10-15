@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import abc
 from abc import ABC
 from typing import Any, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union

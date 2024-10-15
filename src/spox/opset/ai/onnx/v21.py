@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
 from typing import (
@@ -1845,8 +1848,8 @@ def qlinear_matmul(
     y_zero_point: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
     It consumes two quantized input tensors, their scales and zero points,
     scale and zero point of output, and computes the quantized output. The
     quantization formula is y = saturate((x / y_scale) + y_zero_point). For
@@ -1988,9 +1991,11 @@ def quantize_linear(
     axis
         Attribute.
         (Optional) The axis of the dequantizing dimension of the input tensor.
-        Used for per-axis and blocked quantization. Negative value means
+        Used only for per-axis and blocked quantization. Negative value means
         counting dimensions from the back. Accepted range is ``[-r, r-1]`` where
-        ``r = rank(input)``.
+        ``r = rank(input)``. When the rank of the input is 1, per-tensor
+        quantization is applied, rendering the axis unnecessary in this
+        scenario.
     block_size
         Attribute.
         (Optional) The size of the quantization block (number of times every

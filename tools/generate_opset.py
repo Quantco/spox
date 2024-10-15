@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import re
 import subprocess
 from dataclasses import dataclass
@@ -167,8 +170,8 @@ def get_attributes(
         if py_and_attr_type := attr_type_overrides.get(name):
             constructor_type_hint, member_type = (str(el) for el in py_and_attr_type)
         else:
-            constructor_type_hint = ATTRIBUTE_PROTO_TO_INPUT_TYPE[attr.type]
-            member_type = ATTRIBUTE_PROTO_TO_MEMBER_TYPE[attr.type]
+            constructor_type_hint = ATTRIBUTE_PROTO_TO_INPUT_TYPE[attr.type]  # type: ignore
+            member_type = ATTRIBUTE_PROTO_TO_MEMBER_TYPE[attr.type]  # type: ignore
 
         if default == "None":
             constructor_type_hint = f"Optional[{constructor_type_hint}]"
@@ -402,6 +405,8 @@ def write_schemas_code(
             )
         ]
         for doc in todo:
+            if doc is None:
+                raise ValueError("None documentation found")
             format_github_markdown(doc, to_batch=pandoc_batch)
     _pandoc_gfm_to_rst(*pandoc_batch)
 
@@ -513,7 +518,9 @@ def run_pre_commit_hooks(filenames: Union[str, Iterable[str]]):
     if isinstance(filenames, str):
         filenames = [filenames]
     return subprocess.run(
-        f"pre-commit run --files {' '.join(filenames)} --color always", shell=True
+        f"pre-commit run --files {' '.join(filenames)} --color always",
+        shell=True,
+        capture_output=True,
     )
 
 

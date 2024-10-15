@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
 from typing import (
@@ -7491,7 +7494,7 @@ def global_lp_pool(
     Signature: ``ai.onnx@2::GlobalLpPool``.
 
     Type constraints:
-     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
+     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
     return _GlobalLpPool(
         _GlobalLpPool.Attributes(
@@ -9139,8 +9142,8 @@ def matmul(
     B: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
 
     Parameters
     ==========
@@ -9180,8 +9183,8 @@ def matmul_integer(
     b_zero_point: Optional[Var] = None,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
     The production MUST never overflow. The accumulation may overflow if and
     only if in 32 bits.
 
@@ -9306,8 +9309,7 @@ def max_pool(
        output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - dilation[i] * (kernel_shape[i] - 1) - 1) / strides_spatial_shape[i] + 1)
 
     if ceil_mode is enabled. ``pad_shape[i]`` is the sum of pads along axis
-    ``i``. Sliding windows that would start in the right padded region are
-    ignored.
+    ``i``.
 
     ``auto_pad`` is a DEPRECATED attribute. If you are using them currently,
     the output spatial shape will be following when ceil_mode is enabled:
@@ -10945,8 +10947,8 @@ def qlinear_matmul(
     y_zero_point: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
     It consumes two quantized input tensors, their scales and zero points,
     scale and zero point of output, and computes the quantized output. The
     quantization formula is y = saturate((x / y_scale) + y_zero_point). For

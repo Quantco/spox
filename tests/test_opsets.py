@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import spox.opset.ai.onnx.ml.v3 as ml3
 import spox.opset.ai.onnx.v17 as op17
 import spox.opset.ai.onnx.v18 as op18

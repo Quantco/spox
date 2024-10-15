@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import typing
 from typing import Any, Callable, ClassVar, Optional, TypeVar, Union
 

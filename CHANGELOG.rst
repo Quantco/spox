@@ -7,8 +7,12 @@
 Change log
 ==========
 
-0.12.2 (unreleased)
+0.13.0 (unreleased)
 -------------------
+
+**Support change**
+
+- Support for ``Python 3.8`` has been dropped.
 
 **Bug fix**
 

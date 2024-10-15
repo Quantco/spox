@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 Data representation for Tensor shapes. Largely attempts to mimic semantics of ONNX shapes.
 Shapes have 3 representations:

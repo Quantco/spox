@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
 from typing import TYPE_CHECKING, Callable, Dict, Tuple

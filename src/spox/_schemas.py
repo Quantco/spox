@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """Exposes information related to reference ONNX operator schemas, used by StandardOpNode."""
 
 import itertools
@@ -50,11 +53,11 @@ def _current_schema(
 
 def _get_schemas_versioned(
     all_schemas: List[OpSchema],
-) -> Dict[str, Dict[str, OpSchema]]:
+) -> Dict[str, Dict[str, List[OpSchema]]]:
     """Get a map into a list of schemas for all domain/names."""
     return {
         domain: {
-            name: sorted(op_group, key=lambda s: s.since_version)
+            name: sorted(op_group, key=lambda s: s.since_version)  # type: ignore
             for name, op_group in _key_groups(domain_group, lambda s: s.name)
         }
         for domain, domain_group in _key_groups(all_schemas, lambda s: s.domain)
@@ -69,7 +72,7 @@ def _get_schemas_map(
     return {
         domain: {
             version: {
-                name: _current_schema(this_schemas, version)
+                name: _current_schema(this_schemas, version)  # type: ignore
                 for name, this_schemas in domain_schemas.items()
                 if _current_schema(this_schemas, version)
             }
@@ -81,7 +84,7 @@ def _get_schemas_map(
     }
 
 
-ALL_SCHEMAS: List[OpSchema] = get_all_schemas_with_history()
+ALL_SCHEMAS: List[OpSchema] = get_all_schemas_with_history()  # type: ignore
 
 DOMAINS: Set[str] = {s.domain for s in ALL_SCHEMAS}
 

@@ -1,22 +1,52 @@
+exclude: ^.pixi$
 repos:
-  - repo: https://github.com/Quantco/pre-commit-mirrors-ruff
-    rev: 0.6.2
+  - repo: local
     hooks:
-      - id: ruff-conda
-      - id: ruff-format-conda
-  - repo: https://github.com/Quantco/pre-commit-mirrors-mypy
-    rev: "1.10.1"
-    hooks:
-      - id: mypy-conda
-        additional_dependencies: [-c, conda-forge, types-setuptools]
-  - repo: https://github.com/Quantco/pre-commit-mirrors-pyupgrade
-    rev: 3.15.2
-    hooks:
-      - id: pyupgrade-conda
-        args:
-          - --py38
-  - repo: https://github.com/Quantco/pre-commit-mirrors-prettier
-    rev: 3.2.5
-    hooks:
-      - id: prettier-conda
-        files: "\\.md$"
+      # ensure pixi environments are up to date
+      # workaround for https://github.com/prefix-dev/pixi/issues/1482
+      - id: pixi-install
+        name: pixi-install
+        entry: pixi install -e py39 -e lint
+        language: system
+        always_run: true
+        require_serial: true
+        pass_filenames: false
+      # insert-license
+      - id: insert-license
+        name: insert-license
+        entry: >-
+          pixi run -e lint
+          insert-license
+          --license-base64 Q29weXJpZ2h0IChjKSBRdWFudENvIDIwMjMtMjAyNApTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogQlNELTMtQ2xhdXNlCg==
+          --dynamic-years
+          --comment-style "#"
+        language: system
+        types: [python]
+      # ruff
+      - id: ruff
+        name: ruff
+        entry: pixi run -e lint ruff check --fix --exit-non-zero-on-fix --force-exclude --target-version py39
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+      - id: ruff-format
+        name: ruff-format
+        entry: pixi run -e lint ruff format --force-exclude --target-version py39
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+      # mypy
+      - id: mypy
+        name: mypy
+        entry: pixi run -e default mypy
+        language: system
+        types: [python]
+        require_serial: true
+        exclude: ^(tests|api-coverage-tests)/
+      # prettier
+      - id: prettier
+        name: prettier
+        entry: pixi run -e lint prettier --write --list-different --ignore-unknown
+        language: system
+        types: [text]
+        files: \.(md|yml|yaml)$

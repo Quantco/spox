@@ -14,31 +14,24 @@ defaults:
 
 jobs:
   tests:
-    name: "Linux - unit tests - ${{ matrix.OS }} - Python ${{ matrix.PYTHON_VERSION }}"
-    runs-on: ${{ matrix.OS }}
+    name: "Linux - weekly unit tests - ubuntu-latest"
+    runs-on: ubuntu-latest
     env:
       CI: True
-    strategy:
-      fail-fast: true
-      matrix:
-        OS: ["ubuntu-latest"]
-        PYTHON_VERSION: ['3.12']
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-      - uses: mamba-org/setup-micromamba@v1 
+          fetch-depth: 0
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
         with:
-          environment-file: environment.yml
-          create-args: >-
-            python=${{ matrix.PYTHON_VERSION }}
-      - name: Run unit tests
-        shell: bash -l {0}
-        run: |
-          pip install onnx-weekly --pre
-          pip install .
-          pytest
+          environments: opset-generation
+      - name: Install repository
+        run: pixi run -e weekly postinstall
+      - name: Run pytest
+        run: pixi run -e weekly test
       - name: Issue on failure
         uses: actions/github-script@v7
         if: ${{ failure() && github.ref == 'refs/heads/main' }}

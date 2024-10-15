@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 This test implements a custom operator available in ONNX Runtime, showcasing the components available for extension.
 The operator: https://github.com/microsoft/onnxruntime/blob/main/docs/ContribOperators.md#commicrosoftinverse

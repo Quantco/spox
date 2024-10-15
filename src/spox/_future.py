@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """Module containing experimental Spox features that may be standard in the future."""
 
 from contextlib import contextmanager
@@ -82,7 +85,7 @@ class _NumpyLikeOperatorDispatcher:
         creating constants and/or casting.
         """
         targets: List[Union[np.dtype, np.generic, int, float]] = [
-            x.type.dtype if isinstance(x, Var) and isinstance(x.type, Tensor) else x
+            x.type.dtype if isinstance(x, Var) and isinstance(x.type, Tensor) else x  # type: ignore
             for x in args
         ]
         if self.type_promotion:

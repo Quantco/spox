@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """Internal module implementing the low-level Graph object and functions for creating arguments and Graphs."""
 
 import dataclasses
