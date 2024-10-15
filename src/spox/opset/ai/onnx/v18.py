@@ -2,11 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import (
-    Iterable,
     Optional,
-    Sequence,
 )
 
 import numpy as np

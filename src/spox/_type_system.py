@@ -1,7 +1,6 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-import typing
 from dataclasses import dataclass
 from typing import TypeVar
 
@@ -170,7 +169,7 @@ class Tensor(Type):
     enforced.
     """
 
-    _elem_type: typing.Type[np.generic]
+    _elem_type: type[np.generic]
     _shape: Shape
 
     def __init__(

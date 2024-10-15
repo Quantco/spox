@@ -1,8 +1,6 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Tuple
-
 import numpy as np
 import pytest
 
@@ -68,7 +66,7 @@ class Extras:
     def match_brackets(ext, xs: Var) -> Var:
         def bracket_matcher_step(
             i: Var, _cond: Var, stack: Var, result: Var, _: Var
-        ) -> Tuple[Var, Var, Var, Var]:
+        ) -> tuple[Var, Var, Var, Var]:
             closing = op.less(ext.at(xs, i), op.const(0))
             ignore = op.equal(ext.at(xs, i), op.const(0))
             pair = op.concat([ext.top(stack), i], axis=-1)

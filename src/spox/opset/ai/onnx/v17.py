@@ -2,15 +2,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import (
     Callable,
-    Dict,
-    Iterable,
-    List,
     Optional,
-    Sequence,
-    Tuple,
 )
 from typing import cast as typing_cast
 
@@ -498,7 +494,7 @@ class _Compress(StandardNode):
     class Outputs(BaseOutputs):
         output: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         self.infer_output_types_onnx()
         inp, cond = (
             self.inputs.input.unwrap_tensor(),
@@ -589,7 +585,7 @@ class _Constant(StandardNode):
     class Outputs(BaseOutputs):
         output: Var
 
-    def propagate_values(self) -> Dict[str, PropValueType]:
+    def propagate_values(self) -> dict[str, PropValueType]:
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
         )
@@ -1778,7 +1774,7 @@ class _Loop(StandardNode):
     class Outputs(BaseOutputs):
         v_final_and_scan_outputs: Sequence[Var]
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         output_types = super().infer_output_types()
 
         body = self.attrs.body.value
@@ -4533,7 +4529,7 @@ def batch_normalization(
     epsilon: float = 9.999999747378752e-06,
     momentum: float = 0.8999999761581421,
     training_mode: int = 0,
-) -> Tuple[Var, Var, Var]:
+) -> tuple[Var, Var, Var]:
     r"""
     Carries out batch normalization as described in the paper
     https://arxiv.org/abs/1502.03167. Depending on the mode it is being run,
@@ -6202,7 +6198,7 @@ def dropout(
     training_mode: Optional[Var] = None,
     *,
     seed: Optional[int] = None,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Dropout takes an input floating-point tensor, an optional input ratio
     (floating-point scalar) and an optional input training_mode (boolean
@@ -6286,7 +6282,7 @@ def dropout(
 
 def dynamic_quantize_linear(
     x: Var,
-) -> Tuple[Var, Var, Var]:
+) -> tuple[Var, Var, Var]:
     r"""
     A Function to fuse calculation for Scale, Zero Point and FP32->8Bit
     conversion of FP32 Input data. Outputs Scale, ZeroPoint and Quantized
@@ -6793,7 +6789,7 @@ def gru(
     hidden_size: Optional[int] = None,
     layout: int = 0,
     linear_before_reset: int = 0,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Computes an one-layer GRU. This operator is usually supported via some
     custom implementation such as CuDNN.
@@ -8300,7 +8296,7 @@ def lstm(
     hidden_size: Optional[int] = None,
     input_forget: int = 0,
     layout: int = 0,
-) -> Tuple[Var, Var, Var]:
+) -> tuple[Var, Var, Var]:
     r"""
     Computes an one-layer LSTM. This operator is usually supported via some
     custom implementation such as CuDNN.
@@ -8510,7 +8506,7 @@ def layer_normalization(
     axis: int = -1,
     epsilon: float = 9.999999747378752e-06,
     stash_type: int = 1,
-) -> Tuple[Var, Var, Var]:
+) -> tuple[Var, Var, Var]:
     r"""
     This is layer normalization defined in ONNX as function. The overall
     computation can be split into two stages. The first stage is
@@ -8990,7 +8986,7 @@ def loop(
      - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _body_subgraph: Graph = subgraph(
-        typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
+        typing_cast(list[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
         + [var.unwrap_type() for var in v_initial],
         body,
     )
@@ -9286,7 +9282,7 @@ def max_pool(
     pads: Optional[Iterable[int]] = None,
     storage_order: int = 0,
     strides: Optional[Iterable[int]] = None,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     MaxPool consumes an input tensor X and applies max pooling across the
     tensor according to kernel sizes, stride sizes, and pad lengths. max
@@ -11104,7 +11100,7 @@ def rnn(
     direction: str = "forward",
     hidden_size: Optional[int] = None,
     layout: int = 0,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Computes an one-layer simple RNN. This operator is usually supported via
     some custom implementation such as CuDNN.
@@ -14097,7 +14093,7 @@ def softmax_cross_entropy_loss(
     *,
     ignore_index: Optional[int] = None,
     reduction: str = "mean",
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Loss function that measures the softmax cross entropy between 'scores'
     and 'labels'. This operator first computes a loss tensor whose shape is
@@ -14982,7 +14978,7 @@ def top_k(
     axis: int = -1,
     largest: int = 1,
     sorted: int = 1,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Retrieve the top-K largest or smallest elements along a specified axis.
     Given an input tensor of shape [a_0, a_1, ..., a\_{n-1}] and integer
@@ -15175,7 +15171,7 @@ def unique(
     *,
     axis: Optional[int] = None,
     sorted: int = 1,
-) -> Tuple[Var, Var, Var, Var]:
+) -> tuple[Var, Var, Var, Var]:
     r"""
     Find the unique elements of a tensor. When an optional attribute 'axis'
     is provided, unique subtensors sliced along the 'axis' are returned.

@@ -6,7 +6,7 @@ class _{{ schema.name }}(StandardNode):
     {% else %}{% for attr in attributes %}
         {{ attr.name }}: {{ attr.member_type }}
     {% endfor %}
-    {% endif %}  
+    {% endif %}
 
 {% if schema.inputs %}
     @dataclass
@@ -47,14 +47,14 @@ class _{{ schema.name }}(StandardNode):
 
 {% endif %}
 {% if type_inference %}
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
 {% filter indent(width=8) %}
         {%+ include type_inference %}
 {% endfilter %}
 
 {% endif %}
 {% if value_propagation %}
-    def propagate_values(self) -> Dict[str, PropValueType]:
+    def propagate_values(self) -> dict[str, PropValueType]:
 {% filter indent(width=8) %}
         {%+ include value_propagation %}
 {% endfilter %}
@@ -66,4 +66,3 @@ class _{{ schema.name }}(StandardNode):
     inputs: {% if schema.inputs %}Inputs{% else %}BaseInputs{% endif %}
 
     outputs: {% if schema.outputs %}Outputs{% else %}BaseOutputs{% endif %}
-

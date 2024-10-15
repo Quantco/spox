@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import itertools
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional, Sequence, Set, Tuple
+from typing import Callable, Optional
 
 import onnx
 
@@ -23,7 +24,7 @@ def rename_in_graph(
     rename: Callable[[str], str],
     *,
     rename_node: Optional[Callable[[str], str]] = None,
-    rename_op: Optional[Callable[[str, str], Tuple[str, str]]] = None,
+    rename_op: Optional[Callable[[str, str], tuple[str, str]]] = None,
 ) -> onnx.GraphProto:
     def rename_in_subgraph(subgraph):
         return rename_in_graph(
@@ -105,12 +106,12 @@ class _Inline(_InternalNode):
         return self.model.graph
 
     @property
-    def opset_req(self) -> Set[Tuple[str, int]]:
+    def opset_req(self) -> set[tuple[str, int]]:
         return {(imp.domain, imp.version) for imp in self.model.opset_import} | {
             ("", INTERNAL_MIN_OPSET)
         }
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
         for i, var in zip(self.graph.input, self.inputs.inputs):
             if var.type is not None and not (
@@ -126,7 +127,7 @@ class _Inline(_InternalNode):
             for k, o in enumerate(self.graph.output)
         }
 
-    def propagate_values(self) -> Dict[str, _value_prop.PropValueType]:
+    def propagate_values(self) -> dict[str, _value_prop.PropValueType]:
         if any(
             var.type is None or var._value is None
             for var in self.inputs.get_vars().values()
@@ -146,15 +147,15 @@ class _Inline(_InternalNode):
 
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
-    ) -> List[onnx.NodeProto]:
-        input_names: Dict[str, int] = {
+    ) -> list[onnx.NodeProto]:
+        input_names: dict[str, int] = {
             p.name: i for i, p in enumerate(self.graph.input)
         }
-        output_names: Dict[str, int] = {
+        output_names: dict[str, int] = {
             p.name: i for i, p in enumerate(self.graph.output)
         }
-        inner_renames: Dict[str, str] = {}
-        inner_node_renames: Dict[str, str] = {}
+        inner_renames: dict[str, str] = {}
+        inner_node_renames: dict[str, str] = {}
 
         def reserve_prefixed(name: str) -> str:
             if not name:
@@ -183,5 +184,5 @@ class _Inline(_InternalNode):
             raise BuildError(
                 "Inlined graph initializers should be handled beforehand and be removed from the graph."
             )
-        nodes: List[onnx.NodeProto] = list(graph.node)
+        nodes: list[onnx.NodeProto] = list(graph.node)
         return nodes

@@ -1,8 +1,6 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Tuple
-
 import pytest
 
 from spox._shape import Shape
@@ -46,16 +44,16 @@ def no_broadcast_shapes(request):
     return tuple(Shape.from_simple(sh) for sh in request.param)
 
 
-def test_can_broadcast_true(broadcast_shapes: Tuple[Shape, Shape, Shape]):
+def test_can_broadcast_true(broadcast_shapes: tuple[Shape, Shape, Shape]):
     first, second, _ = broadcast_shapes
     assert first.can_broadcast(second)
 
 
-def test_can_broadcast_false(no_broadcast_shapes: Tuple[Shape, Shape]):
+def test_can_broadcast_false(no_broadcast_shapes: tuple[Shape, Shape]):
     first, second = no_broadcast_shapes
     assert not first.can_broadcast(second)
 
 
-def test_broadcast(broadcast_shapes: Tuple[Shape, Shape, Shape]):
+def test_broadcast(broadcast_shapes: tuple[Shape, Shape, Shape]):
     first, second, result = broadcast_shapes
     assert first.broadcast(second) == result

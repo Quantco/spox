@@ -1,8 +1,6 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import List, Tuple
-
 import numpy as np
 import onnx
 import pytest
@@ -42,7 +40,7 @@ def tensor_shape_pairs():
 
 
 @pytest.fixture
-def type_pairs() -> List[Tuple[Type, onnx.TypeProto]]:
+def type_pairs() -> list[tuple[Type, onnx.TypeProto]]:
     tensor_f32 = tensor_type_proto(np.float32, None)
     seq_tensor_f32 = onnx.helper.make_sequence_type_proto(tensor_f32)
     opt_seq_tensor_f32 = onnx.helper.make_optional_type_proto(seq_tensor_f32)

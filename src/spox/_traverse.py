@@ -1,7 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Callable, Iterable, Iterator, List, Optional, Set, Tuple, TypeVar
+from collections.abc import Iterable, Iterator
+from typing import Callable, Optional, TypeVar
 
 V = TypeVar("V")
 
@@ -11,7 +12,7 @@ def iterative_dfs(
     adj: Callable[[V], Iterable[V]],
     post_callback: Optional[Callable[[V], None]] = None,
     raise_on_cycle: bool = True,
-) -> List[V]:
+) -> list[V]:
     """
     Performs a depth-first search and returns the postorder of the traversal.
     Throws if the graph contains a cycle. The topological sorting returned is the postorder of the DFS.
@@ -55,12 +56,12 @@ def iterative_dfs(
         for s in sources:
             dfs(s)
     """
-    postorder: List[V] = []
-    visited: Set[V] = set()
-    stack: Set[V] = set()
+    postorder: list[V] = []
+    visited: set[V] = set()
+    stack: set[V] = set()
 
     # Recursion stack - the state of a DFS is described with a stack of (vertex, nodes left to visit).
-    recursion: List[Tuple[V, Iterator[V]]] = []
+    recursion: list[tuple[V, Iterator[V]]] = []
 
     def call(w: V):
         """Helper called when we attempt to enter a node ``w``."""

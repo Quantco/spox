@@ -1,6 +1,6 @@
 def promote(
     *types: Union[Var, np.generic, int, float, None]
-) -> Tuple[Optional[Var], ...]:
+) -> tuple[Optional[Var], ...]:
     """
     Apply constant promotion and type promotion to given parameters, creating constants and/or casting.
 

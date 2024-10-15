@@ -5,7 +5,7 @@
 
 import contextlib
 import itertools
-from typing import Dict, List, Optional, Protocol
+from typing import Optional, Protocol
 
 import numpy as np
 import onnx
@@ -46,7 +46,7 @@ def _temporary_renames(**kwargs: Var):
     # not just ``Var._name``.  So we set names here and reset them
     # afterwards.
     name: Optional[str]
-    pre: Dict[Var, Optional[str]] = {}
+    pre: dict[Var, Optional[str]] = {}
     try:
         for name, arg in kwargs.items():
             pre[arg] = arg._name
@@ -58,7 +58,7 @@ def _temporary_renames(**kwargs: Var):
 
 
 def build(
-    inputs: Dict[str, Var], outputs: Dict[str, Var], *, drop_unused_inputs=False
+    inputs: dict[str, Var], outputs: dict[str, Var], *, drop_unused_inputs=False
 ) -> onnx.ModelProto:
     """
     Builds an ONNX Model with given model inputs and outputs.
@@ -146,7 +146,7 @@ class _InlineCall(Protocol):
     (``str``) into ``Var``.
     """
 
-    def __call__(self, *args: Var, **kwargs: Var) -> Dict[str, Var]:
+    def __call__(self, *args: Var, **kwargs: Var) -> dict[str, Var]:
         """
         Parameters
         ----------
@@ -254,7 +254,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
         )
     # We handle everything related to initializers here, as currently build does not support them too well
     # Overridable initializers are saved to in_defaults, non-overridable replaced with Constant
-    preamble: List[onnx.NodeProto] = []
+    preamble: list[onnx.NodeProto] = []
     input_names = {i.name for i in model.graph.input}
     preamble.extend(
         onnx.helper.make_node("Constant", [], [i.name], value=i)
@@ -275,7 +275,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     model.graph.node.reverse()
     # Now we can assume the graph has no initializers
 
-    def inline_inner(*args: Var, **kwargs: Var) -> Dict[str, Var]:
+    def inline_inner(*args: Var, **kwargs: Var) -> dict[str, Var]:
         for name, arg in zip(in_names, args):
             if name in kwargs:
                 raise TypeError(

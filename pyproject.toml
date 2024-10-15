@@ -51,7 +51,7 @@ namespaces = false
 
 [tool.ruff.lint]
 # Enable the isort rules.
-extend-select = ["I"]
+extend-select = ["I", "UP"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["spox"]

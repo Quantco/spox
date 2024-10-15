@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import warnings
-from typing import Dict, List, Optional
+from typing import Optional
 
 import numpy as np
 import onnx
@@ -23,8 +23,8 @@ def adapt_node(
     proto: onnx.NodeProto,
     source_version: int,
     target_version: int,
-    var_names: Dict[Var, str],
-) -> Optional[List[onnx.NodeProto]]:
+    var_names: dict[Var, str],
+) -> Optional[list[onnx.NodeProto]]:
     if source_version == target_version:
         return None
 
@@ -69,11 +69,11 @@ def adapt_node(
 
 def adapt_inline(
     node: _Inline,
-    protos: List[onnx.NodeProto],
-    target_opsets: Dict[str, int],
-    var_names: Dict[Var, str],
+    protos: list[onnx.NodeProto],
+    target_opsets: dict[str, int],
+    var_names: dict[Var, str],
     node_name: str,
-) -> List[onnx.NodeProto]:
+) -> list[onnx.NodeProto]:
     source_version = max({v for d, v in node.opset_req if d in ("", "ai.onnx")})
     target_version = target_opsets[""]
 
@@ -97,11 +97,11 @@ def adapt_inline(
 
 def adapt_best_effort(
     node: Node,
-    protos: List[onnx.NodeProto],
-    opsets: Dict[str, int],
-    var_names: Dict[Var, str],
-    node_names: Dict[Node, str],
-) -> Optional[List[onnx.NodeProto]]:
+    protos: list[onnx.NodeProto],
+    opsets: dict[str, int],
+    var_names: dict[Var, str],
+    node_names: dict[Node, str],
+) -> Optional[list[onnx.NodeProto]]:
     if isinstance(node, _Inline):
         return adapt_inline(
             node,
