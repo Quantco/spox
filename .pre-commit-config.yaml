@@ -25,13 +25,13 @@ repos:
       # ruff
       - id: ruff
         name: ruff
-        entry: pixi run -e lint ruff check --fix --exit-non-zero-on-fix --force-exclude
+        entry: pixi run -e lint ruff check --fix --exit-non-zero-on-fix --force-exclude --target-version py39
         language: system
         types_or: [python, pyi]
         require_serial: true
       - id: ruff-format
         name: ruff-format
-        entry: pixi run -e lint ruff format --force-exclude
+        entry: pixi run -e lint ruff format --force-exclude --target-version py39
         language: system
         types_or: [python, pyi]
         require_serial: true
