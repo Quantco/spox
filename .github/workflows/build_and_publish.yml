@@ -41,8 +41,8 @@ jobs:
           name: artifact
           path: dist
       - name: Publish package on TestPyPi
-        uses: pypa/gh-action-pypi-publish@897895f1e160c830e369f9779632ebc134688e1b
+        uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597
         with:
           repository-url: https://test.pypi.org/legacy/
       - name: Publish package on PyPi
-        uses: pypa/gh-action-pypi-publish@897895f1e160c830e369f9779632ebc134688e1b
+        uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597
