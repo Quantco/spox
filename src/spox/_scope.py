@@ -1,4 +1,8 @@
-from typing import Dict, Generic, Hashable, Optional, Set, TypeVar, Union, overload
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
+from collections.abc import Hashable
+from typing import Generic, Optional, TypeVar, Union, overload
 
 from ._node import Node
 from ._var import Var
@@ -20,17 +24,17 @@ class ScopeSpace(Generic[H]):
     So ``__getitem__`` (``ScopeSpace[item]``) may be used for both the name of an object and the object of a name.
     """
 
-    name_of: Dict[H, str]
-    of_name: Dict[str, H]
-    reserved: Set[str]
-    base_name_counters: Dict[str, int]
+    name_of: dict[H, str]
+    of_name: dict[str, H]
+    reserved: set[str]
+    base_name_counters: dict[str, int]
     parent: "Optional[ScopeSpace[H]]"
 
     def __init__(
         self,
-        name_of: Optional[Dict[H, str]] = None,
-        of_name: Optional[Dict[str, H]] = None,
-        reserved: Optional[Set[str]] = None,
+        name_of: Optional[dict[H, str]] = None,
+        of_name: Optional[dict[str, H]] = None,
+        reserved: Optional[set[str]] = None,
         parent: "Optional[ScopeSpace[H]]" = None,
     ):
         """

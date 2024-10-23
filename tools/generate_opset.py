@@ -1,8 +1,12 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import re
 import subprocess
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union
+from typing import Optional, Union
 
 import jinja2
 import onnx
@@ -66,7 +70,7 @@ SPLIT18_OUT_VARIADIC_SOLUTION = "num_outputs"
 
 IF16_SUBGRAPH_SOLUTION = {"else_branch": "()", "then_branch": "()"}
 LOOP16_SUBGRAPH_SOLUTION = {
-    "body": "typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])"
+    "body": "typing_cast(list[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])"
     "+ [var.unwrap_type() for var in v_initial]"
 }
 SCAN16_SUBGRAPH_SOLUTION = {
@@ -154,9 +158,9 @@ class Attribute:
 def get_attributes(
     schema: onnx.defs.OpSchema,
     attr_type_overrides,
-    subgraph_solutions: Dict[str, str],
+    subgraph_solutions: dict[str, str],
     allow_extra: bool,
-) -> List[Attribute]:
+) -> list[Attribute]:
     out = []
     for name, attr in schema.attributes.items():
         default = _get_default_value(attr, attr_type_overrides)
@@ -167,8 +171,8 @@ def get_attributes(
         if py_and_attr_type := attr_type_overrides.get(name):
             constructor_type_hint, member_type = (str(el) for el in py_and_attr_type)
         else:
-            constructor_type_hint = ATTRIBUTE_PROTO_TO_INPUT_TYPE[attr.type]
-            member_type = ATTRIBUTE_PROTO_TO_MEMBER_TYPE[attr.type]
+            constructor_type_hint = ATTRIBUTE_PROTO_TO_INPUT_TYPE[attr.type]  # type: ignore
+            member_type = ATTRIBUTE_PROTO_TO_MEMBER_TYPE[attr.type]  # type: ignore
 
         if default == "None":
             constructor_type_hint = f"Optional[{constructor_type_hint}]"
@@ -241,7 +245,7 @@ def get_constructor_return(schema: onnx.defs.OpSchema) -> str:
     if not schema.outputs:
         return "None"
     if len(schema.outputs) > 1:
-        return f"Tuple[{', '.join('Sequence[Var]' if is_variadic(out) else 'Var' for out in schema.outputs)}]"
+        return f"tuple[{', '.join('Sequence[Var]' if is_variadic(out) else 'Var' for out in schema.outputs)}]"
     (out,) = schema.outputs
     if is_variadic(out):
         return "Sequence[Var]"
@@ -249,7 +253,7 @@ def get_constructor_return(schema: onnx.defs.OpSchema) -> str:
 
 
 _PANDOC_SEP = "\U0001f6a7"  # U+1F6A7 CONSTRUCTION SIGN
-_PANDOC_GFM_TO_RST_CACHE: Dict[str, str] = {}
+_PANDOC_GFM_TO_RST_CACHE: dict[str, str] = {}
 
 
 def _pandoc_run(text: str):
@@ -258,7 +262,7 @@ def _pandoc_run(text: str):
     ).stdout.decode()
 
 
-def _pandoc_gfm_to_rst_run(*args: str) -> Tuple[str, ...]:
+def _pandoc_gfm_to_rst_run(*args: str) -> tuple[str, ...]:
     if not args:
         return ()
 
@@ -275,7 +279,7 @@ def _pandoc_gfm_to_rst_run(*args: str) -> Tuple[str, ...]:
     return results
 
 
-def _pandoc_gfm_to_rst(*args: str) -> Tuple[str, ...]:
+def _pandoc_gfm_to_rst(*args: str) -> tuple[str, ...]:
     args = tuple(arg.strip() for arg in args)
     if any(_PANDOC_SEP in arg for arg in args):
         raise ValueError(
@@ -287,7 +291,7 @@ def _pandoc_gfm_to_rst(*args: str) -> Tuple[str, ...]:
         if not (arg in _PANDOC_GFM_TO_RST_CACHE or not arg)
     ]
     results = _pandoc_gfm_to_rst_run(*[args[i] for i in valid])
-    sub: List[Optional[str]] = [None] * len(args)
+    sub: list[Optional[str]] = [None] * len(args)
     for i, result in zip(valid, results):
         sub[i] = result
     for i, arg in enumerate(args):
@@ -305,7 +309,7 @@ def pandoc_gfm_to_rst(doc: str) -> str:
     return result
 
 
-def format_github_markdown(doc: str, *, to_batch: Optional[List[str]] = None) -> str:
+def format_github_markdown(doc: str, *, to_batch: Optional[list[str]] = None) -> str:
     """Jinja filter. Makes some attempt at fixing "Markdown" into RST."""
     # Sometimes Tensor<T> is used in the docs (~17 instances at 1.13)
     # and is treated as invalid HTML tags by pandoc.
@@ -355,14 +359,14 @@ def get_env():
 def write_schemas_code(
     file,
     domain: str,
-    schemas: List[onnx.defs.OpSchema],
-    type_inference: Dict[str, str],
-    value_propagation: Dict[str, str],
-    out_variadic_solutions: Dict[str, str],
-    subgraphs_solutions: Dict[str, Dict[str, str]],
-    attr_type_overrides: List[Tuple[Optional[str], str, Tuple[str, str]]],
-    allow_extra_constructor_arguments: Set[str],
-    inherited_schemas: Dict[onnx.defs.OpSchema, str],
+    schemas: list[onnx.defs.OpSchema],
+    type_inference: dict[str, str],
+    value_propagation: dict[str, str],
+    out_variadic_solutions: dict[str, str],
+    subgraphs_solutions: dict[str, dict[str, str]],
+    attr_type_overrides: list[tuple[Optional[str], str, tuple[str, str]]],
+    allow_extra_constructor_arguments: set[str],
+    inherited_schemas: dict[onnx.defs.OpSchema, str],
     extras: Sequence[str],
     gen_docstrings: bool,
 ):
@@ -387,9 +391,9 @@ def write_schemas_code(
                 end="\n",
             )
 
-    built_schemas: Set[onnx.defs.OpSchema] = set()
+    built_schemas: set[onnx.defs.OpSchema] = set()
 
-    pandoc_batch: List[str] = []
+    pandoc_batch: list[str] = []
     for schema in schemas:
         if schema in inherited_schemas:
             continue
@@ -402,6 +406,8 @@ def write_schemas_code(
             )
         ]
         for doc in todo:
+            if doc is None:
+                raise ValueError("None documentation found")
             format_github_markdown(doc, to_batch=pandoc_batch)
     _pandoc_gfm_to_rst(*pandoc_batch)
 
@@ -496,7 +502,8 @@ def write_schemas_code(
 
     print(
         env.get_template("summary.jinja2").render(
-            built_names=sorted({schema.name for schema in schemas})
+            built_names=sorted({schema.name for schema in schemas}),
+            domain=domain,
         ),
         file=file,
         end="\n",
@@ -512,27 +519,29 @@ def run_pre_commit_hooks(filenames: Union[str, Iterable[str]]):
     if isinstance(filenames, str):
         filenames = [filenames]
     return subprocess.run(
-        f"pre-commit run --files {' '.join(filenames)} --color always", shell=True
+        f"pre-commit run --files {' '.join(filenames)} --color always",
+        shell=True,
+        capture_output=True,
     )
 
 
 def main(
     domain: str,
     version: Optional[int] = None,
-    type_inference: Optional[Dict[str, str]] = None,
-    value_propagation: Optional[Dict[str, str]] = None,
-    out_variadic_solutions: Optional[Dict[str, str]] = None,
-    subgraphs_solutions: Optional[Dict[str, Dict[str, str]]] = None,
+    type_inference: Optional[dict[str, str]] = None,
+    value_propagation: Optional[dict[str, str]] = None,
+    out_variadic_solutions: Optional[dict[str, str]] = None,
+    subgraphs_solutions: Optional[dict[str, dict[str, str]]] = None,
     attr_type_overrides: Optional[
-        List[Tuple[Optional[str], str, Tuple[str, str]]]
+        list[tuple[Optional[str], str, tuple[str, str]]]
     ] = None,
     allow_extra_constructor_arguments: Iterable[str] = (),
-    inherited_schemas: Optional[Dict[onnx.defs.OpSchema, str]] = None,
+    inherited_schemas: Optional[dict[onnx.defs.OpSchema, str]] = None,
     extras: Sequence[str] = (),
     target: str = "src/spox/opset/",
     pre_commit_hooks: bool = True,
     gen_docstrings: bool = True,
-) -> Tuple[List[onnx.defs.OpSchema], str]:
+) -> tuple[list[onnx.defs.OpSchema], str]:
     """
     Generate opset module code and save it in a `.py` source code file.
 

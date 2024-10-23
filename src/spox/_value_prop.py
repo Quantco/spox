@@ -1,10 +1,14 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import enum
 import logging
 import warnings
 from dataclasses import dataclass
-from typing import Dict, List, Union
+from typing import Callable, Union
 
-import numpy
+import numpy as np
+import numpy.typing as npt
 import onnx
 import onnx.reference
 
@@ -20,9 +24,9 @@ The internal representation for runtime values.
 - PropValue -> Optional, Some (has value)
 - None -> Optional, Nothing (no value)
 """
-PropValueType = Union[numpy.ndarray, List["PropValue"], "PropValue", None]
-ORTValue = Union[numpy.ndarray, list, None]
-RefValue = Union[numpy.ndarray, list, float, None]
+PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
+ORTValue = Union[np.ndarray, list, None]
+RefValue = Union[np.ndarray, list, float, None]
 
 VALUE_PROP_STRICT_CHECK: bool = False
 
@@ -56,12 +60,12 @@ class PropValue:
         # platform-dependent dtype - such as ulonglong.
         # Though very similar, it does not compare equal to the usual sized dtype.
         # (for example ulonglong is not uint64)
-        if isinstance(self.value, numpy.ndarray) and numpy.issubdtype(
-            self.value.dtype, numpy.number
+        if isinstance(self.value, np.ndarray) and np.issubdtype(
+            self.value.dtype, np.number
         ):
             # We normalize by reconstructing the dtype through its name
             object.__setattr__(
-                self, "value", self.value.astype(numpy.dtype(self.value.dtype.name))
+                self, "value", self.value.astype(np.dtype(self.value.dtype.name))
             )
 
         if VALUE_PROP_STRICT_CHECK and not self.check():
@@ -75,11 +79,15 @@ class PropValue:
 
     def check(self) -> bool:
         if isinstance(self.type, Tensor):
-            return (
-                isinstance(self.value, numpy.ndarray)
-                and self.value.dtype.type is self.type.dtype.type
+            if not (
+                isinstance(self.value, np.ndarray)
                 and Shape.from_simple(self.value.shape) <= self.type._shape
-            )
+            ):
+                return False
+            # Strings need some special handling
+            if self.value.dtype == object and self.type.dtype == str:
+                return True
+            return self.value.dtype.type is self.type.dtype.type
         elif isinstance(self.type, Sequence):
             return isinstance(self.value, list) and all(
                 elem.type._subtype(self.type.elem_type) for elem in self.value
@@ -110,7 +118,7 @@ class PropValue:
             elem_type = typ.unwrap_sequence().elem_type
             return cls(typ, [cls.from_ref_value(elem_type, elem) for elem in value])
         else:  # otherwise must have Tensor (sometimes this is just a scalar)
-            return cls(typ, numpy.array(value))
+            return cls(typ, np.array(value))
         # No fail branch because representations of Tensor are inconsistent
 
     @classmethod
@@ -122,9 +130,9 @@ class PropValue:
         elif isinstance(value, list):  # Sequence
             elem_type = typ.unwrap_sequence().elem_type
             return cls(typ, [cls.from_ort_value(elem_type, elem) for elem in value])
-        elif isinstance(value, numpy.ndarray):  # Tensor
+        elif isinstance(value, np.ndarray):  # Tensor
             # Normalise the dtype in case we got an alias (like longlong)
-            if value.dtype == numpy.dtype(object):
+            if value.dtype == np.dtype(object):
                 value = value.astype(str)
             return cls(typ, value)
         raise TypeError(f"No handler for ORT value: {value}")
@@ -143,7 +151,7 @@ class PropValue:
         if self.value is None:  # Optional, Nothing
             return None
         elif isinstance(self.value, PropValue):  # Optional, Some
-            return self.value.to_ref_value()
+            return self.value.to_ref_value()  # type: ignore
         elif isinstance(self.value, list):  # Sequence
             return [elem.to_ref_value() for elem in self.value]
         else:  # Tensor
@@ -151,8 +159,8 @@ class PropValue:
 
 
 def _run_reference_implementation(
-    model: onnx.ModelProto, input_feed: Dict[str, RefValue]
-) -> Dict[str, RefValue]:
+    model: onnx.ModelProto, input_feed: dict[str, RefValue]
+) -> dict[str, RefValue]:
     try:
         session = onnx.reference.ReferenceEvaluator(model)
         output_feed = dict(zip(session.output_names, session.run(None, input_feed)))
@@ -167,8 +175,8 @@ def _run_reference_implementation(
 
 
 def _run_onnxruntime(
-    model: onnx.ModelProto, input_feed: Dict[str, ORTValue]
-) -> Dict[str, ORTValue]:
+    model: onnx.ModelProto, input_feed: dict[str, ORTValue]
+) -> dict[str, ORTValue]:
     import onnxruntime
 
     # Silence possible warnings during execution (especially constant folding)
@@ -188,6 +196,8 @@ def _run_onnxruntime(
 
 
 def get_backend_calls():
+    run: Callable[..., dict[str, npt.ArrayLike]]
+    unwrap_feed: Callable[..., PropValue]
     if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
         wrap_feed = PropValue.to_ref_value
         run = _run_reference_implementation

@@ -1,7 +1,11 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import inspect
 import itertools
+from collections.abc import Iterable
 from dataclasses import dataclass, make_dataclass
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, Tuple, TypeVar
+from typing import TYPE_CHECKING, Callable, TypeVar
 
 import onnx
 
@@ -38,8 +42,8 @@ class Function(_InternalNode):
     via the ``to_onnx_function`` method.
     """
 
-    func_args: Dict[str, Var]
-    func_attrs: Dict[str, _attributes.Attr]
+    func_args: dict[str, Var]
+    func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
     func_graph: "_graph.Graph"
@@ -57,7 +61,7 @@ class Function(_InternalNode):
             f"Function {type(self).__name__} does not implement a constructor."
         )
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         from . import _graph
 
         self.func_args = _graph.arguments_dict(
@@ -95,7 +99,7 @@ class Function(_InternalNode):
         functions.extend(self.func_graph._get_build_result().functions)
 
     def to_onnx_function(
-        self, *, extra_opset_req: Iterable[Tuple[str, int]] = ()
+        self, *, extra_opset_req: Iterable[tuple[str, int]] = ()
     ) -> onnx.FunctionProto:
         """
         Translate self into an ONNX FunctionProto, based on the ``func_*`` attributes set when this operator

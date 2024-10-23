@@ -1,8 +1,11 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
-from typing import TYPE_CHECKING, Callable, Dict, Tuple
+from typing import TYPE_CHECKING, Callable
 
-import numpy
+import numpy as np
 import onnx
 import onnx.reference
 import onnx.shape_inference
@@ -48,7 +51,7 @@ class StandardNode(Node):
 
     def to_singleton_onnx_model(
         self, *, dummy_outputs: bool = True, with_dummy_subgraphs: bool = True
-    ) -> Tuple[onnx.ModelProto, Scope]:
+    ) -> tuple[onnx.ModelProto, Scope]:
         """
         Build a singleton model consisting of just this StandardNode. Used for type inference.
         Dummy subgraphs are typed, but have no graph body, so that we can avoid the build cost.
@@ -99,7 +102,7 @@ class StandardNode(Node):
         initializers = [
             from_array(var._value.value, key)
             for key, var in self.inputs.get_vars().items()
-            if var._value and isinstance(var._value.value, numpy.ndarray)
+            if var._value and isinstance(var._value.value, np.ndarray)
         ]
         #  Graph and model
         graph = onnx.helper.make_graph(
@@ -120,7 +123,7 @@ class StandardNode(Node):
         )
         return model, scope
 
-    def infer_output_types_onnx(self) -> Dict[str, Type]:
+    def infer_output_types_onnx(self) -> dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
         if any(var.type is None for var in self.inputs.get_vars().values()):
@@ -150,7 +153,7 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
-    def propagate_values_onnx(self) -> Dict[str, PropValueType]:
+    def propagate_values_onnx(self) -> dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
@@ -182,10 +185,10 @@ class StandardNode(Node):
         }
         return {k: v for k, v in results.items() if k is not None}
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         return self.infer_output_types_onnx()
 
-    def propagate_values(self) -> Dict[str, PropValueType]:
+    def propagate_values(self) -> dict[str, PropValueType]:
         if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
             return self.propagate_values_onnx()
         return {}

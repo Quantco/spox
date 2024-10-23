@@ -1,4 +1,7 @@
-import numpy
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
+import numpy as np
 
 import spox.opset.ai.onnx.v17 as op
 from spox._graph import arguments, results
@@ -6,22 +9,22 @@ from spox._type_system import Tensor
 
 
 def test_explicit_unspecified_optional(onnx_helper):
-    (x,) = arguments(x=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(x=Tensor(np.float32, (None,)))
     r = op.clip(x, min=None, max=op.constant(value_float=0.0))
     graph = results(r=r)
     onnx_helper.assert_close(
-        onnx_helper.run(graph, "r", x=numpy.array([-1, 1, 2], numpy.float32)),
+        onnx_helper.run(graph, "r", x=np.array([-1, 1, 2], np.float32)),
         [-1, 0, 0],
     )
 
 
 def test_unspecified_optional(onnx_helper):
-    (x,) = arguments(x=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(x=Tensor(np.float32, (None,)))
     r = op.clip(x, max=op.constant(value_float=1.0))
     r = op.clip(r, min=op.constant(value_float=-1.0))
     graph = results(r=r)
     onnx_helper.assert_close(
-        onnx_helper.run(graph, "r", x=numpy.array([-3, -1, 1, 2], numpy.float32)),
+        onnx_helper.run(graph, "r", x=np.array([-3, -1, 1, 2], np.float32)),
         [-1, -1, 1, 1],
     )
 
@@ -35,7 +38,7 @@ def test_variadic_no_input_list_mutation(onnx_helper):
 
 
 def test_variadic_no_attr_mutation_array(onnx_helper):
-    a = numpy.array([1])
+    a = np.array([1])
     x = op.constant(value=a)
     a[0] = 0
     assert isinstance(x._op, op._Constant)

@@ -1,8 +1,10 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
 from typing import (
     Optional,
-    Tuple,
 )
 
 import numpy as np
@@ -1065,21 +1067,21 @@ def image_decoder(
     reason (e.g. corrupted encoded stream, invalid format, it will return an
     empty matrix). The following image formats are supported:
 
-    -  BMP
-    -  JPEG (note: Lossless JPEG support is optional)
-    -  JPEG2000
-    -  TIFF
-    -  PNG
-    -  WebP
-    -  Portable image format (PBM, PGM, PPM, PXM, PNM) Decoded images follow
-       a channel-last layout: (Height, Width, Channels). **JPEG chroma
-       upsampling method:** When upsampling the chroma components by a
-       factor of 2, the pixels are linearly interpolated so that the centers
-       of the output pixels are 1/4 and 3/4 of the way between input pixel
-       centers. When rounding, 0.5 is rounded down and up at alternative
-       pixels locations to prevent bias towards larger values (ordered
-       dither pattern). Considering adjacent input pixels A, B, and C, B is
-       upsampled to pixels B0 and B1 so that
+    - BMP
+    - JPEG (note: Lossless JPEG support is optional)
+    - JPEG2000
+    - TIFF
+    - PNG
+    - WebP
+    - Portable image format (PBM, PGM, PPM, PXM, PNM) Decoded images follow
+      a channel-last layout: (Height, Width, Channels). **JPEG chroma
+      upsampling method:** When upsampling the chroma components by a factor
+      of 2, the pixels are linearly interpolated so that the centers of the
+      output pixels are 1/4 and 3/4 of the way between input pixel centers.
+      When rounding, 0.5 is rounded down and up at alternative pixels
+      locations to prevent bias towards larger values (ordered dither
+      pattern). Considering adjacent input pixels A, B, and C, B is
+      upsampled to pixels B0 and B1 so that
 
     ::
 
@@ -1440,7 +1442,7 @@ def string_split(
     *,
     delimiter: Optional[str] = None,
     maxsplit: Optional[int] = None,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     StringSplit splits a string tensor's elements into substrings based on a
     delimiter attribute and a maxsplit attribute.
@@ -1914,4 +1916,4 @@ _CONSTRUCTORS = {
     "Xor": xor,
 }
 
-__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()]
+__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()] + ["const"]

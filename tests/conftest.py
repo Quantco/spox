@@ -1,7 +1,10 @@
-import sys
-from typing import Dict, Optional
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
 
-import numpy
+import sys
+from typing import Optional
+
+import numpy as np
 import onnxruntime
 import pytest
 
@@ -16,7 +19,7 @@ _debug.STORE_TRACEBACK = True
 
 
 class ONNXRuntimeHelper:
-    _build_cache: Dict[Graph, bytes]
+    _build_cache: dict[Graph, bytes]
     _last_graph: Optional[Graph]
     _last_session: Optional[onnxruntime.InferenceSession]
 
@@ -63,12 +66,12 @@ class ONNXRuntimeHelper:
         else:
             if isinstance(given, list):
                 for subarray in given:
-                    numpy.testing.assert_allclose(
-                        given, numpy.array(expected, dtype=subarray.dtype), rtol=rtol
+                    np.testing.assert_allclose(
+                        given, np.array(expected, dtype=subarray.dtype), rtol=rtol
                     )
             else:
-                numpy.testing.assert_allclose(
-                    given, numpy.array(expected, dtype=given.dtype), rtol=rtol
+                np.testing.assert_allclose(
+                    given, np.array(expected, dtype=given.dtype), rtol=rtol
                 )
 
 

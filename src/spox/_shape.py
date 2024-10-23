@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 Data representation for Tensor shapes. Largely attempts to mimic semantics of ONNX shapes.
 Shapes have 3 representations:
@@ -12,14 +15,13 @@ Unknown shapes may cause warnings or errors to be raised.
 """
 
 import abc
-import typing
 from dataclasses import dataclass
-from typing import Optional, Tuple, TypeVar, Union
+from typing import Optional, TypeVar, Union
 
 import onnx
 
 SimpleShapeElem = Union[str, int, None]
-SimpleShape = Optional[Tuple[SimpleShapeElem, ...]]
+SimpleShape = Optional[tuple[SimpleShapeElem, ...]]
 
 
 class ShapeError(TypeError):
@@ -123,22 +125,20 @@ ShapeT = TypeVar("ShapeT", bound="Shape")
 class Shape:
     """Type representing a static Tensor shape."""
 
-    dims: Optional[Tuple[Natural, ...]]
+    dims: Optional[tuple[Natural, ...]]
 
     def __bool__(self):
         return self.dims is not None
 
     @classmethod
-    def from_simple(cls: typing.Type[ShapeT], shape: SimpleShape) -> ShapeT:
+    def from_simple(cls: type[ShapeT], shape: SimpleShape) -> ShapeT:
         """Translate into a Shape from the simplified representation."""
         return cls(
             tuple(Natural.from_simple(v) for v in shape) if shape is not None else None
         )
 
     @classmethod
-    def from_onnx(
-        cls: typing.Type[ShapeT], proto: Optional[onnx.TensorShapeProto]
-    ) -> ShapeT:
+    def from_onnx(cls: type[ShapeT], proto: Optional[onnx.TensorShapeProto]) -> ShapeT:
         """Translate into a Shape from ONNX shape."""
         return (
             cls(tuple(Natural.from_onnx(dim) for dim in proto.dim))

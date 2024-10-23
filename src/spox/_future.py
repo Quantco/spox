@@ -1,7 +1,11 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """Module containing experimental Spox features that may be standard in the future."""
 
+from collections.abc import Iterable
 from contextlib import contextmanager
-from typing import Iterable, List, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -81,8 +85,8 @@ class _NumpyLikeOperatorDispatcher:
         Apply constant promotion and type promotion to given parameters,
         creating constants and/or casting.
         """
-        targets: List[Union[np.dtype, np.generic, int, float]] = [
-            x.type.dtype if isinstance(x, Var) and isinstance(x.type, Tensor) else x
+        targets: list[Union[np.dtype, np.generic, int, float]] = [
+            x.type.dtype if isinstance(x, Var) and isinstance(x.type, Tensor) else x  # type: ignore
             for x in args
         ]
         if self.type_promotion:

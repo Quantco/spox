@@ -6,37 +6,29 @@ build-backend = "setuptools.build_meta"
 name = "spox"
 description = "A framework for constructing ONNX computational graphs."
 authors = [
-  {name = "Jakub Bachurski", email = "kbachurski@gmail.com"},
-  {name = "Christian Bourjau", email = "christian.bourjau@quantco.com"},
+    { name = "Jakub Bachurski", email = "kbachurski@gmail.com" },
+    { name = "Christian Bourjau", email = "christian.bourjau@quantco.com" },
 ]
 
 maintainers = [
-  {name = "Jakub Bachurski", email = "kbachurski@gmail.com"},
-  {name = "Christian Bourjau", email = "christian.bourjau@quantco.com"},
+    { name = "Jakub Bachurski", email = "kbachurski@gmail.com" },
+    { name = "Christian Bourjau", email = "christian.bourjau@quantco.com" },
 ]
-keywords = [
-  "machine-learning",
-  "onnx",
-]
+keywords = ["machine-learning", "onnx"]
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "License :: OSI Approved :: BSD License",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
 dynamic = ["version"]
 
-requires-python = ">=3.8.0"
+requires-python = ">=3.9"
 
-dependencies = [
-  "numpy",
-  "onnx>=1.13",
-  "packaging",
-]
+dependencies = ["numpy", "onnx>=1.13", "packaging"]
 
 [project.urls]
 Source = "https://github.com/quantco/spox"
@@ -51,7 +43,7 @@ version_scheme = "post-release"
 
 [tool.setuptools]
 include-package-data = true
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -59,13 +51,13 @@ namespaces = false
 
 [tool.ruff.lint]
 # Enable the isort rules.
-extend-select = ["I"]
+extend-select = ["I", "UP"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["spox"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 ignore_missing_imports = true
 no_implicit_optional = true
 check_untyped_defs = true

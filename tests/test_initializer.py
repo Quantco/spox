@@ -1,24 +1,27 @@
-import itertools
-from typing import Any, List
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
 
-import numpy
+import itertools
+from typing import Any
+
+import numpy as np
 import pytest
 
 from spox._future import initializer
 
-TESTED_INITIALIZER_ROWS: List[List[Any]] = [
+TESTED_INITIALIZER_ROWS: list[list[Any]] = [
     [0, 1, 2],
     [0.0, 1.0, 2.0],
-    [numpy.float16(3.14), numpy.float16(5.3)],
+    [np.float16(3.14), np.float16(5.3)],
     ["abc", "def"],
     [True, False],
 ]
 
 
 def assert_expected_initializer(var, value):
-    numpy.testing.assert_equal(var._get_value(), numpy.array(value))
-    assert var.unwrap_tensor().dtype.type == numpy.array(value).dtype.type
-    assert var.unwrap_tensor().shape == numpy.array(value).shape
+    np.testing.assert_equal(var._get_value(), np.array(value))
+    assert var.unwrap_tensor().dtype.type == np.array(value).dtype.type
+    assert var.unwrap_tensor().shape == np.array(value).shape
 
 
 @pytest.mark.parametrize(

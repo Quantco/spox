@@ -1,6 +1,10 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import abc
 from abc import ABC
-from typing import Any, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
+from collections.abc import Iterable
+from typing import Any, Generic, Optional, TypeVar, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -42,7 +46,7 @@ class Attr(ABC, Generic[T]):
             return self
 
     @classmethod
-    def maybe(cls: Type[AttrT], value: Optional[T], name: str) -> Optional[AttrT]:
+    def maybe(cls: type[AttrT], value: Optional[T], name: str) -> Optional[AttrT]:
         return cls(value, name) if value is not None else None
 
     @property
@@ -197,15 +201,15 @@ class AttrGraph(Attr[Any]):
         )
 
 
-class _AttrIterable(Attr[Tuple[S, ...]], ABC):
-    def __init__(self, value: Union[Iterable[S], _Ref[Tuple[S, ...]]], name: str):
+class _AttrIterable(Attr[tuple[S, ...]], ABC):
+    def __init__(self, value: Union[Iterable[S], _Ref[tuple[S, ...]]], name: str):
         super().__init__(
             value=value if isinstance(value, _Ref) else tuple(value), name=name
         )
 
     @classmethod
     def maybe(
-        cls: Type[AttrIterableT],
+        cls: type[AttrIterableT],
         value: Optional[Iterable[S]],
         name: str,
     ) -> Optional[AttrIterableT]:

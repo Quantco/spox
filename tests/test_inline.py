@@ -1,6 +1,7 @@
-from typing import Dict
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
 
-import numpy
+import numpy as np
 import onnx
 import onnx.parser
 import pytest
@@ -42,7 +43,7 @@ agraph (float[N] X) => (float[N] Y)
 }
 """
     )
-    model.graph.initializer.append(from_array(numpy.array(1, numpy.float32), "One"))
+    model.graph.initializer.append(from_array(np.array(1, np.float32), "One"))
     return model
 
 
@@ -53,8 +54,8 @@ def inc_proto_sparse_one(inc_proto) -> onnx.ModelProto:
     del model.graph.initializer[:]
     model.graph.sparse_initializer.append(
         onnx.helper.make_sparse_tensor(
-            from_array(numpy.array([1], numpy.float32), "One"),
-            from_array(numpy.array([0], numpy.int64), "OneI"),
+            from_array(np.array([1], np.float32), "One"),
+            from_array(np.array([0], np.int64), "OneI"),
             [1],
         )
     )
@@ -108,7 +109,7 @@ def relu_proto() -> onnx.ModelProto:
 @pytest.fixture
 def min_graph(lin_fun_proto):
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float32, (None,))
     )
     (result,) = inline(lin_fun_proto)(
         A=first, X=op.constant(value_float=1.0), B=second
@@ -132,7 +133,7 @@ def test_minimal(onnx_helper, min_graph):
 @pytest.fixture
 def larger_graph(lin_fun_proto):
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float32, (None,))
     )
     (result,) = inline(lin_fun_proto)(
         A=op.add(first, second), X=op.constant(value_float=2.0), B=second
@@ -142,8 +143,8 @@ def larger_graph(lin_fun_proto):
 
 def test_larger(onnx_helper, larger_graph):
     a, b = (
-        numpy.random.random(5).astype(numpy.float32),
-        numpy.random.random(5).astype(numpy.float32),
+        np.random.random(5).astype(np.float32),
+        np.random.random(5).astype(np.float32),
     )
     onnx_helper.assert_close(
         onnx_helper.run(larger_graph, "final", first=a, second=b), (2 * (a + b) + b) / a
@@ -155,17 +156,17 @@ def add4_graph(add_proto):
     def add(x, y):
         return inline(add_proto)(A=x, B=y)["C"]
 
-    vec = Tensor(numpy.float32, (None,))
+    vec = Tensor(np.float32, (None,))
     a, b, c, d = arguments(a=vec, b=vec, c=vec, d=vec)
     r = add(add(a, b), add(c, d))
     return results(r=r)
 
 
 def test_repeated(onnx_helper, add4_graph):
-    a = numpy.array([1.5, 1.125], numpy.float32)
-    b = numpy.array([0.25, 4.5], numpy.float32)
-    c = numpy.array([4.75, 2], numpy.float32)
-    d = numpy.array([0.125, 3], numpy.float32)
+    a = np.array([1.5, 1.125], np.float32)
+    b = np.array([0.25, 4.5], np.float32)
+    c = np.array([4.75, 2], np.float32)
+    d = np.array([0.125, 3], np.float32)
     onnx_helper.assert_close(
         onnx_helper.run(add4_graph, "r", a=a, b=b, c=c, d=d), a + b + c + d
     )
@@ -176,13 +177,13 @@ def inc3_graph(inc_proto):
     def inc(s):
         return inline(inc_proto)(X=s)["Y"]
 
-    (x,) = arguments(x=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(x=Tensor(np.float32, (None,)))
     y = inc(inc(inc(x)))
     return results(y=y)
 
 
 def test_inc3_with_initializer(onnx_helper, inc3_graph):
-    x = numpy.array([1.5, 0.75], numpy.float32)
+    x = np.array([1.5, 0.75], np.float32)
     onnx_helper.assert_close(onnx_helper.run(inc3_graph, "y", x=x), x + 3)
 
 
@@ -191,13 +192,13 @@ def inc3_graph_sparse_init(inc_proto_sparse_one):
     def inc(s):
         return inline(inc_proto_sparse_one)(X=s)["Y"]
 
-    (x,) = arguments(x=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(x=Tensor(np.float32, (None,)))
     y = inc(inc(inc(x)))
     return results(y=y)
 
 
 def test_inc3_with_sparse_initializer(onnx_helper, inc3_graph_sparse_init):
-    x = numpy.array([1.5, 0.75], numpy.float32)
+    x = np.array([1.5, 0.75], np.float32)
     onnx_helper.assert_close(onnx_helper.run(inc3_graph_sparse_init, "y", x=x), x + 3)
 
 
@@ -205,8 +206,8 @@ def test_inc3_value_prop(inc_proto):
     def inc(s):
         return inline(inc_proto)(X=s)["Y"]
 
-    assert inc(inc(inc(op.constant(value_floats=[0.0]))))._get_value() == numpy.array(
-        [3.0], numpy.float32
+    assert inc(inc(inc(op.constant(value_floats=[0.0]))))._get_value() == np.array(
+        [3.0], np.float32
     )
 
 
@@ -218,7 +219,7 @@ def test_proj_different_outer_name(onnx_helper, proj_proto):
     graph = results(z=proj(x, y))
 
     onnx_helper.assert_close(
-        onnx_helper.run(graph, "z", x=numpy.array([1.0]), y=numpy.array([2.0])), 2
+        onnx_helper.run(graph, "z", x=np.array([1.0]), y=np.array([2.0])), 2
     )
 
 
@@ -230,7 +231,7 @@ def test_proj_same_outer_name(onnx_helper, proj_proto):
     graph = results(c=proj(x, y))
 
     onnx_helper.assert_close(
-        onnx_helper.run(graph, "c", a=numpy.array([1.0]), b=numpy.array([2.0])), 2
+        onnx_helper.run(graph, "c", a=np.array([1.0]), b=np.array([2.0])), 2
     )
 
 
@@ -242,7 +243,7 @@ def test_proj_composed_same_name(onnx_helper, proj_proto):
     graph = results(c=proj(y, proj(x, y)))
 
     onnx_helper.assert_close(
-        onnx_helper.run(graph, "c", a=numpy.array([1.0]), b=numpy.array([2.0])), 2
+        onnx_helper.run(graph, "c", a=np.array([1.0]), b=np.array([2.0])), 2
     )
 
 
@@ -251,8 +252,8 @@ def test_relu_inline_subgraph(onnx_helper, relu_proto):
     (b,) = inline(relu_proto)(a).values()
     graph = results(b=b).with_arguments(a)
 
-    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array(1.0)), 1.0)
-    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=numpy.array(-1.0)), 0.0)
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=np.array(1.0)), 1.0)
+    onnx_helper.assert_close(onnx_helper.run(graph, "b", a=np.array(-1.0)), 0.0)
 
 
 def test_symbolic_dim_stripped(add4_graph):
@@ -325,7 +326,7 @@ def _duplicate_subgraphs_to_list(
 def test_subgraph_list_rename(relu_proto):
     # This is a simple property test that ensures renaming
     # in lists of subgraphs is the same as in just subgraphs
-    renames: Dict[str, str] = {}
+    renames: dict[str, str] = {}
 
     def example_rename(n: str) -> str:
         if n not in renames:
@@ -346,10 +347,10 @@ def test_subgraph_with_nodes_with_optional_inputs():
     """Unset optional inputs must not be prefixed by `inline`."""
 
     def inline_model() -> onnx.ModelProto:
-        a = argument(Tensor(numpy.float64, ("N",)))
-        return build({"a": a}, {"b": op.clip(a, None, op.const(1.0, numpy.float64))})
+        a = argument(Tensor(np.float64, ("N",)))
+        return build({"a": a}, {"b": op.clip(a, None, op.const(1.0, np.float64))})
 
-    foo = argument(Tensor(numpy.float64, ("N",)))
+    foo = argument(Tensor(np.float64, ("N",)))
     (bar,) = inline(inline_model())(foo).values()
 
     model_proto = build({"foo": foo}, {"bar": bar})

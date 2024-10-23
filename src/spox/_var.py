@@ -1,7 +1,10 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 import typing
 from typing import Any, Callable, ClassVar, Optional, TypeVar, Union
 
-import numpy
+import numpy as np
 
 from . import _type_system, _value_prop
 
@@ -110,6 +113,7 @@ class Var:
         -------
         _type_system.Type
             The type of the Var.
+
         Raises
         ------
         TypeError
@@ -195,11 +199,11 @@ class Var:
 
 
 def result_type(
-    *types: Union[Var, numpy.generic, int, float],
-) -> typing.Type[numpy.generic]:
+    *types: Union[Var, np.generic, int, float],
+) -> type[np.generic]:
     """Promote type for all given element types/values using ``np.result_type``."""
-    return numpy.dtype(
-        numpy.result_type(
+    return np.dtype(
+        np.result_type(
             *(
                 typ.unwrap_tensor().dtype if isinstance(typ, Var) else typ
                 for typ in types

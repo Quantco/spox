@@ -1,6 +1,7 @@
-from typing import Tuple
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
 
-import numpy
+import numpy as np
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
@@ -16,17 +17,17 @@ class Extras:
 
     def false(self):
         if self._false is None:
-            self._false = op.const(numpy.array(False))
+            self._false = op.const(np.array(False))
         return self._false
 
     def true(self):
         if self._true is None:
-            self._true = op.const(numpy.array(True))
+            self._true = op.const(np.array(True))
         return self._true
 
     def empty_i64(self):
         if self._empty_i64 is None:
-            self._empty_i64 = op.const(numpy.array([], dtype=numpy.int64))
+            self._empty_i64 = op.const(np.array([], dtype=np.int64))
         return self._empty_i64
 
     @staticmethod
@@ -52,10 +53,10 @@ class Extras:
 
     @staticmethod
     def at(t: Var, j: Var) -> Var:
-        j = op.reshape(j, op.const(numpy.array([1], dtype=numpy.int64)))
+        j = op.reshape(j, op.const(np.array([1], dtype=np.int64)))
         return op.reshape(
             op.slice(t, j, op.add(j, op.const(1))),
-            op.const(numpy.array([], dtype=numpy.int64)),
+            op.const(np.array([], dtype=np.int64)),
         )
 
     @staticmethod
@@ -65,7 +66,7 @@ class Extras:
     def match_brackets(ext, xs: Var) -> Var:
         def bracket_matcher_step(
             i: Var, _cond: Var, stack: Var, result: Var, _: Var
-        ) -> Tuple[Var, Var, Var, Var]:
+        ) -> tuple[Var, Var, Var, Var]:
             closing = op.less(ext.at(xs, i), op.const(0))
             ignore = op.equal(ext.at(xs, i), op.const(0))
             pair = op.concat([ext.top(stack), i], axis=-1)
@@ -89,9 +90,9 @@ class Extras:
             op.reshape(op.size(xs), op.const([1])),
             None,
             [
-                op.sequence_empty(dtype=numpy.int64),
-                op.sequence_empty(dtype=numpy.int64),
-                op.const(numpy.array(True)),
+                op.sequence_empty(dtype=np.int64),
+                op.sequence_empty(dtype=np.int64),
+                op.const(np.array(True)),
             ],
             body=bracket_matcher_step,
         )
@@ -104,13 +105,13 @@ class Extras:
         return op.pad(op.const([1]), ext.scalars(i, op.sub(op.sub(n, i), op.const(1))))
 
     def set_to(ext, t: Var, j: Var, x: Var) -> Var:
-        return op.where(op.cast(ext.onehot(op.size(t), j), to=numpy.bool_), x, t)
+        return op.where(op.cast(ext.onehot(op.size(t), j), to=np.bool_), x, t)
 
     @staticmethod
     def is_token(var: Var, token: str) -> Var:
         return op.equal(
-            op.cast(var, to=numpy.int32),
-            op.cast(op.const(numpy.uint8(ord(token))), to=numpy.int32),
+            op.cast(var, to=np.int32),
+            op.cast(op.const(np.uint8(ord(token))), to=np.int32),
         )
 
     def flat_concat(ext, s: Var) -> Var:

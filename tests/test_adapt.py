@@ -1,9 +1,13 @@
-from dataclasses import dataclass
-from typing import Iterable
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
 
-import numpy
+from collections.abc import Iterable
+from dataclasses import dataclass
+
+import numpy as np
 import onnx
 import onnx.parser
+import onnxruntime as ort
 import pytest
 
 import spox.opset.ai.onnx.v18 as op18
@@ -52,7 +56,7 @@ agraph (float[N] A) => (float[N] B)
 def inline_old_squeeze_graph(old_squeeze):
     (data,) = arguments(
         data=Tensor(
-            numpy.float32,
+            np.float32,
             (
                 1,
                 None,
@@ -65,41 +69,43 @@ def inline_old_squeeze_graph(old_squeeze):
 
 @pytest.fixture
 def inline_old_identity_twice_graph(old_identity):
-    (x,) = arguments(data=Tensor(numpy.float32, (None,)))
+    (x,) = arguments(data=Tensor(np.float32, (None,)))
     (y,) = inline(old_identity)(A=x).values()
     (z,) = inline(old_identity)(A=y).values()
     return results(final=z).with_opset(("ai.onnx", 17))
 
 
+class Squeeze11(StandardNode):
+    @dataclass
+    class Attributes(BaseAttributes):
+        axes: AttrInt64s
+
+    @dataclass
+    class Inputs(BaseInputs):
+        data: Var
+
+    @dataclass
+    class Outputs(BaseOutputs):
+        squeezed: Var
+
+    op_type = OpType("Squeeze", "", 11)
+
+    attrs: Attributes
+    inputs: Inputs
+    outputs: Outputs
+
+
+def squeeze11(_data: Var, _axes: Iterable[int]):
+    return Squeeze11(
+        Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
+    ).outputs.squeezed
+
+
 @pytest.fixture
 def old_squeeze_graph(old_squeeze):
-    class Squeeze11(StandardNode):
-        @dataclass
-        class Attributes(BaseAttributes):
-            axes: AttrInt64s
-
-        @dataclass
-        class Inputs(BaseInputs):
-            data: Var
-
-        @dataclass
-        class Outputs(BaseOutputs):
-            squeezed: Var
-
-        op_type = OpType("Squeeze", "", 11)
-
-        attrs: Attributes
-        inputs: Inputs
-        outputs: Outputs
-
-    def squeeze11(_data: Var, _axes: Iterable[int]):
-        return Squeeze11(
-            Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
-        ).outputs.squeezed
-
     (data,) = arguments(
         data=Tensor(
-            numpy.float32,
+            np.float32,
             (
                 1,
                 None,
@@ -115,7 +121,7 @@ def test_adapts_inline_old_squeeze(onnx_helper, inline_old_squeeze_graph):
         onnx_helper.run(
             inline_old_squeeze_graph,
             "final",
-            data=numpy.array([[1, 2, 3, 4]], dtype=numpy.float32),
+            data=np.array([[1, 2, 3, 4]], dtype=np.float32),
         ),
         [1, 2, 3, 4],
     )
@@ -126,7 +132,7 @@ def test_adapts_inline_old_identity_twice(onnx_helper, inline_old_identity_twice
         onnx_helper.run(
             inline_old_identity_twice_graph,
             "final",
-            data=numpy.array([1, 2, 3, 4], dtype=numpy.float32),
+            data=np.array([1, 2, 3, 4], dtype=np.float32),
         ),
         [1, 2, 3, 4],
     )
@@ -137,14 +143,14 @@ def test_adapts_singleton_old_squeeze(onnx_helper, old_squeeze_graph):
         onnx_helper.run(
             old_squeeze_graph,
             "final",
-            data=numpy.array([[1, 2, 3, 4]], dtype=numpy.float32),
+            data=np.array([[1, 2, 3, 4]], dtype=np.float32),
         ),
         [1, 2, 3, 4],
     )
 
 
 def test_adapt_node_with_repeating_input_names():
-    a = argument(Tensor(numpy.float32, ("N",)))
+    a = argument(Tensor(np.float32, ("N",)))
     b = op18.equal(a, a)
     c = op19.identity(a)
 
@@ -182,7 +188,7 @@ def test_inline_model_custom_node_only():
     # Ensure that our model is valid
     onnx.checker.check_model(model, full_check=True)
 
-    (a,) = arguments(data=Tensor(numpy.str_, ("N",)))
+    (a,) = arguments(data=Tensor(np.str_, ("N",)))
     (b,) = inline(model)(a).values()
 
     # Add another node to the model to trigger the adaption logic
@@ -227,9 +233,41 @@ def test_inline_model_custom_node_nested(old_squeeze: onnx.ModelProto):
     # Ensure that our model is valid
     onnx.checker.check_model(model, full_check=True)
 
-    (a,) = arguments(data=Tensor(numpy.float32, ("N",)))
+    (a,) = arguments(data=Tensor(np.float32, ("N",)))
     (b,) = inline(model)(a).values()
 
     # Add another node to the model to trigger the adaption logic
     c = op18.identity(b)
     build({"a": a}, {"c": c})
+
+
+def test_if_adapatation_squeeze():
+    cond = argument(Tensor(np.bool_, ()))
+    b = argument(Tensor(np.float32, (1,)))
+    squeezed = squeeze11(b, [0])
+    out = op18.if_(
+        cond,
+        then_branch=lambda: [squeezed],
+        else_branch=lambda: [squeeze11(b, [0])],
+    )
+    model = build({"b": b, "cond": cond}, {"out": out[0]})
+
+    # predict on model
+    b = np.array([1.1], dtype=np.float32)
+    cond = np.array(True, dtype=np.bool_)
+    out = ort.InferenceSession(model.SerializeToString()).run(
+        None, {"b": b, "cond": cond}
+    )
+
+
+def test_if_adaptation_const():
+    sq = op19.const(1.1453, dtype=np.float32)
+    b = argument(Tensor(np.float32, ("N",)))
+    cond = op18.equal(sq, b)
+    out = op18.if_(cond, then_branch=lambda: [sq], else_branch=lambda: [sq])
+    model = build({"b": b}, {"out": out[0]})
+    assert model.domain == "" or model.domain == "ai.onnx"
+    assert (
+        model.opset_import[0].domain == "ai.onnx" or model.opset_import[0].domain == ""
+    )
+    assert model.opset_import[0].version > 11

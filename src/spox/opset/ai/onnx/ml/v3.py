@@ -1,11 +1,11 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import (
-    Dict,
-    Iterable,
     Optional,
-    Sequence,
-    Tuple,
 )
 
 import numpy as np
@@ -40,7 +40,7 @@ class _ArrayFeatureExtractor(StandardNode):
     class Outputs(BaseOutputs):
         Z: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
@@ -75,7 +75,7 @@ class _Binarizer(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
@@ -123,7 +123,7 @@ class _CategoryMapper(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
@@ -199,7 +199,7 @@ class _Imputer(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         t = self.inputs.X.unwrap_tensor()
@@ -311,7 +311,7 @@ class _LinearRegressor(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         sim = self.inputs.X.unwrap_tensor().shape
@@ -345,7 +345,7 @@ class _Normalizer(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if self.attrs.norm.value not in ("MAX", "L1", "L2"):
             raise InferenceError(
                 f"Unknown normalisation method `{self.attrs.norm.value}`"
@@ -374,7 +374,7 @@ class _OneHotEncoder(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         if self.attrs.cats_int64s:
@@ -467,7 +467,7 @@ class _Scaler(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if self.inputs.X.type is None:
             return {}
         sc, off = self.attrs.scale, self.attrs.offset
@@ -527,7 +527,7 @@ class _TreeEnsembleClassifier(StandardNode):
         Y: Var
         Z: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         e = (
             len(self.attrs.class_ids.value)
             if self.attrs.class_ids is not None
@@ -591,7 +591,7 @@ class _TreeEnsembleRegressor(StandardNode):
     class Outputs(BaseOutputs):
         Y: Var
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         if self.inputs.fully_typed:
             shape = self.inputs.X.unwrap_tensor().shape
             assert shape is not None  # already checked with fully_typed
@@ -1131,7 +1131,7 @@ def linear_classifier(
     intercepts: Optional[Iterable[float]] = None,
     multi_class: int = 0,
     post_transform: str = "NONE",
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Linear classifier
 
@@ -1381,7 +1381,7 @@ def svmclassifier(
     rho: Optional[Iterable[float]] = None,
     support_vectors: Optional[Iterable[float]] = None,
     vectors_per_class: Optional[Iterable[int]] = None,
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Support Vector Machine classifier
 
@@ -1627,7 +1627,7 @@ def tree_ensemble_classifier(
     nodes_values: Optional[Iterable[float]] = None,
     nodes_values_as_tensor: Optional[np.ndarray] = None,
     post_transform: str = "NONE",
-) -> Tuple[Var, Var]:
+) -> tuple[Var, Var]:
     r"""
     Tree Ensemble classifier. Returns the top class for each of N inputs.
     The attributes named 'nodes_X' form a sequence of tuples, associated by

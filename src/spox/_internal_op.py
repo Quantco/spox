@@ -1,11 +1,15 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 Module for Spox operators that implement special internal behaviour that does not fit into the ONNX IR.
 They behave like a normal Node, but their inference, building and translation behaviour may be overriden.
 """
 
 from abc import ABC
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Set, Tuple
+from typing import Optional
 
 import onnx
 
@@ -46,7 +50,7 @@ INTERNAL_MIN_OPSET = 14
 
 class _InternalNode(Node, ABC):
     @property
-    def opset_req(self) -> Set[Tuple[str, int]]:
+    def opset_req(self) -> set[tuple[str, int]]:
         return set()
 
 
@@ -84,7 +88,7 @@ class Argument(_InternalNode):
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         return {"arg": self.attrs.type.value}
 
@@ -96,7 +100,7 @@ class Argument(_InternalNode):
 
     def to_onnx(
         self, scope: "Scope", doc_string: Optional[str] = None, build_subgraph=None
-    ) -> List[onnx.NodeProto]:
+    ) -> list[onnx.NodeProto]:
         return []
 
 
@@ -117,12 +121,12 @@ class _Initializer(_InternalNode):
     inputs: BaseInputs
     outputs: Outputs
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         arr = self.attrs.value.value
         return {"arg": Tensor(arr.dtype, arr.shape)}
 
-    def propagate_values(self) -> Dict[str, PropValueType]:
+    def propagate_values(self) -> dict[str, PropValueType]:
         return {"arg": self.attrs.value.value}
 
     def update_metadata(self, opset_req, initializers, functions):
@@ -131,7 +135,7 @@ class _Initializer(_InternalNode):
 
     def to_onnx(
         self, scope: "Scope", doc_string: Optional[str] = None, build_subgraph=None
-    ) -> List[onnx.NodeProto]:
+    ) -> list[onnx.NodeProto]:
         # Initializers are added via update_metadata and don't affect the nodes proto list
         return []
 
@@ -157,7 +161,7 @@ class _Introduce(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         return {
             f"outputs_{i}": arr.type
             for i, arr in enumerate(self.inputs.inputs)
@@ -165,12 +169,12 @@ class _Introduce(_InternalNode):
         }
 
     @property
-    def opset_req(self) -> Set[Tuple[str, int]]:
+    def opset_req(self) -> set[tuple[str, int]]:
         return {("", INTERNAL_MIN_OPSET)}
 
     def to_onnx(
         self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
-    ) -> List[onnx.NodeProto]:
+    ) -> list[onnx.NodeProto]:
         assert len(self.inputs.inputs) == len(self.outputs.outputs)
         # Just create a renaming identity from what we forwarded into our actual output
         protos = []

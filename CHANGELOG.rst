@@ -7,11 +7,16 @@
 Change log
 ==========
 
-0.12.2 (2024-07-22)
+0.13.0 (unreleased)
 -------------------
+
+**Support change**
+
+- Support for ``Python 3.8`` has been dropped.
 
 **Bug fix**
 
+- Value propagation of string tensors no longer raises an erroneous ``ValueError`` in some instances.
 - Apply custom shape inference logic in :func:`spox.opsets.ai.onnx.v19.loop` and :func:`spox.opsets.ai.onnx.v21.loop`.
 
 

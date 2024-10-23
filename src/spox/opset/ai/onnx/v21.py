@@ -1,12 +1,12 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import (
     Callable,
-    Dict,
-    Iterable,
-    List,
     Optional,
-    Sequence,
 )
 from typing import cast as typing_cast
 
@@ -436,7 +436,7 @@ class _Constant(StandardNode):
     class Outputs(BaseOutputs):
         output: Var
 
-    def propagate_values(self) -> Dict[str, PropValueType]:
+    def propagate_values(self) -> dict[str, PropValueType]:
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
         )
@@ -612,7 +612,7 @@ class _Loop(StandardNode):
     class Outputs(BaseOutputs):
         v_final_and_scan_outputs: Sequence[Var]
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         output_types = super().infer_output_types()
 
         body = self.attrs.body.value
@@ -894,26 +894,26 @@ def cast(
     In more detail, the conversion among numerical types should follow these
     rules if the destination type is not a float 8 type.
 
-    -  Casting from floating point to:
+    - Casting from floating point to:
 
-       -  floating point: +/- infinity if OOR (out of range).
-       -  fixed point: undefined if OOR.
-       -  bool: +/- 0.0 to False; all else to True.
+      - floating point: +/- infinity if OOR (out of range).
+      - fixed point: undefined if OOR.
+      - bool: +/- 0.0 to False; all else to True.
 
-    -  Casting from fixed point to:
+    - Casting from fixed point to:
 
-       -  floating point: +/- infinity if OOR. (+ infinity in the case of
-          uint)
-       -  fixed point: when OOR, discard higher bits and reinterpret (with
-          respect to two's complement representation for signed types). For
-          example, 200 (int16) -> -56 (int8).
-       -  bool: zero to False; nonzero to True.
+      - floating point: +/- infinity if OOR. (+ infinity in the case of
+        uint)
+      - fixed point: when OOR, discard higher bits and reinterpret (with
+        respect to two's complement representation for signed types). For
+        example, 200 (int16) -> -56 (int8).
+      - bool: zero to False; nonzero to True.
 
-    -  Casting from bool to:
+    - Casting from bool to:
 
-       -  floating point: ``{1.0, 0.0}``.
-       -  fixed point: ``{1, 0}``.
-       -  bool: no change.
+      - floating point: ``{1.0, 0.0}``.
+      - fixed point: ``{1, 0}``.
+      - bool: no change.
 
     Float 8 type were introduced to speed up the training of deep models. By
     default the conversion of a float *x* obeys to the following rules.
@@ -1506,21 +1506,21 @@ def loop(
 
     Operator inputs defined as (max_trip_count, condition_var).
 
-    -  input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
-       is ignored, but is required in the body }
+    - input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
+      is ignored, but is required in the body }
 
-    -  input ("", cond) // Note this is analogous to a while loop bool cond
-       = ...; for (int i=0; cond; ++i) { cond = ...; }
+    - input ("", cond) // Note this is analogous to a while loop bool cond =
+      ...; for (int i=0; cond; ++i) { cond = ...; }
 
-    -  input ("", 1) // Note this is analogous to a do-while loop bool cond
-       = true for (int i=0; cond; ++i) { cond = ...; }
+    - input ("", 1) // Note this is analogous to a do-while loop bool cond =
+      true for (int i=0; cond; ++i) { cond = ...; }
 
-    -  input (trip_count, "") // Note this is analogous to a for loop int
-       trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
-       ignored }
+    - input (trip_count, "") // Note this is analogous to a for loop int
+      trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
+      ignored }
 
-    -  input (trip_count, cond) int trip_count = ...; bool cond = ...; for
-       (int i=0; i < trip_count && cond; ++i) { cond = ...; }
+    - input (trip_count, cond) int trip_count = ...; bool cond = ...; for
+      (int i=0; i < trip_count && cond; ++i) { cond = ...; }
 
     *Sample usage - cond as well as trip count*
 
@@ -1658,7 +1658,7 @@ def loop(
      - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(float8e4m3fn))`, `optional(tensor(float8e4m3fnuz))`, `optional(tensor(float8e5m2))`, `optional(tensor(float8e5m2fnuz))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int4))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint4))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(float8e4m3fn))`, `seq(tensor(float8e4m3fnuz))`, `seq(tensor(float8e5m2))`, `seq(tensor(float8e5m2fnuz))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int4))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint4))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _body_subgraph: Graph = subgraph(
-        typing_cast(List[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
+        typing_cast(list[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
         + [var.unwrap_type() for var in v_initial],
         body,
     )
@@ -1859,8 +1859,8 @@ def qlinear_matmul(
     y_zero_point: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
     It consumes two quantized input tensors, their scales and zero points,
     scale and zero point of output, and computes the quantized output. The
     quantization formula is y = saturate((x / y_scale) + y_zero_point). For
@@ -1955,12 +1955,12 @@ def quantize_linear(
 
     Saturation is done according to:
 
-    -  uint16: [0, 65535]
-    -  int16: [-32768, 32767]
-    -  uint8: [0, 255]
-    -  int8: [-128, 127]
-    -  uint4: [0, 15]
-    -  int4: [-8, 7]
+    - uint16: [0, 65535]
+    - int16: [-32768, 32767]
+    - uint8: [0, 255]
+    - int8: [-128, 127]
+    - uint4: [0, 15]
+    - int4: [-8, 7]
 
     For ``(x / y_scale)``, it rounds to the nearest even. Refer to
     https://en.wikipedia.org/wiki/Rounding for details.
@@ -1974,15 +1974,15 @@ def quantize_linear(
     shape of ``y_scale``. In all cases, ``y_zero_point`` must have the same
     shape as ``y_scale``.
 
-    -  Per-tensor (per-layer) quantization: ``y_scale`` is a scalar.
-    -  Per-axis quantization: The scale must be a 1-D tensor, with the
-       length of the quantization axis. For an input shape
-       ``(D0, ..., Di, ..., Dn)`` and ``axis=i``, ``y_scale`` is a 1-D
-       tensor of length ``Di``.
-    -  Blocked quantization: The scale's shape is identical to the input's
-       shape, except for one dimension, in which blocking is performed.
-       Given ``x`` shape ``(D0, ..., Di, ..., Dn)``, ``axis=i``, and block
-       size ``B``: ``y_scale`` shape is ``(D0, ..., ceil(Di/B), ..., Dn)``.
+    - Per-tensor (per-layer) quantization: ``y_scale`` is a scalar.
+    - Per-axis quantization: The scale must be a 1-D tensor, with the length
+      of the quantization axis. For an input shape
+      ``(D0, ..., Di, ..., Dn)`` and ``axis=i``, ``y_scale`` is a 1-D tensor
+      of length ``Di``.
+    - Blocked quantization: The scale's shape is identical to the input's
+      shape, except for one dimension, in which blocking is performed. Given
+      ``x`` shape ``(D0, ..., Di, ..., Dn)``, ``axis=i``, and block size
+      ``B``: ``y_scale`` shape is ``(D0, ..., ceil(Di/B), ..., Dn)``.
 
     Parameters
     ==========
@@ -2002,9 +2002,11 @@ def quantize_linear(
     axis
         Attribute.
         (Optional) The axis of the dequantizing dimension of the input tensor.
-        Used for per-axis and blocked quantization. Negative value means
+        Used only for per-axis and blocked quantization. Negative value means
         counting dimensions from the back. Accepted range is ``[-r, r-1]`` where
-        ``r = rank(input)``.
+        ``r = rank(input)``. When the rank of the input is 1, per-tensor
+        quantization is applied, rendering the axis unnecessary in this
+        scenario.
     block_size
         Attribute.
         (Optional) The size of the quantization block (number of times every
@@ -3024,4 +3026,4 @@ _CONSTRUCTORS = {
     "Xor": xor,
 }
 
-__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()]
+__all__ = [fun.__name__ for fun in _CONSTRUCTORS.values()] + ["const"]

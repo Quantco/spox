@@ -1,3 +1,6 @@
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
 """
 This test implements a custom operator available in ONNX Runtime, showcasing the components available for extension.
 The operator: https://github.com/microsoft/onnxruntime/blob/main/docs/ContribOperators.md#commicrosoftinverse
@@ -7,9 +10,8 @@ Of these, ``propagate_values`` is probably least common.
 """
 
 from dataclasses import dataclass
-from typing import Dict
 
-import numpy
+import numpy as np
 
 import spox.opset.ai.onnx.v17 as op
 from spox import Var
@@ -41,7 +43,7 @@ class Inverse(Node):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self) -> Dict[str, Type]:
+    def infer_output_types(self) -> dict[str, Type]:
         # This is technically optional, but using an operator without type inference may be inconvenient.
         if self.inputs.X.type is None:
             return {}
@@ -52,11 +54,11 @@ class Inverse(Node):
             )
         return {"Y": t}
 
-    def propagate_values(self) -> Dict[str, numpy.ndarray]:
+    def propagate_values(self) -> dict[str, np.ndarray]:
         # This is optional and implements value propagation ('partial data propagation' in ONNX).
         # In essence constant folding carried through for purposes of type inference.
         return (
-            {"Y": numpy.linalg.inv(self.inputs.X._get_value())}
+            {"Y": np.linalg.inv(self.inputs.X._get_value())}
             if self.inputs.X._value is not None
             else {}
         )
@@ -69,17 +71,17 @@ def inverse(matrix: Var) -> Var:
 
 # Test the correct runtime behaviour with ORT
 def test_basic_build(onnx_helper):
-    (a,) = arguments(a=Tensor(numpy.float64, ("N", "N")))
+    (a,) = arguments(a=Tensor(np.float64, ("N", "N")))
     graph = results(b=inverse(a))
     onnx_helper.assert_close(
-        onnx_helper.run(graph, "b", a=numpy.array([[1.0, 1.0], [0.0, 1.0]])),
-        numpy.array([[1.0, -1.0], [0.0, 1.0]]),
+        onnx_helper.run(graph, "b", a=np.array([[1.0, 1.0], [0.0, 1.0]])),
+        np.array([[1.0, -1.0], [0.0, 1.0]]),
     )
 
 
 def test_node_overrides():
-    f = numpy.array([[1, 0], [1, 1]], dtype=numpy.float64)
+    f = np.array([[1, 0], [1, 1]], dtype=np.float64)
     a = op.constant(value=f)
     b = inverse(a)
-    assert b.type == Tensor(numpy.float64, (2, 2))
-    numpy.testing.assert_allclose(b._get_value(), numpy.linalg.inv(f))
+    assert b.type == Tensor(np.float64, (2, 2))
+    np.testing.assert_allclose(b._get_value(), np.linalg.inv(f))

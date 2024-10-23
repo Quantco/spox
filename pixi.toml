@@ -1,0 +1,91 @@
+[project]
+name = "spox"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "osx-64", "linux-64", "linux-aarch64", "win-64"]
+
+[tasks]
+postinstall = "pip install --no-build-isolation --no-deps --disable-pip-version-check -e ."
+
+[dependencies]
+python = ">=3.9"
+numpy = "*"
+onnx = "*"
+packaging = "*"
+
+[host-dependencies]
+pip = "*"
+setuptools = ">=61"
+setuptools-scm = "*"
+
+[feature.lint.dependencies]
+pre-commit = "*"
+insert-license-header = "*"
+mypy = "*"
+prettier = "*"
+ruff = "*"
+
+[feature.lint.tasks]
+pre-commit-install = "pre-commit install"
+pre-commit-run = "pre-commit run -a"
+
+[feature.docs.dependencies]
+sphinx = "*"
+sphinx_rtd_theme = "*"
+sphinxcontrib-apidoc = "*"
+nbsphinx = "*"
+ipython = "*"
+jupyterlab = "*"
+matplotlib = "*"
+make = "*"
+onnxruntime = "*"
+numpydoc = "*"
+
+[feature.docs.tasks]
+build-docs = "cd docs && make html"
+
+[feature.opset-generation.dependencies]
+pandoc = "*"
+jinja2 = "*"
+python = "3.9.*"
+onnx = "*"
+
+[feature.opset-generation.tasks]
+generate-opset = "./tools/generate_opset.sh"
+
+[feature.test.dependencies]
+pytest = "*"
+pytest-xdist = "*"
+pytest-json-report = "*"
+onnxruntime = "*"
+
+[feature.test.tasks]
+test = "pytest -nauto"
+
+[feature.build.dependencies]
+python-build = "*"
+
+[feature.build.tasks]
+build-wheel = "python -m build --no-isolation ."
+
+[feature.py39.dependencies]
+python = "3.9.*"
+[feature.py310.dependencies]
+python = "3.10.*"
+[feature.py311.dependencies]
+python = "3.11.*"
+[feature.py312.dependencies]
+python = "3.12.*"
+[feature.weekly.pypi-dependencies]
+onnx-weekly = "*"
+
+[environments]
+default = ["test", "lint"]
+py39 = ["py39", "test"]
+py310 = ["py310", "test"]
+py311 = ["py311", "test"]
+py312 = ["py312", "test"]
+weekly = ["weekly", "py312", "test"]
+docs = ["docs"]
+build = ["build"]
+lint = ["lint", "py310"]
+opset-generation = ["opset-generation", "lint"]

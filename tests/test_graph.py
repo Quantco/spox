@@ -1,4 +1,7 @@
-import numpy
+# Copyright (c) QuantCo 2023-2024
+# SPDX-License-Identifier: BSD-3-Clause
+
+import numpy as np
 import pytest
 
 import spox.opset.ai.onnx.v17 as op
@@ -10,21 +13,21 @@ from spox._type_system import Tensor
 @pytest.fixture
 def min_graph():
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float32, (None,))
     )
     return results(final=op.add(first, second))
 
 
 @pytest.fixture
 def square_graph():
-    (value,) = arguments(value=Tensor(numpy.float32, (None,)))
+    (value,) = arguments(value=Tensor(np.float32, (None,)))
     return results(final=op.identity(op.mul(value, value)))
 
 
 @pytest.fixture
 def trivial_seq_graph():
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float32, (None,))
     )
     return results(final=intro(op.add(first, second), second))
 
@@ -32,7 +35,7 @@ def trivial_seq_graph():
 @pytest.fixture
 def expanding_seq_graph():
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32, (None,))
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float32, (None,))
     )
     return results(final=intro(first, second, op.add(first, second)))
 
@@ -40,7 +43,7 @@ def expanding_seq_graph():
 @pytest.fixture
 def copy_graph():
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float64, (None,))
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float64, (None,))
     )
     return results(final=first)
 
@@ -48,22 +51,20 @@ def copy_graph():
 @pytest.fixture
 def tri_graph():
     first, second, third = arguments(
-        first=Tensor(numpy.float32, (2, None)),
-        second=Tensor(numpy.float32, (None,)),
-        third=Tensor(numpy.int32, (None,)),
+        first=Tensor(np.float32, (2, None)),
+        second=Tensor(np.float32, (None,)),
+        third=Tensor(np.int32, (None,)),
     )
-    return results(
-        final=op.add(first, op.mul(second, op.cast(third, to=numpy.float32)))
-    )
+    return results(final=op.add(first, op.mul(second, op.cast(third, to=np.float32))))
 
 
 @pytest.fixture
 def initializer_graph():
     normal, defaulted = arguments(
-        normal=Tensor(numpy.float32, (None,)),
-        defaulted=numpy.array([3, 2, 1], dtype=numpy.float32),
+        normal=Tensor(np.float32, (None,)),
+        defaulted=np.array([3, 2, 1], dtype=np.float32),
     )
-    frozen = initializer(numpy.array([1, 10, 100], dtype=numpy.float32))
+    frozen = initializer(np.array([1, 10, 100], dtype=np.float32))
     return results(result=op.mul(op.add(normal, defaulted), frozen))
 
 
@@ -106,7 +107,7 @@ def test_expanding_seq(onnx_helper, expanding_seq_graph):
 
 def test_no_shape_throws():
     first, second = arguments(
-        first=Tensor(numpy.float32, (None,)), second=Tensor(numpy.float32)
+        first=Tensor(np.float32, (None,)), second=Tensor(np.float32)
     )
     fun = results(final=op.add(first, second))
     with pytest.raises(ValueError):
@@ -115,7 +116,7 @@ def test_no_shape_throws():
 
 def test_no_type_throws():
     with pytest.raises(TypeError):
-        first, second = arguments(first=Tensor(numpy.float32, (None,)), second=None)
+        first, second = arguments(first=Tensor(np.float32, (None,)), second=None)
 
 
 def test_copy(onnx_helper, copy_graph):
@@ -128,12 +129,12 @@ def test_copy(onnx_helper, copy_graph):
 
 
 def test_triple_with_cast(onnx_helper, tri_graph):
-    a = numpy.random.rand(2, 4).astype(numpy.float32)
-    b = numpy.random.rand(4).astype(numpy.float32)
-    c = numpy.array([1, 2, 3, 4], dtype=numpy.int32)
+    a = np.random.rand(2, 4).astype(np.float32)
+    b = np.random.rand(4).astype(np.float32)
+    c = np.array([1, 2, 3, 4], dtype=np.int32)
     onnx_helper.assert_close(
         onnx_helper.run(tri_graph, "final", first=a, second=b, third=c),
-        a + b * c.astype(numpy.float32),
+        a + b * c.astype(np.float32),
     )
 
 
