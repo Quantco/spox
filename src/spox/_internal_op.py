@@ -20,7 +20,7 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
 from ._value_prop import PropValueType
-from ._var import Var
+from ._var import VarInfo
 
 # This is a default used for internal operators that
 # require the default domain. The most common of these
@@ -78,7 +78,7 @@ class Argument(_InternalNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        arg: Var
+        arg: VarInfo
 
     attrs: Attributes
     inputs: Inputs
@@ -115,7 +115,7 @@ class _Initializer(_InternalNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        arg: Var
+        arg: VarInfo
 
     attrs: Attributes
     inputs: BaseInputs
@@ -149,11 +149,11 @@ class _Introduce(_InternalNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        inputs: Sequence[Var]
+        inputs: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[Var]
+        outputs: Sequence[VarInfo]
 
     op_type = OpType("Introduce", "spox.internal", 0)
 
@@ -192,7 +192,7 @@ class _Introduce(_InternalNode):
         return protos
 
 
-def intros(*args: Var) -> Sequence[Var]:
+def intros(*args: VarInfo) -> Sequence[VarInfo]:
     """
     Internal identity operator with variadic arguments.
 
@@ -206,44 +206,44 @@ def intros(*args: Var) -> Sequence[Var]:
     Parameters
     ----------
     args
-        Vars to introduce in current scope.
+        VarInfos to introduce in current scope.
 
     Returns
     -------
-    Sequence[Var]
-        Vars of the same value as ``args``, but with a shared dependency.
+    Sequence[VarInfo]
+        VarInfos of the same value as ``args``, but with a shared dependency.
     """
     return _Introduce(
         None, _Introduce.Inputs(args), out_variadic=len(args)
     ).outputs.outputs
 
 
-def intro(*args: Var) -> Var:
+def intro(*args: VarInfo) -> VarInfo:
     """Introduces arguments like ``intros``, but only returns the last."""
     return intros(*args)[-1]
 
 
-def unsafe_cast(x: Var, typ: Type) -> Var:
+def unsafe_cast(x: VarInfo, typ: Type) -> VarInfo:
     """
     Creates a new var with the type forcefully set to ``typ``.
 
-    Assumes that the real type of the Var is indeed compatible with ``shape`` (for example it was unknown).
+    Assumes that the real type of the VarInfo is indeed compatible with ``shape`` (for example it was unknown).
 
     The function is meant for use when type inference failed, and it has to be overriden to avoid further failures.
 
-    If you want to properly change a ``Var``'s type, use an operator like Cast, CastLike, Optional, etc.
+    If you want to properly change a ``VarInfo``'s type, use an operator like Cast, CastLike, Optional, etc.
 
     Parameters
     ----------
     x
-        Var to retype.
+        VarInfo to retype.
     typ
         Target type - must be a constant.
 
     Returns
     -------
-    Var
-        Var with the type reset to whatever was given.
+    VarInfo
+        VarInfo with the type reset to whatever was given.
     """
     y = intro(x)
     y.type = typ
@@ -251,11 +251,11 @@ def unsafe_cast(x: Var, typ: Type) -> Var:
     return y
 
 
-def unsafe_reshape(x: Var, shape: SimpleShape) -> Var:
+def unsafe_reshape(x: VarInfo, shape: SimpleShape) -> VarInfo:
     """
     Creates a new var with the shape forcefully set to ``shape`` (like an unsafe cast).
 
-    Assumes that the real shape of the Var is indeed compatible with ``shape`` (for example it was unknown).
+    Assumes that the real shape of the VarInfo is indeed compatible with ``shape`` (for example it was unknown).
 
     The function is meant for use when shape inference failed, and it has to be overriden to avoid failures.
 
@@ -264,12 +264,12 @@ def unsafe_reshape(x: Var, shape: SimpleShape) -> Var:
     Parameters
     ----------
     x
-        Var to reshape.
+        VarInfo to reshape.
     shape
         Target shape - must be a constant.
     Returns
     -------
-    Var
-        Var with the same Tensor element type, but different shape.
+    VarInfo
+        VarInfo with the same Tensor element type, but different shape.
     """
     return unsafe_cast(x, Tensor(x.unwrap_tensor().dtype, shape))

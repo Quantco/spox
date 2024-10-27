@@ -20,7 +20,7 @@ from ._exceptions import InferenceWarning
 from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
 from ._type_system import Type
 from ._value_prop import PropValue, PropValueType
-from ._var import Var
+from ._var import Var, VarInfo
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
@@ -94,8 +94,8 @@ class Node(ABC):
         *,
         out_variadic: Optional[int] = None,
         infer_types: bool = True,
-        propagate_values: bool = True,
         validate: bool = True,
+        initializers=[],
         **kwargs,
     ):
         """
@@ -113,9 +113,6 @@ class Node(ABC):
         infer_types
             Whether to run type inference - setting types for output vars if previously None. Should always succeed
             if possible, possibly raising type errors if inputs/attributes are not correctly typed.
-        propagate_values
-            Whether to run value propagation - setting values for output vars if previously None. Should only succeed
-            if all inputs are constant (attributes always are).
         validate
             Whether to run some extra validation. The default validation only warns against unknown types.
         kwargs
@@ -130,7 +127,7 @@ class Node(ABC):
             # As inference functions may access which output vars we initialized (e.g. variadics)
             # we inject uninitialized vars first
             self.outputs = self._init_output_vars()
-            self.inference(infer_types, propagate_values)
+            self.inference(infer_types)
         else:
             self.outputs = outputs
 
@@ -212,7 +209,7 @@ class Node(ABC):
     def post_init(self, **kwargs):
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, initializers) -> dict[str, PropValueType]:
         """
         Propagate values from inputs, and, if possible, compute values for outputs as well.
         This method is used to implement ONNX partial data propagation - for example so that
@@ -224,11 +221,11 @@ class Node(ABC):
         """
         Inference routine for output types. Often overriden by inheriting Node types.
 
-        Returns a dictionary of output field names into Types for the respective Vars.
+        Returns a dictionary of output field names into Types for the respective VarInfos.
         """
         return {}
 
-    def inference(self, infer_types: bool = True, propagate_values: bool = True):
+    def inference(self, infer_types: bool = True):
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
         out_types = self.infer_output_types() if infer_types else {}
@@ -238,20 +235,29 @@ class Node(ABC):
                 # Attempt to use the ones from kwargs, if none then what type inference gave
                 var.type = out_types.get(key)
 
+    def get_output_vars(self, **initializers):
         # After typing everything, try to get values for outputs
-        out_values = self.propagate_values() if propagate_values else {}
-        for key, var in self.outputs.get_vars().items():
-            if var.type is not None and var._value is None and key in out_values:
-                prop = PropValue(var.type, out_values.get(key))
-                if prop.check():
-                    var._value = prop
-                else:
-                    warnings.warn(
-                        InferenceWarning(
-                            f"Propagated value {prop} does not type-check, dropping. "
-                            f"Hint: this indicates a bug with the current value prop backend or type inference."
-                        )
+        out_values = self.propagate_values(initializers)
+        ret = {
+            key: Var(var_info, None)
+            for key, var_info in self.outputs.get_vars().items()
+        }
+        for key, var_info in self.outputs.get_vars().items():
+            if var_info.type is None or key not in out_values:
+                continue
+
+            prop = PropValue(var_info.type, out_values.get(key))
+            if prop.check():
+                ret[key]._value = prop
+            else:
+                warnings.warn(
+                    InferenceWarning(
+                        f"Propagated value {prop} does not type-check, dropping. "
+                        f"Hint: this indicates a bug with the current value prop backend or type inference."
                     )
+                )
+
+        return ret
 
     def validate_types(self) -> None:
         """Validation of types, ran at the end of Node creation."""
@@ -309,31 +315,29 @@ class Node(ABC):
             (variadic,) = variadics
         else:
             variadic = None
-        outputs: dict[str, Union[Var, Sequence[Var]]] = {
-            field.name: Var(self, None, None)
+        outputs: dict[str, Union[VarInfo, Sequence[VarInfo]]] = {
+            field.name: VarInfo(self, None)
             for field in dataclasses.fields(self.Outputs)
             if field.name != variadic
         }
         if variadic is not None:
             assert self.out_variadic is not None
-            outputs[variadic] = [
-                Var(self, None, None) for _ in range(self.out_variadic)
-            ]
+            outputs[variadic] = [VarInfo(self, None) for _ in range(self.out_variadic)]
         return self.Outputs(**outputs)  # type: ignore
 
     @property
-    def dependencies(self) -> Iterable[Var]:
-        """List of input Vars into this Node."""
+    def dependencies(self) -> Iterable[VarInfo]:
+        """List of input VarInfos into this Node."""
         return (var for var in self.inputs.get_vars().values())
 
     @property
-    def dependents(self) -> Iterable[Var]:
-        """List of output Vars from this Node."""
+    def dependents(self) -> Iterable[VarInfo]:
+        """List of output VarInfos from this Node."""
         return (var for var in self.outputs.get_vars().values())
 
     @property
-    def incident(self) -> Iterable[Var]:
-        """List of both input and output Vars for this Node."""
+    def incident(self) -> Iterable[VarInfo]:
+        """List of both input and output VarInfos for this Node."""
         return itertools.chain(self.dependencies, self.dependents)
 
     @property

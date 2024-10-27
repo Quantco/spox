@@ -5,7 +5,7 @@ from collections.abc import Hashable
 from typing import Generic, Optional, TypeVar, Union, overload
 
 from ._node import Node
-from ._var import Var
+from ._var import VarInfo
 
 H = TypeVar("H", bound=Hashable)
 
@@ -18,7 +18,7 @@ class ScopeError(Exception):
 
 class ScopeSpace(Generic[H]):
     """
-    Represents the namespace of a scope for some type H, like Node or Var.
+    Represents the namespace of a scope for some type H, like Node or VarInfo.
 
     Methods (and operators) on the namespace work both ways: both with names (str) and the named type (H).
     So ``__getitem__`` (``ScopeSpace[item]``) may be used for both the name of an object and the object of a name.
@@ -152,15 +152,15 @@ class Scope:
     """
     Class representing the state of an ONNX-rules scope.
 
-    Has namespaces (represented by a ScopeSpace) for Vars and Nodes.
+    Has namespaces (represented by a ScopeSpace) for VarInfos and Nodes.
     """
 
-    var: ScopeSpace[Var]
+    var: ScopeSpace[VarInfo]
     node: ScopeSpace[Node]
 
     def __init__(
         self,
-        sub_var: Optional[ScopeSpace[Var]] = None,
+        sub_var: Optional[ScopeSpace[VarInfo]] = None,
         sub_node: Optional[ScopeSpace[Node]] = None,
         parent: Optional["Scope"] = None,
     ):
@@ -180,7 +180,7 @@ class Scope:
             if not isinstance(key, str):
                 key, value = value, key
             assert isinstance(key, str)
-            if isinstance(value, Var):
+            if isinstance(value, VarInfo):
                 scope.var[key] = value
             elif isinstance(value, Node):
                 scope.node[key] = value
@@ -202,7 +202,7 @@ class Scope:
         node
             Node to introduce in the scope.
         prefix
-            What value to prefix the node name with. If the Var has a predeclared name, it does not get the prefix.
+            What value to prefix the node name with. If the VarInfo has a predeclared name, it does not get the prefix.
         force
             Whether to attempt to overwrite existing names (possibly raising a ScopeError if they were different).
             By default, this is set to True to be more strict, so we see if the scoping algorithm failed to only

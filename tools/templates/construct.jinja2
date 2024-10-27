@@ -31,13 +31,17 @@ return _{{ schema.name }}(
 {% endfor %}
     ), _{{ schema.name }}.Inputs(
 {% for param in schema.inputs
-        %}{{param.name}}={{param.name}}, {%
+        %}{{param.name}}={{param.name}}._var_info, {%
 endfor %}
     ), {%
 if schema.outputs and is_variadic(schema.outputs[-1])
     %}out_variadic={{ out_variadic_solution if out_variadic_solution else "{}_count".format(schema.outputs[-1].name) }}, {%
-endif %}).outputs{%
+endif %}).get_output_vars(
+{% for param in schema.inputs
+        %}{{param.name}}={{param.name}}._value, {%
+endfor %}
+    ){%
 if schema.outputs | length <= 1
-    %}.{{ schema.outputs[0].name }}{%
+    %}["{{ schema.outputs[0].name }}"]{%
 else %}._unpack_to_any(){%
 endif %}

@@ -937,10 +937,13 @@ def bitwise_and(
     return _BitwiseAnd(
         _BitwiseAnd.Attributes(),
         _BitwiseAnd.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def bitwise_not(
@@ -971,9 +974,11 @@ def bitwise_not(
     return _BitwiseNot(
         _BitwiseNot.Attributes(),
         _BitwiseNot.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def bitwise_or(
@@ -1014,10 +1019,13 @@ def bitwise_or(
     return _BitwiseOr(
         _BitwiseOr.Attributes(),
         _BitwiseOr.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def bitwise_xor(
@@ -1058,10 +1066,13 @@ def bitwise_xor(
     return _BitwiseXor(
         _BitwiseXor.Attributes(),
         _BitwiseXor.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def center_crop_pad(
@@ -1116,10 +1127,13 @@ def center_crop_pad(
             axes=AttrInt64s.maybe(axes, name="axes"),
         ),
         _CenterCropPad.Inputs(
-            input_data=input_data,
-            shape=shape,
+            input_data=input_data._var_info,
+            shape=shape._var_info,
         ),
-    ).outputs.output_data
+    ).get_output_vars(
+        input_data=input_data._value,
+        shape=shape._value,
+    )["output_data"]
 
 
 def col2_im(
@@ -1209,11 +1223,15 @@ def col2_im(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _Col2Im.Inputs(
-            input=input,
-            image_shape=image_shape,
-            block_shape=block_shape,
+            input=input._var_info,
+            image_shape=image_shape._var_info,
+            block_shape=block_shape._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        image_shape=image_shape._value,
+        block_shape=block_shape._value,
+    )["output"]
 
 
 def group_normalization(
@@ -1287,11 +1305,15 @@ def group_normalization(
             num_groups=AttrInt64(num_groups, name="num_groups"),
         ),
         _GroupNormalization.Inputs(
-            X=X,
-            scale=scale,
-            bias=bias,
+            X=X._var_info,
+            scale=scale._var_info,
+            bias=bias._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        scale=scale._value,
+        bias=bias._value,
+    )["Y"]
 
 
 def lp_pool(
@@ -1413,9 +1435,11 @@ def lp_pool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _LpPool.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def mish(
@@ -1453,9 +1477,11 @@ def mish(
     return _Mish(
         _Mish.Attributes(),
         _Mish.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def optional_get_element(
@@ -1490,9 +1516,11 @@ def optional_get_element(
     return _OptionalGetElement(
         _OptionalGetElement.Attributes(),
         _OptionalGetElement.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def optional_has_element(
@@ -1527,9 +1555,11 @@ def optional_has_element(
     return _OptionalHasElement(
         _OptionalHasElement.Attributes(),
         _OptionalHasElement.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def pad(
@@ -1671,12 +1701,17 @@ def pad(
             mode=AttrString(mode, name="mode"),
         ),
         _Pad.Inputs(
-            data=data,
-            pads=pads,
-            constant_value=constant_value,
-            axes=axes,
+            data=data._var_info,
+            pads=pads._var_info,
+            constant_value=constant_value._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        pads=pads._value,
+        constant_value=constant_value._value,
+        axes=axes._value,
+    )["output"]
 
 
 def reduce_l1(
@@ -1740,10 +1775,13 @@ def reduce_l1(
             ),
         ),
         _ReduceL1.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_l2(
@@ -1807,10 +1845,13 @@ def reduce_l2(
             ),
         ),
         _ReduceL2.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_log_sum(
@@ -1875,10 +1916,13 @@ def reduce_log_sum(
             ),
         ),
         _ReduceLogSum.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_log_sum_exp(
@@ -1943,10 +1987,13 @@ def reduce_log_sum_exp(
             ),
         ),
         _ReduceLogSumExp.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_max(
@@ -2012,10 +2059,13 @@ def reduce_max(
             ),
         ),
         _ReduceMax.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_mean(
@@ -2079,10 +2129,13 @@ def reduce_mean(
             ),
         ),
         _ReduceMean.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_min(
@@ -2147,10 +2200,13 @@ def reduce_min(
             ),
         ),
         _ReduceMin.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_prod(
@@ -2214,10 +2270,13 @@ def reduce_prod(
             ),
         ),
         _ReduceProd.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_sum_square(
@@ -2281,10 +2340,13 @@ def reduce_sum_square(
             ),
         ),
         _ReduceSumSquare.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def resize(
@@ -2476,12 +2538,17 @@ def resize(
             nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
         ),
         _Resize.Inputs(
-            X=X,
-            roi=roi,
-            scales=scales,
-            sizes=sizes,
+            X=X._var_info,
+            roi=roi._var_info,
+            scales=scales._var_info,
+            sizes=sizes._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        roi=roi._value,
+        scales=scales._value,
+        sizes=sizes._value,
+    )["Y"]
 
 
 def scatter_elements(
@@ -2613,11 +2680,15 @@ def scatter_elements(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterElements.Inputs(
-            data=data,
-            indices=indices,
-            updates=updates,
+            data=data._var_info,
+            indices=indices._var_info,
+            updates=updates._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        indices=indices._value,
+        updates=updates._value,
+    )["output"]
 
 
 def scatter_nd(
@@ -2750,11 +2821,15 @@ def scatter_nd(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterND.Inputs(
-            data=data,
-            indices=indices,
-            updates=updates,
+            data=data._var_info,
+            indices=indices._var_info,
+            updates=updates._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        indices=indices._value,
+        updates=updates._value,
+    )["output"]
 
 
 def split(
@@ -2810,11 +2885,14 @@ def split(
             num_outputs=AttrInt64.maybe(num_outputs, name="num_outputs"),
         ),
         _Split.Inputs(
-            input=input,
-            split=split,
+            input=input._var_info,
+            split=split._var_info,
         ),
         out_variadic=num_outputs,
-    ).outputs.outputs
+    ).get_output_vars(
+        input=input._value,
+        split=split._value,
+    )["outputs"]
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

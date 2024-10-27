@@ -14,14 +14,14 @@ from ._fields import BaseAttributes, BaseInputs, BaseOutputs
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
-from ._var import Var
+from ._var import VarInfo
 
 if TYPE_CHECKING:
     from . import _graph
 
 DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
-ConstructorT = TypeVar("ConstructorT", bound=Callable[..., Iterable[Var]])
+ConstructorT = TypeVar("ConstructorT", bound=Callable[..., Iterable[VarInfo]])
 
 
 class Function(_InternalNode):
@@ -42,7 +42,7 @@ class Function(_InternalNode):
     via the ``to_onnx_function`` method.
     """
 
-    func_args: dict[str, Var]
+    func_args: dict[str, VarInfo]
     func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
@@ -125,11 +125,13 @@ class Function(_InternalNode):
 
 def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
     _FuncInputs = make_dataclass(
-        "_FuncInputs", ((f"in{i}", Var) for i in range(num_inputs)), bases=(BaseInputs,)
+        "_FuncInputs",
+        ((f"in{i}", VarInfo) for i in range(num_inputs)),
+        bases=(BaseInputs,),
     )
     _FuncOutputs = make_dataclass(
         "_FuncOutputs",
-        ((f"out{i}", Var) for i in range(num_outputs)),
+        ((f"out{i}", VarInfo) for i in range(num_outputs)),
         bases=(BaseOutputs,),
     )
 
@@ -155,7 +157,7 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
     The function must be deterministic in the performed operations, as otherwise an error will be raised at build
     due to inconsistent function bodies.
 
-    ``fun`` is assumed to take only Var arguments and return an iterable of them. These will be used to generate the
+    ``fun`` is assumed to take only VarInfo arguments and return an iterable of them. These will be used to generate the
     function class signature.
 
     Keep in mind that functions with the same name & domain will be merged together.
@@ -170,13 +172,13 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
         _num_outputs = None
         _cls = None
 
-        def get_num_outputs(*args: Var) -> int:
+        def get_num_outputs(*args: VarInfo) -> int:
             nonlocal _num_outputs
             if _num_outputs is None:
                 _num_outputs = sum(1 for _ in fun(*args))
             return _num_outputs
 
-        def init(*args: Var):
+        def init(*args: VarInfo):
             nonlocal _cls
             if _cls is not None:
                 return _cls
@@ -186,7 +188,7 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
             )
             return _cls
 
-        def alt_fun(*args: Var) -> Iterable[Var]:
+        def alt_fun(*args: VarInfo) -> Iterable[VarInfo]:
             cls = init(*args)
             return (
                 cls(cls.Attributes(), cls.Inputs(*args)).outputs.get_fields().values()

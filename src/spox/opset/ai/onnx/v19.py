@@ -926,9 +926,11 @@ def average_pool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _AveragePool.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def cast(
@@ -968,26 +970,26 @@ def cast(
     In more detail, the conversion among numerical types should follow these
     rules if the destination type is not a float 8 type.
 
-    - Casting from floating point to:
+    -  Casting from floating point to:
 
-      - floating point: +/- infinity if OOR (out of range).
-      - fixed point: undefined if OOR.
-      - bool: +/- 0.0 to False; all else to True.
+       -  floating point: +/- infinity if OOR (out of range).
+       -  fixed point: undefined if OOR.
+       -  bool: +/- 0.0 to False; all else to True.
 
-    - Casting from fixed point to:
+    -  Casting from fixed point to:
 
-      - floating point: +/- infinity if OOR. (+ infinity in the case of
-        uint)
-      - fixed point: when OOR, discard higher bits and reinterpret (with
-        respect to two's complement representation for signed types). For
-        example, 200 (int16) -> -56 (int8).
-      - bool: zero to False; nonzero to True.
+       -  floating point: +/- infinity if OOR. (+ infinity in the case of
+          uint)
+       -  fixed point: when OOR, discard higher bits and reinterpret (with
+          respect to two's complement representation for signed types). For
+          example, 200 (int16) -> -56 (int8).
+       -  bool: zero to False; nonzero to True.
 
-    - Casting from bool to:
+    -  Casting from bool to:
 
-      - floating point: ``{1.0, 0.0}``.
-      - fixed point: ``{1, 0}``.
-      - bool: no change.
+       -  floating point: ``{1.0, 0.0}``.
+       -  fixed point: ``{1, 0}``.
+       -  bool: no change.
 
     Float 8 type were introduced to speed up the training of deep models. By
     default the conversion of a float *x* obeys to the following rules.
@@ -1058,9 +1060,11 @@ def cast(
             to=AttrDtype(to, name="to"),
         ),
         _Cast.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def cast_like(
@@ -1111,10 +1115,13 @@ def cast_like(
             saturate=AttrInt64(saturate, name="saturate"),
         ),
         _CastLike.Inputs(
-            input=input,
-            target_type=target_type,
+            input=input._var_info,
+            target_type=target_type._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        target_type=target_type._value,
+    )["output"]
 
 
 def constant(
@@ -1183,7 +1190,7 @@ def constant(
             value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
         ),
         _Constant.Inputs(),
-    ).outputs.output
+    ).get_output_vars()["output"]
 
 
 def deform_conv(
@@ -1292,13 +1299,19 @@ def deform_conv(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _DeformConv.Inputs(
-            X=X,
-            W=W,
-            offset=offset,
-            B=B,
-            mask=mask,
+            X=X._var_info,
+            W=W._var_info,
+            offset=offset._var_info,
+            B=B._var_info,
+            mask=mask._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        W=W._value,
+        offset=offset._value,
+        B=B._value,
+        mask=mask._value,
+    )["Y"]
 
 
 def dequantize_linear(
@@ -1338,11 +1351,9 @@ def dequantize_linear(
     axis
         Attribute.
         (Optional) The axis of the dequantizing dimension of the input tensor.
-        Used only for per-axis quantization. Negative value means counting
-        dimensions from the back. Accepted range is ``[-r, r-1]`` where
-        ``r = rank(input)``. When the rank of the input is 1, per-tensor
-        quantization is applied, rendering the axis unnecessary in this
-        scenario.
+        Ignored for per-tensor quantization. Negative value means counting
+        dimensions from the back. Accepted range is [-r, r-1] where r =
+        rank(input).
 
     Returns
     =======
@@ -1363,11 +1374,15 @@ def dequantize_linear(
             axis=AttrInt64(axis, name="axis"),
         ),
         _DequantizeLinear.Inputs(
-            x=x,
-            x_scale=x_scale,
-            x_zero_point=x_zero_point,
+            x=x._var_info,
+            x_scale=x_scale._var_info,
+            x_zero_point=x_zero_point._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        x=x._value,
+        x_scale=x_scale._value,
+        x_zero_point=x_zero_point._value,
+    )["y"]
 
 
 def equal(
@@ -1409,10 +1424,13 @@ def equal(
     return _Equal(
         _Equal.Attributes(),
         _Equal.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def identity(
@@ -1443,9 +1461,11 @@ def identity(
     return _Identity(
         _Identity.Attributes(),
         _Identity.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def if_(
@@ -1508,10 +1528,12 @@ def if_(
             then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
         ),
         _If.Inputs(
-            cond=cond,
+            cond=cond._var_info,
         ),
         out_variadic=len(_else_branch_subgraph.requested_results),
-    ).outputs.outputs
+    ).get_output_vars(
+        cond=cond._value,
+    )["outputs"]
 
 
 def loop(
@@ -1539,21 +1561,21 @@ def loop(
 
     Operator inputs defined as (max_trip_count, condition_var).
 
-    - input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
-      is ignored, but is required in the body }
+    -  input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
+       is ignored, but is required in the body }
 
-    - input ("", cond) // Note this is analogous to a while loop bool cond =
-      ...; for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", cond) // Note this is analogous to a while loop bool cond
+       = ...; for (int i=0; cond; ++i) { cond = ...; }
 
-    - input ("", 1) // Note this is analogous to a do-while loop bool cond =
-      true for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", 1) // Note this is analogous to a do-while loop bool cond
+       = true for (int i=0; cond; ++i) { cond = ...; }
 
-    - input (trip_count, "") // Note this is analogous to a for loop int
-      trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
-      ignored }
+    -  input (trip_count, "") // Note this is analogous to a for loop int
+       trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
+       ignored }
 
-    - input (trip_count, cond) int trip_count = ...; bool cond = ...; for
-      (int i=0; i < trip_count && cond; ++i) { cond = ...; }
+    -  input (trip_count, cond) int trip_count = ...; bool cond = ...; for
+       (int i=0; i < trip_count && cond; ++i) { cond = ...; }
 
     *Sample usage - cond as well as trip count*
 
@@ -1700,12 +1722,16 @@ def loop(
             body=AttrGraph(_body_subgraph, name="body"),
         ),
         _Loop.Inputs(
-            M=M,
-            cond=cond,
-            v_initial=v_initial,
+            M=M._var_info,
+            cond=cond._var_info,
+            v_initial=v_initial._var_info,
         ),
         out_variadic=len(_body_subgraph.requested_results) - 1,
-    ).outputs.v_final_and_scan_outputs
+    ).get_output_vars(
+        M=M._value,
+        cond=cond._value,
+        v_initial=v_initial._value,
+    )["v_final_and_scan_outputs"]
 
 
 def pad(
@@ -1873,12 +1899,17 @@ def pad(
             mode=AttrString(mode, name="mode"),
         ),
         _Pad.Inputs(
-            data=data,
-            pads=pads,
-            constant_value=constant_value,
-            axes=axes,
+            data=data._var_info,
+            pads=pads._var_info,
+            constant_value=constant_value._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        pads=pads._value,
+        constant_value=constant_value._value,
+        axes=axes._value,
+    )["output"]
 
 
 def quantize_linear(
@@ -1953,11 +1984,15 @@ def quantize_linear(
             saturate=AttrInt64(saturate, name="saturate"),
         ),
         _QuantizeLinear.Inputs(
-            x=x,
-            y_scale=y_scale,
-            y_zero_point=y_zero_point,
+            x=x._var_info,
+            y_scale=y_scale._var_info,
+            y_zero_point=y_zero_point._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        x=x._value,
+        y_scale=y_scale._value,
+        y_zero_point=y_zero_point._value,
+    )["y"]
 
 
 def reshape(
@@ -2016,10 +2051,13 @@ def reshape(
             allowzero=AttrInt64(allowzero, name="allowzero"),
         ),
         _Reshape.Inputs(
-            data=data,
-            shape=shape,
+            data=data._var_info,
+            shape=shape._var_info,
         ),
-    ).outputs.reshaped
+    ).get_output_vars(
+        data=data._value,
+        shape=shape._value,
+    )["reshaped"]
 
 
 def resize(
@@ -2249,12 +2287,17 @@ def resize(
             nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
         ),
         _Resize.Inputs(
-            X=X,
-            roi=roi,
-            scales=scales,
-            sizes=sizes,
+            X=X._var_info,
+            roi=roi._var_info,
+            scales=scales._var_info,
+            sizes=sizes._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        roi=roi._value,
+        scales=scales._value,
+        sizes=sizes._value,
+    )["Y"]
 
 
 def scan(
@@ -2494,10 +2537,12 @@ def scan(
             ),
         ),
         _Scan.Inputs(
-            initial_state_and_scan_inputs=initial_state_and_scan_inputs,
+            initial_state_and_scan_inputs=initial_state_and_scan_inputs._var_info,
         ),
         out_variadic=len(_body_subgraph.requested_results),
-    ).outputs.final_state_and_scan_outputs
+    ).get_output_vars(
+        initial_state_and_scan_inputs=initial_state_and_scan_inputs._value,
+    )["final_state_and_scan_outputs"]
 
 
 def shape(
@@ -2582,9 +2627,11 @@ def shape(
             start=AttrInt64(start, name="start"),
         ),
         _Shape.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.shape
+    ).get_output_vars(
+        data=data._value,
+    )["shape"]
 
 
 def size(
@@ -2617,9 +2664,11 @@ def size(
     return _Size(
         _Size.Attributes(),
         _Size.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.size
+    ).get_output_vars(
+        data=data._value,
+    )["size"]
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

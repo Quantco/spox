@@ -14,7 +14,7 @@ import spox._node
 import spox._value_prop
 from spox._graph import initializer as _initializer
 from spox._type_system import Tensor
-from spox._var import Var
+from spox._var import VarInfo
 
 TypeWarningLevel = spox._node.TypeWarningLevel
 
@@ -46,9 +46,9 @@ def value_prop_backend(backend: ValuePropBackend):
     set_value_prop_backend(prev_backend)
 
 
-def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> VarInfo:
     """
-    Create a Var with a constant value.
+    Create a VarInfo with a constant value.
 
     Parameters
     ----------
@@ -60,8 +60,8 @@ def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
 
     Returns
     -------
-    Var
-        Variable with the given constant ``value``.
+    VarInfo
+        VarInfoiable with the given constant ``value``.
 
     Notes
     -----
@@ -79,14 +79,14 @@ class _NumpyLikeOperatorDispatcher:
         self.constant_promotion = constant_promotion
 
     def _promote(
-        self, *args: Union[Var, np.generic, int, float], to_floating: bool = False
-    ) -> Iterable[Optional[Var]]:
+        self, *args: Union[VarInfo, np.generic, int, float], to_floating: bool = False
+    ) -> Iterable[Optional[VarInfo]]:
         """
         Apply constant promotion and type promotion to given parameters,
         creating constants and/or casting.
         """
         targets: list[Union[np.dtype, np.generic, int, float]] = [
-            x.type.dtype if isinstance(x, Var) and isinstance(x.type, Tensor) else x  # type: ignore
+            x.type.dtype if isinstance(x, VarInfo) and isinstance(x.type, Tensor) else x  # type: ignore
             for x in args
         ]
         if self.type_promotion:
@@ -97,7 +97,7 @@ class _NumpyLikeOperatorDispatcher:
             dtypes = {dtype for dtype in targets if isinstance(dtype, np.dtype)}
             if len(dtypes) > 1:
                 raise TypeError(
-                    f"Inconsistent types for Var operator with no type promotion: {dtypes}."
+                    f"Inconsistent types for VarInfo operator with no type promotion: {dtypes}."
                 )
             (target_type,) = dtypes
             if issubclass(target_type.type, np.integer):
@@ -112,54 +112,56 @@ class _NumpyLikeOperatorDispatcher:
                     )
             # TODO: Handle more constant-target inconsistencies here?
 
-        def _promote_target(obj: Union[Var, np.generic, int, float]) -> Optional[Var]:
+        def _promote_target(
+            obj: Union[VarInfo, np.generic, int, float],
+        ) -> Optional[VarInfo]:
             if self.constant_promotion and isinstance(obj, (np.generic, int, float)):
                 return self.op.const(np.array(obj, dtype=target_type))
-            elif isinstance(obj, Var):
+            elif isinstance(obj, VarInfo):
                 return self.op.cast(obj, to=target_type) if self.type_promotion else obj
             raise TypeError(
-                f"Bad value '{obj!r}' of type {type(obj).__name__!r} for operator overloading with Var. "
+                f"Bad value '{obj!r}' of type {type(obj).__name__!r} for operator overloading with VarInfo. "
                 f"({self.type_promotion=}, {self.constant_promotion=})"
             )
 
         return tuple(var for var in map(_promote_target, args))
 
-    def add(self, a, b) -> Var:
+    def add(self, a, b) -> VarInfo:
         a, b = self._promote(a, b)
         return self.op.add(a, b)
 
-    def sub(self, a, b) -> Var:
+    def sub(self, a, b) -> VarInfo:
         a, b = self._promote(a, b)
         return self.op.sub(a, b)
 
-    def mul(self, a, b) -> Var:
+    def mul(self, a, b) -> VarInfo:
         a, b = self._promote(a, b)
         return self.op.mul(a, b)
 
-    def truediv(self, a, b) -> Var:
+    def truediv(self, a, b) -> VarInfo:
         a, b = self._promote(a, b, to_floating=True)
         return self.op.div(a, b)
 
-    def floordiv(self, a, b) -> Var:
+    def floordiv(self, a, b) -> VarInfo:
         a, b = self._promote(a, b)
         c = self.op.div(a, b)
         if isinstance(c.type, Tensor) and not issubclass(c.type._elem_type, np.integer):
             c = self.op.floor(c)
         return c
 
-    def neg(self, a: Var) -> Var:
+    def neg(self, a: VarInfo) -> VarInfo:
         return self.op.neg(a)
 
-    def and_(self, a: Var, b: Var) -> Var:
+    def and_(self, a: VarInfo, b: VarInfo) -> VarInfo:
         return self.op.and_(a, b)
 
-    def or_(self, a: Var, b: Var) -> Var:
+    def or_(self, a: VarInfo, b: VarInfo) -> VarInfo:
         return self.op.or_(a, b)
 
-    def xor(self, a: Var, b: Var) -> Var:
+    def xor(self, a: VarInfo, b: VarInfo) -> VarInfo:
         return self.op.xor(a, b)
 
-    def not_(self, a: Var) -> Var:
+    def not_(self, a: VarInfo) -> VarInfo:
         return self.op.not_(a)
 
 
@@ -167,7 +169,7 @@ class _NumpyLikeOperatorDispatcher:
 def operator_overloading(
     op, type_promotion: bool = False, constant_promotion: bool = True
 ):
-    """Enable operator overloading on Var for this block.
+    """Enable operator overloading on VarInfo for this block.
 
     May be used either as a context manager, or a decorator.
 
@@ -185,7 +187,7 @@ def operator_overloading(
         if the type was not conclusively floating (as in numpy).
         False by default.
     constant_promotion
-        Whether operator overloading should implicitly promote primitive scalar constants to Var.
+        Whether operator overloading should implicitly promote primitive scalar constants to VarInfo.
         True by default.
 
     Examples
@@ -201,12 +203,12 @@ def operator_overloading(
     ...    return x * y
     >>> assert foo()._get_value() == np.array(6)
     """
-    prev_dispatcher = Var._operator_dispatcher
-    Var._operator_dispatcher = _NumpyLikeOperatorDispatcher(
+    prev_dispatcher = VarInfo._operator_dispatcher
+    VarInfo._operator_dispatcher = _NumpyLikeOperatorDispatcher(
         op, type_promotion, constant_promotion
     )
     yield
-    Var._operator_dispatcher = prev_dispatcher
+    VarInfo._operator_dispatcher = prev_dispatcher
 
 
 __all__ = [
@@ -220,6 +222,6 @@ __all__ = [
     "ValuePropBackend",
     "set_value_prop_backend",
     "value_prop_backend",
-    # Operator overloading on Var
+    # Operator overloading on VarInfo
     "operator_overloading",
 ]

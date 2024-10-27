@@ -3961,9 +3961,11 @@ def abs(
     return _Abs(
         _Abs.Attributes(),
         _Abs.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def acos(
@@ -3995,9 +3997,11 @@ def acos(
     return _Acos(
         _Acos.Attributes(),
         _Acos.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def acosh(
@@ -4030,9 +4034,11 @@ def acosh(
     return _Acosh(
         _Acosh.Attributes(),
         _Acosh.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def add(
@@ -4075,10 +4081,13 @@ def add(
     return _Add(
         _Add.Attributes(),
         _Add.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def and_(
@@ -4120,10 +4129,13 @@ def and_(
     return _And(
         _And.Attributes(),
         _And.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def arg_max(
@@ -4181,9 +4193,11 @@ def arg_max(
             select_last_index=AttrInt64(select_last_index, name="select_last_index"),
         ),
         _ArgMax.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def arg_min(
@@ -4241,9 +4255,11 @@ def arg_min(
             select_last_index=AttrInt64(select_last_index, name="select_last_index"),
         ),
         _ArgMin.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def asin(
@@ -4275,9 +4291,11 @@ def asin(
     return _Asin(
         _Asin.Attributes(),
         _Asin.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def asinh(
@@ -4309,9 +4327,11 @@ def asinh(
     return _Asinh(
         _Asinh.Attributes(),
         _Asinh.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def atan(
@@ -4343,9 +4363,11 @@ def atan(
     return _Atan(
         _Atan.Attributes(),
         _Atan.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def atanh(
@@ -4378,9 +4400,11 @@ def atanh(
     return _Atanh(
         _Atanh.Attributes(),
         _Atanh.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def average_pool(
@@ -4514,9 +4538,11 @@ def average_pool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _AveragePool.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def batch_normalization(
@@ -4540,8 +4566,8 @@ def batch_normalization(
     (training_mode=True). There are multiple cases for the number of
     outputs, which we list below:
 
-    - Output case #1: Y, running_mean, running_var (training_mode=True)
-    - Output case #2: Y (training_mode=False)
+    -  Output case #1: Y, running_mean, running_var (training_mode=True)
+    -  Output case #2: Y (training_mode=False)
 
     When training_mode=False, extra outputs are invalid. The outputs are
     updated as follows when training_mode=True:
@@ -4614,7 +4640,7 @@ def batch_normalization(
     training_mode
         Attribute.
         If set to true, it indicates BatchNormalization is being used for
-        training, and outputs 1 and 2 are to be computed.
+        training, and outputs 1, 2, 3, and 4 would be populated.
 
     Returns
     =======
@@ -4639,20 +4665,30 @@ def batch_normalization(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _BatchNormalization(
-        _BatchNormalization.Attributes(
-            epsilon=AttrFloat32(epsilon, name="epsilon"),
-            momentum=AttrFloat32(momentum, name="momentum"),
-            training_mode=AttrInt64(training_mode, name="training_mode"),
-        ),
-        _BatchNormalization.Inputs(
-            X=X,
-            scale=scale,
-            B=B,
-            input_mean=input_mean,
-            input_var=input_var,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _BatchNormalization(
+            _BatchNormalization.Attributes(
+                epsilon=AttrFloat32(epsilon, name="epsilon"),
+                momentum=AttrFloat32(momentum, name="momentum"),
+                training_mode=AttrInt64(training_mode, name="training_mode"),
+            ),
+            _BatchNormalization.Inputs(
+                X=X._var_info,
+                scale=scale._var_info,
+                B=B._var_info,
+                input_mean=input_mean._var_info,
+                input_var=input_var._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+            scale=scale._value,
+            B=B._value,
+            input_mean=input_mean._value,
+            input_var=input_var._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def bernoulli(
@@ -4706,9 +4742,11 @@ def bernoulli(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _Bernoulli.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def bit_shift(
@@ -4766,10 +4804,13 @@ def bit_shift(
             direction=AttrString(direction, name="direction"),
         ),
         _BitShift.Inputs(
-            X=X,
-            Y=Y,
+            X=X._var_info,
+            Y=Y._var_info,
         ),
-    ).outputs.Z
+    ).get_output_vars(
+        X=X._value,
+        Y=Y._value,
+    )["Z"]
 
 
 def blackman_window(
@@ -4819,9 +4860,11 @@ def blackman_window(
             periodic=AttrInt64(periodic, name="periodic"),
         ),
         _BlackmanWindow.Inputs(
-            size=size,
+            size=size._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        size=size._value,
+    )["output"]
 
 
 def cast(
@@ -4860,26 +4903,26 @@ def cast(
     In more detail, the conversion among numerical types should follow these
     rules:
 
-    - Casting from floating point to:
+    -  Casting from floating point to:
 
-      - floating point: +/- infinity if OOR (out of range).
-      - fixed point: undefined if OOR.
-      - bool: +/- 0.0 to False; all else to True.
+       -  floating point: +/- infinity if OOR (out of range).
+       -  fixed point: undefined if OOR.
+       -  bool: +/- 0.0 to False; all else to True.
 
-    - Casting from fixed point to:
+    -  Casting from fixed point to:
 
-      - floating point: +/- infinity if OOR. (+ infinity in the case of
-        uint)
-      - fixed point: when OOR, discard higher bits and reinterpret (with
-        respect to two's complement representation for signed types). For
-        example, 200 (int16) -> -56 (int8).
-      - bool: zero to False; nonzero to True.
+       -  floating point: +/- infinity if OOR. (+ infinity in the case of
+          uint)
+       -  fixed point: when OOR, discard higher bits and reinterpret (with
+          respect to two's complement representation for signed types). For
+          example, 200 (int16) -> -56 (int8).
+       -  bool: zero to False; nonzero to True.
 
-    - Casting from bool to:
+    -  Casting from bool to:
 
-      - floating point: ``{1.0, 0.0}``.
-      - fixed point: ``{1, 0}``.
-      - bool: no change.
+       -  floating point: ``{1.0, 0.0}``.
+       -  fixed point: ``{1, 0}``.
+       -  bool: no change.
 
     Parameters
     ==========
@@ -4911,9 +4954,11 @@ def cast(
             to=AttrDtype(to, name="to"),
         ),
         _Cast.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def cast_like(
@@ -4953,10 +4998,13 @@ def cast_like(
     return _CastLike(
         _CastLike.Attributes(),
         _CastLike.Inputs(
-            input=input,
-            target_type=target_type,
+            input=input._var_info,
+            target_type=target_type._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        target_type=target_type._value,
+    )["output"]
 
 
 def ceil(
@@ -4990,9 +5038,11 @@ def ceil(
     return _Ceil(
         _Ceil.Attributes(),
         _Ceil.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def celu(
@@ -5036,9 +5086,11 @@ def celu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _Celu.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def clip(
@@ -5081,11 +5133,15 @@ def clip(
     return _Clip(
         _Clip.Attributes(),
         _Clip.Inputs(
-            input=input,
-            min=min,
-            max=max,
+            input=input._var_info,
+            min=min._var_info,
+            max=max._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        min=min._value,
+        max=max._value,
+    )["output"]
 
 
 def compress(
@@ -5139,10 +5195,13 @@ def compress(
             axis=AttrInt64.maybe(axis, name="axis"),
         ),
         _Compress.Inputs(
-            input=input,
-            condition=condition,
+            input=input._var_info,
+            condition=condition._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        condition=condition._value,
+    )["output"]
 
 
 def concat(
@@ -5183,9 +5242,11 @@ def concat(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Concat.Inputs(
-            inputs=inputs,
+            inputs=inputs._var_info,
         ),
-    ).outputs.concat_result
+    ).get_output_vars(
+        inputs=inputs._value,
+    )["concat_result"]
 
 
 def concat_from_sequence(
@@ -5236,9 +5297,11 @@ def concat_from_sequence(
             new_axis=AttrInt64(new_axis, name="new_axis"),
         ),
         _ConcatFromSequence.Inputs(
-            input_sequence=input_sequence,
+            input_sequence=input_sequence._var_info,
         ),
-    ).outputs.concat_result
+    ).get_output_vars(
+        input_sequence=input_sequence._value,
+    )["concat_result"]
 
 
 def constant(
@@ -5307,7 +5370,7 @@ def constant(
             value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
         ),
         _Constant.Inputs(),
-    ).outputs.output
+    ).get_output_vars()["output"]
 
 
 def constant_of_shape(
@@ -5352,9 +5415,11 @@ def constant_of_shape(
             value=AttrTensor.maybe(value, name="value"),
         ),
         _ConstantOfShape.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def conv(
@@ -5464,11 +5529,15 @@ def conv(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _Conv.Inputs(
-            X=X,
-            W=W,
-            B=B,
+            X=X._var_info,
+            W=W._var_info,
+            B=B._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        W=W._value,
+        B=B._value,
+    )["Y"]
 
 
 def conv_integer(
@@ -5589,12 +5658,17 @@ def conv_integer(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _ConvInteger.Inputs(
-            x=x,
-            w=w,
-            x_zero_point=x_zero_point,
-            w_zero_point=w_zero_point,
+            x=x._var_info,
+            w=w._var_info,
+            x_zero_point=x_zero_point._var_info,
+            w_zero_point=w_zero_point._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        x=x._value,
+        w=w._value,
+        x_zero_point=x_zero_point._value,
+        w_zero_point=w_zero_point._value,
+    )["y"]
 
 
 def conv_transpose(
@@ -5737,11 +5811,15 @@ def conv_transpose(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _ConvTranspose.Inputs(
-            X=X,
-            W=W,
-            B=B,
+            X=X._var_info,
+            W=W._var_info,
+            B=B._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        W=W._value,
+        B=B._value,
+    )["Y"]
 
 
 def cos(
@@ -5772,9 +5850,11 @@ def cos(
     return _Cos(
         _Cos.Attributes(),
         _Cos.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def cosh(
@@ -5805,9 +5885,11 @@ def cosh(
     return _Cosh(
         _Cosh.Attributes(),
         _Cosh.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def cumsum(
@@ -5881,10 +5963,13 @@ def cumsum(
             reverse=AttrInt64(reverse, name="reverse"),
         ),
         _CumSum.Inputs(
-            x=x,
-            axis=axis,
+            x=x._var_info,
+            axis=axis._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        x=x._value,
+        axis=axis._value,
+    )["y"]
 
 
 def dft(
@@ -5967,10 +6052,13 @@ def dft(
             onesided=AttrInt64(onesided, name="onesided"),
         ),
         _DFT.Inputs(
-            input=input,
-            dft_length=dft_length,
+            input=input._var_info,
+            dft_length=dft_length._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        dft_length=dft_length._value,
+    )["output"]
 
 
 def depth_to_space(
@@ -6041,9 +6129,11 @@ def depth_to_space(
             mode=AttrString(mode, name="mode"),
         ),
         _DepthToSpace.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def dequantize_linear(
@@ -6101,11 +6191,15 @@ def dequantize_linear(
             axis=AttrInt64(axis, name="axis"),
         ),
         _DequantizeLinear.Inputs(
-            x=x,
-            x_scale=x_scale,
-            x_zero_point=x_zero_point,
+            x=x._var_info,
+            x_scale=x_scale._var_info,
+            x_zero_point=x_zero_point._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        x=x._value,
+        x_scale=x_scale._value,
+        x_zero_point=x_zero_point._value,
+    )["y"]
 
 
 def det(
@@ -6141,9 +6235,11 @@ def det(
     return _Det(
         _Det.Attributes(),
         _Det.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def div(
@@ -6186,10 +6282,13 @@ def div(
     return _Div(
         _Div.Attributes(),
         _Div.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def dropout(
@@ -6268,16 +6367,24 @@ def dropout(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(bool)`
     """
-    return _Dropout(
-        _Dropout.Attributes(
-            seed=AttrInt64.maybe(seed, name="seed"),
-        ),
-        _Dropout.Inputs(
-            data=data,
-            ratio=ratio,
-            training_mode=training_mode,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _Dropout(
+            _Dropout.Attributes(
+                seed=AttrInt64.maybe(seed, name="seed"),
+            ),
+            _Dropout.Inputs(
+                data=data._var_info,
+                ratio=ratio._var_info,
+                training_mode=training_mode._var_info,
+            ),
+        )
+        .get_output_vars(
+            data=data._value,
+            ratio=ratio._value,
+            training_mode=training_mode._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def dynamic_quantize_linear(
@@ -6292,9 +6399,9 @@ def dynamic_quantize_linear(
 
        y_scale = (maximum(0, max(x)) - minimum(0, min(x))) / (qmax - qmin)
 
-    - where qmax and qmin are max and min values for quantization range i.e.
-      [0, 255] in case of uint8
-    - data range is adjusted to include 0.
+    -  where qmax and qmin are max and min values for quantization range
+       i.e. [0, 255] in case of uint8
+    -  data range is adjusted to include 0.
 
     Zero point is calculated as:
 
@@ -6303,11 +6410,11 @@ def dynamic_quantize_linear(
        intermediate_zero_point = qmin - min(x)/y_scale
        y_zero_point = cast(round(saturate(itermediate_zero_point)))
 
-    - where qmax and qmin are max and min values for quantization range .i.e
-      [0, 255] in case of uint8
-    - for saturation, it saturates to [0, 255] if it's uint8, or [-127, 127]
-      if it's int8. Right now only uint8 is supported.
-    - rounding to nearest ties to even.
+    -  where qmax and qmin are max and min values for quantization range
+       .i.e [0, 255] in case of uint8
+    -  for saturation, it saturates to [0, 255] if it's uint8, or [-127,
+       127] if it's int8. Right now only uint8 is supported.
+    -  rounding to nearest ties to even.
 
     Data quantization formula is:
 
@@ -6315,9 +6422,9 @@ def dynamic_quantize_linear(
 
        y = saturate (round (x / y_scale) + y_zero_point)
 
-    - for saturation, it saturates to [0, 255] if it's uint8, or [-127, 127]
-      if it's int8. Right now only uint8 is supported.
-    - rounding to nearest ties to even.
+    -  for saturation, it saturates to [0, 255] if it's uint8, or [-127,
+       127] if it's int8. Right now only uint8 is supported.
+    -  rounding to nearest ties to even.
 
     Parameters
     ==========
@@ -6347,12 +6454,18 @@ def dynamic_quantize_linear(
      - T1: `tensor(float)`
      - T2: `tensor(uint8)`
     """
-    return _DynamicQuantizeLinear(
-        _DynamicQuantizeLinear.Attributes(),
-        _DynamicQuantizeLinear.Inputs(
-            x=x,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _DynamicQuantizeLinear(
+            _DynamicQuantizeLinear.Attributes(),
+            _DynamicQuantizeLinear.Inputs(
+                x=x._var_info,
+            ),
+        )
+        .get_output_vars(
+            x=x._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def einsum(
@@ -6422,9 +6535,11 @@ def einsum(
             equation=AttrString(equation, name="equation"),
         ),
         _Einsum.Inputs(
-            Inputs=Inputs,
+            Inputs=Inputs._var_info,
         ),
-    ).outputs.Output
+    ).get_output_vars(
+        Inputs=Inputs._value,
+    )["Output"]
 
 
 def elu(
@@ -6465,9 +6580,11 @@ def elu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _Elu.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def equal(
@@ -6509,10 +6626,13 @@ def equal(
     return _Equal(
         _Equal.Attributes(),
         _Equal.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def erf(
@@ -6544,9 +6664,11 @@ def erf(
     return _Erf(
         _Erf.Attributes(),
         _Erf.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def exp(
@@ -6577,9 +6699,11 @@ def exp(
     return _Exp(
         _Exp.Attributes(),
         _Exp.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def expand(
@@ -6623,10 +6747,13 @@ def expand(
     return _Expand(
         _Expand.Attributes(),
         _Expand.Inputs(
-            input=input,
-            shape=shape,
+            input=input._var_info,
+            shape=shape._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        shape=shape._value,
+    )["output"]
 
 
 def eye_like(
@@ -6683,9 +6810,11 @@ def eye_like(
             k=AttrInt64(k, name="k"),
         ),
         _EyeLike.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def flatten(
@@ -6732,9 +6861,11 @@ def flatten(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Flatten.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def floor(
@@ -6768,9 +6899,11 @@ def floor(
     return _Floor(
         _Floor.Attributes(),
         _Floor.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def gru(
@@ -6796,60 +6929,60 @@ def gru(
 
     Notations:
 
-    - ``X`` - input tensor
-    - ``z`` - update gate
-    - ``r`` - reset gate
-    - ``h`` - hidden gate
-    - ``t`` - time step (t-1 means previous time step)
-    - ``W[zrh]`` - W parameter weight matrix for update, reset, and hidden
-      gates
-    - ``R[zrh]`` - R recurrence weight matrix for update, reset, and hidden
-      gates
-    - ``Wb[zrh]`` - W bias vectors for update, reset, and hidden gates
-    - ``Rb[zrh]`` - R bias vectors for update, reset, and hidden gates
-    - ``WB[zrh]`` - W parameter weight matrix for backward update, reset,
-      and hidden gates
-    - ``RB[zrh]`` - R recurrence weight matrix for backward update, reset,
-      and hidden gates
-    - ``WBb[zrh]`` - W bias vectors for backward update, reset, and hidden
-      gates
-    - ``RBb[zrh]`` - R bias vectors for backward update, reset, and hidden
-      gates
-    - ``H`` - Hidden state
-    - ``num_directions`` - 2 if direction == bidirectional else 1
+    -  ``X`` - input tensor
+    -  ``z`` - update gate
+    -  ``r`` - reset gate
+    -  ``h`` - hidden gate
+    -  ``t`` - time step (t-1 means previous time step)
+    -  ``W[zrh]`` - W parameter weight matrix for update, reset, and hidden
+       gates
+    -  ``R[zrh]`` - R recurrence weight matrix for update, reset, and hidden
+       gates
+    -  ``Wb[zrh]`` - W bias vectors for update, reset, and hidden gates
+    -  ``Rb[zrh]`` - R bias vectors for update, reset, and hidden gates
+    -  ``WB[zrh]`` - W parameter weight matrix for backward update, reset,
+       and hidden gates
+    -  ``RB[zrh]`` - R recurrence weight matrix for backward update, reset,
+       and hidden gates
+    -  ``WBb[zrh]`` - W bias vectors for backward update, reset, and hidden
+       gates
+    -  ``RBb[zrh]`` - R bias vectors for backward update, reset, and hidden
+       gates
+    -  ``H`` - Hidden state
+    -  ``num_directions`` - 2 if direction == bidirectional else 1
 
     Activation functions:
 
-    - Relu(x) - max(0, x)
-    - Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
-    - Sigmoid(x) - 1/(1 + e^{-x})
+    -  Relu(x) - max(0, x)
+    -  Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
+    -  Sigmoid(x) - 1/(1 + e^{-x})
 
     NOTE: Below are optional
 
-    - Affine(x) - alpha \* x + beta
-    - LeakyRelu(x) - x if x >= 0 else alpha \* x
-    - ThresholdedRelu(x) - x if x >= alpha else 0
-    - ScaledTanh(x) - alpha \* Tanh(beta \* x)
-    - HardSigmoid(x) - min(max(alpha \* x + beta, 0), 1)
-    - Elu(x) - x if x >= 0 else alpha \* (e^x - 1)
-    - Softsign(x) - x/(1 + \|x\|)
-    - Softplus(x) - log(1 + e^x)
+    -  Affine(x) - alpha \* x + beta
+    -  LeakyRelu(x) - x if x >= 0 else alpha \* x
+    -  ThresholdedRelu(x) - x if x >= alpha else 0
+    -  ScaledTanh(x) - alpha \* Tanh(beta \* x)
+    -  HardSigmoid(x) - min(max(alpha \* x + beta, 0), 1)
+    -  Elu(x) - x if x >= 0 else alpha \* (e^x - 1)
+    -  Softsign(x) - x/(1 + \|x\|)
+    -  Softplus(x) - log(1 + e^x)
 
     Equations (Default: f=Sigmoid, g=Tanh):
 
-    - zt = f(Xt*(Wz^T) + Ht-1*(Rz^T) + Wbz + Rbz)
-    - rt = f(Xt*(Wr^T) + Ht-1*(Rr^T) + Wbr + Rbr)
-    - ht = g(Xt*(Wh^T) + (rt (.) Ht-1)*(Rh^T) + Rbh + Wbh) # default, when
-      linear_before_reset = 0
-    - ht = g(Xt*(Wh^T) + (rt (.) (Ht-1*(Rh^T) + Rbh)) + Wbh) # when
-      linear_before_reset != 0
-    - Ht = (1 - zt) (.) ht + zt (.) Ht-1 This operator has **optional**
-      inputs/outputs. See `the
-      doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
-      details about the representation of optional arguments. An empty
-      string may be used in the place of an actual argument's name to
-      indicate a missing argument. Trailing optional arguments (those not
-      followed by an argument that is present) may also be simply omitted.
+    -  zt = f(Xt*(Wz^T) + Ht-1*(Rz^T) + Wbz + Rbz)
+    -  rt = f(Xt*(Wr^T) + Ht-1*(Rr^T) + Wbr + Rbr)
+    -  ht = g(Xt*(Wh^T) + (rt (.) Ht-1)*(Rh^T) + Rbh + Wbh) # default, when
+       linear_before_reset = 0
+    -  ht = g(Xt*(Wh^T) + (rt (.) (Ht-1*(Rh^T) + Rbh)) + Wbh) # when
+       linear_before_reset != 0
+    -  Ht = (1 - zt) (.) ht + zt (.) Ht-1 This operator has **optional**
+       inputs/outputs. See `the
+       doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
+       details about the representation of optional arguments. An empty
+       string may be used in the place of an actual argument's name to
+       indicate a missing argument. Trailing optional arguments (those not
+       followed by an argument that is present) may also be simply omitted.
 
     Parameters
     ==========
@@ -6945,30 +7078,43 @@ def gru(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T1: `tensor(int32)`
     """
-    return _GRU(
-        _GRU.Attributes(
-            activation_alpha=AttrFloat32s.maybe(
-                activation_alpha, name="activation_alpha"
+    return (
+        _GRU(
+            _GRU.Attributes(
+                activation_alpha=AttrFloat32s.maybe(
+                    activation_alpha, name="activation_alpha"
+                ),
+                activation_beta=AttrFloat32s.maybe(
+                    activation_beta, name="activation_beta"
+                ),
+                activations=AttrStrings.maybe(activations, name="activations"),
+                clip=AttrFloat32.maybe(clip, name="clip"),
+                direction=AttrString(direction, name="direction"),
+                hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
+                layout=AttrInt64(layout, name="layout"),
+                linear_before_reset=AttrInt64(
+                    linear_before_reset, name="linear_before_reset"
+                ),
             ),
-            activation_beta=AttrFloat32s.maybe(activation_beta, name="activation_beta"),
-            activations=AttrStrings.maybe(activations, name="activations"),
-            clip=AttrFloat32.maybe(clip, name="clip"),
-            direction=AttrString(direction, name="direction"),
-            hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
-            layout=AttrInt64(layout, name="layout"),
-            linear_before_reset=AttrInt64(
-                linear_before_reset, name="linear_before_reset"
+            _GRU.Inputs(
+                X=X._var_info,
+                W=W._var_info,
+                R=R._var_info,
+                B=B._var_info,
+                sequence_lens=sequence_lens._var_info,
+                initial_h=initial_h._var_info,
             ),
-        ),
-        _GRU.Inputs(
-            X=X,
-            W=W,
-            R=R,
-            B=B,
-            sequence_lens=sequence_lens,
-            initial_h=initial_h,
-        ),
-    ).outputs._unpack_to_any()
+        )
+        .get_output_vars(
+            X=X._value,
+            W=W._value,
+            R=R._value,
+            B=B._value,
+            sequence_lens=sequence_lens._value,
+            initial_h=initial_h._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def gather(
@@ -7062,10 +7208,13 @@ def gather(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Gather.Inputs(
-            data=data,
-            indices=indices,
+            data=data._var_info,
+            indices=indices._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        indices=indices._value,
+    )["output"]
 
 
 def gather_elements(
@@ -7167,10 +7316,13 @@ def gather_elements(
             axis=AttrInt64(axis, name="axis"),
         ),
         _GatherElements.Inputs(
-            data=data,
-            indices=indices,
+            data=data._var_info,
+            indices=indices._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        indices=indices._value,
+    )["output"]
 
 
 def gather_nd(
@@ -7317,10 +7469,13 @@ def gather_nd(
             batch_dims=AttrInt64(batch_dims, name="batch_dims"),
         ),
         _GatherND.Inputs(
-            data=data,
-            indices=indices,
+            data=data._var_info,
+            indices=indices._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        indices=indices._value,
+    )["output"]
 
 
 def gemm(
@@ -7337,8 +7492,8 @@ def gemm(
     General Matrix multiplication:
     https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms#Level_3
 
-    - A' = transpose(A) if transA else A
-    - B' = transpose(B) if transB else B
+    -  A' = transpose(A) if transA else A
+    -  B' = transpose(B) if transB else B
 
     Compute Y = alpha \* A' \* B' + beta \* C, where input tensor A has
     shape (M, K) or (K, M), input tensor B has shape (K, N) or (N, K), input
@@ -7404,11 +7559,15 @@ def gemm(
             transB=AttrInt64(transB, name="transB"),
         ),
         _Gemm.Inputs(
-            A=A,
-            B=B,
-            C=C,
+            A=A._var_info,
+            B=B._var_info,
+            C=C._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+        C=C._value,
+    )["Y"]
 
 
 def global_average_pool(
@@ -7448,9 +7607,11 @@ def global_average_pool(
     return _GlobalAveragePool(
         _GlobalAveragePool.Attributes(),
         _GlobalAveragePool.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def global_lp_pool(
@@ -7490,16 +7651,18 @@ def global_lp_pool(
     Signature: ``ai.onnx@2::GlobalLpPool``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
+     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
     return _GlobalLpPool(
         _GlobalLpPool.Attributes(
             p=AttrInt64(p, name="p"),
         ),
         _GlobalLpPool.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def global_max_pool(
@@ -7539,9 +7702,11 @@ def global_max_pool(
     return _GlobalMaxPool(
         _GlobalMaxPool.Attributes(),
         _GlobalMaxPool.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def greater(
@@ -7583,10 +7748,13 @@ def greater(
     return _Greater(
         _Greater.Attributes(),
         _Greater.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def greater_or_equal(
@@ -7628,10 +7796,13 @@ def greater_or_equal(
     return _GreaterOrEqual(
         _GreaterOrEqual.Attributes(),
         _GreaterOrEqual.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def grid_sample(
@@ -7723,10 +7894,13 @@ def grid_sample(
             padding_mode=AttrString(padding_mode, name="padding_mode"),
         ),
         _GridSample.Inputs(
-            X=X,
-            grid=grid,
+            X=X._var_info,
+            grid=grid._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        grid=grid._value,
+    )["Y"]
 
 
 def hamming_window(
@@ -7776,9 +7950,11 @@ def hamming_window(
             periodic=AttrInt64(periodic, name="periodic"),
         ),
         _HammingWindow.Inputs(
-            size=size,
+            size=size._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        size=size._value,
+    )["output"]
 
 
 def hann_window(
@@ -7828,9 +8004,11 @@ def hann_window(
             periodic=AttrInt64(periodic, name="periodic"),
         ),
         _HannWindow.Inputs(
-            size=size,
+            size=size._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        size=size._value,
+    )["output"]
 
 
 def hard_sigmoid(
@@ -7875,9 +8053,11 @@ def hard_sigmoid(
             beta=AttrFloat32(beta, name="beta"),
         ),
         _HardSigmoid.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def hard_swish(
@@ -7911,9 +8091,11 @@ def hard_swish(
     return _HardSwish(
         _HardSwish.Attributes(),
         _HardSwish.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def hardmax(
@@ -7960,9 +8142,11 @@ def hardmax(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Hardmax.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def identity(
@@ -7993,9 +8177,11 @@ def identity(
     return _Identity(
         _Identity.Attributes(),
         _Identity.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def if_(
@@ -8058,10 +8244,12 @@ def if_(
             then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
         ),
         _If.Inputs(
-            cond=cond,
+            cond=cond._var_info,
         ),
         out_variadic=len(_else_branch_subgraph.requested_results),
-    ).outputs.outputs
+    ).get_output_vars(
+        cond=cond._value,
+    )["outputs"]
 
 
 def instance_normalization(
@@ -8115,11 +8303,15 @@ def instance_normalization(
             epsilon=AttrFloat32(epsilon, name="epsilon"),
         ),
         _InstanceNormalization.Inputs(
-            input=input,
-            scale=scale,
-            B=B,
+            input=input._var_info,
+            scale=scale._var_info,
+            B=B._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        scale=scale._value,
+        B=B._value,
+    )["output"]
 
 
 def isinf(
@@ -8167,9 +8359,11 @@ def isinf(
             detect_positive=AttrInt64(detect_positive, name="detect_positive"),
         ),
         _IsInf.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def isnan(
@@ -8201,9 +8395,11 @@ def isnan(
     return _IsNaN(
         _IsNaN.Attributes(),
         _IsNaN.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def lrn(
@@ -8273,9 +8469,11 @@ def lrn(
             size=AttrInt64(size, name="size"),
         ),
         _LRN.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def lstm(
@@ -8303,65 +8501,65 @@ def lstm(
 
     Notations:
 
-    - ``X`` - input tensor
-    - ``i`` - input gate
-    - ``o`` - output gate
-    - ``f`` - forget gate
-    - ``c`` - cell gate
-    - ``t`` - time step (t-1 means previous time step)
-    - ``W[iofc]`` - W parameter weight matrix for input, output, forget, and
-      cell gates
-    - ``R[iofc]`` - R recurrence weight matrix for input, output, forget,
-      and cell gates
-    - ``Wb[iofc]`` - W bias vectors for input, output, forget, and cell
-      gates
-    - ``Rb[iofc]`` - R bias vectors for input, output, forget, and cell
-      gates
-    - ``P[iof]`` - P peephole weight vector for input, output, and forget
-      gates
-    - ``WB[iofc]`` - W parameter weight matrix for backward input, output,
-      forget, and cell gates
-    - ``RB[iofc]`` - R recurrence weight matrix for backward input, output,
-      forget, and cell gates
-    - ``WBb[iofc]`` - W bias vectors for backward input, output, forget, and
-      cell gates
-    - ``RBb[iofc]`` - R bias vectors for backward input, output, forget, and
-      cell gates
-    - ``PB[iof]`` - P peephole weight vector for backward input, output, and
-      forget gates
-    - ``H`` - Hidden state
-    - ``num_directions`` - 2 if direction == bidirectional else 1
+    -  ``X`` - input tensor
+    -  ``i`` - input gate
+    -  ``o`` - output gate
+    -  ``f`` - forget gate
+    -  ``c`` - cell gate
+    -  ``t`` - time step (t-1 means previous time step)
+    -  ``W[iofc]`` - W parameter weight matrix for input, output, forget,
+       and cell gates
+    -  ``R[iofc]`` - R recurrence weight matrix for input, output, forget,
+       and cell gates
+    -  ``Wb[iofc]`` - W bias vectors for input, output, forget, and cell
+       gates
+    -  ``Rb[iofc]`` - R bias vectors for input, output, forget, and cell
+       gates
+    -  ``P[iof]`` - P peephole weight vector for input, output, and forget
+       gates
+    -  ``WB[iofc]`` - W parameter weight matrix for backward input, output,
+       forget, and cell gates
+    -  ``RB[iofc]`` - R recurrence weight matrix for backward input, output,
+       forget, and cell gates
+    -  ``WBb[iofc]`` - W bias vectors for backward input, output, forget,
+       and cell gates
+    -  ``RBb[iofc]`` - R bias vectors for backward input, output, forget,
+       and cell gates
+    -  ``PB[iof]`` - P peephole weight vector for backward input, output,
+       and forget gates
+    -  ``H`` - Hidden state
+    -  ``num_directions`` - 2 if direction == bidirectional else 1
 
     Activation functions:
 
-    - Relu(x) - max(0, x)
-    - Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
-    - Sigmoid(x) - 1/(1 + e^{-x})
+    -  Relu(x) - max(0, x)
+    -  Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
+    -  Sigmoid(x) - 1/(1 + e^{-x})
 
     NOTE: Below are optional
 
-    - Affine(x) - alpha*x + beta
-    - LeakyRelu(x) - x if x >= 0 else alpha \* x
-    - ThresholdedRelu(x) - x if x >= alpha else 0
-    - ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
-    - HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
-    - Elu(x) - x if x >= 0 else alpha*(e^x - 1)
-    - Softsign(x) - x/(1 + \|x\|)
-    - Softplus(x) - log(1 + e^x)
+    -  Affine(x) - alpha*x + beta
+    -  LeakyRelu(x) - x if x >= 0 else alpha \* x
+    -  ThresholdedRelu(x) - x if x >= alpha else 0
+    -  ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
+    -  HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
+    -  Elu(x) - x if x >= 0 else alpha*(e^x - 1)
+    -  Softsign(x) - x/(1 + \|x\|)
+    -  Softplus(x) - log(1 + e^x)
 
     Equations (Default: f=Sigmoid, g=Tanh, h=Tanh):
 
-    - it = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Pi (.) Ct-1 + Wbi + Rbi)
-    - ft = f(Xt*(Wf^T) + Ht-1*(Rf^T) + Pf (.) Ct-1 + Wbf + Rbf)
-    - ct = g(Xt*(Wc^T) + Ht-1*(Rc^T) + Wbc + Rbc)
-    - Ct = ft (.) Ct-1 + it (.) ct
-    - ot = f(Xt*(Wo^T) + Ht-1*(Ro^T) + Po (.) Ct + Wbo + Rbo)
-    - Ht = ot (.) h(Ct) This operator has **optional** inputs/outputs. See
-      `the doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for
-      more details about the representation of optional arguments. An empty
-      string may be used in the place of an actual argument's name to
-      indicate a missing argument. Trailing optional arguments (those not
-      followed by an argument that is present) may also be simply omitted.
+    -  it = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Pi (.) Ct-1 + Wbi + Rbi)
+    -  ft = f(Xt*(Wf^T) + Ht-1*(Rf^T) + Pf (.) Ct-1 + Wbf + Rbf)
+    -  ct = g(Xt*(Wc^T) + Ht-1*(Rc^T) + Wbc + Rbc)
+    -  Ct = ft (.) Ct-1 + it (.) ct
+    -  ot = f(Xt*(Wo^T) + Ht-1*(Ro^T) + Po (.) Ct + Wbo + Rbo)
+    -  Ht = ot (.) h(Ct) This operator has **optional** inputs/outputs. See
+       `the doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for
+       more details about the representation of optional arguments. An empty
+       string may be used in the place of an actual argument's name to
+       indicate a missing argument. Trailing optional arguments (those not
+       followed by an argument that is present) may also be simply omitted.
 
     Parameters
     ==========
@@ -8472,30 +8670,45 @@ def lstm(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T1: `tensor(int32)`
     """
-    return _LSTM(
-        _LSTM.Attributes(
-            activation_alpha=AttrFloat32s.maybe(
-                activation_alpha, name="activation_alpha"
+    return (
+        _LSTM(
+            _LSTM.Attributes(
+                activation_alpha=AttrFloat32s.maybe(
+                    activation_alpha, name="activation_alpha"
+                ),
+                activation_beta=AttrFloat32s.maybe(
+                    activation_beta, name="activation_beta"
+                ),
+                activations=AttrStrings.maybe(activations, name="activations"),
+                clip=AttrFloat32.maybe(clip, name="clip"),
+                direction=AttrString(direction, name="direction"),
+                hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
+                input_forget=AttrInt64(input_forget, name="input_forget"),
+                layout=AttrInt64(layout, name="layout"),
             ),
-            activation_beta=AttrFloat32s.maybe(activation_beta, name="activation_beta"),
-            activations=AttrStrings.maybe(activations, name="activations"),
-            clip=AttrFloat32.maybe(clip, name="clip"),
-            direction=AttrString(direction, name="direction"),
-            hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
-            input_forget=AttrInt64(input_forget, name="input_forget"),
-            layout=AttrInt64(layout, name="layout"),
-        ),
-        _LSTM.Inputs(
-            X=X,
-            W=W,
-            R=R,
-            B=B,
-            sequence_lens=sequence_lens,
-            initial_h=initial_h,
-            initial_c=initial_c,
-            P=P,
-        ),
-    ).outputs._unpack_to_any()
+            _LSTM.Inputs(
+                X=X._var_info,
+                W=W._var_info,
+                R=R._var_info,
+                B=B._var_info,
+                sequence_lens=sequence_lens._var_info,
+                initial_h=initial_h._var_info,
+                initial_c=initial_c._var_info,
+                P=P._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+            W=W._value,
+            R=R._value,
+            B=B._value,
+            sequence_lens=sequence_lens._value,
+            initial_h=initial_h._value,
+            initial_c=initial_c._value,
+            P=P._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def layer_normalization(
@@ -8531,11 +8744,7 @@ def layer_normalization(
     indicate the i-th dimension of ``X``. If ``X``'s shape is
     ``[d[0], ..., d[axis-1], d[axis], ..., d[rank-1]]``, the shape of
     ``Mean`` and ``InvStdDev`` is ``[d[0], ..., d[axis-1], 1, ..., 1]``.
-    ``Y`` and ``X`` have the same shape. This operator supports
-    unidirectional broadcasting (tensors ``Scale`` and ``B`` should be
-    unidirectional broadcastable to tensor ``X``); for more details please
-    check `the
-    doc <https://github.com/onnx/onnx/blob/main/docs/Broadcasting.md>`__.
+    ``Y`` and ``X`` have the same shape.
 
     Parameters
     ==========
@@ -8581,18 +8790,26 @@ def layer_normalization(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - U: `tensor(bfloat16)`, `tensor(float)`
     """
-    return _LayerNormalization(
-        _LayerNormalization.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            epsilon=AttrFloat32(epsilon, name="epsilon"),
-            stash_type=AttrInt64(stash_type, name="stash_type"),
-        ),
-        _LayerNormalization.Inputs(
-            X=X,
-            Scale=Scale,
-            B=B,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _LayerNormalization(
+            _LayerNormalization.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                epsilon=AttrFloat32(epsilon, name="epsilon"),
+                stash_type=AttrInt64(stash_type, name="stash_type"),
+            ),
+            _LayerNormalization.Inputs(
+                X=X._var_info,
+                Scale=Scale._var_info,
+                B=B._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+            Scale=Scale._value,
+            B=B._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def leaky_relu(
@@ -8633,9 +8850,11 @@ def leaky_relu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _LeakyRelu.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def less(
@@ -8677,10 +8896,13 @@ def less(
     return _Less(
         _Less.Attributes(),
         _Less.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def less_or_equal(
@@ -8722,10 +8944,13 @@ def less_or_equal(
     return _LessOrEqual(
         _LessOrEqual.Attributes(),
         _LessOrEqual.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def log(
@@ -8756,9 +8981,11 @@ def log(
     return _Log(
         _Log.Attributes(),
         _Log.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def log_softmax(
@@ -8804,9 +9031,11 @@ def log_softmax(
             axis=AttrInt64(axis, name="axis"),
         ),
         _LogSoftmax.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def loop(
@@ -8834,21 +9063,21 @@ def loop(
 
     Operator inputs defined as (max_trip_count, condition_var).
 
-    - input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
-      is ignored, but is required in the body }
+    -  input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
+       is ignored, but is required in the body }
 
-    - input ("", cond) // Note this is analogous to a while loop bool cond =
-      ...; for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", cond) // Note this is analogous to a while loop bool cond
+       = ...; for (int i=0; cond; ++i) { cond = ...; }
 
-    - input ("", 1) // Note this is analogous to a do-while loop bool cond =
-      true for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", 1) // Note this is analogous to a do-while loop bool cond
+       = true for (int i=0; cond; ++i) { cond = ...; }
 
-    - input (trip_count, "") // Note this is analogous to a for loop int
-      trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
-      ignored }
+    -  input (trip_count, "") // Note this is analogous to a for loop int
+       trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
+       ignored }
 
-    - input (trip_count, cond) int trip_count = ...; bool cond = ...; for
-      (int i=0; i < trip_count && cond; ++i) { cond = ...; }
+    -  input (trip_count, cond) int trip_count = ...; bool cond = ...; for
+       (int i=0; i < trip_count && cond; ++i) { cond = ...; }
 
     *Sample usage - cond as well as trip count*
 
@@ -8995,12 +9224,16 @@ def loop(
             body=AttrGraph(_body_subgraph, name="body"),
         ),
         _Loop.Inputs(
-            M=M,
-            cond=cond,
-            v_initial=v_initial,
+            M=M._var_info,
+            cond=cond._var_info,
+            v_initial=v_initial._var_info,
         ),
         out_variadic=len(_body_subgraph.requested_results) - 1,
-    ).outputs.v_final_and_scan_outputs
+    ).get_output_vars(
+        M=M._value,
+        cond=cond._value,
+        v_initial=v_initial._value,
+    )["v_final_and_scan_outputs"]
 
 
 def lp_normalization(
@@ -9043,9 +9276,11 @@ def lp_normalization(
             p=AttrInt64(p, name="p"),
         ),
         _LpNormalization.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def lp_pool(
@@ -9128,9 +9363,11 @@ def lp_pool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _LpPool.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def matmul(
@@ -9138,8 +9375,8 @@ def matmul(
     B: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like
-    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
+    Matrix product that behaves like numpy.matmul:
+    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html
 
     Parameters
     ==========
@@ -9166,10 +9403,13 @@ def matmul(
     return _MatMul(
         _MatMul.Attributes(),
         _MatMul.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["Y"]
 
 
 def matmul_integer(
@@ -9179,8 +9419,8 @@ def matmul_integer(
     b_zero_point: Optional[Var] = None,
 ) -> Var:
     r"""
-    Matrix product that behaves like
-    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
+    Matrix product that behaves like numpy.matmul:
+    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
     The production MUST never overflow. The accumulation may overflow if and
     only if in 32 bits.
 
@@ -9227,12 +9467,17 @@ def matmul_integer(
     return _MatMulInteger(
         _MatMulInteger.Attributes(),
         _MatMulInteger.Inputs(
-            A=A,
-            B=B,
-            a_zero_point=a_zero_point,
-            b_zero_point=b_zero_point,
+            A=A._var_info,
+            B=B._var_info,
+            a_zero_point=a_zero_point._var_info,
+            b_zero_point=b_zero_point._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+        a_zero_point=a_zero_point._value,
+        b_zero_point=b_zero_point._value,
+    )["Y"]
 
 
 def max(
@@ -9267,9 +9512,11 @@ def max(
     return _Max(
         _Max.Attributes(),
         _Max.Inputs(
-            data_0=data_0,
+            data_0=data_0._var_info,
         ),
-    ).outputs.max
+    ).get_output_vars(
+        data_0=data_0._value,
+    )["max"]
 
 
 def max_pool(
@@ -9408,20 +9655,26 @@ def max_pool(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int8)`, `tensor(uint8)`
      - I: `tensor(int64)`
     """
-    return _MaxPool(
-        _MaxPool.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            storage_order=AttrInt64(storage_order, name="storage_order"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _MaxPool.Inputs(
-            X=X,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _MaxPool(
+            _MaxPool.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                storage_order=AttrInt64(storage_order, name="storage_order"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _MaxPool.Inputs(
+                X=X._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def max_roi_pool(
@@ -9475,10 +9728,13 @@ def max_roi_pool(
             spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
         ),
         _MaxRoiPool.Inputs(
-            X=X,
-            rois=rois,
+            X=X._var_info,
+            rois=rois._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        rois=rois._value,
+    )["Y"]
 
 
 def max_unpool(
@@ -9584,11 +9840,15 @@ def max_unpool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _MaxUnpool.Inputs(
-            X=X,
-            I=I,
-            output_shape=output_shape,
+            X=X._var_info,
+            I=I._var_info,
+            output_shape=output_shape._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        X=X._value,
+        I=I._value,
+        output_shape=output_shape._value,
+    )["output"]
 
 
 def mean(
@@ -9623,9 +9883,11 @@ def mean(
     return _Mean(
         _Mean.Attributes(),
         _Mean.Inputs(
-            data_0=data_0,
+            data_0=data_0._var_info,
         ),
-    ).outputs.mean
+    ).get_output_vars(
+        data_0=data_0._value,
+    )["mean"]
 
 
 def mean_variance_normalization(
@@ -9668,9 +9930,11 @@ def mean_variance_normalization(
             axes=AttrInt64s(axes, name="axes"),
         ),
         _MeanVarianceNormalization.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def mel_weight_matrix(
@@ -9752,13 +10016,19 @@ def mel_weight_matrix(
             output_datatype=AttrInt64(output_datatype, name="output_datatype"),
         ),
         _MelWeightMatrix.Inputs(
-            num_mel_bins=num_mel_bins,
-            dft_length=dft_length,
-            sample_rate=sample_rate,
-            lower_edge_hertz=lower_edge_hertz,
-            upper_edge_hertz=upper_edge_hertz,
+            num_mel_bins=num_mel_bins._var_info,
+            dft_length=dft_length._var_info,
+            sample_rate=sample_rate._var_info,
+            lower_edge_hertz=lower_edge_hertz._var_info,
+            upper_edge_hertz=upper_edge_hertz._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        num_mel_bins=num_mel_bins._value,
+        dft_length=dft_length._value,
+        sample_rate=sample_rate._value,
+        lower_edge_hertz=lower_edge_hertz._value,
+        upper_edge_hertz=upper_edge_hertz._value,
+    )["output"]
 
 
 def min(
@@ -9793,9 +10063,11 @@ def min(
     return _Min(
         _Min.Attributes(),
         _Min.Inputs(
-            data_0=data_0,
+            data_0=data_0._var_info,
         ),
-    ).outputs.min
+    ).get_output_vars(
+        data_0=data_0._value,
+    )["min"]
 
 
 def mod(
@@ -9855,10 +10127,13 @@ def mod(
             fmod=AttrInt64(fmod, name="fmod"),
         ),
         _Mod.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def mul(
@@ -9901,10 +10176,13 @@ def mul(
     return _Mul(
         _Mul.Attributes(),
         _Mul.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def multinomial(
@@ -9961,9 +10239,11 @@ def multinomial(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _Multinomial.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def neg(
@@ -9996,9 +10276,11 @@ def neg(
     return _Neg(
         _Neg.Attributes(),
         _Neg.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def negative_log_likelihood_loss(
@@ -10164,11 +10446,15 @@ def negative_log_likelihood_loss(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _NegativeLogLikelihoodLoss.Inputs(
-            input=input,
-            target=target,
-            weight=weight,
+            input=input._var_info,
+            target=target._var_info,
+            weight=weight._var_info,
         ),
-    ).outputs.loss
+    ).get_output_vars(
+        input=input._value,
+        target=target._value,
+        weight=weight._value,
+    )["loss"]
 
 
 def non_max_suppression(
@@ -10242,13 +10528,19 @@ def non_max_suppression(
             center_point_box=AttrInt64(center_point_box, name="center_point_box"),
         ),
         _NonMaxSuppression.Inputs(
-            boxes=boxes,
-            scores=scores,
-            max_output_boxes_per_class=max_output_boxes_per_class,
-            iou_threshold=iou_threshold,
-            score_threshold=score_threshold,
+            boxes=boxes._var_info,
+            scores=scores._var_info,
+            max_output_boxes_per_class=max_output_boxes_per_class._var_info,
+            iou_threshold=iou_threshold._var_info,
+            score_threshold=score_threshold._var_info,
         ),
-    ).outputs.selected_indices
+    ).get_output_vars(
+        boxes=boxes._value,
+        scores=scores._value,
+        max_output_boxes_per_class=max_output_boxes_per_class._value,
+        iou_threshold=iou_threshold._value,
+        score_threshold=score_threshold._value,
+    )["selected_indices"]
 
 
 def non_zero(
@@ -10283,9 +10575,11 @@ def non_zero(
     return _NonZero(
         _NonZero.Attributes(),
         _NonZero.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def not_(
@@ -10316,9 +10610,11 @@ def not_(
     return _Not(
         _Not.Attributes(),
         _Not.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def one_hot(
@@ -10407,11 +10703,15 @@ def one_hot(
             axis=AttrInt64(axis, name="axis"),
         ),
         _OneHot.Inputs(
-            indices=indices,
-            depth=depth,
-            values=values,
+            indices=indices._var_info,
+            depth=depth._var_info,
+            values=values._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        indices=indices._value,
+        depth=depth._value,
+        values=values._value,
+    )["output"]
 
 
 def optional(
@@ -10452,9 +10752,11 @@ def optional(
             type=AttrType.maybe(type, name="type"),
         ),
         _Optional.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def optional_get_element(
@@ -10488,9 +10790,11 @@ def optional_get_element(
     return _OptionalGetElement(
         _OptionalGetElement.Attributes(),
         _OptionalGetElement.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def optional_has_element(
@@ -10524,9 +10828,11 @@ def optional_has_element(
     return _OptionalHasElement(
         _OptionalHasElement.Attributes(),
         _OptionalHasElement.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def or_(
@@ -10568,10 +10874,13 @@ def or_(
     return _Or(
         _Or.Attributes(),
         _Or.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def prelu(
@@ -10613,10 +10922,13 @@ def prelu(
     return _PRelu(
         _PRelu.Attributes(),
         _PRelu.Inputs(
-            X=X,
-            slope=slope,
+            X=X._var_info,
+            slope=slope._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        slope=slope._value,
+    )["Y"]
 
 
 def pad(
@@ -10718,11 +11030,15 @@ def pad(
             mode=AttrString(mode, name="mode"),
         ),
         _Pad.Inputs(
-            data=data,
-            pads=pads,
-            constant_value=constant_value,
+            data=data._var_info,
+            pads=pads._var_info,
+            constant_value=constant_value._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        pads=pads._value,
+        constant_value=constant_value._value,
+    )["output"]
 
 
 def pow(
@@ -10763,10 +11079,13 @@ def pow(
     return _Pow(
         _Pow.Attributes(),
         _Pow.Inputs(
-            X=X,
-            Y=Y,
+            X=X._var_info,
+            Y=Y._var_info,
         ),
-    ).outputs.Z
+    ).get_output_vars(
+        X=X._value,
+        Y=Y._value,
+    )["Z"]
 
 
 def qlinear_conv(
@@ -10919,17 +11238,27 @@ def qlinear_conv(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _QLinearConv.Inputs(
-            x=x,
-            x_scale=x_scale,
-            x_zero_point=x_zero_point,
-            w=w,
-            w_scale=w_scale,
-            w_zero_point=w_zero_point,
-            y_scale=y_scale,
-            y_zero_point=y_zero_point,
-            B=B,
+            x=x._var_info,
+            x_scale=x_scale._var_info,
+            x_zero_point=x_zero_point._var_info,
+            w=w._var_info,
+            w_scale=w_scale._var_info,
+            w_zero_point=w_zero_point._var_info,
+            y_scale=y_scale._var_info,
+            y_zero_point=y_zero_point._var_info,
+            B=B._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        x=x._value,
+        x_scale=x_scale._value,
+        x_zero_point=x_zero_point._value,
+        w=w._value,
+        w_scale=w_scale._value,
+        w_zero_point=w_zero_point._value,
+        y_scale=y_scale._value,
+        y_zero_point=y_zero_point._value,
+        B=B._value,
+    )["y"]
 
 
 def qlinear_matmul(
@@ -10943,8 +11272,8 @@ def qlinear_matmul(
     y_zero_point: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like
-    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
+    Matrix product that behaves like numpy.matmul:
+    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
     It consumes two quantized input tensors, their scales and zero points,
     scale and zero point of output, and computes the quantized output. The
     quantization formula is y = saturate((x / y_scale) + y_zero_point). For
@@ -11007,16 +11336,25 @@ def qlinear_matmul(
     return _QLinearMatMul(
         _QLinearMatMul.Attributes(),
         _QLinearMatMul.Inputs(
-            a=a,
-            a_scale=a_scale,
-            a_zero_point=a_zero_point,
-            b=b,
-            b_scale=b_scale,
-            b_zero_point=b_zero_point,
-            y_scale=y_scale,
-            y_zero_point=y_zero_point,
+            a=a._var_info,
+            a_scale=a_scale._var_info,
+            a_zero_point=a_zero_point._var_info,
+            b=b._var_info,
+            b_scale=b_scale._var_info,
+            b_zero_point=b_zero_point._var_info,
+            y_scale=y_scale._var_info,
+            y_zero_point=y_zero_point._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        a=a._value,
+        a_scale=a_scale._value,
+        a_zero_point=a_zero_point._value,
+        b=b._value,
+        b_scale=b_scale._value,
+        b_zero_point=b_zero_point._value,
+        y_scale=y_scale._value,
+        y_zero_point=y_zero_point._value,
+    )["y"]
 
 
 def quantize_linear(
@@ -11078,11 +11416,15 @@ def quantize_linear(
             axis=AttrInt64(axis, name="axis"),
         ),
         _QuantizeLinear.Inputs(
-            x=x,
-            y_scale=y_scale,
-            y_zero_point=y_zero_point,
+            x=x._var_info,
+            y_scale=y_scale._var_info,
+            y_zero_point=y_zero_point._var_info,
         ),
-    ).outputs.y
+    ).get_output_vars(
+        x=x._value,
+        y_scale=y_scale._value,
+        y_zero_point=y_zero_point._value,
+    )["y"]
 
 
 def rnn(
@@ -11107,46 +11449,46 @@ def rnn(
 
     Notations:
 
-    - ``X`` - input tensor
-    - ``i`` - input gate
-    - ``t`` - time step (t-1 means previous time step)
-    - ``Wi`` - W parameter weight matrix for input gate
-    - ``Ri`` - R recurrence weight matrix for input gate
-    - ``Wbi`` - W parameter bias vector for input gate
-    - ``Rbi`` - R parameter bias vector for input gate
-    - ``WBi`` - W parameter weight matrix for backward input gate
-    - ``RBi`` - R recurrence weight matrix for backward input gate
-    - ``WBbi`` - WR bias vectors for backward input gate
-    - ``RBbi`` - RR bias vectors for backward input gate
-    - ``H`` - Hidden state
-    - ``num_directions`` - 2 if direction == bidirectional else 1
+    -  ``X`` - input tensor
+    -  ``i`` - input gate
+    -  ``t`` - time step (t-1 means previous time step)
+    -  ``Wi`` - W parameter weight matrix for input gate
+    -  ``Ri`` - R recurrence weight matrix for input gate
+    -  ``Wbi`` - W parameter bias vector for input gate
+    -  ``Rbi`` - R parameter bias vector for input gate
+    -  ``WBi`` - W parameter weight matrix for backward input gate
+    -  ``RBi`` - R recurrence weight matrix for backward input gate
+    -  ``WBbi`` - WR bias vectors for backward input gate
+    -  ``RBbi`` - RR bias vectors for backward input gate
+    -  ``H`` - Hidden state
+    -  ``num_directions`` - 2 if direction == bidirectional else 1
 
     Activation functions:
 
-    - Relu(x) - max(0, x)
-    - Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
-    - Sigmoid(x) - 1/(1 + e^{-x})
+    -  Relu(x) - max(0, x)
+    -  Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
+    -  Sigmoid(x) - 1/(1 + e^{-x})
 
     NOTE: Below are optional
 
-    - Affine(x) - alpha*x + beta
-    - LeakyRelu(x) - x if x >= 0 else alpha \* x
-    - ThresholdedRelu(x) - x if x >= alpha else 0
-    - ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
-    - HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
-    - Elu(x) - x if x >= 0 else alpha*(e^x - 1)
-    - Softsign(x) - x/(1 + \|x\|)
-    - Softplus(x) - log(1 + e^x)
+    -  Affine(x) - alpha*x + beta
+    -  LeakyRelu(x) - x if x >= 0 else alpha \* x
+    -  ThresholdedRelu(x) - x if x >= alpha else 0
+    -  ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
+    -  HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
+    -  Elu(x) - x if x >= 0 else alpha*(e^x - 1)
+    -  Softsign(x) - x/(1 + \|x\|)
+    -  Softplus(x) - log(1 + e^x)
 
     Equations (Default: f=Tanh):
 
-    - Ht = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Wbi + Rbi) This operator has
-      **optional** inputs/outputs. See `the
-      doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
-      details about the representation of optional arguments. An empty
-      string may be used in the place of an actual argument's name to
-      indicate a missing argument. Trailing optional arguments (those not
-      followed by an argument that is present) may also be simply omitted.
+    -  Ht = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Wbi + Rbi) This operator has
+       **optional** inputs/outputs. See `the
+       doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
+       details about the representation of optional arguments. An empty
+       string may be used in the place of an actual argument's name to
+       indicate a missing argument. Trailing optional arguments (those not
+       followed by an argument that is present) may also be simply omitted.
 
     Parameters
     ==========
@@ -11237,27 +11579,40 @@ def rnn(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T1: `tensor(int32)`
     """
-    return _RNN(
-        _RNN.Attributes(
-            activation_alpha=AttrFloat32s.maybe(
-                activation_alpha, name="activation_alpha"
+    return (
+        _RNN(
+            _RNN.Attributes(
+                activation_alpha=AttrFloat32s.maybe(
+                    activation_alpha, name="activation_alpha"
+                ),
+                activation_beta=AttrFloat32s.maybe(
+                    activation_beta, name="activation_beta"
+                ),
+                activations=AttrStrings(activations, name="activations"),
+                clip=AttrFloat32.maybe(clip, name="clip"),
+                direction=AttrString(direction, name="direction"),
+                hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
+                layout=AttrInt64(layout, name="layout"),
             ),
-            activation_beta=AttrFloat32s.maybe(activation_beta, name="activation_beta"),
-            activations=AttrStrings(activations, name="activations"),
-            clip=AttrFloat32.maybe(clip, name="clip"),
-            direction=AttrString(direction, name="direction"),
-            hidden_size=AttrInt64.maybe(hidden_size, name="hidden_size"),
-            layout=AttrInt64(layout, name="layout"),
-        ),
-        _RNN.Inputs(
-            X=X,
-            W=W,
-            R=R,
-            B=B,
-            sequence_lens=sequence_lens,
-            initial_h=initial_h,
-        ),
-    ).outputs._unpack_to_any()
+            _RNN.Inputs(
+                X=X._var_info,
+                W=W._var_info,
+                R=R._var_info,
+                B=B._var_info,
+                sequence_lens=sequence_lens._var_info,
+                initial_h=initial_h._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+            W=W._value,
+            R=R._value,
+            B=B._value,
+            sequence_lens=sequence_lens._value,
+            initial_h=initial_h._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def random_normal(
@@ -11320,7 +11675,7 @@ def random_normal(
             shape=AttrInt64s(shape, name="shape"),
         ),
         _RandomNormal.Inputs(),
-    ).outputs.output
+    ).get_output_vars()["output"]
 
 
 def random_normal_like(
@@ -11384,9 +11739,11 @@ def random_normal_like(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _RandomNormalLike.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def random_uniform(
@@ -11448,7 +11805,7 @@ def random_uniform(
             shape=AttrInt64s(shape, name="shape"),
         ),
         _RandomUniform.Inputs(),
-    ).outputs.output
+    ).get_output_vars()["output"]
 
 
 def random_uniform_like(
@@ -11512,9 +11869,11 @@ def random_uniform_like(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _RandomUniformLike.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def range(
@@ -11584,11 +11943,15 @@ def range(
     return _Range(
         _Range.Attributes(),
         _Range.Inputs(
-            start=start,
-            limit=limit,
-            delta=delta,
+            start=start._var_info,
+            limit=limit._var_info,
+            delta=delta._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        start=start._value,
+        limit=limit._value,
+        delta=delta._value,
+    )["output"]
 
 
 def reciprocal(
@@ -11621,9 +11984,11 @@ def reciprocal(
     return _Reciprocal(
         _Reciprocal.Attributes(),
         _Reciprocal.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def reduce_l1(
@@ -11676,9 +12041,11 @@ def reduce_l1(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceL1.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_l2(
@@ -11731,9 +12098,11 @@ def reduce_l2(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceL2.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_log_sum(
@@ -11787,9 +12156,11 @@ def reduce_log_sum(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceLogSum.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_log_sum_exp(
@@ -11843,9 +12214,11 @@ def reduce_log_sum_exp(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceLogSumExp.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_max(
@@ -11900,9 +12273,11 @@ def reduce_max(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMax.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_mean(
@@ -11955,9 +12330,11 @@ def reduce_mean(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMean.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_min(
@@ -12011,9 +12388,11 @@ def reduce_min(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMin.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_prod(
@@ -12066,9 +12445,11 @@ def reduce_prod(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceProd.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def reduce_sum(
@@ -12132,10 +12513,13 @@ def reduce_sum(
             ),
         ),
         _ReduceSum.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_sum_square(
@@ -12188,9 +12572,11 @@ def reduce_sum_square(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceSumSquare.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+    )["reduced"]
 
 
 def relu(
@@ -12223,9 +12609,11 @@ def relu(
     return _Relu(
         _Relu.Attributes(),
         _Relu.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def reshape(
@@ -12284,10 +12672,13 @@ def reshape(
             allowzero=AttrInt64(allowzero, name="allowzero"),
         ),
         _Reshape.Inputs(
-            data=data,
-            shape=shape,
+            data=data._var_info,
+            shape=shape._var_info,
         ),
-    ).outputs.reshaped
+    ).get_output_vars(
+        data=data._value,
+        shape=shape._value,
+    )["reshaped"]
 
 
 def resize(
@@ -12423,12 +12814,17 @@ def resize(
             nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
         ),
         _Resize.Inputs(
-            X=X,
-            roi=roi,
-            scales=scales,
-            sizes=sizes,
+            X=X._var_info,
+            roi=roi._var_info,
+            scales=scales._var_info,
+            sizes=sizes._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        roi=roi._value,
+        scales=scales._value,
+        sizes=sizes._value,
+    )["Y"]
 
 
 def reverse_sequence(
@@ -12499,10 +12895,13 @@ def reverse_sequence(
             time_axis=AttrInt64(time_axis, name="time_axis"),
         ),
         _ReverseSequence.Inputs(
-            input=input,
-            sequence_lens=sequence_lens,
+            input=input._var_info,
+            sequence_lens=sequence_lens._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        input=input._value,
+        sequence_lens=sequence_lens._value,
+    )["Y"]
 
 
 def roi_align(
@@ -12604,11 +13003,15 @@ def roi_align(
             spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
         ),
         _RoiAlign.Inputs(
-            X=X,
-            rois=rois,
-            batch_indices=batch_indices,
+            X=X._var_info,
+            rois=rois._var_info,
+            batch_indices=batch_indices._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        rois=rois._value,
+        batch_indices=batch_indices._value,
+    )["Y"]
 
 
 def round(
@@ -12653,9 +13056,11 @@ def round(
     return _Round(
         _Round.Attributes(),
         _Round.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def stft(
@@ -12724,12 +13129,17 @@ def stft(
             onesided=AttrInt64(onesided, name="onesided"),
         ),
         _STFT.Inputs(
-            signal=signal,
-            frame_step=frame_step,
-            window=window,
-            frame_length=frame_length,
+            signal=signal._var_info,
+            frame_step=frame_step._var_info,
+            window=window._var_info,
+            frame_length=frame_length._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        signal=signal._value,
+        frame_step=frame_step._value,
+        window=window._value,
+        frame_length=frame_length._value,
+    )["output"]
 
 
 def scan(
@@ -12969,10 +13379,12 @@ def scan(
             ),
         ),
         _Scan.Inputs(
-            initial_state_and_scan_inputs=initial_state_and_scan_inputs,
+            initial_state_and_scan_inputs=initial_state_and_scan_inputs._var_info,
         ),
         out_variadic=len(_body_subgraph.requested_results),
-    ).outputs.final_state_and_scan_outputs
+    ).get_output_vars(
+        initial_state_and_scan_inputs=initial_state_and_scan_inputs._value,
+    )["final_state_and_scan_outputs"]
 
 
 def scatter_elements(
@@ -13101,11 +13513,15 @@ def scatter_elements(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterElements.Inputs(
-            data=data,
-            indices=indices,
-            updates=updates,
+            data=data._var_info,
+            indices=indices._var_info,
+            updates=updates._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        indices=indices._value,
+        updates=updates._value,
+    )["output"]
 
 
 def scatter_nd(
@@ -13222,11 +13638,15 @@ def scatter_nd(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterND.Inputs(
-            data=data,
-            indices=indices,
-            updates=updates,
+            data=data._var_info,
+            indices=indices._var_info,
+            updates=updates._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        indices=indices._value,
+        updates=updates._value,
+    )["output"]
 
 
 def selu(
@@ -13274,9 +13694,11 @@ def selu(
             gamma=AttrFloat32(gamma, name="gamma"),
         ),
         _Selu.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def sequence_at(
@@ -13320,10 +13742,13 @@ def sequence_at(
     return _SequenceAt(
         _SequenceAt.Attributes(),
         _SequenceAt.Inputs(
-            input_sequence=input_sequence,
-            position=position,
+            input_sequence=input_sequence._var_info,
+            position=position._var_info,
         ),
-    ).outputs.tensor
+    ).get_output_vars(
+        input_sequence=input_sequence._value,
+        position=position._value,
+    )["tensor"]
 
 
 def sequence_construct(
@@ -13356,9 +13781,11 @@ def sequence_construct(
     return _SequenceConstruct(
         _SequenceConstruct.Attributes(),
         _SequenceConstruct.Inputs(
-            inputs=inputs,
+            inputs=inputs._var_info,
         ),
-    ).outputs.output_sequence
+    ).get_output_vars(
+        inputs=inputs._value,
+    )["output_sequence"]
 
 
 def sequence_empty(
@@ -13393,7 +13820,7 @@ def sequence_empty(
             dtype=AttrDtype.maybe(dtype, name="dtype"),
         ),
         _SequenceEmpty.Inputs(),
-    ).outputs.output
+    ).get_output_vars()["output"]
 
 
 def sequence_erase(
@@ -13437,10 +13864,13 @@ def sequence_erase(
     return _SequenceErase(
         _SequenceErase.Attributes(),
         _SequenceErase.Inputs(
-            input_sequence=input_sequence,
-            position=position,
+            input_sequence=input_sequence._var_info,
+            position=position._var_info,
         ),
-    ).outputs.output_sequence
+    ).get_output_vars(
+        input_sequence=input_sequence._value,
+        position=position._value,
+    )["output_sequence"]
 
 
 def sequence_insert(
@@ -13491,11 +13921,15 @@ def sequence_insert(
     return _SequenceInsert(
         _SequenceInsert.Attributes(),
         _SequenceInsert.Inputs(
-            input_sequence=input_sequence,
-            tensor=tensor,
-            position=position,
+            input_sequence=input_sequence._var_info,
+            tensor=tensor._var_info,
+            position=position._var_info,
         ),
-    ).outputs.output_sequence
+    ).get_output_vars(
+        input_sequence=input_sequence._value,
+        tensor=tensor._value,
+        position=position._value,
+    )["output_sequence"]
 
 
 def sequence_length(
@@ -13528,9 +13962,11 @@ def sequence_length(
     return _SequenceLength(
         _SequenceLength.Attributes(),
         _SequenceLength.Inputs(
-            input_sequence=input_sequence,
+            input_sequence=input_sequence._var_info,
         ),
-    ).outputs.length
+    ).get_output_vars(
+        input_sequence=input_sequence._value,
+    )["length"]
 
 
 def sequence_map(
@@ -13598,11 +14034,14 @@ def sequence_map(
             body=AttrGraph(_body_subgraph, name="body"),
         ),
         _SequenceMap.Inputs(
-            input_sequence=input_sequence,
-            additional_inputs=additional_inputs,
+            input_sequence=input_sequence._var_info,
+            additional_inputs=additional_inputs._var_info,
         ),
         out_variadic=len(_body_subgraph.requested_results),
-    ).outputs.out_sequence
+    ).get_output_vars(
+        input_sequence=input_sequence._value,
+        additional_inputs=additional_inputs._value,
+    )["out_sequence"]
 
 
 def shape(
@@ -13687,9 +14126,11 @@ def shape(
             start=AttrInt64(start, name="start"),
         ),
         _Shape.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.shape
+    ).get_output_vars(
+        data=data._value,
+    )["shape"]
 
 
 def shrink(
@@ -13735,9 +14176,11 @@ def shrink(
             lambd=AttrFloat32(lambd, name="lambd"),
         ),
         _Shrink.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def sigmoid(
@@ -13770,9 +14213,11 @@ def sigmoid(
     return _Sigmoid(
         _Sigmoid.Attributes(),
         _Sigmoid.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def sign(
@@ -13805,9 +14250,11 @@ def sign(
     return _Sign(
         _Sign.Attributes(),
         _Sign.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def sin(
@@ -13838,9 +14285,11 @@ def sin(
     return _Sin(
         _Sin.Attributes(),
         _Sin.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def sinh(
@@ -13871,9 +14320,11 @@ def sinh(
     return _Sinh(
         _Sinh.Attributes(),
         _Sinh.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def size(
@@ -13906,9 +14357,11 @@ def size(
     return _Size(
         _Size.Attributes(),
         _Size.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.size
+    ).get_output_vars(
+        data=data._value,
+    )["size"]
 
 
 def slice(
@@ -14027,13 +14480,19 @@ def slice(
     return _Slice(
         _Slice.Attributes(),
         _Slice.Inputs(
-            data=data,
-            starts=starts,
-            ends=ends,
-            axes=axes,
-            steps=steps,
+            data=data._var_info,
+            starts=starts._var_info,
+            ends=ends._var_info,
+            axes=axes._var_info,
+            steps=steps._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        data=data._value,
+        starts=starts._value,
+        ends=ends._value,
+        axes=axes._value,
+        steps=steps._value,
+    )["output"]
 
 
 def softmax(
@@ -14081,9 +14540,11 @@ def softmax(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Softmax.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def softmax_cross_entropy_loss(
@@ -14104,10 +14565,10 @@ def softmax_cross_entropy_loss(
     L[i,][j_1][j_2]...[j_k] denotes a scalar element in L. After L is
     available, this operator can optionally do a reduction operator.
 
-    - shape(scores): (N, C) where C is the number of classes, or (N, C, D1,
-      D2,..., Dk), with K >= 1 in case of K-dimensional loss.
-    - shape(labels): (N) where each value is 0 <= labels[i] <= C-1, or (N,
-      D1, D2,..., Dk), with K >= 1 in case of K-dimensional loss.
+    -  shape(scores): (N, C) where C is the number of classes, or (N, C, D1,
+       D2,..., Dk), with K >= 1 in case of K-dimensional loss.
+    -  shape(labels): (N) where each value is 0 <= labels[i] <= C-1, or (N,
+       D1, D2,..., Dk), with K >= 1 in case of K-dimensional loss.
 
     The loss for one sample, l_i, can calculated as follows:
 
@@ -14137,13 +14598,13 @@ def softmax_cross_entropy_loss(
 
     Finally, L is optionally reduced:
 
-    - If reduction = 'none', the output is L with shape (N, D1, D2, ...,
-      Dk).
-    - If reduction = 'sum', the output is scalar: Sum(L).
-    - If reduction = 'mean', the output is scalar: ReduceMean(L), or if
-      weight is provided: ``ReduceSum(L) / ReduceSum(W)``, where tensor W is
-      of shape ``(N, D1, D2, ..., Dk)`` and
-      ``W[n][d1][d2]...[dk] = weights[labels[i][d1][d2]...[dk]]``.
+    -  If reduction = 'none', the output is L with shape (N, D1, D2, ...,
+       Dk).
+    -  If reduction = 'sum', the output is scalar: Sum(L).
+    -  If reduction = 'mean', the output is scalar: ReduceMean(L), or if
+       weight is provided: ``ReduceSum(L) / ReduceSum(W)``, where tensor W
+       is of shape ``(N, D1, D2, ..., Dk)`` and
+       ``W[n][d1][d2]...[dk] = weights[labels[i][d1][d2]...[dk]]``.
 
     Parameters
     ==========
@@ -14195,17 +14656,25 @@ def softmax_cross_entropy_loss(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _SoftmaxCrossEntropyLoss(
-        _SoftmaxCrossEntropyLoss.Attributes(
-            ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
-            reduction=AttrString(reduction, name="reduction"),
-        ),
-        _SoftmaxCrossEntropyLoss.Inputs(
-            scores=scores,
-            labels=labels,
-            weights=weights,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _SoftmaxCrossEntropyLoss(
+            _SoftmaxCrossEntropyLoss.Attributes(
+                ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
+                reduction=AttrString(reduction, name="reduction"),
+            ),
+            _SoftmaxCrossEntropyLoss.Inputs(
+                scores=scores._var_info,
+                labels=labels._var_info,
+                weights=weights._var_info,
+            ),
+        )
+        .get_output_vars(
+            scores=scores._value,
+            labels=labels._value,
+            weights=weights._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def softplus(
@@ -14238,9 +14707,11 @@ def softplus(
     return _Softplus(
         _Softplus.Attributes(),
         _Softplus.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def softsign(
@@ -14273,9 +14744,11 @@ def softsign(
     return _Softsign(
         _Softsign.Attributes(),
         _Softsign.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def space_to_depth(
@@ -14317,9 +14790,11 @@ def space_to_depth(
             blocksize=AttrInt64(blocksize, name="blocksize"),
         ),
         _SpaceToDepth.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def split(
@@ -14369,11 +14844,14 @@ def split(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Split.Inputs(
-            input=input,
-            split=split,
+            input=input._var_info,
+            split=split._var_info,
         ),
         out_variadic=outputs_count,
-    ).outputs.outputs
+    ).get_output_vars(
+        input=input._value,
+        split=split._value,
+    )["outputs"]
 
 
 def split_to_sequence(
@@ -14437,10 +14915,13 @@ def split_to_sequence(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _SplitToSequence.Inputs(
-            input=input,
-            split=split,
+            input=input._var_info,
+            split=split._var_info,
         ),
-    ).outputs.output_sequence
+    ).get_output_vars(
+        input=input._value,
+        split=split._value,
+    )["output_sequence"]
 
 
 def sqrt(
@@ -14473,9 +14954,11 @@ def sqrt(
     return _Sqrt(
         _Sqrt.Attributes(),
         _Sqrt.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def squeeze(
@@ -14516,10 +14999,13 @@ def squeeze(
     return _Squeeze(
         _Squeeze.Attributes(),
         _Squeeze.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.squeezed
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["squeezed"]
 
 
 def string_normalizer(
@@ -14584,9 +15070,11 @@ def string_normalizer(
             stopwords=AttrStrings.maybe(stopwords, name="stopwords"),
         ),
         _StringNormalizer.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def sub(
@@ -14629,10 +15117,13 @@ def sub(
     return _Sub(
         _Sub.Attributes(),
         _Sub.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def sum(
@@ -14667,9 +15158,11 @@ def sum(
     return _Sum(
         _Sum.Attributes(),
         _Sum.Inputs(
-            data_0=data_0,
+            data_0=data_0._var_info,
         ),
-    ).outputs.sum
+    ).get_output_vars(
+        data_0=data_0._value,
+    )["sum"]
 
 
 def tan(
@@ -14700,9 +15193,11 @@ def tan(
     return _Tan(
         _Tan.Attributes(),
         _Tan.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def tanh(
@@ -14734,9 +15229,11 @@ def tanh(
     return _Tanh(
         _Tanh.Attributes(),
         _Tanh.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def tf_idf_vectorizer(
@@ -14881,9 +15378,11 @@ def tf_idf_vectorizer(
             weights=AttrFloat32s.maybe(weights, name="weights"),
         ),
         _TfIdfVectorizer.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def thresholded_relu(
@@ -14923,9 +15422,11 @@ def thresholded_relu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _ThresholdedRelu.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def tile(
@@ -14965,10 +15466,13 @@ def tile(
     return _Tile(
         _Tile.Attributes(),
         _Tile.Inputs(
-            input=input,
-            repeats=repeats,
+            input=input._var_info,
+            repeats=repeats._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        repeats=repeats._value,
+    )["output"]
 
 
 def top_k(
@@ -14981,25 +15485,25 @@ def top_k(
 ) -> tuple[Var, Var]:
     r"""
     Retrieve the top-K largest or smallest elements along a specified axis.
-    Given an input tensor of shape [a_0, a_1, ..., a\_{n-1}] and integer
+    Given an input tensor of shape [a_1, a_2, ..., a_n, r] and integer
     argument k, return two outputs:
 
-    - Value tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-      a\_{n-1}] which contains the values of the top k elements along the
-      specified axis
+    -  Value tensor of shape [a_1, a_2, ..., a\_{axis-1}, k, a\_{axis+1},
+       ... a_n] which contains the values of the top k elements along the
+       specified axis
 
-    - Index tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-      a\_{n-1}] which contains the indices of the top k elements (original
-      indices from the input tensor).
+    -  Index tensor of shape [a_1, a_2, ..., a\_{axis-1}, k, a\_{axis+1},
+       ... a_n] which contains the indices of the top k elements (original
+       indices from the input tensor).
 
-    - If "largest" is 1 (the default value) then the k largest elements are
-      returned.
+    -  If "largest" is 1 (the default value) then the k largest elements are
+       returned.
 
-    - If "sorted" is 1 (the default value) then the resulting k elements
-      will be sorted.
+    -  If "sorted" is 1 (the default value) then the resulting k elements
+       will be sorted.
 
-    - If "sorted" is 0, order of returned 'Values' and 'Indices' are
-      undefined.
+    -  If "sorted" is 0, order of returned 'Values' and 'Indices' are
+       undefined.
 
     Given two equivalent values, this operator uses the indices along the
     axis as a tiebreaker. That is, the element with the lower index will
@@ -15009,7 +15513,7 @@ def top_k(
     ==========
     X
         Type T.
-        Tensor of shape [a_0, a_1, ..., a\_{n-1}]
+        Tensor of shape [a_1, a_2, ..., a_n, r]
     K
         Type tensor(int64).
         A 1-D tensor containing a single positive value corresponding to the
@@ -15030,13 +15534,12 @@ def top_k(
     =======
     Values : Var
         Type T.
-        Tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-        a\_{n-1}] containing top K values from the input tensor
+        Tensor of shape [a_1, a_2, ..., a\_{axis-1}, k, a\_{axis+1}, ... a_n]
+        containing top K values from the input tensor
     Indices : Var
         Type I.
-        Tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-        a\_{n-1}] containing the corresponding input tensor indices for the top
-        K values.
+        Tensor of shape [a_1, a_2, ..., a\_{axis-1}, k, a\_{axis+1}, ... a_n]
+        containing the corresponding input tensor indices for the top K values.
 
     Notes
     =====
@@ -15046,17 +15549,24 @@ def top_k(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - I: `tensor(int64)`
     """
-    return _TopK(
-        _TopK.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            largest=AttrInt64(largest, name="largest"),
-            sorted=AttrInt64(sorted, name="sorted"),
-        ),
-        _TopK.Inputs(
-            X=X,
-            K=K,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _TopK(
+            _TopK.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                largest=AttrInt64(largest, name="largest"),
+                sorted=AttrInt64(sorted, name="sorted"),
+            ),
+            _TopK.Inputs(
+                X=X._var_info,
+                K=K._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+            K=K._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def transpose(
@@ -15097,9 +15607,11 @@ def transpose(
             perm=AttrInt64s.maybe(perm, name="perm"),
         ),
         _Transpose.Inputs(
-            data=data,
+            data=data._var_info,
         ),
-    ).outputs.transposed
+    ).get_output_vars(
+        data=data._value,
+    )["transposed"]
 
 
 def trilu(
@@ -15160,10 +15672,13 @@ def trilu(
             upper=AttrInt64(upper, name="upper"),
         ),
         _Trilu.Inputs(
-            input=input,
-            k=k,
+            input=input._var_info,
+            k=k._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        k=k._value,
+    )["output"]
 
 
 def unique(
@@ -15335,15 +15850,21 @@ def unique(
     Type constraints:
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Unique(
-        _Unique.Attributes(
-            axis=AttrInt64.maybe(axis, name="axis"),
-            sorted=AttrInt64(sorted, name="sorted"),
-        ),
-        _Unique.Inputs(
-            X=X,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _Unique(
+            _Unique.Attributes(
+                axis=AttrInt64.maybe(axis, name="axis"),
+                sorted=AttrInt64(sorted, name="sorted"),
+            ),
+            _Unique.Inputs(
+                X=X._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def unsqueeze(
@@ -15394,10 +15915,13 @@ def unsqueeze(
     return _Unsqueeze(
         _Unsqueeze.Attributes(),
         _Unsqueeze.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.expanded
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["expanded"]
 
 
 def where(
@@ -15444,11 +15968,15 @@ def where(
     return _Where(
         _Where.Attributes(),
         _Where.Inputs(
-            condition=condition,
-            X=X,
-            Y=Y,
+            condition=condition._var_info,
+            X=X._var_info,
+            Y=Y._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        condition=condition._value,
+        X=X._value,
+        Y=Y._value,
+    )["output"]
 
 
 def xor(
@@ -15490,10 +16018,13 @@ def xor(
     return _Xor(
         _Xor.Attributes(),
         _Xor.Inputs(
-            A=A,
-            B=B,
+            A=A._var_info,
+            B=B._var_info,
         ),
-    ).outputs.C
+    ).get_output_vars(
+        A=A._value,
+        B=B._value,
+    )["C"]
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

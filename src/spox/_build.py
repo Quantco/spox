@@ -21,7 +21,7 @@ from ._internal_op import Argument, intros
 from ._node import Node
 from ._scope import Scope
 from ._traverse import iterative_dfs
-from ._var import Var
+from ._var import VarInfo
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -58,11 +58,11 @@ class BuildResult:
 
     scope: Scope
     nodes: dict[Node, tuple[onnx.NodeProto, ...]]
-    arguments: tuple[Var, ...]
-    results: tuple[Var, ...]
+    arguments: tuple[VarInfo, ...]
+    results: tuple[VarInfo, ...]
     opset_req: set[tuple[str, int]]
     functions: tuple["_function.Function", ...]
-    initializers: dict[Var, np.ndarray]
+    initializers: dict[VarInfo, np.ndarray]
 
 
 class Builder:
@@ -93,7 +93,7 @@ class Builder:
         """
         Structure representing the tree of scopes, which are identified with the respective graphs.
 
-        This structure is the base of the least-enclosing-scope algorithm. Every value (Var), and hence
+        This structure is the base of the least-enclosing-scope algorithm. Every value (VarInfo), and hence
         the responsible Node - up to its (Python object) identity may appear in multiple scopes, but it should
         best-cased be computed only once in the ONNX graph, same as in the Python source code.
 
@@ -164,12 +164,12 @@ class Builder:
     graphs: set["Graph"]
     graph_topo: list["Graph"]
     # Arguments, results
-    arguments_of: dict["Graph", list[Var]]
-    results_of: dict["Graph", list[Var]]
+    arguments_of: dict["Graph", list[VarInfo]]
+    results_of: dict["Graph", list[VarInfo]]
     source_of: dict["Graph", Node]
     # Arguments found by traversal
-    all_arguments_in: dict["Graph", set[Var]]
-    claimed_arguments_in: dict["Graph", set[Var]]
+    all_arguments_in: dict["Graph", set[VarInfo]]
+    claimed_arguments_in: dict["Graph", set[VarInfo]]
     # Scopes
     scope_tree: ScopeTree
     scope_own: dict["Graph", list[Node]]
@@ -203,8 +203,8 @@ class Builder:
 
     @staticmethod
     def get_intro_results(
-        request_results: dict[str, Var], set_names: bool
-    ) -> list[Var]:
+        request_results: dict[str, VarInfo], set_names: bool
+    ) -> list[VarInfo]:
         """
         Helper method for wrapping all requested results into a single Introduce and possibly naming them.
 
@@ -218,7 +218,7 @@ class Builder:
                 var._rename(key)
         return vars
 
-    def discover(self, graph: "Graph") -> tuple[set[Var], set[Var]]:
+    def discover(self, graph: "Graph") -> tuple[set[VarInfo], set[VarInfo]]:
         """
         Run the discovery step of the build process. Resolves arguments and results for the involved graphs.
         Finds the topological ordering between (sub)graphs and sets their owners (nodes of which they are attributes).
@@ -410,7 +410,7 @@ class Builder:
         self, graph: "Graph", scope: Scope, prefix: str = ""
     ) -> BuildResult:
         """
-        Compile a given Graph into a BuildResult. Handles naming of all the Vars/Nodes and only adds Nodes to a
+        Compile a given Graph into a BuildResult. Handles naming of all the VarInfos/Nodes and only adds Nodes to a
         Graph that should be present in the respective GraphProto. The passed Scope object is aware of values already
         available in the outer scope and may be the source of errors if the build fails.
 
@@ -432,7 +432,7 @@ class Builder:
         # A bunch of model metadata we're collecting
         opset_req: set[tuple[str, int]] = set()
         functions: list[_function.Function] = []
-        initializers: dict[Var, np.ndarray] = {}
+        initializers: dict[VarInfo, np.ndarray] = {}
 
         # Add arguments to our scope
         for arg in self.arguments_of[graph]:

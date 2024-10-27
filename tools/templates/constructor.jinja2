@@ -1,11 +1,11 @@
 def {{ schema.name | get_constructor_name }}({%
 for param in schema.inputs %}{%
     if is_optional(param)
-        %}{{ param.name }}: Optional[Var] = None, {%
+        %}{{ param.name }}: Optional[VarInfo] = None, {%
     elif is_variadic(param)
-        %}{{ param.name }}: Sequence[Var]{{" = ()" if loop.index0 >= schema.min_input else ""}}, {%
+        %}{{ param.name }}: Sequence[VarInfo]{{" = ()" if loop.index0 >= schema.min_input else ""}}, {%
     else
-        %}{{ param.name }}: Var, {%
+        %}{{ param.name }}: VarInfo, {%
 endif %}{% endfor %}
     {% if schema.attributes
         %}*, {%

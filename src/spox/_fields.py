@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Optional, Union
 
 from ._attributes import Attr
-from ._var import Var
+from ._var import VarInfo
 
 
 @dataclass
@@ -32,19 +32,19 @@ class VarFieldKind(enum.Enum):
 
 
 @dataclass
-class BaseVars(BaseFields):
+class BaseVarInfos(BaseFields):
     def __post_init__(self):
         # Check if passed fields are of the appropriate types based on field kinds
         for field in dataclasses.fields(self):
             value = getattr(self, field.name)
             field_type = self._get_field_type(field)
             if field_type == VarFieldKind.SINGLE:
-                if not isinstance(value, Var):
-                    raise TypeError(f"Field expected Var, got: {type(value)}.")
+                if not isinstance(value, VarInfo):
+                    raise TypeError(f"Field expected VarInfo, got: {type(value)}.")
             elif field_type == VarFieldKind.OPTIONAL:
-                if value is not None and not isinstance(value, Var):
+                if value is not None and not isinstance(value, VarInfo):
                     raise TypeError(
-                        f"Optional must be Var or None, got: {type(value)}."
+                        f"Optional must be VarInfo or None, got: {type(value)}."
                     )
             elif field_type == VarFieldKind.VARIADIC:
                 if not isinstance(value, Iterable):
@@ -53,31 +53,31 @@ class BaseVars(BaseFields):
                     )
                 # Cast to tuple to avoid accidental mutation
                 setattr(self, field.name, tuple(value))
-                if bad := {type(var) for var in value} - {Var}:
+                if bad := {type(var) for var in value} - {VarInfo}:
                     raise TypeError(
-                        f"Variadic field must only consist of Vars, got: {bad}."
+                        f"Variadic field must only consist of VarInfos, got: {bad}."
                     )
 
     @classmethod
     def _get_field_type(cls, field) -> VarFieldKind:
         """Access the kind of the field (single, optional, variadic) based on its type annotation."""
-        if field.type == Var:
+        if field.type == VarInfo:
             return VarFieldKind.SINGLE
-        elif field.type == Optional[Var]:
+        elif field.type == Optional[VarInfo]:
             return VarFieldKind.OPTIONAL
-        elif field.type == Sequence[Var]:
+        elif field.type == Sequence[VarInfo]:
             return VarFieldKind.VARIADIC
         raise ValueError(f"Bad field type: '{field.type}'.")
 
-    def _flatten(self) -> Iterable[tuple[str, Optional[Var]]]:
+    def _flatten(self) -> Iterable[tuple[str, Optional[VarInfo]]]:
         """Iterate over the pairs of names and values of fields in this object."""
         for key, value in self.__dict__.items():
-            if value is None or isinstance(value, Var):
+            if value is None or isinstance(value, VarInfo):
                 yield key, value
             else:
                 yield from ((f"{key}_{i}", v) for i, v in enumerate(value))
 
-    def __iter__(self) -> Iterator[Optional[Var]]:
+    def __iter__(self) -> Iterator[Optional[VarInfo]]:
         """Iterate over the values of fields in this object."""
         yield from (v for _, v in self._flatten())
 
@@ -85,11 +85,11 @@ class BaseVars(BaseFields):
         """Count the number of fields in this object (should be same as declared in the class)."""
         return sum(1 for _ in self)
 
-    def get_vars(self) -> dict[str, Var]:
-        """Return a flat mapping by name of all the Vars in this object."""
+    def get_vars(self) -> dict[str, VarInfo]:
+        """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
-    def get_fields(self) -> dict[str, Union[None, Var, Sequence[Var]]]:
+    def get_fields(self) -> dict[str, Union[None, VarInfo, Sequence[VarInfo]]]:
         """Return a mapping of all fields stored in this object by name."""
         return self.__dict__.copy()
 
@@ -107,10 +107,10 @@ class BaseVars(BaseFields):
 
 
 @dataclass
-class BaseInputs(BaseVars):
+class BaseInputs(BaseVarInfos):
     pass
 
 
 @dataclass
-class BaseOutputs(BaseVars):
+class BaseOutputs(BaseVarInfos):
     pass

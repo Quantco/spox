@@ -5,7 +5,6 @@
 
 from typing import TYPE_CHECKING, Callable
 
-import numpy as np
 import onnx
 import onnx.reference
 import onnx.shape_inference
@@ -18,7 +17,6 @@ from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
-from ._utils import from_array
 from ._value_prop import PropValueType
 
 if TYPE_CHECKING:
@@ -99,11 +97,7 @@ class StandardNode(Node):
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
-        initializers = [
-            from_array(var._value.value, key)
-            for key, var in self.inputs.get_vars().items()
-            if var._value and isinstance(var._value.value, np.ndarray)
-        ]
+        initializers = []
         #  Graph and model
         graph = onnx.helper.make_graph(
             [node_proto],
@@ -153,15 +147,15 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
-    def propagate_values_onnx(self) -> dict[str, PropValueType]:
+    def propagate_values_onnx(self, initializers) -> dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
         """
         # Cannot do propagation when some inputs were not propagated/inferred
         if any(
-            var.type is None or var._value is None
-            for var in self.inputs.get_vars().values()
+            var_info.type is None or initializers[name] is None
+            for name, var_info in self.inputs.get_vars().items()
         ):
             return {}
         if next(iter(self.subgraphs), None) is not None:
@@ -170,9 +164,9 @@ class StandardNode(Node):
         model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False)
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
-            scope.var[var]: wrap_feed(var._value)
-            for var in self.inputs.get_vars().values()
-            if var._value
+            scope.var[var_info]: wrap_feed(initializers[name])
+            for name, var_info in self.inputs.get_vars().items()
+            if initializers[name]
         }
 
         output_feed = run(model, input_feed)
@@ -188,9 +182,9 @@ class StandardNode(Node):
     def infer_output_types(self) -> dict[str, Type]:
         return self.infer_output_types_onnx()
 
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, initializers) -> dict[str, PropValueType]:
         if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
-            return self.propagate_values_onnx()
+            return self.propagate_values_onnx(initializers)
         return {}
 
 

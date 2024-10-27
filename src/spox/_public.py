@@ -17,7 +17,7 @@ from ._graph import Argument, initializer, results
 from ._inline import _Inline
 from ._standard import _strip_dim_symbol
 from ._type_system import Type
-from ._var import Var
+from ._var import Var, VarInfo
 
 
 def argument(typ: Type) -> Var:
@@ -37,16 +37,16 @@ def argument(typ: Type) -> Var:
     """
     return _internal_op.Argument(
         _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
-    ).outputs.arg
+    ).get_output_vars()["arg"]
 
 
 @contextlib.contextmanager
-def _temporary_renames(**kwargs: Var):
+def _temporary_renames(**kwargs: VarInfo):
     # The build code can't really special-case variable names that are
-    # not just ``Var._name``.  So we set names here and reset them
+    # not just ``VarInfo._name``.  So we set names here and reset them
     # afterwards.
     name: Optional[str]
-    pre: dict[Var, Optional[str]] = {}
+    pre: dict[VarInfo, Optional[str]] = {}
     try:
         for name, arg in kwargs.items():
             pre[arg] = arg._name
@@ -73,7 +73,7 @@ def build(
         Model inputs. Keys are names, values must be results of
         ``argument``.
     outputs
-        Model outputs. Keys are names, values may be any ``Var``.
+        Model outputs. Keys are names, values may be any ``VarInfo``.
         Building will resolve what nodes were used in the construction
         of output variables.
     drop_unused_inputs
@@ -107,29 +107,34 @@ def build(
     >>> # a, b, c are all vectors and named the same in the graph
     >>> # We create 3 distinct arguments
     >>> a, b, c = [argument(VectorFloat32) for _ in range(3)]
-    >>> # p represents the Var equivalent to a * b
+    >>> # p represents the VarInfo equivalent to a * b
     >>> q = op.add(op.mul(a, b), c)
     >>> # Build an ONNX model in Spox
     >>> model = build({'a': a, 'b': b, 'c': c}, {'r': q})
     """
-    if not all(isinstance(var, Var) for var in inputs.values()):
+    if not all(isinstance(var, VarInfo) for var in inputs.values()):
         seen_types = {type(obj) for obj in inputs.values()}
-        raise TypeError(f"Build inputs must be Vars, not {seen_types - {Var}}.")
-    if not all(isinstance(var, Var) for var in outputs.values()):
+        raise TypeError(f"Build inputs must be VarInfos, not {seen_types - {VarInfo}}.")
+    if not all(isinstance(var, VarInfo) for var in outputs.values()):
         seen_types = {type(obj) for obj in outputs.values()}
-        raise TypeError(f"Build outputs must be Vars, not {seen_types - {Var}}.")
+        raise TypeError(
+            f"Build outputs must be VarInfos, not {seen_types - {VarInfo}}."
+        )
     if not all(isinstance(var._op, Argument) for var in inputs.values()):
         raise TypeError(
-            "Build inputs must be `Var`s constructed using the `spox.argument` function. "
+            "Build inputs must be `VarInfo`s constructed using the `spox.argument` function. "
             "They must not be results of other operations."
         )
     if not outputs:
         raise ValueError("Build outputs must not be empty for the graph to be valid.")
 
-    with _temporary_renames(**inputs):
-        graph = results(**outputs)
+    input_infos = {key: var._var_info for key, var in inputs.items()}
+    output_infos = {key: var._var_info for key, var in outputs.items()}
+
+    with _temporary_renames(**input_infos):
+        graph = results(**output_infos)
         if not drop_unused_inputs:
-            graph = graph.with_arguments(*inputs.values())
+            graph = graph.with_arguments(*input_infos.values())
         model_proto = graph.to_onnx_model()
 
     # Validate that no further inputs were required.
@@ -142,24 +147,24 @@ def build(
 class _InlineCall(Protocol):
     """
     A callable returned by ``inline``, taking positional and keyword
-    arguments of type ``Var``, and returning a dictionary of names
-    (``str``) into ``Var``.
+    arguments of type ``VarInfo``, and returning a dictionary of names
+    (``str``) into ``VarInfo``.
     """
 
-    def __call__(self, *args: Var, **kwargs: Var) -> dict[str, Var]:
+    def __call__(self, *args: VarInfo, **kwargs: VarInfo) -> dict[str, VarInfo]:
         """
         Parameters
         ----------
         args
-            Variables passed as model inputs - positional, as they are
+            VarInfoiables passed as model inputs - positional, as they are
             listed in the model.
         kwargs
             Further variables passed as model inputs - keyword, as
             they are named in the model.
         Returns
         -------
-        Dict[str, Var]
-            Variables representing the inlined model's outputs.
+        Dict[str, VarInfo]
+            VarInfoiables representing the inlined model's outputs.
         """
 
 
@@ -170,7 +175,7 @@ def _copy_model(model: onnx.ModelProto) -> onnx.ModelProto:
 
 
 def inline(model: onnx.ModelProto) -> _InlineCall:
-    """Inline an existing ONNX model, taking and producing ``Var``.
+    """Inline an existing ONNX model, taking and producing ``VarInfo``.
 
     Any valid model may be inlined. The behaviour of the ``model`` is
     replicated, its metadata (docstring, annotations) may be stripped.
@@ -191,8 +196,8 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     Returns
     -------
     _InlineCall
-        A callable which takes ``Var`` arguments and returns a
-        dictionary of output names into ``Var``.
+        A callable which takes ``VarInfo`` arguments and returns a
+        dictionary of output names into ``VarInfo``.
 
         Positional arguments are assigned based on the order they are
         listed in the model.  Keyword arguments are assigned based on
@@ -275,13 +280,14 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
     model.graph.node.reverse()
     # Now we can assume the graph has no initializers
 
-    def inline_inner(*args: Var, **kwargs: Var) -> dict[str, Var]:
+    def inline_inner(*args: Var, **kwargs: Var) -> dict[str, VarInfo]:
+        kwargs = {name: var._var_info for name, var in kwargs.items()}
         for name, arg in zip(in_names, args):
             if name in kwargs:
                 raise TypeError(
                     f"inline callback got multiple values for argument '{name}', {_signature_msg}."
                 )
-            kwargs[name] = arg
+            kwargs[name] = arg._var_info
         if not (missing := set(in_names) - set(kwargs)) <= set(in_defaults):
             raise TypeError(
                 f"inline callback missing required arguments: {missing}, {_signature_msg}."

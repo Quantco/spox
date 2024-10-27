@@ -738,10 +738,13 @@ def affine_grid(
             align_corners=AttrInt64(align_corners, name="align_corners"),
         ),
         _AffineGrid.Inputs(
-            theta=theta,
-            size=size,
+            theta=theta._var_info,
+            size=size._var_info,
         ),
-    ).outputs.grid
+    ).get_output_vars(
+        theta=theta._value,
+        size=size._value,
+    )["grid"]
 
 
 def constant_of_shape(
@@ -786,9 +789,11 @@ def constant_of_shape(
             value=AttrTensor.maybe(value, name="value"),
         ),
         _ConstantOfShape.Inputs(
-            input=input,
+            input=input._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+    )["output"]
 
 
 def dft(
@@ -887,11 +892,15 @@ def dft(
             onesided=AttrInt64(onesided, name="onesided"),
         ),
         _DFT.Inputs(
-            input=input,
-            dft_length=dft_length,
-            axis=axis,
+            input=input._var_info,
+            dft_length=dft_length._var_info,
+            axis=axis._var_info,
         ),
-    ).outputs.output
+    ).get_output_vars(
+        input=input._value,
+        dft_length=dft_length._value,
+        axis=axis._value,
+    )["output"]
 
 
 def gelu(
@@ -937,9 +946,11 @@ def gelu(
             approximate=AttrString(approximate, name="approximate"),
         ),
         _Gelu.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def grid_sample(
@@ -1051,10 +1062,13 @@ def grid_sample(
             padding_mode=AttrString(padding_mode, name="padding_mode"),
         ),
         _GridSample.Inputs(
-            X=X,
-            grid=grid,
+            X=X._var_info,
+            grid=grid._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+        grid=grid._value,
+    )["Y"]
 
 
 def image_decoder(
@@ -1067,21 +1081,21 @@ def image_decoder(
     reason (e.g. corrupted encoded stream, invalid format, it will return an
     empty matrix). The following image formats are supported:
 
-    - BMP
-    - JPEG (note: Lossless JPEG support is optional)
-    - JPEG2000
-    - TIFF
-    - PNG
-    - WebP
-    - Portable image format (PBM, PGM, PPM, PXM, PNM) Decoded images follow
-      a channel-last layout: (Height, Width, Channels). **JPEG chroma
-      upsampling method:** When upsampling the chroma components by a factor
-      of 2, the pixels are linearly interpolated so that the centers of the
-      output pixels are 1/4 and 3/4 of the way between input pixel centers.
-      When rounding, 0.5 is rounded down and up at alternative pixels
-      locations to prevent bias towards larger values (ordered dither
-      pattern). Considering adjacent input pixels A, B, and C, B is
-      upsampled to pixels B0 and B1 so that
+    -  BMP
+    -  JPEG (note: Lossless JPEG support is optional)
+    -  JPEG2000
+    -  TIFF
+    -  PNG
+    -  WebP
+    -  Portable image format (PBM, PGM, PPM, PXM, PNM) Decoded images follow
+       a channel-last layout: (Height, Width, Channels). **JPEG chroma
+       upsampling method:** When upsampling the chroma components by a
+       factor of 2, the pixels are linearly interpolated so that the centers
+       of the output pixels are 1/4 and 3/4 of the way between input pixel
+       centers. When rounding, 0.5 is rounded down and up at alternative
+       pixels locations to prevent bias towards larger values (ordered
+       dither pattern). Considering adjacent input pixels A, B, and C, B is
+       upsampled to pixels B0 and B1 so that
 
     ::
 
@@ -1120,9 +1134,11 @@ def image_decoder(
             pixel_format=AttrString(pixel_format, name="pixel_format"),
         ),
         _ImageDecoder.Inputs(
-            encoded_stream=encoded_stream,
+            encoded_stream=encoded_stream._var_info,
         ),
-    ).outputs.image
+    ).get_output_vars(
+        encoded_stream=encoded_stream._value,
+    )["image"]
 
 
 def isinf(
@@ -1170,9 +1186,11 @@ def isinf(
             detect_positive=AttrInt64(detect_positive, name="detect_positive"),
         ),
         _IsInf.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def isnan(
@@ -1204,9 +1222,11 @@ def isnan(
     return _IsNaN(
         _IsNaN.Attributes(),
         _IsNaN.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def reduce_max(
@@ -1275,10 +1295,13 @@ def reduce_max(
             ),
         ),
         _ReduceMax.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def reduce_min(
@@ -1346,10 +1369,13 @@ def reduce_min(
             ),
         ),
         _ReduceMin.Inputs(
-            data=data,
-            axes=axes,
+            data=data._var_info,
+            axes=axes._var_info,
         ),
-    ).outputs.reduced
+    ).get_output_vars(
+        data=data._value,
+        axes=axes._value,
+    )["reduced"]
 
 
 def regex_full_match(
@@ -1393,9 +1419,11 @@ def regex_full_match(
             pattern=AttrString.maybe(pattern, name="pattern"),
         ),
         _RegexFullMatch.Inputs(
-            X=X,
+            X=X._var_info,
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=X._value,
+    )["Y"]
 
 
 def string_concat(
@@ -1431,10 +1459,13 @@ def string_concat(
     return _StringConcat(
         _StringConcat.Attributes(),
         _StringConcat.Inputs(
-            X=X,
-            Y=Y,
+            X=X._var_info,
+            Y=Y._var_info,
         ),
-    ).outputs.Z
+    ).get_output_vars(
+        X=X._value,
+        Y=Y._value,
+    )["Z"]
 
 
 def string_split(
@@ -1506,15 +1537,21 @@ def string_split(
      - T2: `tensor(string)`
      - T3: `tensor(int64)`
     """
-    return _StringSplit(
-        _StringSplit.Attributes(
-            delimiter=AttrString.maybe(delimiter, name="delimiter"),
-            maxsplit=AttrInt64.maybe(maxsplit, name="maxsplit"),
-        ),
-        _StringSplit.Inputs(
-            X=X,
-        ),
-    ).outputs._unpack_to_any()
+    return (
+        _StringSplit(
+            _StringSplit.Attributes(
+                delimiter=AttrString.maybe(delimiter, name="delimiter"),
+                maxsplit=AttrInt64.maybe(maxsplit, name="maxsplit"),
+            ),
+            _StringSplit.Inputs(
+                X=X._var_info,
+            ),
+        )
+        .get_output_vars(
+            X=X._value,
+        )
+        ._unpack_to_any()
+    )
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

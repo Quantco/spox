@@ -14,11 +14,11 @@ class _{{ schema.name }}(StandardNode):
     {% for input in schema.inputs %}
         {{ input.name }}: {%
             if is_optional(input)
-                %}Optional[Var]{%
+                %}Optional[VarInfo]{%
             elif is_variadic(input)
-                %}Sequence[Var]{%
+                %}Sequence[VarInfo]{%
             else
-                %}Var{%
+                %}VarInfo{%
             endif %}
 
     {% endfor %}
@@ -33,11 +33,11 @@ class _{{ schema.name }}(StandardNode):
     {% for output in schema.outputs %}
         {{ output.name }}: {%
             if is_optional(output)
-                %}Optional[Var]{%
+                %}Optional[VarInfo]{%
             elif is_variadic(output)
-                %}Sequence[Var]{%
+                %}Sequence[VarInfo]{%
             else
-                %}Var{%
+                %}VarInfo{%
             endif %}
 
     {% endfor %}
