@@ -22,7 +22,7 @@ from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
 from ._utils import from_array
-from ._var import Var, VarInfo
+from ._var import Var, VarInfo, unwrap_vars
 
 
 def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var]:
@@ -95,7 +95,7 @@ def enum_arguments(
     return arguments(**{f"{prefix}{i}": info for i, info in enumerate(infos)})
 
 
-def initializer(arr: np.ndarray) -> VarInfo:
+def initializer(arr: np.ndarray) -> Var:
     """
     Create a single initializer (frozen argument) with a given array value.
 
@@ -113,7 +113,7 @@ def initializer(arr: np.ndarray) -> VarInfo:
     return _Initializer(
         _Initializer.Attributes(value=AttrTensor(value=arr, name="dummy")),
         BaseInputs(),
-    ).outputs.arg
+    ).get_output_vars()["arg"]
 
 
 @dataclass(frozen=True, eq=False)
@@ -436,23 +436,23 @@ class Graph:
         return model
 
 
-def results(**kwargs: VarInfo) -> Graph:
+def results(**kwargs: Var) -> Graph:
     """
     Use this function to construct a ``Graph`` object.
 
     Parameters
     ----------
     kwargs
-        VarInfos to be marked as results in the created Graph.
+        Var to be marked as results in the created Graph.
     Returns
     -------
     Graph
         Graph with the results given in `kwargs`, in the same order. Keys are used as names for the results.
     """
-    return Graph(kwargs)
+    return Graph(unwrap_vars(kwargs))
 
 
-def enum_results(*vars: VarInfo, prefix="out") -> Graph:
+def enum_results(*vars: Var, prefix="out") -> Graph:
     """
     Use this function to construct a ``Graph`` object, whenever the exact names are not important.
     Useful when creating subgraphs.
@@ -471,7 +471,7 @@ def enum_results(*vars: VarInfo, prefix="out") -> Graph:
     return results(**{f"{prefix}{i}": var for i, var in enumerate(vars)})
 
 
-def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[VarInfo]]) -> Graph:
+def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Var]]) -> Graph:
     """
     Convenience function for creating a subgraph, for use in an operator like If or Loop.
     However, for those operators one may prefer to use alternative constructors like ``xif`` or ``xloop``
@@ -498,8 +498,6 @@ def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[VarInfo]]) -> Gr
     if not callable(fun):
         raise TypeError("Subgraph callback must be callable.")
     outs = fun(*ins)
-    if not (
-        isinstance(outs, Iterable) and all(isinstance(out, VarInfo) for out in outs)
-    ):
+    if not (isinstance(outs, Iterable) and all(isinstance(out, Var) for out in outs)):
         raise TypeError("Subgraph result must be an Iterable of VarInfo.")
     return enum_results(*outs).with_arguments(*ins)._with_constructor(fun)

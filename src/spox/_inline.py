@@ -127,10 +127,10 @@ class _Inline(_InternalNode):
             for k, o in enumerate(self.graph.output)
         }
 
-    def propagate_values(self) -> dict[str, _value_prop.PropValueType]:
+    def propagate_values(self, initializers) -> dict[str, _value_prop.PropValueType]:
         if any(
-            var.type is None or var._value is None
-            for var in self.inputs.get_vars().values()
+            var_info.type is None or initializers.get(name) is None
+            for name, var_info in self.inputs.get_vars().items()
         ):
             return {}
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()

@@ -126,7 +126,7 @@ class _Initializer(_InternalNode):
         arr = self.attrs.value.value
         return {"arg": Tensor(arr.dtype, arr.shape)}
 
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, initializers) -> dict[str, PropValueType]:
         return {"arg": self.attrs.value.value}
 
     def update_metadata(self, opset_req, initializers, functions):
@@ -247,7 +247,6 @@ def unsafe_cast(x: VarInfo, typ: Type) -> VarInfo:
     """
     y = intro(x)
     y.type = typ
-    y._value = x._value
     return y
 
 

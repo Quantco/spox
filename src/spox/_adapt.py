@@ -4,7 +4,6 @@
 import warnings
 from typing import Optional
 
-import numpy as np
 import onnx
 import onnx.version_converter
 
@@ -14,7 +13,6 @@ from ._internal_op import _InternalNode
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
-from ._utils import from_array
 from ._var import VarInfo
 
 
@@ -43,11 +41,7 @@ def adapt_node(
             )
             for key, var in node.outputs.get_vars().items()
         ]
-        initializers = [
-            from_array(var._value, name)  # type: ignore
-            for name, var in node.inputs.get_vars().items()
-            if isinstance(var._value, np.ndarray)
-        ]
+        initializers = []
     except ValueError:
         return None
 

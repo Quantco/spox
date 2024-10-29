@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import typing
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Iterable, Sequence
+from typing import Callable, Optional, TypeVar, Union, overload
 
 import numpy as np
 
@@ -158,9 +159,9 @@ class Var:
             raise TypeError(
                 "The propagated value field of a VarInfo must be a PropValue."
             )
-        if value is not None and value.type != var_info._type:
+        if value is not None and value.type != var_info.type:
             raise ValueError(
-                f"The propagated value type ({value.type}) and actual VarInfo type ({type_}) must be the same."
+                f"The propagated value type ({value.type}) and actual VarInfo type ({var_info.type}) must be the same."
             )
 
         self._var_info = var_info
@@ -215,13 +216,97 @@ class Var:
         """Equivalent to ``self.unwrap_type().unwrap_optional()``."""
         return self.unwrap_type().unwrap_optional()
 
-    def __copy__(self) -> "VarInfo":
+    @property
+    def _op(self):
+        return self._var_info._op
+
+    @property
+    def _name(self):
+        return self._var_info._name
+
+    def _rename(self, name: Optional[str]):
+        self._var_info._rename(name)
+
+    @property
+    def _which_output(self):
+        return self._var_info._which_output
+
+    @property
+    def type(self):
+        return self._var_info.type
+
+    def __copy__(self) -> "Var":
         # Simply return `self` to ensure that "copies" are still equal
         # during the build process
         return self
 
-    def __deepcopy__(self, _) -> "VarInfo":
-        raise ValueError("'VarInfo' objects cannot be deepcopied.")
+    def __deepcopy__(self, _) -> "Var":
+        raise ValueError("'Var' objects cannot be deepcopied.")
+
+
+# we want unwrap to be type aware
+T = TypeVar("T")
+
+
+@overload
+def unwrap_vars(var: Var) -> VarInfo: ...
+
+
+@overload
+def unwrap_vars(var: Optional[Var]) -> Optional[VarInfo]: ...
+
+
+@overload
+def unwrap_vars(var: Union[Sequence[Var], Iterable[Var]]) -> list[VarInfo]: ...
+
+
+@overload
+def unwrap_vars(var: dict[T, Var]) -> dict[T, VarInfo]: ...
+
+
+def unwrap_vars(var):
+    if var is None:
+        return None
+    elif isinstance(var, Var):
+        return var._var_info
+    elif isinstance(var, dict):
+        return {k: v._var_info for k, v in var.items()}
+    elif isinstance(var, Sequence) or isinstance(var, Iterable):
+        return [v._var_info for v in var]
+    else:
+        raise ValueError("Unsupported type for unwrap_vars")
+
+
+@overload
+def get_value(var: Var) -> Optional[_value_prop.PropValue]: ...
+
+
+@overload
+def get_value(var: Optional[Var]) -> Optional[_value_prop.PropValue]: ...
+
+
+@overload
+def get_value(
+    var: Union[Sequence[Var], Iterable[Var]],
+) -> Union[
+    Sequence[Optional[_value_prop.PropValue]], Iterable[Optional[_value_prop.PropValue]]
+]: ...
+
+
+@overload
+def get_value(var: dict[T, Var]) -> dict[T, Optional[_value_prop.PropValue]]: ...
+
+
+def get_value(var):
+    if var is None:
+        return None
+    if isinstance(var, Var):
+        return var._value
+    if isinstance(var, Sequence) or isinstance(var, Iterable):
+        return [v._value if v is not None else None for v in var]
+    if isinstance(var, dict):
+        return {k: v._value if v is not None else None for k, v in var.items()}
+    raise ValueError("Unsupported type for get_value")
 
 
 def result_type(

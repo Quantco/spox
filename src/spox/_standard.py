@@ -154,7 +154,7 @@ class StandardNode(Node):
         """
         # Cannot do propagation when some inputs were not propagated/inferred
         if any(
-            var_info.type is None or initializers[name] is None
+            var_info.type is None or initializers.get(name, None) is None
             for name, var_info in self.inputs.get_vars().items()
         ):
             return {}

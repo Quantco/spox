@@ -18,6 +18,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
 from spox._node import OpType
 from spox._standard import StandardNode
+from spox._var import VarInfo
 
 
 @pytest.fixture
@@ -82,11 +83,11 @@ class Squeeze11(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        squeezed: Var
+        squeezed: VarInfo
 
     op_type = OpType("Squeeze", "", 11)
 
@@ -97,8 +98,9 @@ class Squeeze11(StandardNode):
 
 def squeeze11(_data: Var, _axes: Iterable[int]):
     return Squeeze11(
-        Squeeze11.Attributes(AttrInt64s(_axes, "axes")), Squeeze11.Inputs(_data)
-    ).outputs.squeezed
+        Squeeze11.Attributes(AttrInt64s(_axes, "axes")),
+        Squeeze11.Inputs(_data._var_info),
+    ).get_output_vars()["squeezed"]
 
 
 @pytest.fixture

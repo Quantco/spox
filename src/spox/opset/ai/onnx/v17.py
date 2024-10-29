@@ -32,7 +32,7 @@ from spox._standard import InferenceError, StandardNode
 from spox._type_system import Sequence as SpoxSequence
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropValueType
-from spox._var import Var
+from spox._var import Var, VarInfo, get_value, unwrap_vars
 
 
 class _Abs(StandardNode):
@@ -42,11 +42,11 @@ class _Abs(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Abs", "", 13)
 
@@ -62,11 +62,11 @@ class _Acos(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Acos", "", 7)
 
@@ -82,11 +82,11 @@ class _Acosh(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Acosh", "", 9)
 
@@ -102,12 +102,12 @@ class _Add(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Add", "", 14)
 
@@ -123,12 +123,12 @@ class _And(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("And", "", 7)
 
@@ -146,11 +146,11 @@ class _ArgMax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ArgMax", "", 13)
 
@@ -168,11 +168,11 @@ class _ArgMin(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ArgMin", "", 13)
 
@@ -188,11 +188,11 @@ class _Asin(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Asin", "", 7)
 
@@ -208,11 +208,11 @@ class _Asinh(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Asinh", "", 9)
 
@@ -228,11 +228,11 @@ class _Atan(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Atan", "", 7)
 
@@ -248,11 +248,11 @@ class _Atanh(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Atanh", "", 9)
 
@@ -273,11 +273,11 @@ class _AveragePool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("AveragePool", "", 11)
 
@@ -295,17 +295,17 @@ class _BatchNormalization(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        scale: Var
-        B: Var
-        input_mean: Var
-        input_var: Var
+        X: VarInfo
+        scale: VarInfo
+        B: VarInfo
+        input_mean: VarInfo
+        input_var: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        running_mean: Optional[Var]
-        running_var: Optional[Var]
+        Y: VarInfo
+        running_mean: Optional[VarInfo]
+        running_var: Optional[VarInfo]
 
     op_type = OpType("BatchNormalization", "", 15)
 
@@ -322,11 +322,11 @@ class _Bernoulli(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Bernoulli", "", 15)
 
@@ -342,12 +342,12 @@ class _BitShift(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        Y: Var
+        X: VarInfo
+        Y: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: Var
+        Z: VarInfo
 
     op_type = OpType("BitShift", "", 11)
 
@@ -364,11 +364,11 @@ class _BlackmanWindow(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        size: Var
+        size: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("BlackmanWindow", "", 17)
 
@@ -384,11 +384,11 @@ class _Cast(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Cast", "", 13)
 
@@ -404,12 +404,12 @@ class _CastLike(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        target_type: Var
+        input: VarInfo
+        target_type: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("CastLike", "", 15)
 
@@ -425,11 +425,11 @@ class _Ceil(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Ceil", "", 13)
 
@@ -445,11 +445,11 @@ class _Celu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Celu", "", 12)
 
@@ -465,13 +465,13 @@ class _Clip(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        min: Optional[Var]
-        max: Optional[Var]
+        input: VarInfo
+        min: Optional[VarInfo]
+        max: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Clip", "", 13)
 
@@ -487,12 +487,12 @@ class _Compress(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        condition: Var
+        input: VarInfo
+        condition: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     def infer_output_types(self) -> dict[str, Type]:
         self.infer_output_types_onnx()
@@ -534,11 +534,11 @@ class _Concat(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        inputs: Sequence[Var]
+        inputs: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        concat_result: Var
+        concat_result: VarInfo
 
     op_type = OpType("Concat", "", 13)
 
@@ -555,11 +555,11 @@ class _ConcatFromSequence(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input_sequence: Var
+        input_sequence: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        concat_result: Var
+        concat_result: VarInfo
 
     op_type = OpType("ConcatFromSequence", "", 11)
 
@@ -583,9 +583,9 @@ class _Constant(StandardNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, initializers) -> dict[str, PropValueType]:
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
         )
@@ -625,11 +625,11 @@ class _ConstantOfShape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("ConstantOfShape", "", 9)
 
@@ -650,13 +650,13 @@ class _Conv(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        W: Var
-        B: Optional[Var]
+        X: VarInfo
+        W: VarInfo
+        B: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Conv", "", 11)
 
@@ -677,14 +677,14 @@ class _ConvInteger(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
-        w: Var
-        x_zero_point: Optional[Var]
-        w_zero_point: Optional[Var]
+        x: VarInfo
+        w: VarInfo
+        x_zero_point: Optional[VarInfo]
+        w_zero_point: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: VarInfo
 
     op_type = OpType("ConvInteger", "", 10)
 
@@ -707,13 +707,13 @@ class _ConvTranspose(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        W: Var
-        B: Optional[Var]
+        X: VarInfo
+        W: VarInfo
+        B: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("ConvTranspose", "", 11)
 
@@ -729,11 +729,11 @@ class _Cos(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Cos", "", 7)
 
@@ -749,11 +749,11 @@ class _Cosh(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Cosh", "", 9)
 
@@ -770,12 +770,12 @@ class _CumSum(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
-        axis: Var
+        x: VarInfo
+        axis: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: VarInfo
 
     op_type = OpType("CumSum", "", 14)
 
@@ -793,12 +793,12 @@ class _DFT(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        dft_length: Optional[Var]
+        input: VarInfo
+        dft_length: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("DFT", "", 17)
 
@@ -815,11 +815,11 @@ class _DepthToSpace(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("DepthToSpace", "", 13)
 
@@ -835,13 +835,13 @@ class _DequantizeLinear(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
-        x_scale: Var
-        x_zero_point: Optional[Var]
+        x: VarInfo
+        x_scale: VarInfo
+        x_zero_point: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: VarInfo
 
     op_type = OpType("DequantizeLinear", "", 13)
 
@@ -857,11 +857,11 @@ class _Det(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Det", "", 11)
 
@@ -877,12 +877,12 @@ class _Div(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Div", "", 14)
 
@@ -898,14 +898,14 @@ class _Dropout(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        ratio: Optional[Var]
-        training_mode: Optional[Var]
+        data: VarInfo
+        ratio: Optional[VarInfo]
+        training_mode: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
-        mask: Optional[Var]
+        output: VarInfo
+        mask: Optional[VarInfo]
 
     op_type = OpType("Dropout", "", 13)
 
@@ -921,13 +921,13 @@ class _DynamicQuantizeLinear(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
+        x: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
-        y_scale: Var
-        y_zero_point: Var
+        y: VarInfo
+        y_scale: VarInfo
+        y_zero_point: VarInfo
 
     op_type = OpType("DynamicQuantizeLinear", "", 11)
 
@@ -943,11 +943,11 @@ class _Einsum(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        Inputs: Sequence[Var]
+        Inputs: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Output: Var
+        Output: VarInfo
 
     op_type = OpType("Einsum", "", 12)
 
@@ -963,11 +963,11 @@ class _Elu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Elu", "", 6)
 
@@ -983,12 +983,12 @@ class _Equal(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Equal", "", 13)
 
@@ -1004,11 +1004,11 @@ class _Erf(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Erf", "", 13)
 
@@ -1024,11 +1024,11 @@ class _Exp(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Exp", "", 13)
 
@@ -1044,12 +1044,12 @@ class _Expand(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        shape: Var
+        input: VarInfo
+        shape: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Expand", "", 13)
 
@@ -1066,11 +1066,11 @@ class _EyeLike(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("EyeLike", "", 9)
 
@@ -1086,11 +1086,11 @@ class _Flatten(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Flatten", "", 13)
 
@@ -1106,11 +1106,11 @@ class _Floor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Floor", "", 13)
 
@@ -1133,17 +1133,17 @@ class _GRU(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        W: Var
-        R: Var
-        B: Optional[Var]
-        sequence_lens: Optional[Var]
-        initial_h: Optional[Var]
+        X: VarInfo
+        W: VarInfo
+        R: VarInfo
+        B: Optional[VarInfo]
+        sequence_lens: Optional[VarInfo]
+        initial_h: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Optional[Var]
-        Y_h: Optional[Var]
+        Y: Optional[VarInfo]
+        Y_h: Optional[VarInfo]
 
     op_type = OpType("GRU", "", 14)
 
@@ -1159,12 +1159,12 @@ class _Gather(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        indices: Var
+        data: VarInfo
+        indices: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Gather", "", 13)
 
@@ -1180,12 +1180,12 @@ class _GatherElements(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        indices: Var
+        data: VarInfo
+        indices: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("GatherElements", "", 13)
 
@@ -1201,12 +1201,12 @@ class _GatherND(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        indices: Var
+        data: VarInfo
+        indices: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("GatherND", "", 13)
 
@@ -1225,13 +1225,13 @@ class _Gemm(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
-        C: Optional[Var]
+        A: VarInfo
+        B: VarInfo
+        C: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Gemm", "", 13)
 
@@ -1247,11 +1247,11 @@ class _GlobalAveragePool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("GlobalAveragePool", "", 1)
 
@@ -1267,11 +1267,11 @@ class _GlobalLpPool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("GlobalLpPool", "", 2)
 
@@ -1287,11 +1287,11 @@ class _GlobalMaxPool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("GlobalMaxPool", "", 1)
 
@@ -1307,12 +1307,12 @@ class _Greater(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Greater", "", 13)
 
@@ -1328,12 +1328,12 @@ class _GreaterOrEqual(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("GreaterOrEqual", "", 16)
 
@@ -1351,12 +1351,12 @@ class _GridSample(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        grid: Var
+        X: VarInfo
+        grid: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("GridSample", "", 16)
 
@@ -1373,11 +1373,11 @@ class _HammingWindow(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        size: Var
+        size: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("HammingWindow", "", 17)
 
@@ -1394,11 +1394,11 @@ class _HannWindow(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        size: Var
+        size: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("HannWindow", "", 17)
 
@@ -1415,11 +1415,11 @@ class _HardSigmoid(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("HardSigmoid", "", 6)
 
@@ -1435,11 +1435,11 @@ class _HardSwish(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("HardSwish", "", 14)
 
@@ -1455,11 +1455,11 @@ class _Hardmax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Hardmax", "", 13)
 
@@ -1475,11 +1475,11 @@ class _Identity(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Identity", "", 16)
 
@@ -1496,11 +1496,11 @@ class _If(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        cond: Var
+        cond: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[Var]
+        outputs: Sequence[VarInfo]
 
     op_type = OpType("If", "", 16)
 
@@ -1516,13 +1516,13 @@ class _InstanceNormalization(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        scale: Var
-        B: Var
+        input: VarInfo
+        scale: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("InstanceNormalization", "", 6)
 
@@ -1539,11 +1539,11 @@ class _IsInf(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("IsInf", "", 10)
 
@@ -1559,11 +1559,11 @@ class _IsNaN(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("IsNaN", "", 13)
 
@@ -1582,11 +1582,11 @@ class _LRN(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("LRN", "", 13)
 
@@ -1609,20 +1609,20 @@ class _LSTM(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        W: Var
-        R: Var
-        B: Optional[Var]
-        sequence_lens: Optional[Var]
-        initial_h: Optional[Var]
-        initial_c: Optional[Var]
-        P: Optional[Var]
+        X: VarInfo
+        W: VarInfo
+        R: VarInfo
+        B: Optional[VarInfo]
+        sequence_lens: Optional[VarInfo]
+        initial_h: Optional[VarInfo]
+        initial_c: Optional[VarInfo]
+        P: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Optional[Var]
-        Y_h: Optional[Var]
-        Y_c: Optional[Var]
+        Y: Optional[VarInfo]
+        Y_h: Optional[VarInfo]
+        Y_c: Optional[VarInfo]
 
     op_type = OpType("LSTM", "", 14)
 
@@ -1640,15 +1640,15 @@ class _LayerNormalization(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        Scale: Var
-        B: Optional[Var]
+        X: VarInfo
+        Scale: VarInfo
+        B: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        Mean: Optional[Var]
-        InvStdDev: Optional[Var]
+        Y: VarInfo
+        Mean: Optional[VarInfo]
+        InvStdDev: Optional[VarInfo]
 
     op_type = OpType("LayerNormalization", "", 17)
 
@@ -1664,11 +1664,11 @@ class _LeakyRelu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("LeakyRelu", "", 16)
 
@@ -1684,12 +1684,12 @@ class _Less(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Less", "", 13)
 
@@ -1705,12 +1705,12 @@ class _LessOrEqual(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("LessOrEqual", "", 16)
 
@@ -1726,11 +1726,11 @@ class _Log(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Log", "", 13)
 
@@ -1746,11 +1746,11 @@ class _LogSoftmax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("LogSoftmax", "", 13)
 
@@ -1766,13 +1766,13 @@ class _Loop(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        M: Optional[Var]
-        cond: Optional[Var]
-        v_initial: Sequence[Var]
+        M: Optional[VarInfo]
+        cond: Optional[VarInfo]
+        v_initial: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        v_final_and_scan_outputs: Sequence[Var]
+        v_final_and_scan_outputs: Sequence[VarInfo]
 
     def infer_output_types(self) -> dict[str, Type]:
         output_types = super().infer_output_types()
@@ -1803,11 +1803,11 @@ class _LpNormalization(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("LpNormalization", "", 1)
 
@@ -1827,11 +1827,11 @@ class _LpPool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("LpPool", "", 11)
 
@@ -1847,12 +1847,12 @@ class _MatMul(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("MatMul", "", 13)
 
@@ -1868,14 +1868,14 @@ class _MatMulInteger(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
-        a_zero_point: Optional[Var]
-        b_zero_point: Optional[Var]
+        A: VarInfo
+        B: VarInfo
+        a_zero_point: Optional[VarInfo]
+        b_zero_point: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("MatMulInteger", "", 10)
 
@@ -1891,11 +1891,11 @@ class _Max(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data_0: Sequence[Var]
+        data_0: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        max: Var
+        max: VarInfo
 
     op_type = OpType("Max", "", 13)
 
@@ -1917,12 +1917,12 @@ class _MaxPool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        Indices: Optional[Var]
+        Y: VarInfo
+        Indices: Optional[VarInfo]
 
     op_type = OpType("MaxPool", "", 12)
 
@@ -1939,12 +1939,12 @@ class _MaxRoiPool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        rois: Var
+        X: VarInfo
+        rois: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("MaxRoiPool", "", 1)
 
@@ -1962,13 +1962,13 @@ class _MaxUnpool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        I: Var
-        output_shape: Optional[Var]
+        X: VarInfo
+        I: VarInfo
+        output_shape: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("MaxUnpool", "", 11)
 
@@ -1984,11 +1984,11 @@ class _Mean(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data_0: Sequence[Var]
+        data_0: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        mean: Var
+        mean: VarInfo
 
     op_type = OpType("Mean", "", 13)
 
@@ -2004,11 +2004,11 @@ class _MeanVarianceNormalization(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("MeanVarianceNormalization", "", 13)
 
@@ -2024,15 +2024,15 @@ class _MelWeightMatrix(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        num_mel_bins: Var
-        dft_length: Var
-        sample_rate: Var
-        lower_edge_hertz: Var
-        upper_edge_hertz: Var
+        num_mel_bins: VarInfo
+        dft_length: VarInfo
+        sample_rate: VarInfo
+        lower_edge_hertz: VarInfo
+        upper_edge_hertz: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("MelWeightMatrix", "", 17)
 
@@ -2048,11 +2048,11 @@ class _Min(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data_0: Sequence[Var]
+        data_0: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        min: Var
+        min: VarInfo
 
     op_type = OpType("Min", "", 13)
 
@@ -2068,12 +2068,12 @@ class _Mod(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Mod", "", 13)
 
@@ -2089,12 +2089,12 @@ class _Mul(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Mul", "", 14)
 
@@ -2112,11 +2112,11 @@ class _Multinomial(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Multinomial", "", 7)
 
@@ -2132,11 +2132,11 @@ class _Neg(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Neg", "", 13)
 
@@ -2153,13 +2153,13 @@ class _NegativeLogLikelihoodLoss(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        target: Var
-        weight: Optional[Var]
+        input: VarInfo
+        target: VarInfo
+        weight: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        loss: Var
+        loss: VarInfo
 
     op_type = OpType("NegativeLogLikelihoodLoss", "", 13)
 
@@ -2175,15 +2175,15 @@ class _NonMaxSuppression(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        boxes: Var
-        scores: Var
-        max_output_boxes_per_class: Optional[Var]
-        iou_threshold: Optional[Var]
-        score_threshold: Optional[Var]
+        boxes: VarInfo
+        scores: VarInfo
+        max_output_boxes_per_class: Optional[VarInfo]
+        iou_threshold: Optional[VarInfo]
+        score_threshold: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        selected_indices: Var
+        selected_indices: VarInfo
 
     op_type = OpType("NonMaxSuppression", "", 11)
 
@@ -2199,11 +2199,11 @@ class _NonZero(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("NonZero", "", 13)
 
@@ -2219,11 +2219,11 @@ class _Not(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Not", "", 1)
 
@@ -2239,13 +2239,13 @@ class _OneHot(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        indices: Var
-        depth: Var
-        values: Var
+        indices: VarInfo
+        depth: VarInfo
+        values: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("OneHot", "", 11)
 
@@ -2261,11 +2261,11 @@ class _Optional(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Optional[Var]
+        input: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Optional", "", 15)
 
@@ -2281,11 +2281,11 @@ class _OptionalGetElement(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("OptionalGetElement", "", 15)
 
@@ -2301,11 +2301,11 @@ class _OptionalHasElement(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("OptionalHasElement", "", 15)
 
@@ -2321,12 +2321,12 @@ class _Or(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Or", "", 7)
 
@@ -2342,12 +2342,12 @@ class _PRelu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        slope: Var
+        X: VarInfo
+        slope: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("PRelu", "", 16)
 
@@ -2363,13 +2363,13 @@ class _Pad(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        pads: Var
-        constant_value: Optional[Var]
+        data: VarInfo
+        pads: VarInfo
+        constant_value: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Pad", "", 13)
 
@@ -2385,12 +2385,12 @@ class _Pow(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        Y: Var
+        X: VarInfo
+        Y: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: Var
+        Z: VarInfo
 
     op_type = OpType("Pow", "", 15)
 
@@ -2411,19 +2411,19 @@ class _QLinearConv(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
-        x_scale: Var
-        x_zero_point: Var
-        w: Var
-        w_scale: Var
-        w_zero_point: Var
-        y_scale: Var
-        y_zero_point: Var
-        B: Optional[Var]
+        x: VarInfo
+        x_scale: VarInfo
+        x_zero_point: VarInfo
+        w: VarInfo
+        w_scale: VarInfo
+        w_zero_point: VarInfo
+        y_scale: VarInfo
+        y_zero_point: VarInfo
+        B: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: VarInfo
 
     op_type = OpType("QLinearConv", "", 10)
 
@@ -2439,18 +2439,18 @@ class _QLinearMatMul(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        a: Var
-        a_scale: Var
-        a_zero_point: Var
-        b: Var
-        b_scale: Var
-        b_zero_point: Var
-        y_scale: Var
-        y_zero_point: Var
+        a: VarInfo
+        a_scale: VarInfo
+        a_zero_point: VarInfo
+        b: VarInfo
+        b_scale: VarInfo
+        b_zero_point: VarInfo
+        y_scale: VarInfo
+        y_zero_point: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: VarInfo
 
     op_type = OpType("QLinearMatMul", "", 10)
 
@@ -2466,13 +2466,13 @@ class _QuantizeLinear(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
-        y_scale: Var
-        y_zero_point: Optional[Var]
+        x: VarInfo
+        y_scale: VarInfo
+        y_zero_point: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: VarInfo
 
     op_type = OpType("QuantizeLinear", "", 13)
 
@@ -2494,17 +2494,17 @@ class _RNN(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        W: Var
-        R: Var
-        B: Optional[Var]
-        sequence_lens: Optional[Var]
-        initial_h: Optional[Var]
+        X: VarInfo
+        W: VarInfo
+        R: VarInfo
+        B: Optional[VarInfo]
+        sequence_lens: Optional[VarInfo]
+        initial_h: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Optional[Var]
-        Y_h: Optional[Var]
+        Y: Optional[VarInfo]
+        Y_h: Optional[VarInfo]
 
     op_type = OpType("RNN", "", 14)
 
@@ -2526,7 +2526,7 @@ class _RandomNormal(StandardNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("RandomNormal", "", 1)
 
@@ -2545,11 +2545,11 @@ class _RandomNormalLike(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("RandomNormalLike", "", 1)
 
@@ -2571,7 +2571,7 @@ class _RandomUniform(StandardNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("RandomUniform", "", 1)
 
@@ -2590,11 +2590,11 @@ class _RandomUniformLike(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("RandomUniformLike", "", 1)
 
@@ -2610,13 +2610,13 @@ class _Range(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        start: Var
-        limit: Var
-        delta: Var
+        start: VarInfo
+        limit: VarInfo
+        delta: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Range", "", 11)
 
@@ -2632,11 +2632,11 @@ class _Reciprocal(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Reciprocal", "", 13)
 
@@ -2653,11 +2653,11 @@ class _ReduceL1(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceL1", "", 13)
 
@@ -2674,11 +2674,11 @@ class _ReduceL2(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceL2", "", 13)
 
@@ -2695,11 +2695,11 @@ class _ReduceLogSum(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceLogSum", "", 13)
 
@@ -2716,11 +2716,11 @@ class _ReduceLogSumExp(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceLogSumExp", "", 13)
 
@@ -2737,11 +2737,11 @@ class _ReduceMax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceMax", "", 13)
 
@@ -2758,11 +2758,11 @@ class _ReduceMean(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceMean", "", 13)
 
@@ -2779,11 +2779,11 @@ class _ReduceMin(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceMin", "", 13)
 
@@ -2800,11 +2800,11 @@ class _ReduceProd(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceProd", "", 13)
 
@@ -2821,12 +2821,12 @@ class _ReduceSum(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        axes: Optional[Var]
+        data: VarInfo
+        axes: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceSum", "", 13)
 
@@ -2843,11 +2843,11 @@ class _ReduceSumSquare(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceSumSquare", "", 13)
 
@@ -2863,11 +2863,11 @@ class _Relu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Relu", "", 14)
 
@@ -2883,12 +2883,12 @@ class _Reshape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        shape: Var
+        data: VarInfo
+        shape: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reshaped: Var
+        reshaped: VarInfo
 
     op_type = OpType("Reshape", "", 14)
 
@@ -2909,14 +2909,14 @@ class _Resize(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        roi: Optional[Var]
-        scales: Optional[Var]
-        sizes: Optional[Var]
+        X: VarInfo
+        roi: Optional[VarInfo]
+        scales: Optional[VarInfo]
+        sizes: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Resize", "", 13)
 
@@ -2933,12 +2933,12 @@ class _ReverseSequence(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        sequence_lens: Var
+        input: VarInfo
+        sequence_lens: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("ReverseSequence", "", 10)
 
@@ -2959,13 +2959,13 @@ class _RoiAlign(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        rois: Var
-        batch_indices: Var
+        X: VarInfo
+        rois: VarInfo
+        batch_indices: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("RoiAlign", "", 16)
 
@@ -2981,11 +2981,11 @@ class _Round(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Round", "", 11)
 
@@ -3001,14 +3001,14 @@ class _STFT(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        signal: Var
-        frame_step: Var
-        window: Optional[Var]
-        frame_length: Optional[Var]
+        signal: VarInfo
+        frame_step: VarInfo
+        window: Optional[VarInfo]
+        frame_length: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("STFT", "", 17)
 
@@ -3029,11 +3029,11 @@ class _Scan(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        initial_state_and_scan_inputs: Sequence[Var]
+        initial_state_and_scan_inputs: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        final_state_and_scan_outputs: Sequence[Var]
+        final_state_and_scan_outputs: Sequence[VarInfo]
 
     op_type = OpType("Scan", "", 16)
 
@@ -3050,13 +3050,13 @@ class _ScatterElements(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        indices: Var
-        updates: Var
+        data: VarInfo
+        indices: VarInfo
+        updates: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("ScatterElements", "", 16)
 
@@ -3072,13 +3072,13 @@ class _ScatterND(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        indices: Var
-        updates: Var
+        data: VarInfo
+        indices: VarInfo
+        updates: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("ScatterND", "", 16)
 
@@ -3095,11 +3095,11 @@ class _Selu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Selu", "", 6)
 
@@ -3115,12 +3115,12 @@ class _SequenceAt(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input_sequence: Var
-        position: Var
+        input_sequence: VarInfo
+        position: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        tensor: Var
+        tensor: VarInfo
 
     op_type = OpType("SequenceAt", "", 11)
 
@@ -3136,11 +3136,11 @@ class _SequenceConstruct(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        inputs: Sequence[Var]
+        inputs: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output_sequence: Var
+        output_sequence: VarInfo
 
     op_type = OpType("SequenceConstruct", "", 11)
 
@@ -3158,7 +3158,7 @@ class _SequenceEmpty(StandardNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("SequenceEmpty", "", 11)
 
@@ -3174,12 +3174,12 @@ class _SequenceErase(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input_sequence: Var
-        position: Optional[Var]
+        input_sequence: VarInfo
+        position: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output_sequence: Var
+        output_sequence: VarInfo
 
     op_type = OpType("SequenceErase", "", 11)
 
@@ -3195,13 +3195,13 @@ class _SequenceInsert(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input_sequence: Var
-        tensor: Var
-        position: Optional[Var]
+        input_sequence: VarInfo
+        tensor: VarInfo
+        position: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output_sequence: Var
+        output_sequence: VarInfo
 
     op_type = OpType("SequenceInsert", "", 11)
 
@@ -3217,11 +3217,11 @@ class _SequenceLength(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input_sequence: Var
+        input_sequence: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        length: Var
+        length: VarInfo
 
     op_type = OpType("SequenceLength", "", 11)
 
@@ -3237,12 +3237,12 @@ class _SequenceMap(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input_sequence: Var
-        additional_inputs: Sequence[Var]
+        input_sequence: VarInfo
+        additional_inputs: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        out_sequence: Sequence[Var]
+        out_sequence: Sequence[VarInfo]
 
     op_type = OpType("SequenceMap", "", 17)
 
@@ -3259,11 +3259,11 @@ class _Shape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        shape: Var
+        shape: VarInfo
 
     op_type = OpType("Shape", "", 15)
 
@@ -3280,11 +3280,11 @@ class _Shrink(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Shrink", "", 9)
 
@@ -3300,11 +3300,11 @@ class _Sigmoid(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Sigmoid", "", 13)
 
@@ -3320,11 +3320,11 @@ class _Sign(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Sign", "", 13)
 
@@ -3340,11 +3340,11 @@ class _Sin(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Sin", "", 7)
 
@@ -3360,11 +3360,11 @@ class _Sinh(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Sinh", "", 9)
 
@@ -3380,11 +3380,11 @@ class _Size(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        size: Var
+        size: VarInfo
 
     op_type = OpType("Size", "", 13)
 
@@ -3400,15 +3400,15 @@ class _Slice(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        starts: Var
-        ends: Var
-        axes: Optional[Var]
-        steps: Optional[Var]
+        data: VarInfo
+        starts: VarInfo
+        ends: VarInfo
+        axes: Optional[VarInfo]
+        steps: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Slice", "", 13)
 
@@ -3424,11 +3424,11 @@ class _Softmax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Softmax", "", 13)
 
@@ -3445,14 +3445,14 @@ class _SoftmaxCrossEntropyLoss(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        scores: Var
-        labels: Var
-        weights: Optional[Var]
+        scores: VarInfo
+        labels: VarInfo
+        weights: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
-        log_prob: Optional[Var]
+        output: VarInfo
+        log_prob: Optional[VarInfo]
 
     op_type = OpType("SoftmaxCrossEntropyLoss", "", 13)
 
@@ -3468,11 +3468,11 @@ class _Softplus(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Softplus", "", 1)
 
@@ -3488,11 +3488,11 @@ class _Softsign(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Softsign", "", 1)
 
@@ -3508,11 +3508,11 @@ class _SpaceToDepth(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("SpaceToDepth", "", 13)
 
@@ -3528,12 +3528,12 @@ class _Split(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        split: Optional[Var]
+        input: VarInfo
+        split: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[Var]
+        outputs: Sequence[VarInfo]
 
     op_type = OpType("Split", "", 13)
 
@@ -3550,12 +3550,12 @@ class _SplitToSequence(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        split: Optional[Var]
+        input: VarInfo
+        split: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output_sequence: Var
+        output_sequence: VarInfo
 
     op_type = OpType("SplitToSequence", "", 11)
 
@@ -3571,11 +3571,11 @@ class _Sqrt(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Sqrt", "", 13)
 
@@ -3591,12 +3591,12 @@ class _Squeeze(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        axes: Optional[Var]
+        data: VarInfo
+        axes: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        squeezed: Var
+        squeezed: VarInfo
 
     op_type = OpType("Squeeze", "", 13)
 
@@ -3615,11 +3615,11 @@ class _StringNormalizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("StringNormalizer", "", 10)
 
@@ -3635,12 +3635,12 @@ class _Sub(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Sub", "", 14)
 
@@ -3656,11 +3656,11 @@ class _Sum(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data_0: Sequence[Var]
+        data_0: Sequence[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        sum: Var
+        sum: VarInfo
 
     op_type = OpType("Sum", "", 13)
 
@@ -3676,11 +3676,11 @@ class _Tan(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Tan", "", 7)
 
@@ -3696,11 +3696,11 @@ class _Tanh(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Tanh", "", 13)
 
@@ -3724,11 +3724,11 @@ class _TfIdfVectorizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("TfIdfVectorizer", "", 9)
 
@@ -3744,11 +3744,11 @@ class _ThresholdedRelu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("ThresholdedRelu", "", 10)
 
@@ -3764,12 +3764,12 @@ class _Tile(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        repeats: Var
+        input: VarInfo
+        repeats: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Tile", "", 13)
 
@@ -3787,13 +3787,13 @@ class _TopK(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        K: Var
+        X: VarInfo
+        K: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Values: Var
-        Indices: Var
+        Values: VarInfo
+        Indices: VarInfo
 
     op_type = OpType("TopK", "", 11)
 
@@ -3809,11 +3809,11 @@ class _Transpose(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        transposed: Var
+        transposed: VarInfo
 
     op_type = OpType("Transpose", "", 13)
 
@@ -3829,12 +3829,12 @@ class _Trilu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        k: Optional[Var]
+        input: VarInfo
+        k: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Trilu", "", 14)
 
@@ -3851,14 +3851,14 @@ class _Unique(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        indices: Optional[Var]
-        inverse_indices: Optional[Var]
-        counts: Optional[Var]
+        Y: VarInfo
+        indices: Optional[VarInfo]
+        inverse_indices: Optional[VarInfo]
+        counts: Optional[VarInfo]
 
     op_type = OpType("Unique", "", 11)
 
@@ -3874,12 +3874,12 @@ class _Unsqueeze(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        axes: Var
+        data: VarInfo
+        axes: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        expanded: Var
+        expanded: VarInfo
 
     op_type = OpType("Unsqueeze", "", 13)
 
@@ -3895,13 +3895,13 @@ class _Where(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        condition: Var
-        X: Var
-        Y: Var
+        condition: VarInfo
+        X: VarInfo
+        Y: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("Where", "", 16)
 
@@ -3917,12 +3917,12 @@ class _Xor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: VarInfo
+        B: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: VarInfo
 
     op_type = OpType("Xor", "", 7)
 
@@ -3961,10 +3961,10 @@ def abs(
     return _Abs(
         _Abs.Attributes(),
         _Abs.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -3997,10 +3997,10 @@ def acos(
     return _Acos(
         _Acos.Attributes(),
         _Acos.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4034,10 +4034,10 @@ def acosh(
     return _Acosh(
         _Acosh.Attributes(),
         _Acosh.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4081,12 +4081,12 @@ def add(
     return _Add(
         _Add.Attributes(),
         _Add.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -4129,12 +4129,12 @@ def and_(
     return _And(
         _And.Attributes(),
         _And.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -4193,10 +4193,10 @@ def arg_max(
             select_last_index=AttrInt64(select_last_index, name="select_last_index"),
         ),
         _ArgMax.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -4255,10 +4255,10 @@ def arg_min(
             select_last_index=AttrInt64(select_last_index, name="select_last_index"),
         ),
         _ArgMin.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -4291,10 +4291,10 @@ def asin(
     return _Asin(
         _Asin.Attributes(),
         _Asin.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4327,10 +4327,10 @@ def asinh(
     return _Asinh(
         _Asinh.Attributes(),
         _Asinh.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4363,10 +4363,10 @@ def atan(
     return _Atan(
         _Atan.Attributes(),
         _Atan.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4400,10 +4400,10 @@ def atanh(
     return _Atanh(
         _Atanh.Attributes(),
         _Atanh.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4538,10 +4538,10 @@ def average_pool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _AveragePool.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -4673,19 +4673,19 @@ def batch_normalization(
                 training_mode=AttrInt64(training_mode, name="training_mode"),
             ),
             _BatchNormalization.Inputs(
-                X=X._var_info,
-                scale=scale._var_info,
-                B=B._var_info,
-                input_mean=input_mean._var_info,
-                input_var=input_var._var_info,
+                X=unwrap_vars(X),
+                scale=unwrap_vars(scale),
+                B=unwrap_vars(B),
+                input_mean=unwrap_vars(input_mean),
+                input_var=unwrap_vars(input_var),
             ),
         )
         .get_output_vars(
-            X=X._value,
-            scale=scale._value,
-            B=B._value,
-            input_mean=input_mean._value,
-            input_var=input_var._value,
+            X=get_value(X),
+            scale=get_value(scale),
+            B=get_value(B),
+            input_mean=get_value(input_mean),
+            input_var=get_value(input_var),
         )
         ._unpack_to_any()
     )
@@ -4742,10 +4742,10 @@ def bernoulli(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _Bernoulli.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4804,12 +4804,12 @@ def bit_shift(
             direction=AttrString(direction, name="direction"),
         ),
         _BitShift.Inputs(
-            X=X._var_info,
-            Y=Y._var_info,
+            X=unwrap_vars(X),
+            Y=unwrap_vars(Y),
         ),
     ).get_output_vars(
-        X=X._value,
-        Y=Y._value,
+        X=get_value(X),
+        Y=get_value(Y),
     )["Z"]
 
 
@@ -4860,10 +4860,10 @@ def blackman_window(
             periodic=AttrInt64(periodic, name="periodic"),
         ),
         _BlackmanWindow.Inputs(
-            size=size._var_info,
+            size=unwrap_vars(size),
         ),
     ).get_output_vars(
-        size=size._value,
+        size=get_value(size),
     )["output"]
 
 
@@ -4954,10 +4954,10 @@ def cast(
             to=AttrDtype(to, name="to"),
         ),
         _Cast.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -4998,12 +4998,12 @@ def cast_like(
     return _CastLike(
         _CastLike.Attributes(),
         _CastLike.Inputs(
-            input=input._var_info,
-            target_type=target_type._var_info,
+            input=unwrap_vars(input),
+            target_type=unwrap_vars(target_type),
         ),
     ).get_output_vars(
-        input=input._value,
-        target_type=target_type._value,
+        input=get_value(input),
+        target_type=get_value(target_type),
     )["output"]
 
 
@@ -5038,10 +5038,10 @@ def ceil(
     return _Ceil(
         _Ceil.Attributes(),
         _Ceil.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -5086,10 +5086,10 @@ def celu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _Celu.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -5133,14 +5133,14 @@ def clip(
     return _Clip(
         _Clip.Attributes(),
         _Clip.Inputs(
-            input=input._var_info,
-            min=min._var_info,
-            max=max._var_info,
+            input=unwrap_vars(input),
+            min=unwrap_vars(min),
+            max=unwrap_vars(max),
         ),
     ).get_output_vars(
-        input=input._value,
-        min=min._value,
-        max=max._value,
+        input=get_value(input),
+        min=get_value(min),
+        max=get_value(max),
     )["output"]
 
 
@@ -5195,12 +5195,12 @@ def compress(
             axis=AttrInt64.maybe(axis, name="axis"),
         ),
         _Compress.Inputs(
-            input=input._var_info,
-            condition=condition._var_info,
+            input=unwrap_vars(input),
+            condition=unwrap_vars(condition),
         ),
     ).get_output_vars(
-        input=input._value,
-        condition=condition._value,
+        input=get_value(input),
+        condition=get_value(condition),
     )["output"]
 
 
@@ -5242,10 +5242,10 @@ def concat(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Concat.Inputs(
-            inputs=inputs._var_info,
+            inputs=unwrap_vars(inputs),
         ),
     ).get_output_vars(
-        inputs=inputs._value,
+        inputs=get_value(inputs),
     )["concat_result"]
 
 
@@ -5297,10 +5297,10 @@ def concat_from_sequence(
             new_axis=AttrInt64(new_axis, name="new_axis"),
         ),
         _ConcatFromSequence.Inputs(
-            input_sequence=input_sequence._var_info,
+            input_sequence=unwrap_vars(input_sequence),
         ),
     ).get_output_vars(
-        input_sequence=input_sequence._value,
+        input_sequence=get_value(input_sequence),
     )["concat_result"]
 
 
@@ -5415,10 +5415,10 @@ def constant_of_shape(
             value=AttrTensor.maybe(value, name="value"),
         ),
         _ConstantOfShape.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -5529,14 +5529,14 @@ def conv(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _Conv.Inputs(
-            X=X._var_info,
-            W=W._var_info,
-            B=B._var_info,
+            X=unwrap_vars(X),
+            W=unwrap_vars(W),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        X=X._value,
-        W=W._value,
-        B=B._value,
+        X=get_value(X),
+        W=get_value(W),
+        B=get_value(B),
     )["Y"]
 
 
@@ -5658,16 +5658,16 @@ def conv_integer(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _ConvInteger.Inputs(
-            x=x._var_info,
-            w=w._var_info,
-            x_zero_point=x_zero_point._var_info,
-            w_zero_point=w_zero_point._var_info,
+            x=unwrap_vars(x),
+            w=unwrap_vars(w),
+            x_zero_point=unwrap_vars(x_zero_point),
+            w_zero_point=unwrap_vars(w_zero_point),
         ),
     ).get_output_vars(
-        x=x._value,
-        w=w._value,
-        x_zero_point=x_zero_point._value,
-        w_zero_point=w_zero_point._value,
+        x=get_value(x),
+        w=get_value(w),
+        x_zero_point=get_value(x_zero_point),
+        w_zero_point=get_value(w_zero_point),
     )["y"]
 
 
@@ -5811,14 +5811,14 @@ def conv_transpose(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _ConvTranspose.Inputs(
-            X=X._var_info,
-            W=W._var_info,
-            B=B._var_info,
+            X=unwrap_vars(X),
+            W=unwrap_vars(W),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        X=X._value,
-        W=W._value,
-        B=B._value,
+        X=get_value(X),
+        W=get_value(W),
+        B=get_value(B),
     )["Y"]
 
 
@@ -5850,10 +5850,10 @@ def cos(
     return _Cos(
         _Cos.Attributes(),
         _Cos.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -5885,10 +5885,10 @@ def cosh(
     return _Cosh(
         _Cosh.Attributes(),
         _Cosh.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -5963,12 +5963,12 @@ def cumsum(
             reverse=AttrInt64(reverse, name="reverse"),
         ),
         _CumSum.Inputs(
-            x=x._var_info,
-            axis=axis._var_info,
+            x=unwrap_vars(x),
+            axis=unwrap_vars(axis),
         ),
     ).get_output_vars(
-        x=x._value,
-        axis=axis._value,
+        x=get_value(x),
+        axis=get_value(axis),
     )["y"]
 
 
@@ -6052,12 +6052,12 @@ def dft(
             onesided=AttrInt64(onesided, name="onesided"),
         ),
         _DFT.Inputs(
-            input=input._var_info,
-            dft_length=dft_length._var_info,
+            input=unwrap_vars(input),
+            dft_length=unwrap_vars(dft_length),
         ),
     ).get_output_vars(
-        input=input._value,
-        dft_length=dft_length._value,
+        input=get_value(input),
+        dft_length=get_value(dft_length),
     )["output"]
 
 
@@ -6129,10 +6129,10 @@ def depth_to_space(
             mode=AttrString(mode, name="mode"),
         ),
         _DepthToSpace.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -6191,14 +6191,14 @@ def dequantize_linear(
             axis=AttrInt64(axis, name="axis"),
         ),
         _DequantizeLinear.Inputs(
-            x=x._var_info,
-            x_scale=x_scale._var_info,
-            x_zero_point=x_zero_point._var_info,
+            x=unwrap_vars(x),
+            x_scale=unwrap_vars(x_scale),
+            x_zero_point=unwrap_vars(x_zero_point),
         ),
     ).get_output_vars(
-        x=x._value,
-        x_scale=x_scale._value,
-        x_zero_point=x_zero_point._value,
+        x=get_value(x),
+        x_scale=get_value(x_scale),
+        x_zero_point=get_value(x_zero_point),
     )["y"]
 
 
@@ -6235,10 +6235,10 @@ def det(
     return _Det(
         _Det.Attributes(),
         _Det.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -6282,12 +6282,12 @@ def div(
     return _Div(
         _Div.Attributes(),
         _Div.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -6373,15 +6373,15 @@ def dropout(
                 seed=AttrInt64.maybe(seed, name="seed"),
             ),
             _Dropout.Inputs(
-                data=data._var_info,
-                ratio=ratio._var_info,
-                training_mode=training_mode._var_info,
+                data=unwrap_vars(data),
+                ratio=unwrap_vars(ratio),
+                training_mode=unwrap_vars(training_mode),
             ),
         )
         .get_output_vars(
-            data=data._value,
-            ratio=ratio._value,
-            training_mode=training_mode._value,
+            data=get_value(data),
+            ratio=get_value(ratio),
+            training_mode=get_value(training_mode),
         )
         ._unpack_to_any()
     )
@@ -6458,11 +6458,11 @@ def dynamic_quantize_linear(
         _DynamicQuantizeLinear(
             _DynamicQuantizeLinear.Attributes(),
             _DynamicQuantizeLinear.Inputs(
-                x=x._var_info,
+                x=unwrap_vars(x),
             ),
         )
         .get_output_vars(
-            x=x._value,
+            x=get_value(x),
         )
         ._unpack_to_any()
     )
@@ -6535,10 +6535,10 @@ def einsum(
             equation=AttrString(equation, name="equation"),
         ),
         _Einsum.Inputs(
-            Inputs=Inputs._var_info,
+            Inputs=unwrap_vars(Inputs),
         ),
     ).get_output_vars(
-        Inputs=Inputs._value,
+        Inputs=get_value(Inputs),
     )["Output"]
 
 
@@ -6580,10 +6580,10 @@ def elu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _Elu.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -6626,12 +6626,12 @@ def equal(
     return _Equal(
         _Equal.Attributes(),
         _Equal.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -6664,10 +6664,10 @@ def erf(
     return _Erf(
         _Erf.Attributes(),
         _Erf.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -6699,10 +6699,10 @@ def exp(
     return _Exp(
         _Exp.Attributes(),
         _Exp.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -6747,12 +6747,12 @@ def expand(
     return _Expand(
         _Expand.Attributes(),
         _Expand.Inputs(
-            input=input._var_info,
-            shape=shape._var_info,
+            input=unwrap_vars(input),
+            shape=unwrap_vars(shape),
         ),
     ).get_output_vars(
-        input=input._value,
-        shape=shape._value,
+        input=get_value(input),
+        shape=get_value(shape),
     )["output"]
 
 
@@ -6810,10 +6810,10 @@ def eye_like(
             k=AttrInt64(k, name="k"),
         ),
         _EyeLike.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -6861,10 +6861,10 @@ def flatten(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Flatten.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -6899,10 +6899,10 @@ def floor(
     return _Floor(
         _Floor.Attributes(),
         _Floor.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -7097,21 +7097,21 @@ def gru(
                 ),
             ),
             _GRU.Inputs(
-                X=X._var_info,
-                W=W._var_info,
-                R=R._var_info,
-                B=B._var_info,
-                sequence_lens=sequence_lens._var_info,
-                initial_h=initial_h._var_info,
+                X=unwrap_vars(X),
+                W=unwrap_vars(W),
+                R=unwrap_vars(R),
+                B=unwrap_vars(B),
+                sequence_lens=unwrap_vars(sequence_lens),
+                initial_h=unwrap_vars(initial_h),
             ),
         )
         .get_output_vars(
-            X=X._value,
-            W=W._value,
-            R=R._value,
-            B=B._value,
-            sequence_lens=sequence_lens._value,
-            initial_h=initial_h._value,
+            X=get_value(X),
+            W=get_value(W),
+            R=get_value(R),
+            B=get_value(B),
+            sequence_lens=get_value(sequence_lens),
+            initial_h=get_value(initial_h),
         )
         ._unpack_to_any()
     )
@@ -7208,12 +7208,12 @@ def gather(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Gather.Inputs(
-            data=data._var_info,
-            indices=indices._var_info,
+            data=unwrap_vars(data),
+            indices=unwrap_vars(indices),
         ),
     ).get_output_vars(
-        data=data._value,
-        indices=indices._value,
+        data=get_value(data),
+        indices=get_value(indices),
     )["output"]
 
 
@@ -7316,12 +7316,12 @@ def gather_elements(
             axis=AttrInt64(axis, name="axis"),
         ),
         _GatherElements.Inputs(
-            data=data._var_info,
-            indices=indices._var_info,
+            data=unwrap_vars(data),
+            indices=unwrap_vars(indices),
         ),
     ).get_output_vars(
-        data=data._value,
-        indices=indices._value,
+        data=get_value(data),
+        indices=get_value(indices),
     )["output"]
 
 
@@ -7469,12 +7469,12 @@ def gather_nd(
             batch_dims=AttrInt64(batch_dims, name="batch_dims"),
         ),
         _GatherND.Inputs(
-            data=data._var_info,
-            indices=indices._var_info,
+            data=unwrap_vars(data),
+            indices=unwrap_vars(indices),
         ),
     ).get_output_vars(
-        data=data._value,
-        indices=indices._value,
+        data=get_value(data),
+        indices=get_value(indices),
     )["output"]
 
 
@@ -7559,14 +7559,14 @@ def gemm(
             transB=AttrInt64(transB, name="transB"),
         ),
         _Gemm.Inputs(
-            A=A._var_info,
-            B=B._var_info,
-            C=C._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
+            C=unwrap_vars(C),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
-        C=C._value,
+        A=get_value(A),
+        B=get_value(B),
+        C=get_value(C),
     )["Y"]
 
 
@@ -7607,10 +7607,10 @@ def global_average_pool(
     return _GlobalAveragePool(
         _GlobalAveragePool.Attributes(),
         _GlobalAveragePool.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -7658,10 +7658,10 @@ def global_lp_pool(
             p=AttrInt64(p, name="p"),
         ),
         _GlobalLpPool.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -7702,10 +7702,10 @@ def global_max_pool(
     return _GlobalMaxPool(
         _GlobalMaxPool.Attributes(),
         _GlobalMaxPool.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -7748,12 +7748,12 @@ def greater(
     return _Greater(
         _Greater.Attributes(),
         _Greater.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -7796,12 +7796,12 @@ def greater_or_equal(
     return _GreaterOrEqual(
         _GreaterOrEqual.Attributes(),
         _GreaterOrEqual.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -7894,12 +7894,12 @@ def grid_sample(
             padding_mode=AttrString(padding_mode, name="padding_mode"),
         ),
         _GridSample.Inputs(
-            X=X._var_info,
-            grid=grid._var_info,
+            X=unwrap_vars(X),
+            grid=unwrap_vars(grid),
         ),
     ).get_output_vars(
-        X=X._value,
-        grid=grid._value,
+        X=get_value(X),
+        grid=get_value(grid),
     )["Y"]
 
 
@@ -7950,10 +7950,10 @@ def hamming_window(
             periodic=AttrInt64(periodic, name="periodic"),
         ),
         _HammingWindow.Inputs(
-            size=size._var_info,
+            size=unwrap_vars(size),
         ),
     ).get_output_vars(
-        size=size._value,
+        size=get_value(size),
     )["output"]
 
 
@@ -8004,10 +8004,10 @@ def hann_window(
             periodic=AttrInt64(periodic, name="periodic"),
         ),
         _HannWindow.Inputs(
-            size=size._var_info,
+            size=unwrap_vars(size),
         ),
     ).get_output_vars(
-        size=size._value,
+        size=get_value(size),
     )["output"]
 
 
@@ -8053,10 +8053,10 @@ def hard_sigmoid(
             beta=AttrFloat32(beta, name="beta"),
         ),
         _HardSigmoid.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -8091,10 +8091,10 @@ def hard_swish(
     return _HardSwish(
         _HardSwish.Attributes(),
         _HardSwish.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -8142,10 +8142,10 @@ def hardmax(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Hardmax.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -8177,10 +8177,10 @@ def identity(
     return _Identity(
         _Identity.Attributes(),
         _Identity.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -8244,11 +8244,11 @@ def if_(
             then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
         ),
         _If.Inputs(
-            cond=cond._var_info,
+            cond=unwrap_vars(cond),
         ),
         out_variadic=len(_else_branch_subgraph.requested_results),
     ).get_output_vars(
-        cond=cond._value,
+        cond=get_value(cond),
     )["outputs"]
 
 
@@ -8303,14 +8303,14 @@ def instance_normalization(
             epsilon=AttrFloat32(epsilon, name="epsilon"),
         ),
         _InstanceNormalization.Inputs(
-            input=input._var_info,
-            scale=scale._var_info,
-            B=B._var_info,
+            input=unwrap_vars(input),
+            scale=unwrap_vars(scale),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        input=input._value,
-        scale=scale._value,
-        B=B._value,
+        input=get_value(input),
+        scale=get_value(scale),
+        B=get_value(B),
     )["output"]
 
 
@@ -8359,10 +8359,10 @@ def isinf(
             detect_positive=AttrInt64(detect_positive, name="detect_positive"),
         ),
         _IsInf.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -8395,10 +8395,10 @@ def isnan(
     return _IsNaN(
         _IsNaN.Attributes(),
         _IsNaN.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -8469,10 +8469,10 @@ def lrn(
             size=AttrInt64(size, name="size"),
         ),
         _LRN.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -8687,25 +8687,25 @@ def lstm(
                 layout=AttrInt64(layout, name="layout"),
             ),
             _LSTM.Inputs(
-                X=X._var_info,
-                W=W._var_info,
-                R=R._var_info,
-                B=B._var_info,
-                sequence_lens=sequence_lens._var_info,
-                initial_h=initial_h._var_info,
-                initial_c=initial_c._var_info,
-                P=P._var_info,
+                X=unwrap_vars(X),
+                W=unwrap_vars(W),
+                R=unwrap_vars(R),
+                B=unwrap_vars(B),
+                sequence_lens=unwrap_vars(sequence_lens),
+                initial_h=unwrap_vars(initial_h),
+                initial_c=unwrap_vars(initial_c),
+                P=unwrap_vars(P),
             ),
         )
         .get_output_vars(
-            X=X._value,
-            W=W._value,
-            R=R._value,
-            B=B._value,
-            sequence_lens=sequence_lens._value,
-            initial_h=initial_h._value,
-            initial_c=initial_c._value,
-            P=P._value,
+            X=get_value(X),
+            W=get_value(W),
+            R=get_value(R),
+            B=get_value(B),
+            sequence_lens=get_value(sequence_lens),
+            initial_h=get_value(initial_h),
+            initial_c=get_value(initial_c),
+            P=get_value(P),
         )
         ._unpack_to_any()
     )
@@ -8798,15 +8798,15 @@ def layer_normalization(
                 stash_type=AttrInt64(stash_type, name="stash_type"),
             ),
             _LayerNormalization.Inputs(
-                X=X._var_info,
-                Scale=Scale._var_info,
-                B=B._var_info,
+                X=unwrap_vars(X),
+                Scale=unwrap_vars(Scale),
+                B=unwrap_vars(B),
             ),
         )
         .get_output_vars(
-            X=X._value,
-            Scale=Scale._value,
-            B=B._value,
+            X=get_value(X),
+            Scale=get_value(Scale),
+            B=get_value(B),
         )
         ._unpack_to_any()
     )
@@ -8850,10 +8850,10 @@ def leaky_relu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _LeakyRelu.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -8896,12 +8896,12 @@ def less(
     return _Less(
         _Less.Attributes(),
         _Less.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -8944,12 +8944,12 @@ def less_or_equal(
     return _LessOrEqual(
         _LessOrEqual.Attributes(),
         _LessOrEqual.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -8981,10 +8981,10 @@ def log(
     return _Log(
         _Log.Attributes(),
         _Log.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -9031,10 +9031,10 @@ def log_softmax(
             axis=AttrInt64(axis, name="axis"),
         ),
         _LogSoftmax.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -9224,15 +9224,15 @@ def loop(
             body=AttrGraph(_body_subgraph, name="body"),
         ),
         _Loop.Inputs(
-            M=M._var_info,
-            cond=cond._var_info,
-            v_initial=v_initial._var_info,
+            M=unwrap_vars(M),
+            cond=unwrap_vars(cond),
+            v_initial=unwrap_vars(v_initial),
         ),
         out_variadic=len(_body_subgraph.requested_results) - 1,
     ).get_output_vars(
-        M=M._value,
-        cond=cond._value,
-        v_initial=v_initial._value,
+        M=get_value(M),
+        cond=get_value(cond),
+        v_initial=get_value(v_initial),
     )["v_final_and_scan_outputs"]
 
 
@@ -9276,10 +9276,10 @@ def lp_normalization(
             p=AttrInt64(p, name="p"),
         ),
         _LpNormalization.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -9363,10 +9363,10 @@ def lp_pool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _LpPool.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -9403,12 +9403,12 @@ def matmul(
     return _MatMul(
         _MatMul.Attributes(),
         _MatMul.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["Y"]
 
 
@@ -9467,16 +9467,16 @@ def matmul_integer(
     return _MatMulInteger(
         _MatMulInteger.Attributes(),
         _MatMulInteger.Inputs(
-            A=A._var_info,
-            B=B._var_info,
-            a_zero_point=a_zero_point._var_info,
-            b_zero_point=b_zero_point._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
+            a_zero_point=unwrap_vars(a_zero_point),
+            b_zero_point=unwrap_vars(b_zero_point),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
-        a_zero_point=a_zero_point._value,
-        b_zero_point=b_zero_point._value,
+        A=get_value(A),
+        B=get_value(B),
+        a_zero_point=get_value(a_zero_point),
+        b_zero_point=get_value(b_zero_point),
     )["Y"]
 
 
@@ -9512,10 +9512,10 @@ def max(
     return _Max(
         _Max.Attributes(),
         _Max.Inputs(
-            data_0=data_0._var_info,
+            data_0=unwrap_vars(data_0),
         ),
     ).get_output_vars(
-        data_0=data_0._value,
+        data_0=get_value(data_0),
     )["max"]
 
 
@@ -9667,11 +9667,11 @@ def max_pool(
                 strides=AttrInt64s.maybe(strides, name="strides"),
             ),
             _MaxPool.Inputs(
-                X=X._var_info,
+                X=unwrap_vars(X),
             ),
         )
         .get_output_vars(
-            X=X._value,
+            X=get_value(X),
         )
         ._unpack_to_any()
     )
@@ -9728,12 +9728,12 @@ def max_roi_pool(
             spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
         ),
         _MaxRoiPool.Inputs(
-            X=X._var_info,
-            rois=rois._var_info,
+            X=unwrap_vars(X),
+            rois=unwrap_vars(rois),
         ),
     ).get_output_vars(
-        X=X._value,
-        rois=rois._value,
+        X=get_value(X),
+        rois=get_value(rois),
     )["Y"]
 
 
@@ -9840,14 +9840,14 @@ def max_unpool(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _MaxUnpool.Inputs(
-            X=X._var_info,
-            I=I._var_info,
-            output_shape=output_shape._var_info,
+            X=unwrap_vars(X),
+            I=unwrap_vars(I),
+            output_shape=unwrap_vars(output_shape),
         ),
     ).get_output_vars(
-        X=X._value,
-        I=I._value,
-        output_shape=output_shape._value,
+        X=get_value(X),
+        I=get_value(I),
+        output_shape=get_value(output_shape),
     )["output"]
 
 
@@ -9883,10 +9883,10 @@ def mean(
     return _Mean(
         _Mean.Attributes(),
         _Mean.Inputs(
-            data_0=data_0._var_info,
+            data_0=unwrap_vars(data_0),
         ),
     ).get_output_vars(
-        data_0=data_0._value,
+        data_0=get_value(data_0),
     )["mean"]
 
 
@@ -9930,10 +9930,10 @@ def mean_variance_normalization(
             axes=AttrInt64s(axes, name="axes"),
         ),
         _MeanVarianceNormalization.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -10016,18 +10016,18 @@ def mel_weight_matrix(
             output_datatype=AttrInt64(output_datatype, name="output_datatype"),
         ),
         _MelWeightMatrix.Inputs(
-            num_mel_bins=num_mel_bins._var_info,
-            dft_length=dft_length._var_info,
-            sample_rate=sample_rate._var_info,
-            lower_edge_hertz=lower_edge_hertz._var_info,
-            upper_edge_hertz=upper_edge_hertz._var_info,
+            num_mel_bins=unwrap_vars(num_mel_bins),
+            dft_length=unwrap_vars(dft_length),
+            sample_rate=unwrap_vars(sample_rate),
+            lower_edge_hertz=unwrap_vars(lower_edge_hertz),
+            upper_edge_hertz=unwrap_vars(upper_edge_hertz),
         ),
     ).get_output_vars(
-        num_mel_bins=num_mel_bins._value,
-        dft_length=dft_length._value,
-        sample_rate=sample_rate._value,
-        lower_edge_hertz=lower_edge_hertz._value,
-        upper_edge_hertz=upper_edge_hertz._value,
+        num_mel_bins=get_value(num_mel_bins),
+        dft_length=get_value(dft_length),
+        sample_rate=get_value(sample_rate),
+        lower_edge_hertz=get_value(lower_edge_hertz),
+        upper_edge_hertz=get_value(upper_edge_hertz),
     )["output"]
 
 
@@ -10063,10 +10063,10 @@ def min(
     return _Min(
         _Min.Attributes(),
         _Min.Inputs(
-            data_0=data_0._var_info,
+            data_0=unwrap_vars(data_0),
         ),
     ).get_output_vars(
-        data_0=data_0._value,
+        data_0=get_value(data_0),
     )["min"]
 
 
@@ -10127,12 +10127,12 @@ def mod(
             fmod=AttrInt64(fmod, name="fmod"),
         ),
         _Mod.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -10176,12 +10176,12 @@ def mul(
     return _Mul(
         _Mul.Attributes(),
         _Mul.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -10239,10 +10239,10 @@ def multinomial(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _Multinomial.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -10276,10 +10276,10 @@ def neg(
     return _Neg(
         _Neg.Attributes(),
         _Neg.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -10446,14 +10446,14 @@ def negative_log_likelihood_loss(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _NegativeLogLikelihoodLoss.Inputs(
-            input=input._var_info,
-            target=target._var_info,
-            weight=weight._var_info,
+            input=unwrap_vars(input),
+            target=unwrap_vars(target),
+            weight=unwrap_vars(weight),
         ),
     ).get_output_vars(
-        input=input._value,
-        target=target._value,
-        weight=weight._value,
+        input=get_value(input),
+        target=get_value(target),
+        weight=get_value(weight),
     )["loss"]
 
 
@@ -10528,18 +10528,18 @@ def non_max_suppression(
             center_point_box=AttrInt64(center_point_box, name="center_point_box"),
         ),
         _NonMaxSuppression.Inputs(
-            boxes=boxes._var_info,
-            scores=scores._var_info,
-            max_output_boxes_per_class=max_output_boxes_per_class._var_info,
-            iou_threshold=iou_threshold._var_info,
-            score_threshold=score_threshold._var_info,
+            boxes=unwrap_vars(boxes),
+            scores=unwrap_vars(scores),
+            max_output_boxes_per_class=unwrap_vars(max_output_boxes_per_class),
+            iou_threshold=unwrap_vars(iou_threshold),
+            score_threshold=unwrap_vars(score_threshold),
         ),
     ).get_output_vars(
-        boxes=boxes._value,
-        scores=scores._value,
-        max_output_boxes_per_class=max_output_boxes_per_class._value,
-        iou_threshold=iou_threshold._value,
-        score_threshold=score_threshold._value,
+        boxes=get_value(boxes),
+        scores=get_value(scores),
+        max_output_boxes_per_class=get_value(max_output_boxes_per_class),
+        iou_threshold=get_value(iou_threshold),
+        score_threshold=get_value(score_threshold),
     )["selected_indices"]
 
 
@@ -10575,10 +10575,10 @@ def non_zero(
     return _NonZero(
         _NonZero.Attributes(),
         _NonZero.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -10610,10 +10610,10 @@ def not_(
     return _Not(
         _Not.Attributes(),
         _Not.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -10703,14 +10703,14 @@ def one_hot(
             axis=AttrInt64(axis, name="axis"),
         ),
         _OneHot.Inputs(
-            indices=indices._var_info,
-            depth=depth._var_info,
-            values=values._var_info,
+            indices=unwrap_vars(indices),
+            depth=unwrap_vars(depth),
+            values=unwrap_vars(values),
         ),
     ).get_output_vars(
-        indices=indices._value,
-        depth=depth._value,
-        values=values._value,
+        indices=get_value(indices),
+        depth=get_value(depth),
+        values=get_value(values),
     )["output"]
 
 
@@ -10752,10 +10752,10 @@ def optional(
             type=AttrType.maybe(type, name="type"),
         ),
         _Optional.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -10790,10 +10790,10 @@ def optional_get_element(
     return _OptionalGetElement(
         _OptionalGetElement.Attributes(),
         _OptionalGetElement.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -10828,10 +10828,10 @@ def optional_has_element(
     return _OptionalHasElement(
         _OptionalHasElement.Attributes(),
         _OptionalHasElement.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -10874,12 +10874,12 @@ def or_(
     return _Or(
         _Or.Attributes(),
         _Or.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -10922,12 +10922,12 @@ def prelu(
     return _PRelu(
         _PRelu.Attributes(),
         _PRelu.Inputs(
-            X=X._var_info,
-            slope=slope._var_info,
+            X=unwrap_vars(X),
+            slope=unwrap_vars(slope),
         ),
     ).get_output_vars(
-        X=X._value,
-        slope=slope._value,
+        X=get_value(X),
+        slope=get_value(slope),
     )["Y"]
 
 
@@ -11030,14 +11030,14 @@ def pad(
             mode=AttrString(mode, name="mode"),
         ),
         _Pad.Inputs(
-            data=data._var_info,
-            pads=pads._var_info,
-            constant_value=constant_value._var_info,
+            data=unwrap_vars(data),
+            pads=unwrap_vars(pads),
+            constant_value=unwrap_vars(constant_value),
         ),
     ).get_output_vars(
-        data=data._value,
-        pads=pads._value,
-        constant_value=constant_value._value,
+        data=get_value(data),
+        pads=get_value(pads),
+        constant_value=get_value(constant_value),
     )["output"]
 
 
@@ -11079,12 +11079,12 @@ def pow(
     return _Pow(
         _Pow.Attributes(),
         _Pow.Inputs(
-            X=X._var_info,
-            Y=Y._var_info,
+            X=unwrap_vars(X),
+            Y=unwrap_vars(Y),
         ),
     ).get_output_vars(
-        X=X._value,
-        Y=Y._value,
+        X=get_value(X),
+        Y=get_value(Y),
     )["Z"]
 
 
@@ -11238,26 +11238,26 @@ def qlinear_conv(
             strides=AttrInt64s.maybe(strides, name="strides"),
         ),
         _QLinearConv.Inputs(
-            x=x._var_info,
-            x_scale=x_scale._var_info,
-            x_zero_point=x_zero_point._var_info,
-            w=w._var_info,
-            w_scale=w_scale._var_info,
-            w_zero_point=w_zero_point._var_info,
-            y_scale=y_scale._var_info,
-            y_zero_point=y_zero_point._var_info,
-            B=B._var_info,
+            x=unwrap_vars(x),
+            x_scale=unwrap_vars(x_scale),
+            x_zero_point=unwrap_vars(x_zero_point),
+            w=unwrap_vars(w),
+            w_scale=unwrap_vars(w_scale),
+            w_zero_point=unwrap_vars(w_zero_point),
+            y_scale=unwrap_vars(y_scale),
+            y_zero_point=unwrap_vars(y_zero_point),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        x=x._value,
-        x_scale=x_scale._value,
-        x_zero_point=x_zero_point._value,
-        w=w._value,
-        w_scale=w_scale._value,
-        w_zero_point=w_zero_point._value,
-        y_scale=y_scale._value,
-        y_zero_point=y_zero_point._value,
-        B=B._value,
+        x=get_value(x),
+        x_scale=get_value(x_scale),
+        x_zero_point=get_value(x_zero_point),
+        w=get_value(w),
+        w_scale=get_value(w_scale),
+        w_zero_point=get_value(w_zero_point),
+        y_scale=get_value(y_scale),
+        y_zero_point=get_value(y_zero_point),
+        B=get_value(B),
     )["y"]
 
 
@@ -11336,24 +11336,24 @@ def qlinear_matmul(
     return _QLinearMatMul(
         _QLinearMatMul.Attributes(),
         _QLinearMatMul.Inputs(
-            a=a._var_info,
-            a_scale=a_scale._var_info,
-            a_zero_point=a_zero_point._var_info,
-            b=b._var_info,
-            b_scale=b_scale._var_info,
-            b_zero_point=b_zero_point._var_info,
-            y_scale=y_scale._var_info,
-            y_zero_point=y_zero_point._var_info,
+            a=unwrap_vars(a),
+            a_scale=unwrap_vars(a_scale),
+            a_zero_point=unwrap_vars(a_zero_point),
+            b=unwrap_vars(b),
+            b_scale=unwrap_vars(b_scale),
+            b_zero_point=unwrap_vars(b_zero_point),
+            y_scale=unwrap_vars(y_scale),
+            y_zero_point=unwrap_vars(y_zero_point),
         ),
     ).get_output_vars(
-        a=a._value,
-        a_scale=a_scale._value,
-        a_zero_point=a_zero_point._value,
-        b=b._value,
-        b_scale=b_scale._value,
-        b_zero_point=b_zero_point._value,
-        y_scale=y_scale._value,
-        y_zero_point=y_zero_point._value,
+        a=get_value(a),
+        a_scale=get_value(a_scale),
+        a_zero_point=get_value(a_zero_point),
+        b=get_value(b),
+        b_scale=get_value(b_scale),
+        b_zero_point=get_value(b_zero_point),
+        y_scale=get_value(y_scale),
+        y_zero_point=get_value(y_zero_point),
     )["y"]
 
 
@@ -11416,14 +11416,14 @@ def quantize_linear(
             axis=AttrInt64(axis, name="axis"),
         ),
         _QuantizeLinear.Inputs(
-            x=x._var_info,
-            y_scale=y_scale._var_info,
-            y_zero_point=y_zero_point._var_info,
+            x=unwrap_vars(x),
+            y_scale=unwrap_vars(y_scale),
+            y_zero_point=unwrap_vars(y_zero_point),
         ),
     ).get_output_vars(
-        x=x._value,
-        y_scale=y_scale._value,
-        y_zero_point=y_zero_point._value,
+        x=get_value(x),
+        y_scale=get_value(y_scale),
+        y_zero_point=get_value(y_zero_point),
     )["y"]
 
 
@@ -11595,21 +11595,21 @@ def rnn(
                 layout=AttrInt64(layout, name="layout"),
             ),
             _RNN.Inputs(
-                X=X._var_info,
-                W=W._var_info,
-                R=R._var_info,
-                B=B._var_info,
-                sequence_lens=sequence_lens._var_info,
-                initial_h=initial_h._var_info,
+                X=unwrap_vars(X),
+                W=unwrap_vars(W),
+                R=unwrap_vars(R),
+                B=unwrap_vars(B),
+                sequence_lens=unwrap_vars(sequence_lens),
+                initial_h=unwrap_vars(initial_h),
             ),
         )
         .get_output_vars(
-            X=X._value,
-            W=W._value,
-            R=R._value,
-            B=B._value,
-            sequence_lens=sequence_lens._value,
-            initial_h=initial_h._value,
+            X=get_value(X),
+            W=get_value(W),
+            R=get_value(R),
+            B=get_value(B),
+            sequence_lens=get_value(sequence_lens),
+            initial_h=get_value(initial_h),
         )
         ._unpack_to_any()
     )
@@ -11739,10 +11739,10 @@ def random_normal_like(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _RandomNormalLike.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -11869,10 +11869,10 @@ def random_uniform_like(
             seed=AttrFloat32.maybe(seed, name="seed"),
         ),
         _RandomUniformLike.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -11943,14 +11943,14 @@ def range(
     return _Range(
         _Range.Attributes(),
         _Range.Inputs(
-            start=start._var_info,
-            limit=limit._var_info,
-            delta=delta._var_info,
+            start=unwrap_vars(start),
+            limit=unwrap_vars(limit),
+            delta=unwrap_vars(delta),
         ),
     ).get_output_vars(
-        start=start._value,
-        limit=limit._value,
-        delta=delta._value,
+        start=get_value(start),
+        limit=get_value(limit),
+        delta=get_value(delta),
     )["output"]
 
 
@@ -11984,10 +11984,10 @@ def reciprocal(
     return _Reciprocal(
         _Reciprocal.Attributes(),
         _Reciprocal.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -12041,10 +12041,10 @@ def reduce_l1(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceL1.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12098,10 +12098,10 @@ def reduce_l2(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceL2.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12156,10 +12156,10 @@ def reduce_log_sum(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceLogSum.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12214,10 +12214,10 @@ def reduce_log_sum_exp(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceLogSumExp.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12273,10 +12273,10 @@ def reduce_max(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMax.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12330,10 +12330,10 @@ def reduce_mean(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMean.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12388,10 +12388,10 @@ def reduce_min(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceMin.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12445,10 +12445,10 @@ def reduce_prod(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceProd.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12513,12 +12513,12 @@ def reduce_sum(
             ),
         ),
         _ReduceSum.Inputs(
-            data=data._var_info,
-            axes=axes._var_info,
+            data=unwrap_vars(data),
+            axes=unwrap_vars(axes),
         ),
     ).get_output_vars(
-        data=data._value,
-        axes=axes._value,
+        data=get_value(data),
+        axes=get_value(axes),
     )["reduced"]
 
 
@@ -12572,10 +12572,10 @@ def reduce_sum_square(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _ReduceSumSquare.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["reduced"]
 
 
@@ -12609,10 +12609,10 @@ def relu(
     return _Relu(
         _Relu.Attributes(),
         _Relu.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -12672,12 +12672,12 @@ def reshape(
             allowzero=AttrInt64(allowzero, name="allowzero"),
         ),
         _Reshape.Inputs(
-            data=data._var_info,
-            shape=shape._var_info,
+            data=unwrap_vars(data),
+            shape=unwrap_vars(shape),
         ),
     ).get_output_vars(
-        data=data._value,
-        shape=shape._value,
+        data=get_value(data),
+        shape=get_value(shape),
     )["reshaped"]
 
 
@@ -12814,16 +12814,16 @@ def resize(
             nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
         ),
         _Resize.Inputs(
-            X=X._var_info,
-            roi=roi._var_info,
-            scales=scales._var_info,
-            sizes=sizes._var_info,
+            X=unwrap_vars(X),
+            roi=unwrap_vars(roi),
+            scales=unwrap_vars(scales),
+            sizes=unwrap_vars(sizes),
         ),
     ).get_output_vars(
-        X=X._value,
-        roi=roi._value,
-        scales=scales._value,
-        sizes=sizes._value,
+        X=get_value(X),
+        roi=get_value(roi),
+        scales=get_value(scales),
+        sizes=get_value(sizes),
     )["Y"]
 
 
@@ -12895,12 +12895,12 @@ def reverse_sequence(
             time_axis=AttrInt64(time_axis, name="time_axis"),
         ),
         _ReverseSequence.Inputs(
-            input=input._var_info,
-            sequence_lens=sequence_lens._var_info,
+            input=unwrap_vars(input),
+            sequence_lens=unwrap_vars(sequence_lens),
         ),
     ).get_output_vars(
-        input=input._value,
-        sequence_lens=sequence_lens._value,
+        input=get_value(input),
+        sequence_lens=get_value(sequence_lens),
     )["Y"]
 
 
@@ -13003,14 +13003,14 @@ def roi_align(
             spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
         ),
         _RoiAlign.Inputs(
-            X=X._var_info,
-            rois=rois._var_info,
-            batch_indices=batch_indices._var_info,
+            X=unwrap_vars(X),
+            rois=unwrap_vars(rois),
+            batch_indices=unwrap_vars(batch_indices),
         ),
     ).get_output_vars(
-        X=X._value,
-        rois=rois._value,
-        batch_indices=batch_indices._value,
+        X=get_value(X),
+        rois=get_value(rois),
+        batch_indices=get_value(batch_indices),
     )["Y"]
 
 
@@ -13056,10 +13056,10 @@ def round(
     return _Round(
         _Round.Attributes(),
         _Round.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -13129,16 +13129,16 @@ def stft(
             onesided=AttrInt64(onesided, name="onesided"),
         ),
         _STFT.Inputs(
-            signal=signal._var_info,
-            frame_step=frame_step._var_info,
-            window=window._var_info,
-            frame_length=frame_length._var_info,
+            signal=unwrap_vars(signal),
+            frame_step=unwrap_vars(frame_step),
+            window=unwrap_vars(window),
+            frame_length=unwrap_vars(frame_length),
         ),
     ).get_output_vars(
-        signal=signal._value,
-        frame_step=frame_step._value,
-        window=window._value,
-        frame_length=frame_length._value,
+        signal=get_value(signal),
+        frame_step=get_value(frame_step),
+        window=get_value(window),
+        frame_length=get_value(frame_length),
     )["output"]
 
 
@@ -13379,11 +13379,11 @@ def scan(
             ),
         ),
         _Scan.Inputs(
-            initial_state_and_scan_inputs=initial_state_and_scan_inputs._var_info,
+            initial_state_and_scan_inputs=unwrap_vars(initial_state_and_scan_inputs),
         ),
         out_variadic=len(_body_subgraph.requested_results),
     ).get_output_vars(
-        initial_state_and_scan_inputs=initial_state_and_scan_inputs._value,
+        initial_state_and_scan_inputs=get_value(initial_state_and_scan_inputs),
     )["final_state_and_scan_outputs"]
 
 
@@ -13513,14 +13513,14 @@ def scatter_elements(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterElements.Inputs(
-            data=data._var_info,
-            indices=indices._var_info,
-            updates=updates._var_info,
+            data=unwrap_vars(data),
+            indices=unwrap_vars(indices),
+            updates=unwrap_vars(updates),
         ),
     ).get_output_vars(
-        data=data._value,
-        indices=indices._value,
-        updates=updates._value,
+        data=get_value(data),
+        indices=get_value(indices),
+        updates=get_value(updates),
     )["output"]
 
 
@@ -13638,14 +13638,14 @@ def scatter_nd(
             reduction=AttrString(reduction, name="reduction"),
         ),
         _ScatterND.Inputs(
-            data=data._var_info,
-            indices=indices._var_info,
-            updates=updates._var_info,
+            data=unwrap_vars(data),
+            indices=unwrap_vars(indices),
+            updates=unwrap_vars(updates),
         ),
     ).get_output_vars(
-        data=data._value,
-        indices=indices._value,
-        updates=updates._value,
+        data=get_value(data),
+        indices=get_value(indices),
+        updates=get_value(updates),
     )["output"]
 
 
@@ -13694,10 +13694,10 @@ def selu(
             gamma=AttrFloat32(gamma, name="gamma"),
         ),
         _Selu.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -13742,12 +13742,12 @@ def sequence_at(
     return _SequenceAt(
         _SequenceAt.Attributes(),
         _SequenceAt.Inputs(
-            input_sequence=input_sequence._var_info,
-            position=position._var_info,
+            input_sequence=unwrap_vars(input_sequence),
+            position=unwrap_vars(position),
         ),
     ).get_output_vars(
-        input_sequence=input_sequence._value,
-        position=position._value,
+        input_sequence=get_value(input_sequence),
+        position=get_value(position),
     )["tensor"]
 
 
@@ -13781,10 +13781,10 @@ def sequence_construct(
     return _SequenceConstruct(
         _SequenceConstruct.Attributes(),
         _SequenceConstruct.Inputs(
-            inputs=inputs._var_info,
+            inputs=unwrap_vars(inputs),
         ),
     ).get_output_vars(
-        inputs=inputs._value,
+        inputs=get_value(inputs),
     )["output_sequence"]
 
 
@@ -13864,12 +13864,12 @@ def sequence_erase(
     return _SequenceErase(
         _SequenceErase.Attributes(),
         _SequenceErase.Inputs(
-            input_sequence=input_sequence._var_info,
-            position=position._var_info,
+            input_sequence=unwrap_vars(input_sequence),
+            position=unwrap_vars(position),
         ),
     ).get_output_vars(
-        input_sequence=input_sequence._value,
-        position=position._value,
+        input_sequence=get_value(input_sequence),
+        position=get_value(position),
     )["output_sequence"]
 
 
@@ -13921,14 +13921,14 @@ def sequence_insert(
     return _SequenceInsert(
         _SequenceInsert.Attributes(),
         _SequenceInsert.Inputs(
-            input_sequence=input_sequence._var_info,
-            tensor=tensor._var_info,
-            position=position._var_info,
+            input_sequence=unwrap_vars(input_sequence),
+            tensor=unwrap_vars(tensor),
+            position=unwrap_vars(position),
         ),
     ).get_output_vars(
-        input_sequence=input_sequence._value,
-        tensor=tensor._value,
-        position=position._value,
+        input_sequence=get_value(input_sequence),
+        tensor=get_value(tensor),
+        position=get_value(position),
     )["output_sequence"]
 
 
@@ -13962,10 +13962,10 @@ def sequence_length(
     return _SequenceLength(
         _SequenceLength.Attributes(),
         _SequenceLength.Inputs(
-            input_sequence=input_sequence._var_info,
+            input_sequence=unwrap_vars(input_sequence),
         ),
     ).get_output_vars(
-        input_sequence=input_sequence._value,
+        input_sequence=get_value(input_sequence),
     )["length"]
 
 
@@ -14034,13 +14034,13 @@ def sequence_map(
             body=AttrGraph(_body_subgraph, name="body"),
         ),
         _SequenceMap.Inputs(
-            input_sequence=input_sequence._var_info,
-            additional_inputs=additional_inputs._var_info,
+            input_sequence=unwrap_vars(input_sequence),
+            additional_inputs=unwrap_vars(additional_inputs),
         ),
         out_variadic=len(_body_subgraph.requested_results),
     ).get_output_vars(
-        input_sequence=input_sequence._value,
-        additional_inputs=additional_inputs._value,
+        input_sequence=get_value(input_sequence),
+        additional_inputs=get_value(additional_inputs),
     )["out_sequence"]
 
 
@@ -14126,10 +14126,10 @@ def shape(
             start=AttrInt64(start, name="start"),
         ),
         _Shape.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["shape"]
 
 
@@ -14176,10 +14176,10 @@ def shrink(
             lambd=AttrFloat32(lambd, name="lambd"),
         ),
         _Shrink.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -14213,10 +14213,10 @@ def sigmoid(
     return _Sigmoid(
         _Sigmoid.Attributes(),
         _Sigmoid.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -14250,10 +14250,10 @@ def sign(
     return _Sign(
         _Sign.Attributes(),
         _Sign.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -14285,10 +14285,10 @@ def sin(
     return _Sin(
         _Sin.Attributes(),
         _Sin.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -14320,10 +14320,10 @@ def sinh(
     return _Sinh(
         _Sinh.Attributes(),
         _Sinh.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -14357,10 +14357,10 @@ def size(
     return _Size(
         _Size.Attributes(),
         _Size.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["size"]
 
 
@@ -14480,18 +14480,18 @@ def slice(
     return _Slice(
         _Slice.Attributes(),
         _Slice.Inputs(
-            data=data._var_info,
-            starts=starts._var_info,
-            ends=ends._var_info,
-            axes=axes._var_info,
-            steps=steps._var_info,
+            data=unwrap_vars(data),
+            starts=unwrap_vars(starts),
+            ends=unwrap_vars(ends),
+            axes=unwrap_vars(axes),
+            steps=unwrap_vars(steps),
         ),
     ).get_output_vars(
-        data=data._value,
-        starts=starts._value,
-        ends=ends._value,
-        axes=axes._value,
-        steps=steps._value,
+        data=get_value(data),
+        starts=get_value(starts),
+        ends=get_value(ends),
+        axes=get_value(axes),
+        steps=get_value(steps),
     )["output"]
 
 
@@ -14540,10 +14540,10 @@ def softmax(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Softmax.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -14663,15 +14663,15 @@ def softmax_cross_entropy_loss(
                 reduction=AttrString(reduction, name="reduction"),
             ),
             _SoftmaxCrossEntropyLoss.Inputs(
-                scores=scores._var_info,
-                labels=labels._var_info,
-                weights=weights._var_info,
+                scores=unwrap_vars(scores),
+                labels=unwrap_vars(labels),
+                weights=unwrap_vars(weights),
             ),
         )
         .get_output_vars(
-            scores=scores._value,
-            labels=labels._value,
-            weights=weights._value,
+            scores=get_value(scores),
+            labels=get_value(labels),
+            weights=get_value(weights),
         )
         ._unpack_to_any()
     )
@@ -14707,10 +14707,10 @@ def softplus(
     return _Softplus(
         _Softplus.Attributes(),
         _Softplus.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -14744,10 +14744,10 @@ def softsign(
     return _Softsign(
         _Softsign.Attributes(),
         _Softsign.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -14790,10 +14790,10 @@ def space_to_depth(
             blocksize=AttrInt64(blocksize, name="blocksize"),
         ),
         _SpaceToDepth.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -14844,13 +14844,13 @@ def split(
             axis=AttrInt64(axis, name="axis"),
         ),
         _Split.Inputs(
-            input=input._var_info,
-            split=split._var_info,
+            input=unwrap_vars(input),
+            split=unwrap_vars(split),
         ),
         out_variadic=outputs_count,
     ).get_output_vars(
-        input=input._value,
-        split=split._value,
+        input=get_value(input),
+        split=get_value(split),
     )["outputs"]
 
 
@@ -14915,12 +14915,12 @@ def split_to_sequence(
             keepdims=AttrInt64(keepdims, name="keepdims"),
         ),
         _SplitToSequence.Inputs(
-            input=input._var_info,
-            split=split._var_info,
+            input=unwrap_vars(input),
+            split=unwrap_vars(split),
         ),
     ).get_output_vars(
-        input=input._value,
-        split=split._value,
+        input=get_value(input),
+        split=get_value(split),
     )["output_sequence"]
 
 
@@ -14954,10 +14954,10 @@ def sqrt(
     return _Sqrt(
         _Sqrt.Attributes(),
         _Sqrt.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -14999,12 +14999,12 @@ def squeeze(
     return _Squeeze(
         _Squeeze.Attributes(),
         _Squeeze.Inputs(
-            data=data._var_info,
-            axes=axes._var_info,
+            data=unwrap_vars(data),
+            axes=unwrap_vars(axes),
         ),
     ).get_output_vars(
-        data=data._value,
-        axes=axes._value,
+        data=get_value(data),
+        axes=get_value(axes),
     )["squeezed"]
 
 
@@ -15070,10 +15070,10 @@ def string_normalizer(
             stopwords=AttrStrings.maybe(stopwords, name="stopwords"),
         ),
         _StringNormalizer.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -15117,12 +15117,12 @@ def sub(
     return _Sub(
         _Sub.Attributes(),
         _Sub.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 
@@ -15158,10 +15158,10 @@ def sum(
     return _Sum(
         _Sum.Attributes(),
         _Sum.Inputs(
-            data_0=data_0._var_info,
+            data_0=unwrap_vars(data_0),
         ),
     ).get_output_vars(
-        data_0=data_0._value,
+        data_0=get_value(data_0),
     )["sum"]
 
 
@@ -15193,10 +15193,10 @@ def tan(
     return _Tan(
         _Tan.Attributes(),
         _Tan.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -15229,10 +15229,10 @@ def tanh(
     return _Tanh(
         _Tanh.Attributes(),
         _Tanh.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -15378,10 +15378,10 @@ def tf_idf_vectorizer(
             weights=AttrFloat32s.maybe(weights, name="weights"),
         ),
         _TfIdfVectorizer.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -15422,10 +15422,10 @@ def thresholded_relu(
             alpha=AttrFloat32(alpha, name="alpha"),
         ),
         _ThresholdedRelu.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -15466,12 +15466,12 @@ def tile(
     return _Tile(
         _Tile.Attributes(),
         _Tile.Inputs(
-            input=input._var_info,
-            repeats=repeats._var_info,
+            input=unwrap_vars(input),
+            repeats=unwrap_vars(repeats),
         ),
     ).get_output_vars(
-        input=input._value,
-        repeats=repeats._value,
+        input=get_value(input),
+        repeats=get_value(repeats),
     )["output"]
 
 
@@ -15557,13 +15557,13 @@ def top_k(
                 sorted=AttrInt64(sorted, name="sorted"),
             ),
             _TopK.Inputs(
-                X=X._var_info,
-                K=K._var_info,
+                X=unwrap_vars(X),
+                K=unwrap_vars(K),
             ),
         )
         .get_output_vars(
-            X=X._value,
-            K=K._value,
+            X=get_value(X),
+            K=get_value(K),
         )
         ._unpack_to_any()
     )
@@ -15607,10 +15607,10 @@ def transpose(
             perm=AttrInt64s.maybe(perm, name="perm"),
         ),
         _Transpose.Inputs(
-            data=data._var_info,
+            data=unwrap_vars(data),
         ),
     ).get_output_vars(
-        data=data._value,
+        data=get_value(data),
     )["transposed"]
 
 
@@ -15672,12 +15672,12 @@ def trilu(
             upper=AttrInt64(upper, name="upper"),
         ),
         _Trilu.Inputs(
-            input=input._var_info,
-            k=k._var_info,
+            input=unwrap_vars(input),
+            k=unwrap_vars(k),
         ),
     ).get_output_vars(
-        input=input._value,
-        k=k._value,
+        input=get_value(input),
+        k=get_value(k),
     )["output"]
 
 
@@ -15857,11 +15857,11 @@ def unique(
                 sorted=AttrInt64(sorted, name="sorted"),
             ),
             _Unique.Inputs(
-                X=X._var_info,
+                X=unwrap_vars(X),
             ),
         )
         .get_output_vars(
-            X=X._value,
+            X=get_value(X),
         )
         ._unpack_to_any()
     )
@@ -15915,12 +15915,12 @@ def unsqueeze(
     return _Unsqueeze(
         _Unsqueeze.Attributes(),
         _Unsqueeze.Inputs(
-            data=data._var_info,
-            axes=axes._var_info,
+            data=unwrap_vars(data),
+            axes=unwrap_vars(axes),
         ),
     ).get_output_vars(
-        data=data._value,
-        axes=axes._value,
+        data=get_value(data),
+        axes=get_value(axes),
     )["expanded"]
 
 
@@ -15968,14 +15968,14 @@ def where(
     return _Where(
         _Where.Attributes(),
         _Where.Inputs(
-            condition=condition._var_info,
-            X=X._var_info,
-            Y=Y._var_info,
+            condition=unwrap_vars(condition),
+            X=unwrap_vars(X),
+            Y=unwrap_vars(Y),
         ),
     ).get_output_vars(
-        condition=condition._value,
-        X=X._value,
-        Y=Y._value,
+        condition=get_value(condition),
+        X=get_value(X),
+        Y=get_value(Y),
     )["output"]
 
 
@@ -16018,12 +16018,12 @@ def xor(
     return _Xor(
         _Xor.Attributes(),
         _Xor.Inputs(
-            A=A._var_info,
-            B=B._var_info,
+            A=unwrap_vars(A),
+            B=unwrap_vars(B),
         ),
     ).get_output_vars(
-        A=A._value,
-        B=B._value,
+        A=get_value(A),
+        B=get_value(B),
     )["C"]
 
 

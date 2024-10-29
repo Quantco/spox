@@ -18,7 +18,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._var import Var
+from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v19 import (
     _GRU,
     _LRN,
@@ -386,12 +386,12 @@ class _AffineGrid(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        theta: Var
-        size: Var
+        theta: VarInfo
+        size: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        grid: Var
+        grid: VarInfo
 
     op_type = OpType("AffineGrid", "", 20)
 
@@ -407,11 +407,11 @@ class _ConstantOfShape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("ConstantOfShape", "", 20)
 
@@ -428,13 +428,13 @@ class _DFT(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        dft_length: Optional[Var]
-        axis: Optional[Var]
+        input: VarInfo
+        dft_length: Optional[VarInfo]
+        axis: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: VarInfo
 
     op_type = OpType("DFT", "", 20)
 
@@ -450,11 +450,11 @@ class _Gelu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("Gelu", "", 20)
 
@@ -472,12 +472,12 @@ class _GridSample(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        grid: Var
+        X: VarInfo
+        grid: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("GridSample", "", 20)
 
@@ -493,11 +493,11 @@ class _ImageDecoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        encoded_stream: Var
+        encoded_stream: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        image: Var
+        image: VarInfo
 
     op_type = OpType("ImageDecoder", "", 20)
 
@@ -514,11 +514,11 @@ class _IsInf(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("IsInf", "", 20)
 
@@ -534,11 +534,11 @@ class _IsNaN(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("IsNaN", "", 20)
 
@@ -555,12 +555,12 @@ class _ReduceMax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        axes: Optional[Var]
+        data: VarInfo
+        axes: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceMax", "", 20)
 
@@ -577,12 +577,12 @@ class _ReduceMin(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        axes: Optional[Var]
+        data: VarInfo
+        axes: Optional[VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: Var
+        reduced: VarInfo
 
     op_type = OpType("ReduceMin", "", 20)
 
@@ -598,11 +598,11 @@ class _RegexFullMatch(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("RegexFullMatch", "", 20)
 
@@ -618,12 +618,12 @@ class _StringConcat(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        Y: Var
+        X: VarInfo
+        Y: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: Var
+        Z: VarInfo
 
     op_type = OpType("StringConcat", "", 20)
 
@@ -640,12 +640,12 @@ class _StringSplit(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        Z: Var
+        Y: VarInfo
+        Z: VarInfo
 
     op_type = OpType("StringSplit", "", 20)
 
@@ -738,12 +738,12 @@ def affine_grid(
             align_corners=AttrInt64(align_corners, name="align_corners"),
         ),
         _AffineGrid.Inputs(
-            theta=theta._var_info,
-            size=size._var_info,
+            theta=unwrap_vars(theta),
+            size=unwrap_vars(size),
         ),
     ).get_output_vars(
-        theta=theta._value,
-        size=size._value,
+        theta=get_value(theta),
+        size=get_value(size),
     )["grid"]
 
 
@@ -789,10 +789,10 @@ def constant_of_shape(
             value=AttrTensor.maybe(value, name="value"),
         ),
         _ConstantOfShape.Inputs(
-            input=input._var_info,
+            input=unwrap_vars(input),
         ),
     ).get_output_vars(
-        input=input._value,
+        input=get_value(input),
     )["output"]
 
 
@@ -892,14 +892,14 @@ def dft(
             onesided=AttrInt64(onesided, name="onesided"),
         ),
         _DFT.Inputs(
-            input=input._var_info,
-            dft_length=dft_length._var_info,
-            axis=axis._var_info,
+            input=unwrap_vars(input),
+            dft_length=unwrap_vars(dft_length),
+            axis=unwrap_vars(axis),
         ),
     ).get_output_vars(
-        input=input._value,
-        dft_length=dft_length._value,
-        axis=axis._value,
+        input=get_value(input),
+        dft_length=get_value(dft_length),
+        axis=get_value(axis),
     )["output"]
 
 
@@ -946,10 +946,10 @@ def gelu(
             approximate=AttrString(approximate, name="approximate"),
         ),
         _Gelu.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -1062,12 +1062,12 @@ def grid_sample(
             padding_mode=AttrString(padding_mode, name="padding_mode"),
         ),
         _GridSample.Inputs(
-            X=X._var_info,
-            grid=grid._var_info,
+            X=unwrap_vars(X),
+            grid=unwrap_vars(grid),
         ),
     ).get_output_vars(
-        X=X._value,
-        grid=grid._value,
+        X=get_value(X),
+        grid=get_value(grid),
     )["Y"]
 
 
@@ -1134,10 +1134,10 @@ def image_decoder(
             pixel_format=AttrString(pixel_format, name="pixel_format"),
         ),
         _ImageDecoder.Inputs(
-            encoded_stream=encoded_stream._var_info,
+            encoded_stream=unwrap_vars(encoded_stream),
         ),
     ).get_output_vars(
-        encoded_stream=encoded_stream._value,
+        encoded_stream=get_value(encoded_stream),
     )["image"]
 
 
@@ -1186,10 +1186,10 @@ def isinf(
             detect_positive=AttrInt64(detect_positive, name="detect_positive"),
         ),
         _IsInf.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -1222,10 +1222,10 @@ def isnan(
     return _IsNaN(
         _IsNaN.Attributes(),
         _IsNaN.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -1295,12 +1295,12 @@ def reduce_max(
             ),
         ),
         _ReduceMax.Inputs(
-            data=data._var_info,
-            axes=axes._var_info,
+            data=unwrap_vars(data),
+            axes=unwrap_vars(axes),
         ),
     ).get_output_vars(
-        data=data._value,
-        axes=axes._value,
+        data=get_value(data),
+        axes=get_value(axes),
     )["reduced"]
 
 
@@ -1369,12 +1369,12 @@ def reduce_min(
             ),
         ),
         _ReduceMin.Inputs(
-            data=data._var_info,
-            axes=axes._var_info,
+            data=unwrap_vars(data),
+            axes=unwrap_vars(axes),
         ),
     ).get_output_vars(
-        data=data._value,
-        axes=axes._value,
+        data=get_value(data),
+        axes=get_value(axes),
     )["reduced"]
 
 
@@ -1419,10 +1419,10 @@ def regex_full_match(
             pattern=AttrString.maybe(pattern, name="pattern"),
         ),
         _RegexFullMatch.Inputs(
-            X=X._var_info,
+            X=unwrap_vars(X),
         ),
     ).get_output_vars(
-        X=X._value,
+        X=get_value(X),
     )["Y"]
 
 
@@ -1459,12 +1459,12 @@ def string_concat(
     return _StringConcat(
         _StringConcat.Attributes(),
         _StringConcat.Inputs(
-            X=X._var_info,
-            Y=Y._var_info,
+            X=unwrap_vars(X),
+            Y=unwrap_vars(Y),
         ),
     ).get_output_vars(
-        X=X._value,
-        Y=Y._value,
+        X=get_value(X),
+        Y=get_value(Y),
     )["Z"]
 
 
@@ -1544,11 +1544,11 @@ def string_split(
                 maxsplit=AttrInt64.maybe(maxsplit, name="maxsplit"),
             ),
             _StringSplit.Inputs(
-                X=X._var_info,
+                X=unwrap_vars(X),
             ),
         )
         .get_output_vars(
-            X=X._value,
+            X=get_value(X),
         )
         ._unpack_to_any()
     )
