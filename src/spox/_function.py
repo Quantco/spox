@@ -14,7 +14,7 @@ from ._fields import BaseAttributes, BaseInputs, BaseOutputs
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
-from ._var import VarInfo
+from ._var import Var, VarInfo
 
 if TYPE_CHECKING:
     from . import _graph
@@ -42,7 +42,7 @@ class Function(_InternalNode):
     via the ``to_onnx_function`` method.
     """
 
-    func_args: dict[str, VarInfo]
+    func_args: dict[str, Var]
     func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs

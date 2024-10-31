@@ -3,12 +3,15 @@
 
 import dataclasses
 import enum
+import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 
 from ._attributes import Attr
-from ._var import VarInfo
+from ._exceptions import InferenceWarning
+from ._value_prop import PropValue
+from ._var import Var, VarInfo
 
 
 @dataclass
@@ -113,4 +116,41 @@ class BaseInputs(BaseVarInfos):
 
 @dataclass
 class BaseOutputs(BaseVarInfos):
-    pass
+    def _propagate_vars(
+        self,
+        prop_values={},
+        flatten_variadic=False,
+    ):
+        def _create_var(key, var_info):
+            ret = Var(var_info, None)
+
+            if var_info.type is None or key not in prop_values:
+                return ret
+
+            prop = PropValue(var_info.type, prop_values.get(key))
+            if prop.check():
+                ret._value = prop
+            else:
+                warnings.warn(
+                    InferenceWarning(
+                        f"Propagated value {prop} does not type-check, dropping. "
+                        f"Hint: this indicates a bug with the current value prop backend or type inference."
+                    )
+                )
+
+            return ret
+
+        ret_dict = {}
+
+        for key, var_info in self.__dict__.items():
+            if var_info is None or isinstance(var_info, VarInfo):
+                ret_dict[key] = _create_var(key, var_info)
+            elif flatten_variadic:
+                for i, v in enumerate(var_info):
+                    ret_dict[f"{key}_{i}"] = _create_var(f"{key}_{i}", v)
+            else:
+                ret_dict[key] = [
+                    _create_var(f"{key}_{i}", v) for i, v in enumerate(var_info)
+                ]
+
+        return ret_dict

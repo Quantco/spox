@@ -17,7 +17,7 @@ from ._graph import Argument, initializer, results
 from ._inline import _Inline
 from ._standard import _strip_dim_symbol
 from ._type_system import Type
-from ._var import Var, VarInfo, unwrap_vars
+from ._var import Var
 
 
 def argument(typ: Type) -> Var:
@@ -43,10 +43,10 @@ def argument(typ: Type) -> Var:
 @contextlib.contextmanager
 def _temporary_renames(**kwargs: Var):
     # The build code can't really special-case variable names that are
-    # not just ``VarInfo._name``.  So we set names here and reset them
+    # not just ``Var._name``.  So we set names here and reset them
     # afterwards.
     name: Optional[str]
-    pre: dict[VarInfo, Optional[str]] = {}
+    pre: dict[Var, Optional[str]] = {}
     try:
         for name, arg in kwargs.items():
             pre[arg._var_info] = arg._var_info._name
@@ -130,8 +130,7 @@ def build(
     with _temporary_renames(**inputs):
         graph = results(**outputs)
         if not drop_unused_inputs:
-            print({name: var._var_info for name, var in inputs.items()})
-            graph = graph.with_arguments(*unwrap_vars(inputs.values()))
+            graph = graph.with_arguments(*inputs.values())
         model_proto = graph.to_onnx_model()
 
     # Validate that no further inputs were required.
@@ -303,7 +302,8 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             out_variadic=len(model.graph.output),
             model=model,
         )
-        return node.get_output_vars()
+
+        return node.get_output_vars(flatten_variadic=True)
 
     return inline_inner
 

@@ -19,8 +19,8 @@ from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
 from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
 from ._type_system import Type
-from ._value_prop import PropValue, PropValueType
-from ._var import Var, VarInfo
+from ._value_prop import PropValueType
+from ._var import VarInfo
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
@@ -235,29 +235,12 @@ class Node(ABC):
                 # Attempt to use the ones from kwargs, if none then what type inference gave
                 var.type = out_types.get(key)
 
-    def get_output_vars(self, **initializers):
+    def get_output_vars(self, flatten_variadic=False, **initializers):
         # After typing everything, try to get values for outputs
         out_values = self.propagate_values(initializers)
-        ret = {
-            key: Var(var_info, None)
-            for key, var_info in self.outputs.get_vars().items()
-        }
-        for key, var_info in self.outputs.get_vars().items():
-            if var_info.type is None or key not in out_values:
-                continue
-
-            prop = PropValue(var_info.type, out_values.get(key))
-            if prop.check():
-                ret[key]._value = prop
-            else:
-                warnings.warn(
-                    InferenceWarning(
-                        f"Propagated value {prop} does not type-check, dropping. "
-                        f"Hint: this indicates a bug with the current value prop backend or type inference."
-                    )
-                )
-
-        return ret
+        return self.outputs._propagate_vars(
+            out_values, flatten_variadic=flatten_variadic
+        )
 
     def validate_types(self) -> None:
         """Validation of types, ran at the end of Node creation."""

@@ -22,7 +22,7 @@ from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
 from ._utils import from_array
-from ._var import Var, VarInfo, unwrap_vars
+from ._var import Var, VarInfo
 
 
 def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var]:
@@ -36,8 +36,8 @@ def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var
         and its type is used to create a respective Tensor.
     Returns
     -------
-    Dict[str, VarInfo]
-        Argument VarInfos of given Types, named the same as kwargs.
+    Dict[str, Var]
+        Argument Vars of given Types, named the same as kwargs.
     """
     result = {}
     for name, info in kwargs.items():
@@ -66,14 +66,14 @@ def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var
     return result
 
 
-def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> tuple[VarInfo, ...]:
-    """This function is a shorthand for a respective call to ``arguments_dict``, unpacking the VarInfos from the dict."""
+def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> tuple[Var, ...]:
+    """This function is a shorthand for a respective call to ``arguments_dict``, unpacking the Vars from the dict."""
     return tuple(arguments_dict(**kwargs).values())
 
 
 def enum_arguments(
     *infos: Union[Type, np.ndarray], prefix: str = "in"
-) -> tuple[VarInfo, ...]:
+) -> tuple[Var, ...]:
     """
     Convenience function for creating an enumeration of arguments, prefixed with ``prefix``.
     Calls ``arguments`` internally.
@@ -89,8 +89,8 @@ def enum_arguments(
         String to prefix the names of created arguments with.
     Returns
     -------
-    Tuple[VarInfo, ...]
-        Argument VarInfos as specified, in the same order as information ``infos``.
+    Tuple[Var, ...]
+        Argument Vars as specified, in the same order as information ``infos``.
     """
     return arguments(**{f"{prefix}{i}": info for i, info in enumerate(infos)})
 
@@ -108,7 +108,7 @@ def initializer(arr: np.ndarray) -> Var:
         Value of the initializer.
     Returns
     -------
-        VarInfo which is always equal to the respective value provided by `arr`.
+        Var which is always equal to the respective value provided by `arr`.
     """
     return _Initializer(
         _Initializer.Attributes(value=AttrTensor(value=arr, name="dummy")),
@@ -133,12 +133,12 @@ class Graph:
     Note: building a Graph is cached, so changing it in-place without the setters will invalidate the build.
     """
 
-    _results: dict[str, VarInfo]
+    _results: dict[str, Var]
     _name: Optional[str] = None
     _doc_string: Optional[str] = None
-    _arguments: Optional[tuple[VarInfo, ...]] = None
+    _arguments: Optional[tuple[Var, ...]] = None
     _extra_opset_req: Optional[set[tuple[str, int]]] = None
-    _constructor: Optional[Callable[..., Iterable[VarInfo]]] = None
+    _constructor: Optional[Callable[..., Iterable[Var]]] = None
     _build_result: "_build.Cached[_build.BuildResult]" = dataclasses.field(
         default_factory=_build.Cached
     )
@@ -159,18 +159,14 @@ class Graph:
         return f"<Graph '{name_repr}' ({args_repr}) -> ({res_repr}){': ' if comments else ''}{', '.join(comments)}>"
 
     def __post_init__(self):
-        if any(not isinstance(var, VarInfo) for var in self._results.values()):
+        if any(not isinstance(var, Var) for var in self._results.values()):
             seen_types = {type(obj) for obj in self._results.values()}
-            raise TypeError(
-                f"Graph results must be VarInfos, not {seen_types - {VarInfo}}."
-            )
+            raise TypeError(f"Graph results must be Vars, not {seen_types - {Var}}.")
         if self._arguments is not None and any(
-            not isinstance(var, VarInfo) for var in self._arguments
+            not isinstance(var, Var) for var in self._arguments
         ):
             seen_types = {type(obj) for obj in self._arguments}
-            raise TypeError(
-                f"Build outputs must be VarInfos, not {seen_types - {VarInfo}}."
-            )
+            raise TypeError(f"Build outputs must be Vars, not {seen_types - {Var}}.")
 
     def with_name(self, name: str) -> "Graph":
         """Return a Graph with its name set to ``name``."""
@@ -180,9 +176,9 @@ class Graph:
         """Return a Graph with its doc string set to ``doc``."""
         return replace(self, _doc_string=doc_string)
 
-    def with_arguments(self, *args: VarInfo) -> "Graph":
+    def with_arguments(self, *args: Var) -> "Graph":
         """
-        Return a Graph with given VarInfos marked as exactly its arguments.
+        Return a Graph with given Vars marked as exactly its arguments.
         A useful idiom is ``results(...).with_arguments(...)`` when you want to specify both results and arguments.
         """
         return replace(self, _arguments=args)
@@ -197,11 +193,11 @@ class Graph:
             extra_opset_req |= self._extra_opset_req
         return replace(self, _extra_opset_req=extra_opset_req)
 
-    def _with_constructor(self, fun: Callable[..., Iterable[VarInfo]]) -> "Graph":
+    def _with_constructor(self, fun: Callable[..., Iterable[Var]]) -> "Graph":
         """Assign a constructor that constructed this Graph given ``self.requested_arguments``."""
         return replace(self, _constructor=fun)
 
-    def _reconstruct(self, *args: VarInfo) -> "Graph":
+    def _reconstruct(self, *args: Var) -> "Graph":
         assert self._constructor is not None
         return (
             results(**dict(zip(self._results, self._constructor(*args))))
@@ -217,12 +213,12 @@ class Graph:
         return replace(self, _build_result=_build.Cached(what))
 
     @property
-    def requested_arguments(self) -> Optional[Iterable[VarInfo]]:
+    def requested_arguments(self) -> Optional[Iterable[Var]]:
         """Arguments requested by this Graph (for building) - ``None`` if unspecified."""
         return self._arguments
 
     @property
-    def requested_results(self) -> dict[str, VarInfo]:
+    def requested_results(self) -> dict[str, Var]:
         """Results (named) requested by this Graph (for building)."""
         return self._results
 
@@ -449,7 +445,7 @@ def results(**kwargs: Var) -> Graph:
     Graph
         Graph with the results given in `kwargs`, in the same order. Keys are used as names for the results.
     """
-    return Graph(unwrap_vars(kwargs))
+    return Graph(kwargs)
 
 
 def enum_results(*vars: Var, prefix="out") -> Graph:
@@ -460,7 +456,7 @@ def enum_results(*vars: Var, prefix="out") -> Graph:
     Parameters
     ----------
     vars
-        VarInfos to be marked as results.
+        Vars to be marked as results.
     prefix
         String to prefix the names of created results with.
     Returns
@@ -482,7 +478,7 @@ def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Var]]) -> Graph:
     types
         A list of argument types for the subgraph.
     fun
-        A function taking as many VarInfo arguments as the length of `types`, and returning the results of the subgraph.
+        A function taking as many Var arguments as the length of `types`, and returning the results of the subgraph.
     Returns
     -------
     Graph
@@ -499,5 +495,6 @@ def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Var]]) -> Graph:
         raise TypeError("Subgraph callback must be callable.")
     outs = fun(*ins)
     if not (isinstance(outs, Iterable) and all(isinstance(out, Var) for out in outs)):
-        raise TypeError("Subgraph result must be an Iterable of VarInfo.")
+        raise TypeError("Subgraph result must be an Iterable of Var.")
+
     return enum_results(*outs).with_arguments(*ins)._with_constructor(fun)

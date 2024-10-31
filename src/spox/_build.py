@@ -21,7 +21,7 @@ from ._internal_op import Argument, intros
 from ._node import Node
 from ._scope import Scope
 from ._traverse import iterative_dfs
-from ._var import VarInfo
+from ._var import Var, VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -203,8 +203,8 @@ class Builder:
 
     @staticmethod
     def get_intro_results(
-        request_results: dict[str, VarInfo], set_names: bool
-    ) -> list[VarInfo]:
+        request_results: dict[str, Var], set_names: bool
+    ) -> list[Var]:
         """
         Helper method for wrapping all requested results into a single Introduce and possibly naming them.
 
@@ -212,7 +212,7 @@ class Builder:
         as usually only ONNX subgraph input/output ordering is significant.
         """
         # Created vars all have the same op
-        vars = list(intros(*request_results.values()))
+        vars = list(intros(*unwrap_vars(request_results.values())))
         for key, var in zip(request_results, vars):
             if set_names:
                 var._rename(key)
@@ -290,7 +290,7 @@ class Builder:
         else:
             # If there is a request, we may not have found it by traversal if an argument was unused.
             all_arguments |= set(graph.requested_arguments)
-            self.arguments_of[graph] = list(graph.requested_arguments)
+            self.arguments_of[graph] = unwrap_vars(graph.requested_arguments)
 
         if set(self.arguments_of[graph]) & claimed_arguments:
             raise BuildError(

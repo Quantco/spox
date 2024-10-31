@@ -34,7 +34,7 @@ def test_variadic_no_input_list_mutation(onnx_helper):
     ins = [a, b]
     concat = op.concat(ins, axis=0)
     ins[1] = b
-    assert list(concat._op.inputs) == [a, b]
+    assert list(concat._op.inputs.get_vars()) == [a, b]
 
 
 def test_variadic_no_attr_mutation_array(onnx_helper):
