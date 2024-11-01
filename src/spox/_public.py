@@ -303,7 +303,9 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             model=model,
         )
 
-        return node.get_output_vars(flatten_variadic=True)
+        return dict(
+            zip(out_names, node.get_output_vars(flatten_variadic=True).values())
+        )
 
     return inline_inner
 
