@@ -212,7 +212,7 @@ class Builder:
         as usually only ONNX subgraph input/output ordering is significant.
         """
         # Created vars all have the same op
-        vars = list(intros(*unwrap_vars(request_results.values())))
+        vars = list(intros(*request_results.values()))
         for key, var in zip(request_results, vars):
             if set_names:
                 var._rename(key)
@@ -244,8 +244,8 @@ class Builder:
         # Create and set the source & results of this graph
         if not graph.requested_results:
             raise BuildError(f"Graph {graph} has no results.")
-        self.results_of[graph] = self.get_intro_results(
-            graph.requested_results, graph is self.main
+        self.results_of[graph] = unwrap_vars(
+            self.get_intro_results(graph.requested_results, graph is self.main)
         )
         self.source_of[graph] = self.results_of[graph][0]._op
 

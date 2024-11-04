@@ -19,7 +19,7 @@ from spox._function import Function, to_function
 from spox._graph import arguments, results
 from spox._node import OpType
 from spox._type_system import Tensor
-from spox._var import Var
+from spox._var import Var, VarInfo
 
 
 @pytest.fixture
@@ -32,11 +32,11 @@ def linear():
 
         @dataclass
         class Inputs(BaseInputs):
-            X: Var
+            X: VarInfo
 
         @dataclass
         class Outputs(BaseOutputs):
-            Y: Var
+            Y: VarInfo
 
         op_type = OpType("LinearFunction", "spox.test", 0)
 
@@ -67,8 +67,8 @@ def linear():
                 slope_outer=AttrFloat32(a, "slope_outer"),
                 shift_outer=AttrFloat32(b, "shift_outer"),
             ),
-            LinearFunction.Inputs(x),
-        ).outputs.Y
+            LinearFunction.Inputs(x._var_info),
+        ).get_output_vars(X=x._value)["Y"]
 
     return linear_inner
 
@@ -83,11 +83,11 @@ def linear2(linear):
 
         @dataclass
         class Inputs(BaseInputs):
-            X: Var
+            X: VarInfo
 
         @dataclass
         class Outputs(BaseOutputs):
-            Y: Var
+            Y: VarInfo
 
         op_type = OpType("LinearFunction2", "spox.test", 0)
 
@@ -111,8 +111,8 @@ def linear2(linear):
             LinearFunction2.Attributes(
                 slope1=AttrFloat32(a, name="slope1"), shift1=AttrFloat32(b, "shift1")
             ),
-            LinearFunction2.Inputs(x),
-        ).outputs.Y
+            LinearFunction2.Inputs(x._var_info),
+        ).get_output_vars(X=x._value)["Y"]
 
     return linear_inner
 
@@ -129,11 +129,11 @@ def cubic(linear):
 
         @dataclass
         class Inputs(BaseInputs):
-            X: Var
+            X: VarInfo
 
         @dataclass
         class Outputs(BaseOutputs):
-            Y: Var
+            Y: VarInfo
 
         op_type = OpType("CubicFunction", "spox.test.extra", 0)
 

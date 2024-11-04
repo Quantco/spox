@@ -333,9 +333,9 @@ def unwrap_vars(var):
     elif isinstance(var, Var):
         return var._var_info
     elif isinstance(var, dict):
-        return {k: v._var_info for k, v in var.items()}
+        return {k: unwrap_vars(v) for k, v in var.items()}
     elif isinstance(var, Sequence) or isinstance(var, Iterable):
-        return [v._var_info for v in var]
+        return [unwrap_vars(v) for v in var]
     else:
         raise ValueError("Unsupported type for unwrap_vars")
 

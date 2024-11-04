@@ -20,7 +20,7 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
 from ._value_prop import PropValueType
-from ._var import VarInfo
+from ._var import Var, VarInfo, unwrap_vars
 
 # This is a default used for internal operators that
 # require the default domain. The most common of these
@@ -192,7 +192,7 @@ class _Introduce(_InternalNode):
         return protos
 
 
-def intros(*args: VarInfo) -> Sequence[VarInfo]:
+def intros(*args: Var) -> Sequence[Var]:
     """
     Internal identity operator with variadic arguments.
 
@@ -206,55 +206,55 @@ def intros(*args: VarInfo) -> Sequence[VarInfo]:
     Parameters
     ----------
     args
-        VarInfos to introduce in current scope.
+        Vars to introduce in current scope.
 
     Returns
     -------
-    Sequence[VarInfo]
-        VarInfos of the same value as ``args``, but with a shared dependency.
+    Sequence[Var]
+        Vars of the same value as ``args``, but with a shared dependency.
     """
     return _Introduce(
-        None, _Introduce.Inputs(args), out_variadic=len(args)
-    ).outputs.outputs
+        None, _Introduce.Inputs(unwrap_vars(args)), out_variadic=len(args)
+    ).get_output_vars()["outputs"]
 
 
-def intro(*args: VarInfo) -> VarInfo:
+def intro(*args: Var) -> Var:
     """Introduces arguments like ``intros``, but only returns the last."""
     return intros(*args)[-1]
 
 
-def unsafe_cast(x: VarInfo, typ: Type) -> VarInfo:
+def unsafe_cast(x: Var, typ: Type) -> Var:
     """
     Creates a new var with the type forcefully set to ``typ``.
 
-    Assumes that the real type of the VarInfo is indeed compatible with ``shape`` (for example it was unknown).
+    Assumes that the real type of the Var is indeed compatible with ``shape`` (for example it was unknown).
 
     The function is meant for use when type inference failed, and it has to be overriden to avoid further failures.
 
-    If you want to properly change a ``VarInfo``'s type, use an operator like Cast, CastLike, Optional, etc.
+    If you want to properly change a ``Var``'s type, use an operator like Cast, CastLike, Optional, etc.
 
     Parameters
     ----------
     x
-        VarInfo to retype.
+        Var to retype.
     typ
         Target type - must be a constant.
 
     Returns
     -------
-    VarInfo
-        VarInfo with the type reset to whatever was given.
+    Var
+        Var with the type reset to whatever was given.
     """
     y = intro(x)
-    y.type = typ
+    y._var_info.type = typ
     return y
 
 
-def unsafe_reshape(x: VarInfo, shape: SimpleShape) -> VarInfo:
+def unsafe_reshape(x: Var, shape: SimpleShape) -> Var:
     """
     Creates a new var with the shape forcefully set to ``shape`` (like an unsafe cast).
 
-    Assumes that the real shape of the VarInfo is indeed compatible with ``shape`` (for example it was unknown).
+    Assumes that the real shape of the Var is indeed compatible with ``shape`` (for example it was unknown).
 
     The function is meant for use when shape inference failed, and it has to be overriden to avoid failures.
 
@@ -263,12 +263,12 @@ def unsafe_reshape(x: VarInfo, shape: SimpleShape) -> VarInfo:
     Parameters
     ----------
     x
-        VarInfo to reshape.
+        Var to reshape.
     shape
         Target shape - must be a constant.
     Returns
     -------
-    VarInfo
-        VarInfo with the same Tensor element type, but different shape.
+    Var
+        Var with the same Tensor element type, but different shape.
     """
     return unsafe_cast(x, Tensor(x.unwrap_tensor().dtype, shape))
