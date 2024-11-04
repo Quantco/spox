@@ -733,18 +733,22 @@ def affine_grid(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int64)`
     """
-    return _AffineGrid(
-        _AffineGrid.Attributes(
-            align_corners=AttrInt64(align_corners, name="align_corners"),
-        ),
-        _AffineGrid.Inputs(
-            theta=unwrap_vars(theta),
-            size=unwrap_vars(size),
-        ),
-    ).get_output_vars(
-        theta=get_value(theta),
-        size=get_value(size),
-    )["grid"]
+    return (
+        _AffineGrid(
+            _AffineGrid.Attributes(
+                align_corners=AttrInt64(align_corners, name="align_corners"),
+            ),
+            _AffineGrid.Inputs(
+                theta=unwrap_vars(theta),
+                size=unwrap_vars(size),
+            ),
+        )
+        .get_output_vars(
+            theta=get_value(theta),
+            size=get_value(size),
+        )
+        .grid
+    )
 
 
 def constant_of_shape(
@@ -784,16 +788,20 @@ def constant_of_shape(
      - T1: `tensor(int64)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ConstantOfShape(
-        _ConstantOfShape.Attributes(
-            value=AttrTensor.maybe(value, name="value"),
-        ),
-        _ConstantOfShape.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _ConstantOfShape(
+            _ConstantOfShape.Attributes(
+                value=AttrTensor.maybe(value, name="value"),
+            ),
+            _ConstantOfShape.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def dft(
@@ -886,21 +894,25 @@ def dft(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int32)`, `tensor(int64)`
     """
-    return _DFT(
-        _DFT.Attributes(
-            inverse=AttrInt64(inverse, name="inverse"),
-            onesided=AttrInt64(onesided, name="onesided"),
-        ),
-        _DFT.Inputs(
-            input=unwrap_vars(input),
-            dft_length=unwrap_vars(dft_length),
-            axis=unwrap_vars(axis),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        dft_length=get_value(dft_length),
-        axis=get_value(axis),
-    )["output"]
+    return (
+        _DFT(
+            _DFT.Attributes(
+                inverse=AttrInt64(inverse, name="inverse"),
+                onesided=AttrInt64(onesided, name="onesided"),
+            ),
+            _DFT.Inputs(
+                input=unwrap_vars(input),
+                dft_length=unwrap_vars(dft_length),
+                axis=unwrap_vars(axis),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            dft_length=get_value(dft_length),
+            axis=get_value(axis),
+        )
+        .output
+    )
 
 
 def gelu(
@@ -941,16 +953,20 @@ def gelu(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Gelu(
-        _Gelu.Attributes(
-            approximate=AttrString(approximate, name="approximate"),
-        ),
-        _Gelu.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Gelu(
+            _Gelu.Attributes(
+                approximate=AttrString(approximate, name="approximate"),
+            ),
+            _Gelu.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def grid_sample(
@@ -1055,20 +1071,24 @@ def grid_sample(
      - T1: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _GridSample(
-        _GridSample.Attributes(
-            align_corners=AttrInt64(align_corners, name="align_corners"),
-            mode=AttrString(mode, name="mode"),
-            padding_mode=AttrString(padding_mode, name="padding_mode"),
-        ),
-        _GridSample.Inputs(
-            X=unwrap_vars(X),
-            grid=unwrap_vars(grid),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        grid=get_value(grid),
-    )["Y"]
+    return (
+        _GridSample(
+            _GridSample.Attributes(
+                align_corners=AttrInt64(align_corners, name="align_corners"),
+                mode=AttrString(mode, name="mode"),
+                padding_mode=AttrString(padding_mode, name="padding_mode"),
+            ),
+            _GridSample.Inputs(
+                X=unwrap_vars(X),
+                grid=unwrap_vars(grid),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            grid=get_value(grid),
+        )
+        .Y
+    )
 
 
 def image_decoder(
@@ -1129,16 +1149,20 @@ def image_decoder(
      - T1: `tensor(uint8)`
      - T2: `tensor(uint8)`
     """
-    return _ImageDecoder(
-        _ImageDecoder.Attributes(
-            pixel_format=AttrString(pixel_format, name="pixel_format"),
-        ),
-        _ImageDecoder.Inputs(
-            encoded_stream=unwrap_vars(encoded_stream),
-        ),
-    ).get_output_vars(
-        encoded_stream=get_value(encoded_stream),
-    )["image"]
+    return (
+        _ImageDecoder(
+            _ImageDecoder.Attributes(
+                pixel_format=AttrString(pixel_format, name="pixel_format"),
+            ),
+            _ImageDecoder.Inputs(
+                encoded_stream=unwrap_vars(encoded_stream),
+            ),
+        )
+        .get_output_vars(
+            encoded_stream=get_value(encoded_stream),
+        )
+        .image
+    )
 
 
 def isinf(
@@ -1180,17 +1204,21 @@ def isinf(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`
      - T2: `tensor(bool)`
     """
-    return _IsInf(
-        _IsInf.Attributes(
-            detect_negative=AttrInt64(detect_negative, name="detect_negative"),
-            detect_positive=AttrInt64(detect_positive, name="detect_positive"),
-        ),
-        _IsInf.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _IsInf(
+            _IsInf.Attributes(
+                detect_negative=AttrInt64(detect_negative, name="detect_negative"),
+                detect_positive=AttrInt64(detect_positive, name="detect_positive"),
+            ),
+            _IsInf.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def isnan(
@@ -1219,14 +1247,18 @@ def isnan(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`
      - T2: `tensor(bool)`
     """
-    return _IsNaN(
-        _IsNaN.Attributes(),
-        _IsNaN.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _IsNaN(
+            _IsNaN.Attributes(),
+            _IsNaN.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def reduce_max(
@@ -1287,21 +1319,25 @@ def reduce_max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ReduceMax(
-        _ReduceMax.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceMax(
+            _ReduceMax.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceMax.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceMax.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_min(
@@ -1361,21 +1397,25 @@ def reduce_min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ReduceMin(
-        _ReduceMin.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceMin(
+            _ReduceMin.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceMin.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceMin.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def regex_full_match(
@@ -1414,16 +1454,20 @@ def regex_full_match(
      - T1: `tensor(string)`
      - T2: `tensor(bool)`
     """
-    return _RegexFullMatch(
-        _RegexFullMatch.Attributes(
-            pattern=AttrString.maybe(pattern, name="pattern"),
-        ),
-        _RegexFullMatch.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _RegexFullMatch(
+            _RegexFullMatch.Attributes(
+                pattern=AttrString.maybe(pattern, name="pattern"),
+            ),
+            _RegexFullMatch.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def string_concat(
@@ -1456,16 +1500,20 @@ def string_concat(
     Type constraints:
      - T: `tensor(string)`
     """
-    return _StringConcat(
-        _StringConcat.Attributes(),
-        _StringConcat.Inputs(
-            X=unwrap_vars(X),
-            Y=unwrap_vars(Y),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        Y=get_value(Y),
-    )["Z"]
+    return (
+        _StringConcat(
+            _StringConcat.Attributes(),
+            _StringConcat.Inputs(
+                X=unwrap_vars(X),
+                Y=unwrap_vars(Y),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            Y=get_value(Y),
+        )
+        .Z
+    )
 
 
 def string_split(
@@ -1550,7 +1598,7 @@ def string_split(
         .get_output_vars(
             X=get_value(X),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 

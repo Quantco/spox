@@ -3958,14 +3958,18 @@ def abs(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Abs(
-        _Abs.Attributes(),
-        _Abs.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Abs(
+            _Abs.Attributes(),
+            _Abs.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def acos(
@@ -3994,14 +3998,18 @@ def acos(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Acos(
-        _Acos.Attributes(),
-        _Acos.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Acos(
+            _Acos.Attributes(),
+            _Acos.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def acosh(
@@ -4031,14 +4039,18 @@ def acosh(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Acosh(
-        _Acosh.Attributes(),
-        _Acosh.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Acosh(
+            _Acosh.Attributes(),
+            _Acosh.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def add(
@@ -4078,16 +4090,20 @@ def add(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Add(
-        _Add.Attributes(),
-        _Add.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Add(
+            _Add.Attributes(),
+            _Add.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def and_(
@@ -4126,16 +4142,20 @@ def and_(
      - T: `tensor(bool)`
      - T1: `tensor(bool)`
     """
-    return _And(
-        _And.Attributes(),
-        _And.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _And(
+            _And.Attributes(),
+            _And.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def arg_max(
@@ -4186,18 +4206,24 @@ def arg_max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ArgMax(
-        _ArgMax.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            select_last_index=AttrInt64(select_last_index, name="select_last_index"),
-        ),
-        _ArgMax.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ArgMax(
+            _ArgMax.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                select_last_index=AttrInt64(
+                    select_last_index, name="select_last_index"
+                ),
+            ),
+            _ArgMax.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def arg_min(
@@ -4248,18 +4274,24 @@ def arg_min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ArgMin(
-        _ArgMin.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            select_last_index=AttrInt64(select_last_index, name="select_last_index"),
-        ),
-        _ArgMin.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ArgMin(
+            _ArgMin.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                select_last_index=AttrInt64(
+                    select_last_index, name="select_last_index"
+                ),
+            ),
+            _ArgMin.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def asin(
@@ -4288,14 +4320,18 @@ def asin(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Asin(
-        _Asin.Attributes(),
-        _Asin.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Asin(
+            _Asin.Attributes(),
+            _Asin.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def asinh(
@@ -4324,14 +4360,18 @@ def asinh(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Asinh(
-        _Asinh.Attributes(),
-        _Asinh.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Asinh(
+            _Asinh.Attributes(),
+            _Asinh.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def atan(
@@ -4360,14 +4400,18 @@ def atan(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Atan(
-        _Atan.Attributes(),
-        _Atan.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Atan(
+            _Atan.Attributes(),
+            _Atan.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def atanh(
@@ -4397,14 +4441,18 @@ def atanh(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Atanh(
-        _Atanh.Attributes(),
-        _Atanh.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Atanh(
+            _Atanh.Attributes(),
+            _Atanh.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def average_pool(
@@ -4528,21 +4576,27 @@ def average_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _AveragePool(
-        _AveragePool.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
-            count_include_pad=AttrInt64(count_include_pad, name="count_include_pad"),
-            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _AveragePool.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _AveragePool(
+            _AveragePool.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+                count_include_pad=AttrInt64(
+                    count_include_pad, name="count_include_pad"
+                ),
+                kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _AveragePool.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def batch_normalization(
@@ -4687,7 +4741,7 @@ def batch_normalization(
             input_mean=get_value(input_mean),
             input_var=get_value(input_var),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -4736,17 +4790,21 @@ def bernoulli(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Bernoulli(
-        _Bernoulli.Attributes(
-            dtype=AttrDtype.maybe(dtype, name="dtype"),
-            seed=AttrFloat32.maybe(seed, name="seed"),
-        ),
-        _Bernoulli.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Bernoulli(
+            _Bernoulli.Attributes(
+                dtype=AttrDtype.maybe(dtype, name="dtype"),
+                seed=AttrFloat32.maybe(seed, name="seed"),
+            ),
+            _Bernoulli.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def bit_shift(
@@ -4799,18 +4857,22 @@ def bit_shift(
     Type constraints:
      - T: `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _BitShift(
-        _BitShift.Attributes(
-            direction=AttrString(direction, name="direction"),
-        ),
-        _BitShift.Inputs(
-            X=unwrap_vars(X),
-            Y=unwrap_vars(Y),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        Y=get_value(Y),
-    )["Z"]
+    return (
+        _BitShift(
+            _BitShift.Attributes(
+                direction=AttrString(direction, name="direction"),
+            ),
+            _BitShift.Inputs(
+                X=unwrap_vars(X),
+                Y=unwrap_vars(Y),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            Y=get_value(Y),
+        )
+        .Z
+    )
 
 
 def blackman_window(
@@ -4854,17 +4916,21 @@ def blackman_window(
      - T1: `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _BlackmanWindow(
-        _BlackmanWindow.Attributes(
-            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
-            periodic=AttrInt64(periodic, name="periodic"),
-        ),
-        _BlackmanWindow.Inputs(
-            size=unwrap_vars(size),
-        ),
-    ).get_output_vars(
-        size=get_value(size),
-    )["output"]
+    return (
+        _BlackmanWindow(
+            _BlackmanWindow.Attributes(
+                output_datatype=AttrInt64(output_datatype, name="output_datatype"),
+                periodic=AttrInt64(periodic, name="periodic"),
+            ),
+            _BlackmanWindow.Inputs(
+                size=unwrap_vars(size),
+            ),
+        )
+        .get_output_vars(
+            size=get_value(size),
+        )
+        .output
+    )
 
 
 def cast(
@@ -4949,16 +5015,20 @@ def cast(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Cast(
-        _Cast.Attributes(
-            to=AttrDtype(to, name="to"),
-        ),
-        _Cast.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Cast(
+            _Cast.Attributes(
+                to=AttrDtype(to, name="to"),
+            ),
+            _Cast.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def cast_like(
@@ -4995,16 +5065,20 @@ def cast_like(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _CastLike(
-        _CastLike.Attributes(),
-        _CastLike.Inputs(
-            input=unwrap_vars(input),
-            target_type=unwrap_vars(target_type),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        target_type=get_value(target_type),
-    )["output"]
+    return (
+        _CastLike(
+            _CastLike.Attributes(),
+            _CastLike.Inputs(
+                input=unwrap_vars(input),
+                target_type=unwrap_vars(target_type),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            target_type=get_value(target_type),
+        )
+        .output
+    )
 
 
 def ceil(
@@ -5035,14 +5109,18 @@ def ceil(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Ceil(
-        _Ceil.Attributes(),
-        _Ceil.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Ceil(
+            _Ceil.Attributes(),
+            _Ceil.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def celu(
@@ -5081,16 +5159,20 @@ def celu(
     Type constraints:
      - T: `tensor(float)`
     """
-    return _Celu(
-        _Celu.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-        ),
-        _Celu.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Celu(
+            _Celu.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+            ),
+            _Celu.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def clip(
@@ -5130,18 +5212,22 @@ def clip(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Clip(
-        _Clip.Attributes(),
-        _Clip.Inputs(
-            input=unwrap_vars(input),
-            min=unwrap_vars(min),
-            max=unwrap_vars(max),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        min=get_value(min),
-        max=get_value(max),
-    )["output"]
+    return (
+        _Clip(
+            _Clip.Attributes(),
+            _Clip.Inputs(
+                input=unwrap_vars(input),
+                min=unwrap_vars(min),
+                max=unwrap_vars(max),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            min=get_value(min),
+            max=get_value(max),
+        )
+        .output
+    )
 
 
 def compress(
@@ -5190,18 +5276,22 @@ def compress(
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(bool)`
     """
-    return _Compress(
-        _Compress.Attributes(
-            axis=AttrInt64.maybe(axis, name="axis"),
-        ),
-        _Compress.Inputs(
-            input=unwrap_vars(input),
-            condition=unwrap_vars(condition),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        condition=get_value(condition),
-    )["output"]
+    return (
+        _Compress(
+            _Compress.Attributes(
+                axis=AttrInt64.maybe(axis, name="axis"),
+            ),
+            _Compress.Inputs(
+                input=unwrap_vars(input),
+                condition=unwrap_vars(condition),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            condition=get_value(condition),
+        )
+        .output
+    )
 
 
 def concat(
@@ -5237,16 +5327,20 @@ def concat(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Concat(
-        _Concat.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _Concat.Inputs(
-            inputs=unwrap_vars(inputs),
-        ),
-    ).get_output_vars(
-        inputs=get_value(inputs),
-    )["concat_result"]
+    return (
+        _Concat(
+            _Concat.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _Concat.Inputs(
+                inputs=unwrap_vars(inputs),
+            ),
+        )
+        .get_output_vars(
+            inputs=get_value(inputs),
+        )
+        .concat_result
+    )
 
 
 def concat_from_sequence(
@@ -5291,17 +5385,21 @@ def concat_from_sequence(
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ConcatFromSequence(
-        _ConcatFromSequence.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            new_axis=AttrInt64(new_axis, name="new_axis"),
-        ),
-        _ConcatFromSequence.Inputs(
-            input_sequence=unwrap_vars(input_sequence),
-        ),
-    ).get_output_vars(
-        input_sequence=get_value(input_sequence),
-    )["concat_result"]
+    return (
+        _ConcatFromSequence(
+            _ConcatFromSequence.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                new_axis=AttrInt64(new_axis, name="new_axis"),
+            ),
+            _ConcatFromSequence.Inputs(
+                input_sequence=unwrap_vars(input_sequence),
+            ),
+        )
+        .get_output_vars(
+            input_sequence=get_value(input_sequence),
+        )
+        .concat_result
+    )
 
 
 def constant(
@@ -5359,18 +5457,22 @@ def constant(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Constant(
-        _Constant.Attributes(
-            value=AttrTensor.maybe(value, name="value"),
-            value_float=AttrFloat32.maybe(value_float, name="value_float"),
-            value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
-            value_int=AttrInt64.maybe(value_int, name="value_int"),
-            value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
-            value_string=AttrString.maybe(value_string, name="value_string"),
-            value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
-        ),
-        _Constant.Inputs(),
-    ).get_output_vars()["output"]
+    return (
+        _Constant(
+            _Constant.Attributes(
+                value=AttrTensor.maybe(value, name="value"),
+                value_float=AttrFloat32.maybe(value_float, name="value_float"),
+                value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
+                value_int=AttrInt64.maybe(value_int, name="value_int"),
+                value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
+                value_string=AttrString.maybe(value_string, name="value_string"),
+                value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
+            ),
+            _Constant.Inputs(),
+        )
+        .get_output_vars()
+        .output
+    )
 
 
 def constant_of_shape(
@@ -5410,16 +5512,20 @@ def constant_of_shape(
      - T1: `tensor(int64)`
      - T2: `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ConstantOfShape(
-        _ConstantOfShape.Attributes(
-            value=AttrTensor.maybe(value, name="value"),
-        ),
-        _ConstantOfShape.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _ConstantOfShape(
+            _ConstantOfShape.Attributes(
+                value=AttrTensor.maybe(value, name="value"),
+            ),
+            _ConstantOfShape.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def conv(
@@ -5519,25 +5625,29 @@ def conv(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Conv(
-        _Conv.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            group=AttrInt64(group, name="group"),
-            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _Conv.Inputs(
-            X=unwrap_vars(X),
-            W=unwrap_vars(W),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        W=get_value(W),
-        B=get_value(B),
-    )["Y"]
+    return (
+        _Conv(
+            _Conv.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                group=AttrInt64(group, name="group"),
+                kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _Conv.Inputs(
+                X=unwrap_vars(X),
+                W=unwrap_vars(W),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            W=get_value(W),
+            B=get_value(B),
+        )
+        .Y
+    )
 
 
 def conv_integer(
@@ -5648,27 +5758,31 @@ def conv_integer(
      - T2: `tensor(int8)`, `tensor(uint8)`
      - T3: `tensor(int32)`
     """
-    return _ConvInteger(
-        _ConvInteger.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            group=AttrInt64(group, name="group"),
-            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _ConvInteger.Inputs(
-            x=unwrap_vars(x),
-            w=unwrap_vars(w),
-            x_zero_point=unwrap_vars(x_zero_point),
-            w_zero_point=unwrap_vars(w_zero_point),
-        ),
-    ).get_output_vars(
-        x=get_value(x),
-        w=get_value(w),
-        x_zero_point=get_value(x_zero_point),
-        w_zero_point=get_value(w_zero_point),
-    )["y"]
+    return (
+        _ConvInteger(
+            _ConvInteger.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                group=AttrInt64(group, name="group"),
+                kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _ConvInteger.Inputs(
+                x=unwrap_vars(x),
+                w=unwrap_vars(w),
+                x_zero_point=unwrap_vars(x_zero_point),
+                w_zero_point=unwrap_vars(w_zero_point),
+            ),
+        )
+        .get_output_vars(
+            x=get_value(x),
+            w=get_value(w),
+            x_zero_point=get_value(x_zero_point),
+            w_zero_point=get_value(w_zero_point),
+        )
+        .y
+    )
 
 
 def conv_transpose(
@@ -5799,27 +5913,31 @@ def conv_transpose(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _ConvTranspose(
-        _ConvTranspose.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            group=AttrInt64(group, name="group"),
-            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
-            output_padding=AttrInt64s.maybe(output_padding, name="output_padding"),
-            output_shape=AttrInt64s.maybe(output_shape, name="output_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _ConvTranspose.Inputs(
-            X=unwrap_vars(X),
-            W=unwrap_vars(W),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        W=get_value(W),
-        B=get_value(B),
-    )["Y"]
+    return (
+        _ConvTranspose(
+            _ConvTranspose.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                group=AttrInt64(group, name="group"),
+                kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+                output_padding=AttrInt64s.maybe(output_padding, name="output_padding"),
+                output_shape=AttrInt64s.maybe(output_shape, name="output_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _ConvTranspose.Inputs(
+                X=unwrap_vars(X),
+                W=unwrap_vars(W),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            W=get_value(W),
+            B=get_value(B),
+        )
+        .Y
+    )
 
 
 def cos(
@@ -5847,14 +5965,18 @@ def cos(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Cos(
-        _Cos.Attributes(),
-        _Cos.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Cos(
+            _Cos.Attributes(),
+            _Cos.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def cosh(
@@ -5882,14 +6004,18 @@ def cosh(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Cosh(
-        _Cosh.Attributes(),
-        _Cosh.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Cosh(
+            _Cosh.Attributes(),
+            _Cosh.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def cumsum(
@@ -5957,19 +6083,23 @@ def cumsum(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
      - T2: `tensor(int32)`, `tensor(int64)`
     """
-    return _CumSum(
-        _CumSum.Attributes(
-            exclusive=AttrInt64(exclusive, name="exclusive"),
-            reverse=AttrInt64(reverse, name="reverse"),
-        ),
-        _CumSum.Inputs(
-            x=unwrap_vars(x),
-            axis=unwrap_vars(axis),
-        ),
-    ).get_output_vars(
-        x=get_value(x),
-        axis=get_value(axis),
-    )["y"]
+    return (
+        _CumSum(
+            _CumSum.Attributes(
+                exclusive=AttrInt64(exclusive, name="exclusive"),
+                reverse=AttrInt64(reverse, name="reverse"),
+            ),
+            _CumSum.Inputs(
+                x=unwrap_vars(x),
+                axis=unwrap_vars(axis),
+            ),
+        )
+        .get_output_vars(
+            x=get_value(x),
+            axis=get_value(axis),
+        )
+        .y
+    )
 
 
 def dft(
@@ -6045,20 +6175,24 @@ def dft(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int32)`, `tensor(int64)`
     """
-    return _DFT(
-        _DFT.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            inverse=AttrInt64(inverse, name="inverse"),
-            onesided=AttrInt64(onesided, name="onesided"),
-        ),
-        _DFT.Inputs(
-            input=unwrap_vars(input),
-            dft_length=unwrap_vars(dft_length),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        dft_length=get_value(dft_length),
-    )["output"]
+    return (
+        _DFT(
+            _DFT.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                inverse=AttrInt64(inverse, name="inverse"),
+                onesided=AttrInt64(onesided, name="onesided"),
+            ),
+            _DFT.Inputs(
+                input=unwrap_vars(input),
+                dft_length=unwrap_vars(dft_length),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            dft_length=get_value(dft_length),
+        )
+        .output
+    )
 
 
 def depth_to_space(
@@ -6123,17 +6257,21 @@ def depth_to_space(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _DepthToSpace(
-        _DepthToSpace.Attributes(
-            blocksize=AttrInt64(blocksize, name="blocksize"),
-            mode=AttrString(mode, name="mode"),
-        ),
-        _DepthToSpace.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _DepthToSpace(
+            _DepthToSpace.Attributes(
+                blocksize=AttrInt64(blocksize, name="blocksize"),
+                mode=AttrString(mode, name="mode"),
+            ),
+            _DepthToSpace.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def dequantize_linear(
@@ -6186,20 +6324,24 @@ def dequantize_linear(
     Type constraints:
      - T: `tensor(int32)`, `tensor(int8)`, `tensor(uint8)`
     """
-    return _DequantizeLinear(
-        _DequantizeLinear.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _DequantizeLinear.Inputs(
-            x=unwrap_vars(x),
-            x_scale=unwrap_vars(x_scale),
-            x_zero_point=unwrap_vars(x_zero_point),
-        ),
-    ).get_output_vars(
-        x=get_value(x),
-        x_scale=get_value(x_scale),
-        x_zero_point=get_value(x_zero_point),
-    )["y"]
+    return (
+        _DequantizeLinear(
+            _DequantizeLinear.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _DequantizeLinear.Inputs(
+                x=unwrap_vars(x),
+                x_scale=unwrap_vars(x_scale),
+                x_zero_point=unwrap_vars(x_zero_point),
+            ),
+        )
+        .get_output_vars(
+            x=get_value(x),
+            x_scale=get_value(x_scale),
+            x_zero_point=get_value(x_zero_point),
+        )
+        .y
+    )
 
 
 def det(
@@ -6232,14 +6374,18 @@ def det(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Det(
-        _Det.Attributes(),
-        _Det.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Det(
+            _Det.Attributes(),
+            _Det.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def div(
@@ -6279,16 +6425,20 @@ def div(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Div(
-        _Div.Attributes(),
-        _Div.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Div(
+            _Div.Attributes(),
+            _Div.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def dropout(
@@ -6383,7 +6533,7 @@ def dropout(
             ratio=get_value(ratio),
             training_mode=get_value(training_mode),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -6464,7 +6614,7 @@ def dynamic_quantize_linear(
         .get_output_vars(
             x=get_value(x),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -6530,16 +6680,20 @@ def einsum(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Einsum(
-        _Einsum.Attributes(
-            equation=AttrString(equation, name="equation"),
-        ),
-        _Einsum.Inputs(
-            Inputs=unwrap_vars(Inputs),
-        ),
-    ).get_output_vars(
-        Inputs=get_value(Inputs),
-    )["Output"]
+    return (
+        _Einsum(
+            _Einsum.Attributes(
+                equation=AttrString(equation, name="equation"),
+            ),
+            _Einsum.Inputs(
+                Inputs=unwrap_vars(Inputs),
+            ),
+        )
+        .get_output_vars(
+            Inputs=get_value(Inputs),
+        )
+        .Output
+    )
 
 
 def elu(
@@ -6575,16 +6729,20 @@ def elu(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Elu(
-        _Elu.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-        ),
-        _Elu.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Elu(
+            _Elu.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+            ),
+            _Elu.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def equal(
@@ -6623,16 +6781,20 @@ def equal(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(bool)`
     """
-    return _Equal(
-        _Equal.Attributes(),
-        _Equal.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Equal(
+            _Equal.Attributes(),
+            _Equal.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def erf(
@@ -6661,14 +6823,18 @@ def erf(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Erf(
-        _Erf.Attributes(),
-        _Erf.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Erf(
+            _Erf.Attributes(),
+            _Erf.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def exp(
@@ -6696,14 +6862,18 @@ def exp(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Exp(
-        _Exp.Attributes(),
-        _Exp.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Exp(
+            _Exp.Attributes(),
+            _Exp.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def expand(
@@ -6744,16 +6914,20 @@ def expand(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Expand(
-        _Expand.Attributes(),
-        _Expand.Inputs(
-            input=unwrap_vars(input),
-            shape=unwrap_vars(shape),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        shape=get_value(shape),
-    )["output"]
+    return (
+        _Expand(
+            _Expand.Attributes(),
+            _Expand.Inputs(
+                input=unwrap_vars(input),
+                shape=unwrap_vars(shape),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            shape=get_value(shape),
+        )
+        .output
+    )
 
 
 def eye_like(
@@ -6804,17 +6978,21 @@ def eye_like(
      - T1: `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _EyeLike(
-        _EyeLike.Attributes(
-            dtype=AttrDtype.maybe(dtype, name="dtype"),
-            k=AttrInt64(k, name="k"),
-        ),
-        _EyeLike.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _EyeLike(
+            _EyeLike.Attributes(
+                dtype=AttrDtype.maybe(dtype, name="dtype"),
+                k=AttrInt64(k, name="k"),
+            ),
+            _EyeLike.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def flatten(
@@ -6856,16 +7034,20 @@ def flatten(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Flatten(
-        _Flatten.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _Flatten.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Flatten(
+            _Flatten.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _Flatten.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def floor(
@@ -6896,14 +7078,18 @@ def floor(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Floor(
-        _Floor.Attributes(),
-        _Floor.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Floor(
+            _Floor.Attributes(),
+            _Floor.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def gru(
@@ -7113,7 +7299,7 @@ def gru(
             sequence_lens=get_value(sequence_lens),
             initial_h=get_value(initial_h),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -7203,18 +7389,22 @@ def gather(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _Gather(
-        _Gather.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _Gather.Inputs(
-            data=unwrap_vars(data),
-            indices=unwrap_vars(indices),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        indices=get_value(indices),
-    )["output"]
+    return (
+        _Gather(
+            _Gather.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _Gather.Inputs(
+                data=unwrap_vars(data),
+                indices=unwrap_vars(indices),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            indices=get_value(indices),
+        )
+        .output
+    )
 
 
 def gather_elements(
@@ -7311,18 +7501,22 @@ def gather_elements(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _GatherElements(
-        _GatherElements.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _GatherElements.Inputs(
-            data=unwrap_vars(data),
-            indices=unwrap_vars(indices),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        indices=get_value(indices),
-    )["output"]
+    return (
+        _GatherElements(
+            _GatherElements.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _GatherElements.Inputs(
+                data=unwrap_vars(data),
+                indices=unwrap_vars(indices),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            indices=get_value(indices),
+        )
+        .output
+    )
 
 
 def gather_nd(
@@ -7464,18 +7658,22 @@ def gather_nd(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _GatherND(
-        _GatherND.Attributes(
-            batch_dims=AttrInt64(batch_dims, name="batch_dims"),
-        ),
-        _GatherND.Inputs(
-            data=unwrap_vars(data),
-            indices=unwrap_vars(indices),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        indices=get_value(indices),
-    )["output"]
+    return (
+        _GatherND(
+            _GatherND.Attributes(
+                batch_dims=AttrInt64(batch_dims, name="batch_dims"),
+            ),
+            _GatherND.Inputs(
+                data=unwrap_vars(data),
+                indices=unwrap_vars(indices),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            indices=get_value(indices),
+        )
+        .output
+    )
 
 
 def gemm(
@@ -7551,23 +7749,27 @@ def gemm(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _Gemm(
-        _Gemm.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-            beta=AttrFloat32(beta, name="beta"),
-            transA=AttrInt64(transA, name="transA"),
-            transB=AttrInt64(transB, name="transB"),
-        ),
-        _Gemm.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-            C=unwrap_vars(C),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-        C=get_value(C),
-    )["Y"]
+    return (
+        _Gemm(
+            _Gemm.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+                beta=AttrFloat32(beta, name="beta"),
+                transA=AttrInt64(transA, name="transA"),
+                transB=AttrInt64(transB, name="transB"),
+            ),
+            _Gemm.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+                C=unwrap_vars(C),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+            C=get_value(C),
+        )
+        .Y
+    )
 
 
 def global_average_pool(
@@ -7604,14 +7806,18 @@ def global_average_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _GlobalAveragePool(
-        _GlobalAveragePool.Attributes(),
-        _GlobalAveragePool.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _GlobalAveragePool(
+            _GlobalAveragePool.Attributes(),
+            _GlobalAveragePool.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def global_lp_pool(
@@ -7653,16 +7859,20 @@ def global_lp_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _GlobalLpPool(
-        _GlobalLpPool.Attributes(
-            p=AttrInt64(p, name="p"),
-        ),
-        _GlobalLpPool.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _GlobalLpPool(
+            _GlobalLpPool.Attributes(
+                p=AttrInt64(p, name="p"),
+            ),
+            _GlobalLpPool.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def global_max_pool(
@@ -7699,14 +7909,18 @@ def global_max_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _GlobalMaxPool(
-        _GlobalMaxPool.Attributes(),
-        _GlobalMaxPool.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _GlobalMaxPool(
+            _GlobalMaxPool.Attributes(),
+            _GlobalMaxPool.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def greater(
@@ -7745,16 +7959,20 @@ def greater(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(bool)`
     """
-    return _Greater(
-        _Greater.Attributes(),
-        _Greater.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Greater(
+            _Greater.Attributes(),
+            _Greater.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def greater_or_equal(
@@ -7793,16 +8011,20 @@ def greater_or_equal(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(bool)`
     """
-    return _GreaterOrEqual(
-        _GreaterOrEqual.Attributes(),
-        _GreaterOrEqual.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _GreaterOrEqual(
+            _GreaterOrEqual.Attributes(),
+            _GreaterOrEqual.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def grid_sample(
@@ -7887,20 +8109,24 @@ def grid_sample(
      - T1: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _GridSample(
-        _GridSample.Attributes(
-            align_corners=AttrInt64(align_corners, name="align_corners"),
-            mode=AttrString(mode, name="mode"),
-            padding_mode=AttrString(padding_mode, name="padding_mode"),
-        ),
-        _GridSample.Inputs(
-            X=unwrap_vars(X),
-            grid=unwrap_vars(grid),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        grid=get_value(grid),
-    )["Y"]
+    return (
+        _GridSample(
+            _GridSample.Attributes(
+                align_corners=AttrInt64(align_corners, name="align_corners"),
+                mode=AttrString(mode, name="mode"),
+                padding_mode=AttrString(padding_mode, name="padding_mode"),
+            ),
+            _GridSample.Inputs(
+                X=unwrap_vars(X),
+                grid=unwrap_vars(grid),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            grid=get_value(grid),
+        )
+        .Y
+    )
 
 
 def hamming_window(
@@ -7944,17 +8170,21 @@ def hamming_window(
      - T1: `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _HammingWindow(
-        _HammingWindow.Attributes(
-            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
-            periodic=AttrInt64(periodic, name="periodic"),
-        ),
-        _HammingWindow.Inputs(
-            size=unwrap_vars(size),
-        ),
-    ).get_output_vars(
-        size=get_value(size),
-    )["output"]
+    return (
+        _HammingWindow(
+            _HammingWindow.Attributes(
+                output_datatype=AttrInt64(output_datatype, name="output_datatype"),
+                periodic=AttrInt64(periodic, name="periodic"),
+            ),
+            _HammingWindow.Inputs(
+                size=unwrap_vars(size),
+            ),
+        )
+        .get_output_vars(
+            size=get_value(size),
+        )
+        .output
+    )
 
 
 def hann_window(
@@ -7998,17 +8228,21 @@ def hann_window(
      - T1: `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _HannWindow(
-        _HannWindow.Attributes(
-            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
-            periodic=AttrInt64(periodic, name="periodic"),
-        ),
-        _HannWindow.Inputs(
-            size=unwrap_vars(size),
-        ),
-    ).get_output_vars(
-        size=get_value(size),
-    )["output"]
+    return (
+        _HannWindow(
+            _HannWindow.Attributes(
+                output_datatype=AttrInt64(output_datatype, name="output_datatype"),
+                periodic=AttrInt64(periodic, name="periodic"),
+            ),
+            _HannWindow.Inputs(
+                size=unwrap_vars(size),
+            ),
+        )
+        .get_output_vars(
+            size=get_value(size),
+        )
+        .output
+    )
 
 
 def hard_sigmoid(
@@ -8047,17 +8281,21 @@ def hard_sigmoid(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _HardSigmoid(
-        _HardSigmoid.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-            beta=AttrFloat32(beta, name="beta"),
-        ),
-        _HardSigmoid.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _HardSigmoid(
+            _HardSigmoid.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+                beta=AttrFloat32(beta, name="beta"),
+            ),
+            _HardSigmoid.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def hard_swish(
@@ -8088,14 +8326,18 @@ def hard_swish(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _HardSwish(
-        _HardSwish.Attributes(),
-        _HardSwish.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _HardSwish(
+            _HardSwish.Attributes(),
+            _HardSwish.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def hardmax(
@@ -8137,16 +8379,20 @@ def hardmax(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Hardmax(
-        _Hardmax.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _Hardmax.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Hardmax(
+            _Hardmax.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _Hardmax.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def identity(
@@ -8174,14 +8420,18 @@ def identity(
     Type constraints:
      - V: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Identity(
-        _Identity.Attributes(),
-        _Identity.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Identity(
+            _Identity.Attributes(),
+            _Identity.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def if_(
@@ -8238,18 +8488,22 @@ def if_(
     """
     _else_branch_subgraph: Graph = subgraph((), else_branch)
     _then_branch_subgraph: Graph = subgraph((), then_branch)
-    return _If(
-        _If.Attributes(
-            else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
-            then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
-        ),
-        _If.Inputs(
-            cond=unwrap_vars(cond),
-        ),
-        out_variadic=len(_else_branch_subgraph.requested_results),
-    ).get_output_vars(
-        cond=get_value(cond),
-    )["outputs"]
+    return (
+        _If(
+            _If.Attributes(
+                else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
+                then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
+            ),
+            _If.Inputs(
+                cond=unwrap_vars(cond),
+            ),
+            out_variadic=len(_else_branch_subgraph.requested_results),
+        )
+        .get_output_vars(
+            cond=get_value(cond),
+        )
+        .outputs
+    )
 
 
 def instance_normalization(
@@ -8298,20 +8552,24 @@ def instance_normalization(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _InstanceNormalization(
-        _InstanceNormalization.Attributes(
-            epsilon=AttrFloat32(epsilon, name="epsilon"),
-        ),
-        _InstanceNormalization.Inputs(
-            input=unwrap_vars(input),
-            scale=unwrap_vars(scale),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        scale=get_value(scale),
-        B=get_value(B),
-    )["output"]
+    return (
+        _InstanceNormalization(
+            _InstanceNormalization.Attributes(
+                epsilon=AttrFloat32(epsilon, name="epsilon"),
+            ),
+            _InstanceNormalization.Inputs(
+                input=unwrap_vars(input),
+                scale=unwrap_vars(scale),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            scale=get_value(scale),
+            B=get_value(B),
+        )
+        .output
+    )
 
 
 def isinf(
@@ -8353,17 +8611,21 @@ def isinf(
      - T1: `tensor(double)`, `tensor(float)`
      - T2: `tensor(bool)`
     """
-    return _IsInf(
-        _IsInf.Attributes(
-            detect_negative=AttrInt64(detect_negative, name="detect_negative"),
-            detect_positive=AttrInt64(detect_positive, name="detect_positive"),
-        ),
-        _IsInf.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _IsInf(
+            _IsInf.Attributes(
+                detect_negative=AttrInt64(detect_negative, name="detect_negative"),
+                detect_positive=AttrInt64(detect_positive, name="detect_positive"),
+            ),
+            _IsInf.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def isnan(
@@ -8392,14 +8654,18 @@ def isnan(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(bool)`
     """
-    return _IsNaN(
-        _IsNaN.Attributes(),
-        _IsNaN.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _IsNaN(
+            _IsNaN.Attributes(),
+            _IsNaN.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def lrn(
@@ -8461,19 +8727,23 @@ def lrn(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _LRN(
-        _LRN.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-            beta=AttrFloat32(beta, name="beta"),
-            bias=AttrFloat32(bias, name="bias"),
-            size=AttrInt64(size, name="size"),
-        ),
-        _LRN.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _LRN(
+            _LRN.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+                beta=AttrFloat32(beta, name="beta"),
+                bias=AttrFloat32(bias, name="bias"),
+                size=AttrInt64(size, name="size"),
+            ),
+            _LRN.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def lstm(
@@ -8707,7 +8977,7 @@ def lstm(
             initial_c=get_value(initial_c),
             P=get_value(P),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -8812,7 +9082,7 @@ def layer_normalization(
             Scale=get_value(Scale),
             B=get_value(B),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -8849,16 +9119,20 @@ def leaky_relu(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _LeakyRelu(
-        _LeakyRelu.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-        ),
-        _LeakyRelu.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _LeakyRelu(
+            _LeakyRelu.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+            ),
+            _LeakyRelu.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def less(
@@ -8897,16 +9171,20 @@ def less(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(bool)`
     """
-    return _Less(
-        _Less.Attributes(),
-        _Less.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Less(
+            _Less.Attributes(),
+            _Less.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def less_or_equal(
@@ -8945,16 +9223,20 @@ def less_or_equal(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(bool)`
     """
-    return _LessOrEqual(
-        _LessOrEqual.Attributes(),
-        _LessOrEqual.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _LessOrEqual(
+            _LessOrEqual.Attributes(),
+            _LessOrEqual.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def log(
@@ -8982,14 +9264,18 @@ def log(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Log(
-        _Log.Attributes(),
-        _Log.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Log(
+            _Log.Attributes(),
+            _Log.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def log_softmax(
@@ -9030,16 +9316,20 @@ def log_softmax(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _LogSoftmax(
-        _LogSoftmax.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _LogSoftmax.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _LogSoftmax(
+            _LogSoftmax.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _LogSoftmax.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def loop(
@@ -9223,21 +9513,25 @@ def loop(
         + [var.unwrap_type() for var in v_initial],
         body,
     )
-    return _Loop(
-        _Loop.Attributes(
-            body=AttrGraph(_body_subgraph, name="body"),
-        ),
-        _Loop.Inputs(
-            M=unwrap_vars(M),
-            cond=unwrap_vars(cond),
-            v_initial=unwrap_vars(v_initial),
-        ),
-        out_variadic=len(_body_subgraph.requested_results) - 1,
-    ).get_output_vars(
-        M=get_value(M),
-        cond=get_value(cond),
-        v_initial=get_value(v_initial),
-    )["v_final_and_scan_outputs"]
+    return (
+        _Loop(
+            _Loop.Attributes(
+                body=AttrGraph(_body_subgraph, name="body"),
+            ),
+            _Loop.Inputs(
+                M=unwrap_vars(M),
+                cond=unwrap_vars(cond),
+                v_initial=unwrap_vars(v_initial),
+            ),
+            out_variadic=len(_body_subgraph.requested_results) - 1,
+        )
+        .get_output_vars(
+            M=get_value(M),
+            cond=get_value(cond),
+            v_initial=get_value(v_initial),
+        )
+        .v_final_and_scan_outputs
+    )
 
 
 def lp_normalization(
@@ -9274,17 +9568,21 @@ def lp_normalization(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _LpNormalization(
-        _LpNormalization.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            p=AttrInt64(p, name="p"),
-        ),
-        _LpNormalization.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _LpNormalization(
+            _LpNormalization.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                p=AttrInt64(p, name="p"),
+            ),
+            _LpNormalization.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def lp_pool(
@@ -9358,20 +9656,24 @@ def lp_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _LpPool(
-        _LpPool.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
-            p=AttrInt64(p, name="p"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _LpPool.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _LpPool(
+            _LpPool.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+                p=AttrInt64(p, name="p"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _LpPool.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def matmul(
@@ -9404,16 +9706,20 @@ def matmul(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _MatMul(
-        _MatMul.Attributes(),
-        _MatMul.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["Y"]
+    return (
+        _MatMul(
+            _MatMul.Attributes(),
+            _MatMul.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .Y
+    )
 
 
 def matmul_integer(
@@ -9468,20 +9774,24 @@ def matmul_integer(
      - T2: `tensor(int8)`, `tensor(uint8)`
      - T3: `tensor(int32)`
     """
-    return _MatMulInteger(
-        _MatMulInteger.Attributes(),
-        _MatMulInteger.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-            a_zero_point=unwrap_vars(a_zero_point),
-            b_zero_point=unwrap_vars(b_zero_point),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-        a_zero_point=get_value(a_zero_point),
-        b_zero_point=get_value(b_zero_point),
-    )["Y"]
+    return (
+        _MatMulInteger(
+            _MatMulInteger.Attributes(),
+            _MatMulInteger.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+                a_zero_point=unwrap_vars(a_zero_point),
+                b_zero_point=unwrap_vars(b_zero_point),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+            a_zero_point=get_value(a_zero_point),
+            b_zero_point=get_value(b_zero_point),
+        )
+        .Y
+    )
 
 
 def max(
@@ -9513,14 +9823,18 @@ def max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Max(
-        _Max.Attributes(),
-        _Max.Inputs(
-            data_0=unwrap_vars(data_0),
-        ),
-    ).get_output_vars(
-        data_0=get_value(data_0),
-    )["max"]
+    return (
+        _Max(
+            _Max.Attributes(),
+            _Max.Inputs(
+                data_0=unwrap_vars(data_0),
+            ),
+        )
+        .get_output_vars(
+            data_0=get_value(data_0),
+        )
+        .max
+    )
 
 
 def max_pool(
@@ -9678,7 +9992,7 @@ def max_pool(
         .get_output_vars(
             X=get_value(X),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -9727,19 +10041,23 @@ def max_roi_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _MaxRoiPool(
-        _MaxRoiPool.Attributes(
-            pooled_shape=AttrInt64s(pooled_shape, name="pooled_shape"),
-            spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
-        ),
-        _MaxRoiPool.Inputs(
-            X=unwrap_vars(X),
-            rois=unwrap_vars(rois),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        rois=get_value(rois),
-    )["Y"]
+    return (
+        _MaxRoiPool(
+            _MaxRoiPool.Attributes(
+                pooled_shape=AttrInt64s(pooled_shape, name="pooled_shape"),
+                spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
+            ),
+            _MaxRoiPool.Inputs(
+                X=unwrap_vars(X),
+                rois=unwrap_vars(rois),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            rois=get_value(rois),
+        )
+        .Y
+    )
 
 
 def max_unpool(
@@ -9838,22 +10156,26 @@ def max_unpool(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int64)`
     """
-    return _MaxUnpool(
-        _MaxUnpool.Attributes(
-            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _MaxUnpool.Inputs(
-            X=unwrap_vars(X),
-            I=unwrap_vars(I),
-            output_shape=unwrap_vars(output_shape),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        I=get_value(I),
-        output_shape=get_value(output_shape),
-    )["output"]
+    return (
+        _MaxUnpool(
+            _MaxUnpool.Attributes(
+                kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _MaxUnpool.Inputs(
+                X=unwrap_vars(X),
+                I=unwrap_vars(I),
+                output_shape=unwrap_vars(output_shape),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            I=get_value(I),
+            output_shape=get_value(output_shape),
+        )
+        .output
+    )
 
 
 def mean(
@@ -9885,14 +10207,18 @@ def mean(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Mean(
-        _Mean.Attributes(),
-        _Mean.Inputs(
-            data_0=unwrap_vars(data_0),
-        ),
-    ).get_output_vars(
-        data_0=get_value(data_0),
-    )["mean"]
+    return (
+        _Mean(
+            _Mean.Attributes(),
+            _Mean.Inputs(
+                data_0=unwrap_vars(data_0),
+            ),
+        )
+        .get_output_vars(
+            data_0=get_value(data_0),
+        )
+        .mean
+    )
 
 
 def mean_variance_normalization(
@@ -9930,16 +10256,20 @@ def mean_variance_normalization(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _MeanVarianceNormalization(
-        _MeanVarianceNormalization.Attributes(
-            axes=AttrInt64s(axes, name="axes"),
-        ),
-        _MeanVarianceNormalization.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _MeanVarianceNormalization(
+            _MeanVarianceNormalization.Attributes(
+                axes=AttrInt64s(axes, name="axes"),
+            ),
+            _MeanVarianceNormalization.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def mel_weight_matrix(
@@ -10016,24 +10346,28 @@ def mel_weight_matrix(
      - T2: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T3: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _MelWeightMatrix(
-        _MelWeightMatrix.Attributes(
-            output_datatype=AttrInt64(output_datatype, name="output_datatype"),
-        ),
-        _MelWeightMatrix.Inputs(
-            num_mel_bins=unwrap_vars(num_mel_bins),
-            dft_length=unwrap_vars(dft_length),
-            sample_rate=unwrap_vars(sample_rate),
-            lower_edge_hertz=unwrap_vars(lower_edge_hertz),
-            upper_edge_hertz=unwrap_vars(upper_edge_hertz),
-        ),
-    ).get_output_vars(
-        num_mel_bins=get_value(num_mel_bins),
-        dft_length=get_value(dft_length),
-        sample_rate=get_value(sample_rate),
-        lower_edge_hertz=get_value(lower_edge_hertz),
-        upper_edge_hertz=get_value(upper_edge_hertz),
-    )["output"]
+    return (
+        _MelWeightMatrix(
+            _MelWeightMatrix.Attributes(
+                output_datatype=AttrInt64(output_datatype, name="output_datatype"),
+            ),
+            _MelWeightMatrix.Inputs(
+                num_mel_bins=unwrap_vars(num_mel_bins),
+                dft_length=unwrap_vars(dft_length),
+                sample_rate=unwrap_vars(sample_rate),
+                lower_edge_hertz=unwrap_vars(lower_edge_hertz),
+                upper_edge_hertz=unwrap_vars(upper_edge_hertz),
+            ),
+        )
+        .get_output_vars(
+            num_mel_bins=get_value(num_mel_bins),
+            dft_length=get_value(dft_length),
+            sample_rate=get_value(sample_rate),
+            lower_edge_hertz=get_value(lower_edge_hertz),
+            upper_edge_hertz=get_value(upper_edge_hertz),
+        )
+        .output
+    )
 
 
 def min(
@@ -10065,14 +10399,18 @@ def min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Min(
-        _Min.Attributes(),
-        _Min.Inputs(
-            data_0=unwrap_vars(data_0),
-        ),
-    ).get_output_vars(
-        data_0=get_value(data_0),
-    )["min"]
+    return (
+        _Min(
+            _Min.Attributes(),
+            _Min.Inputs(
+                data_0=unwrap_vars(data_0),
+            ),
+        )
+        .get_output_vars(
+            data_0=get_value(data_0),
+        )
+        .min
+    )
 
 
 def mod(
@@ -10127,18 +10465,22 @@ def mod(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Mod(
-        _Mod.Attributes(
-            fmod=AttrInt64(fmod, name="fmod"),
-        ),
-        _Mod.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Mod(
+            _Mod.Attributes(
+                fmod=AttrInt64(fmod, name="fmod"),
+            ),
+            _Mod.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def mul(
@@ -10178,16 +10520,20 @@ def mul(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Mul(
-        _Mul.Attributes(),
-        _Mul.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Mul(
+            _Mul.Attributes(),
+            _Mul.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def multinomial(
@@ -10237,18 +10583,22 @@ def multinomial(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int32)`, `tensor(int64)`
     """
-    return _Multinomial(
-        _Multinomial.Attributes(
-            dtype=AttrDtype(dtype, name="dtype"),
-            sample_size=AttrInt64(sample_size, name="sample_size"),
-            seed=AttrFloat32.maybe(seed, name="seed"),
-        ),
-        _Multinomial.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Multinomial(
+            _Multinomial.Attributes(
+                dtype=AttrDtype(dtype, name="dtype"),
+                sample_size=AttrInt64(sample_size, name="sample_size"),
+                seed=AttrFloat32.maybe(seed, name="seed"),
+            ),
+            _Multinomial.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def neg(
@@ -10278,14 +10628,18 @@ def neg(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`
     """
-    return _Neg(
-        _Neg.Attributes(),
-        _Neg.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Neg(
+            _Neg.Attributes(),
+            _Neg.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def negative_log_likelihood_loss(
@@ -10445,21 +10799,25 @@ def negative_log_likelihood_loss(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _NegativeLogLikelihoodLoss(
-        _NegativeLogLikelihoodLoss.Attributes(
-            ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
-            reduction=AttrString(reduction, name="reduction"),
-        ),
-        _NegativeLogLikelihoodLoss.Inputs(
-            input=unwrap_vars(input),
-            target=unwrap_vars(target),
-            weight=unwrap_vars(weight),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        target=get_value(target),
-        weight=get_value(weight),
-    )["loss"]
+    return (
+        _NegativeLogLikelihoodLoss(
+            _NegativeLogLikelihoodLoss.Attributes(
+                ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
+                reduction=AttrString(reduction, name="reduction"),
+            ),
+            _NegativeLogLikelihoodLoss.Inputs(
+                input=unwrap_vars(input),
+                target=unwrap_vars(target),
+                weight=unwrap_vars(weight),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            target=get_value(target),
+            weight=get_value(weight),
+        )
+        .loss
+    )
 
 
 def non_max_suppression(
@@ -10528,24 +10886,28 @@ def non_max_suppression(
     Signature: ``ai.onnx@11::NonMaxSuppression``.
 
     """
-    return _NonMaxSuppression(
-        _NonMaxSuppression.Attributes(
-            center_point_box=AttrInt64(center_point_box, name="center_point_box"),
-        ),
-        _NonMaxSuppression.Inputs(
-            boxes=unwrap_vars(boxes),
-            scores=unwrap_vars(scores),
-            max_output_boxes_per_class=unwrap_vars(max_output_boxes_per_class),
-            iou_threshold=unwrap_vars(iou_threshold),
-            score_threshold=unwrap_vars(score_threshold),
-        ),
-    ).get_output_vars(
-        boxes=get_value(boxes),
-        scores=get_value(scores),
-        max_output_boxes_per_class=get_value(max_output_boxes_per_class),
-        iou_threshold=get_value(iou_threshold),
-        score_threshold=get_value(score_threshold),
-    )["selected_indices"]
+    return (
+        _NonMaxSuppression(
+            _NonMaxSuppression.Attributes(
+                center_point_box=AttrInt64(center_point_box, name="center_point_box"),
+            ),
+            _NonMaxSuppression.Inputs(
+                boxes=unwrap_vars(boxes),
+                scores=unwrap_vars(scores),
+                max_output_boxes_per_class=unwrap_vars(max_output_boxes_per_class),
+                iou_threshold=unwrap_vars(iou_threshold),
+                score_threshold=unwrap_vars(score_threshold),
+            ),
+        )
+        .get_output_vars(
+            boxes=get_value(boxes),
+            scores=get_value(scores),
+            max_output_boxes_per_class=get_value(max_output_boxes_per_class),
+            iou_threshold=get_value(iou_threshold),
+            score_threshold=get_value(score_threshold),
+        )
+        .selected_indices
+    )
 
 
 def non_zero(
@@ -10577,14 +10939,18 @@ def non_zero(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _NonZero(
-        _NonZero.Attributes(),
-        _NonZero.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _NonZero(
+            _NonZero.Attributes(),
+            _NonZero.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def not_(
@@ -10612,14 +10978,18 @@ def not_(
     Type constraints:
      - T: `tensor(bool)`
     """
-    return _Not(
-        _Not.Attributes(),
-        _Not.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Not(
+            _Not.Attributes(),
+            _Not.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def one_hot(
@@ -10703,20 +11073,24 @@ def one_hot(
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T3: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _OneHot(
-        _OneHot.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _OneHot.Inputs(
-            indices=unwrap_vars(indices),
-            depth=unwrap_vars(depth),
-            values=unwrap_vars(values),
-        ),
-    ).get_output_vars(
-        indices=get_value(indices),
-        depth=get_value(depth),
-        values=get_value(values),
-    )["output"]
+    return (
+        _OneHot(
+            _OneHot.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _OneHot.Inputs(
+                indices=unwrap_vars(indices),
+                depth=unwrap_vars(depth),
+                values=unwrap_vars(values),
+            ),
+        )
+        .get_output_vars(
+            indices=get_value(indices),
+            depth=get_value(depth),
+            values=get_value(values),
+        )
+        .output
+    )
 
 
 def optional(
@@ -10752,16 +11126,20 @@ def optional(
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`
     """
-    return _Optional(
-        _Optional.Attributes(
-            type=AttrType.maybe(type, name="type"),
-        ),
-        _Optional.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Optional(
+            _Optional.Attributes(
+                type=AttrType.maybe(type, name="type"),
+            ),
+            _Optional.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def optional_get_element(
@@ -10792,14 +11170,18 @@ def optional_get_element(
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _OptionalGetElement(
-        _OptionalGetElement.Attributes(),
-        _OptionalGetElement.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _OptionalGetElement(
+            _OptionalGetElement.Attributes(),
+            _OptionalGetElement.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def optional_has_element(
@@ -10830,14 +11212,18 @@ def optional_has_element(
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`
      - B: `tensor(bool)`
     """
-    return _OptionalHasElement(
-        _OptionalHasElement.Attributes(),
-        _OptionalHasElement.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _OptionalHasElement(
+            _OptionalHasElement.Attributes(),
+            _OptionalHasElement.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def or_(
@@ -10876,16 +11262,20 @@ def or_(
      - T: `tensor(bool)`
      - T1: `tensor(bool)`
     """
-    return _Or(
-        _Or.Attributes(),
-        _Or.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Or(
+            _Or.Attributes(),
+            _Or.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def prelu(
@@ -10924,16 +11314,20 @@ def prelu(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _PRelu(
-        _PRelu.Attributes(),
-        _PRelu.Inputs(
-            X=unwrap_vars(X),
-            slope=unwrap_vars(slope),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        slope=get_value(slope),
-    )["Y"]
+    return (
+        _PRelu(
+            _PRelu.Attributes(),
+            _PRelu.Inputs(
+                X=unwrap_vars(X),
+                slope=unwrap_vars(slope),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            slope=get_value(slope),
+        )
+        .Y
+    )
 
 
 def pad(
@@ -11030,20 +11424,24 @@ def pad(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Pad(
-        _Pad.Attributes(
-            mode=AttrString(mode, name="mode"),
-        ),
-        _Pad.Inputs(
-            data=unwrap_vars(data),
-            pads=unwrap_vars(pads),
-            constant_value=unwrap_vars(constant_value),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        pads=get_value(pads),
-        constant_value=get_value(constant_value),
-    )["output"]
+    return (
+        _Pad(
+            _Pad.Attributes(
+                mode=AttrString(mode, name="mode"),
+            ),
+            _Pad.Inputs(
+                data=unwrap_vars(data),
+                pads=unwrap_vars(pads),
+                constant_value=unwrap_vars(constant_value),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            pads=get_value(pads),
+            constant_value=get_value(constant_value),
+        )
+        .output
+    )
 
 
 def pow(
@@ -11081,16 +11479,20 @@ def pow(
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Pow(
-        _Pow.Attributes(),
-        _Pow.Inputs(
-            X=unwrap_vars(X),
-            Y=unwrap_vars(Y),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        Y=get_value(Y),
-    )["Z"]
+    return (
+        _Pow(
+            _Pow.Attributes(),
+            _Pow.Inputs(
+                X=unwrap_vars(X),
+                Y=unwrap_vars(Y),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            Y=get_value(Y),
+        )
+        .Z
+    )
 
 
 def qlinear_conv(
@@ -11233,37 +11635,41 @@ def qlinear_conv(
      - T3: `tensor(int8)`, `tensor(uint8)`
      - T4: `tensor(int32)`
     """
-    return _QLinearConv(
-        _QLinearConv.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            group=AttrInt64(group, name="group"),
-            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _QLinearConv.Inputs(
-            x=unwrap_vars(x),
-            x_scale=unwrap_vars(x_scale),
-            x_zero_point=unwrap_vars(x_zero_point),
-            w=unwrap_vars(w),
-            w_scale=unwrap_vars(w_scale),
-            w_zero_point=unwrap_vars(w_zero_point),
-            y_scale=unwrap_vars(y_scale),
-            y_zero_point=unwrap_vars(y_zero_point),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        x=get_value(x),
-        x_scale=get_value(x_scale),
-        x_zero_point=get_value(x_zero_point),
-        w=get_value(w),
-        w_scale=get_value(w_scale),
-        w_zero_point=get_value(w_zero_point),
-        y_scale=get_value(y_scale),
-        y_zero_point=get_value(y_zero_point),
-        B=get_value(B),
-    )["y"]
+    return (
+        _QLinearConv(
+            _QLinearConv.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                group=AttrInt64(group, name="group"),
+                kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _QLinearConv.Inputs(
+                x=unwrap_vars(x),
+                x_scale=unwrap_vars(x_scale),
+                x_zero_point=unwrap_vars(x_zero_point),
+                w=unwrap_vars(w),
+                w_scale=unwrap_vars(w_scale),
+                w_zero_point=unwrap_vars(w_zero_point),
+                y_scale=unwrap_vars(y_scale),
+                y_zero_point=unwrap_vars(y_zero_point),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            x=get_value(x),
+            x_scale=get_value(x_scale),
+            x_zero_point=get_value(x_zero_point),
+            w=get_value(w),
+            w_scale=get_value(w_scale),
+            w_zero_point=get_value(w_zero_point),
+            y_scale=get_value(y_scale),
+            y_zero_point=get_value(y_zero_point),
+            B=get_value(B),
+        )
+        .y
+    )
 
 
 def qlinear_matmul(
@@ -11338,28 +11744,32 @@ def qlinear_matmul(
      - T2: `tensor(int8)`, `tensor(uint8)`
      - T3: `tensor(int8)`, `tensor(uint8)`
     """
-    return _QLinearMatMul(
-        _QLinearMatMul.Attributes(),
-        _QLinearMatMul.Inputs(
-            a=unwrap_vars(a),
-            a_scale=unwrap_vars(a_scale),
-            a_zero_point=unwrap_vars(a_zero_point),
-            b=unwrap_vars(b),
-            b_scale=unwrap_vars(b_scale),
-            b_zero_point=unwrap_vars(b_zero_point),
-            y_scale=unwrap_vars(y_scale),
-            y_zero_point=unwrap_vars(y_zero_point),
-        ),
-    ).get_output_vars(
-        a=get_value(a),
-        a_scale=get_value(a_scale),
-        a_zero_point=get_value(a_zero_point),
-        b=get_value(b),
-        b_scale=get_value(b_scale),
-        b_zero_point=get_value(b_zero_point),
-        y_scale=get_value(y_scale),
-        y_zero_point=get_value(y_zero_point),
-    )["y"]
+    return (
+        _QLinearMatMul(
+            _QLinearMatMul.Attributes(),
+            _QLinearMatMul.Inputs(
+                a=unwrap_vars(a),
+                a_scale=unwrap_vars(a_scale),
+                a_zero_point=unwrap_vars(a_zero_point),
+                b=unwrap_vars(b),
+                b_scale=unwrap_vars(b_scale),
+                b_zero_point=unwrap_vars(b_zero_point),
+                y_scale=unwrap_vars(y_scale),
+                y_zero_point=unwrap_vars(y_zero_point),
+            ),
+        )
+        .get_output_vars(
+            a=get_value(a),
+            a_scale=get_value(a_scale),
+            a_zero_point=get_value(a_zero_point),
+            b=get_value(b),
+            b_scale=get_value(b_scale),
+            b_zero_point=get_value(b_zero_point),
+            y_scale=get_value(y_scale),
+            y_zero_point=get_value(y_zero_point),
+        )
+        .y
+    )
 
 
 def quantize_linear(
@@ -11416,20 +11826,24 @@ def quantize_linear(
      - T1: `tensor(float)`, `tensor(int32)`
      - T2: `tensor(int8)`, `tensor(uint8)`
     """
-    return _QuantizeLinear(
-        _QuantizeLinear.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _QuantizeLinear.Inputs(
-            x=unwrap_vars(x),
-            y_scale=unwrap_vars(y_scale),
-            y_zero_point=unwrap_vars(y_zero_point),
-        ),
-    ).get_output_vars(
-        x=get_value(x),
-        y_scale=get_value(y_scale),
-        y_zero_point=get_value(y_zero_point),
-    )["y"]
+    return (
+        _QuantizeLinear(
+            _QuantizeLinear.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _QuantizeLinear.Inputs(
+                x=unwrap_vars(x),
+                y_scale=unwrap_vars(y_scale),
+                y_zero_point=unwrap_vars(y_zero_point),
+            ),
+        )
+        .get_output_vars(
+            x=get_value(x),
+            y_scale=get_value(y_scale),
+            y_zero_point=get_value(y_zero_point),
+        )
+        .y
+    )
 
 
 def rnn(
@@ -11616,7 +12030,7 @@ def rnn(
             sequence_lens=get_value(sequence_lens),
             initial_h=get_value(initial_h),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -11671,16 +12085,20 @@ def random_normal(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _RandomNormal(
-        _RandomNormal.Attributes(
-            dtype=AttrDtype(dtype, name="dtype"),
-            mean=AttrFloat32(mean, name="mean"),
-            scale=AttrFloat32(scale, name="scale"),
-            seed=AttrFloat32.maybe(seed, name="seed"),
-            shape=AttrInt64s(shape, name="shape"),
-        ),
-        _RandomNormal.Inputs(),
-    ).get_output_vars()["output"]
+    return (
+        _RandomNormal(
+            _RandomNormal.Attributes(
+                dtype=AttrDtype(dtype, name="dtype"),
+                mean=AttrFloat32(mean, name="mean"),
+                scale=AttrFloat32(scale, name="scale"),
+                seed=AttrFloat32.maybe(seed, name="seed"),
+                shape=AttrInt64s(shape, name="shape"),
+            ),
+            _RandomNormal.Inputs(),
+        )
+        .get_output_vars()
+        .output
+    )
 
 
 def random_normal_like(
@@ -11736,19 +12154,23 @@ def random_normal_like(
      - T1: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _RandomNormalLike(
-        _RandomNormalLike.Attributes(
-            dtype=AttrDtype.maybe(dtype, name="dtype"),
-            mean=AttrFloat32(mean, name="mean"),
-            scale=AttrFloat32(scale, name="scale"),
-            seed=AttrFloat32.maybe(seed, name="seed"),
-        ),
-        _RandomNormalLike.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _RandomNormalLike(
+            _RandomNormalLike.Attributes(
+                dtype=AttrDtype.maybe(dtype, name="dtype"),
+                mean=AttrFloat32(mean, name="mean"),
+                scale=AttrFloat32(scale, name="scale"),
+                seed=AttrFloat32.maybe(seed, name="seed"),
+            ),
+            _RandomNormalLike.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def random_uniform(
@@ -11801,16 +12223,20 @@ def random_uniform(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _RandomUniform(
-        _RandomUniform.Attributes(
-            dtype=AttrDtype(dtype, name="dtype"),
-            high=AttrFloat32(high, name="high"),
-            low=AttrFloat32(low, name="low"),
-            seed=AttrFloat32.maybe(seed, name="seed"),
-            shape=AttrInt64s(shape, name="shape"),
-        ),
-        _RandomUniform.Inputs(),
-    ).get_output_vars()["output"]
+    return (
+        _RandomUniform(
+            _RandomUniform.Attributes(
+                dtype=AttrDtype(dtype, name="dtype"),
+                high=AttrFloat32(high, name="high"),
+                low=AttrFloat32(low, name="low"),
+                seed=AttrFloat32.maybe(seed, name="seed"),
+                shape=AttrInt64s(shape, name="shape"),
+            ),
+            _RandomUniform.Inputs(),
+        )
+        .get_output_vars()
+        .output
+    )
 
 
 def random_uniform_like(
@@ -11866,19 +12292,23 @@ def random_uniform_like(
      - T1: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _RandomUniformLike(
-        _RandomUniformLike.Attributes(
-            dtype=AttrDtype.maybe(dtype, name="dtype"),
-            high=AttrFloat32(high, name="high"),
-            low=AttrFloat32(low, name="low"),
-            seed=AttrFloat32.maybe(seed, name="seed"),
-        ),
-        _RandomUniformLike.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _RandomUniformLike(
+            _RandomUniformLike.Attributes(
+                dtype=AttrDtype.maybe(dtype, name="dtype"),
+                high=AttrFloat32(high, name="high"),
+                low=AttrFloat32(low, name="low"),
+                seed=AttrFloat32.maybe(seed, name="seed"),
+            ),
+            _RandomUniformLike.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def range(
@@ -11945,18 +12375,22 @@ def range(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _Range(
-        _Range.Attributes(),
-        _Range.Inputs(
-            start=unwrap_vars(start),
-            limit=unwrap_vars(limit),
-            delta=unwrap_vars(delta),
-        ),
-    ).get_output_vars(
-        start=get_value(start),
-        limit=get_value(limit),
-        delta=get_value(delta),
-    )["output"]
+    return (
+        _Range(
+            _Range.Attributes(),
+            _Range.Inputs(
+                start=unwrap_vars(start),
+                limit=unwrap_vars(limit),
+                delta=unwrap_vars(delta),
+            ),
+        )
+        .get_output_vars(
+            start=get_value(start),
+            limit=get_value(limit),
+            delta=get_value(delta),
+        )
+        .output
+    )
 
 
 def reciprocal(
@@ -11986,14 +12420,18 @@ def reciprocal(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Reciprocal(
-        _Reciprocal.Attributes(),
-        _Reciprocal.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Reciprocal(
+            _Reciprocal.Attributes(),
+            _Reciprocal.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def reduce_l1(
@@ -12040,17 +12478,21 @@ def reduce_l1(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceL1(
-        _ReduceL1.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceL1.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceL1(
+            _ReduceL1.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceL1.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_l2(
@@ -12097,17 +12539,21 @@ def reduce_l2(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceL2(
-        _ReduceL2.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceL2.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceL2(
+            _ReduceL2.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceL2.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_log_sum(
@@ -12155,17 +12601,21 @@ def reduce_log_sum(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceLogSum(
-        _ReduceLogSum.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceLogSum.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceLogSum(
+            _ReduceLogSum.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceLogSum.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_log_sum_exp(
@@ -12213,17 +12663,21 @@ def reduce_log_sum_exp(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceLogSumExp(
-        _ReduceLogSumExp.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceLogSumExp.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceLogSumExp(
+            _ReduceLogSumExp.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceLogSumExp.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_max(
@@ -12272,17 +12726,21 @@ def reduce_max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ReduceMax(
-        _ReduceMax.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceMax.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceMax(
+            _ReduceMax.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceMax.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_mean(
@@ -12329,17 +12787,21 @@ def reduce_mean(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceMean(
-        _ReduceMean.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceMean.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceMean(
+            _ReduceMean.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceMean.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_min(
@@ -12387,17 +12849,21 @@ def reduce_min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ReduceMin(
-        _ReduceMin.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceMin.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceMin(
+            _ReduceMin.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceMin.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_prod(
@@ -12444,17 +12910,21 @@ def reduce_prod(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceProd(
-        _ReduceProd.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceProd.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceProd(
+            _ReduceProd.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceProd.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def reduce_sum(
@@ -12510,21 +12980,25 @@ def reduce_sum(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceSum(
-        _ReduceSum.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceSum(
+            _ReduceSum.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceSum.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceSum.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_sum_square(
@@ -12571,17 +13045,21 @@ def reduce_sum_square(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceSumSquare(
-        _ReduceSumSquare.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _ReduceSumSquare.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["reduced"]
+    return (
+        _ReduceSumSquare(
+            _ReduceSumSquare.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _ReduceSumSquare.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .reduced
+    )
 
 
 def relu(
@@ -12611,14 +13089,18 @@ def relu(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`
     """
-    return _Relu(
-        _Relu.Attributes(),
-        _Relu.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Relu(
+            _Relu.Attributes(),
+            _Relu.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def reshape(
@@ -12672,18 +13154,22 @@ def reshape(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Reshape(
-        _Reshape.Attributes(
-            allowzero=AttrInt64(allowzero, name="allowzero"),
-        ),
-        _Reshape.Inputs(
-            data=unwrap_vars(data),
-            shape=unwrap_vars(shape),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        shape=get_value(shape),
-    )["reshaped"]
+    return (
+        _Reshape(
+            _Reshape.Attributes(
+                allowzero=AttrInt64(allowzero, name="allowzero"),
+            ),
+            _Reshape.Inputs(
+                data=unwrap_vars(data),
+                shape=unwrap_vars(shape),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            shape=get_value(shape),
+        )
+        .reshaped
+    )
 
 
 def resize(
@@ -12805,31 +13291,36 @@ def resize(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Resize(
-        _Resize.Attributes(
-            coordinate_transformation_mode=AttrString(
-                coordinate_transformation_mode, name="coordinate_transformation_mode"
+    return (
+        _Resize(
+            _Resize.Attributes(
+                coordinate_transformation_mode=AttrString(
+                    coordinate_transformation_mode,
+                    name="coordinate_transformation_mode",
+                ),
+                cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
+                exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
+                extrapolation_value=AttrFloat32(
+                    extrapolation_value, name="extrapolation_value"
+                ),
+                mode=AttrString(mode, name="mode"),
+                nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
             ),
-            cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
-            exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
-            extrapolation_value=AttrFloat32(
-                extrapolation_value, name="extrapolation_value"
+            _Resize.Inputs(
+                X=unwrap_vars(X),
+                roi=unwrap_vars(roi),
+                scales=unwrap_vars(scales),
+                sizes=unwrap_vars(sizes),
             ),
-            mode=AttrString(mode, name="mode"),
-            nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
-        ),
-        _Resize.Inputs(
-            X=unwrap_vars(X),
-            roi=unwrap_vars(roi),
-            scales=unwrap_vars(scales),
-            sizes=unwrap_vars(sizes),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        roi=get_value(roi),
-        scales=get_value(scales),
-        sizes=get_value(sizes),
-    )["Y"]
+        )
+        .get_output_vars(
+            X=get_value(X),
+            roi=get_value(roi),
+            scales=get_value(scales),
+            sizes=get_value(sizes),
+        )
+        .Y
+    )
 
 
 def reverse_sequence(
@@ -12894,19 +13385,23 @@ def reverse_sequence(
     Type constraints:
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ReverseSequence(
-        _ReverseSequence.Attributes(
-            batch_axis=AttrInt64(batch_axis, name="batch_axis"),
-            time_axis=AttrInt64(time_axis, name="time_axis"),
-        ),
-        _ReverseSequence.Inputs(
-            input=unwrap_vars(input),
-            sequence_lens=unwrap_vars(sequence_lens),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        sequence_lens=get_value(sequence_lens),
-    )["Y"]
+    return (
+        _ReverseSequence(
+            _ReverseSequence.Attributes(
+                batch_axis=AttrInt64(batch_axis, name="batch_axis"),
+                time_axis=AttrInt64(time_axis, name="time_axis"),
+            ),
+            _ReverseSequence.Inputs(
+                input=unwrap_vars(input),
+                sequence_lens=unwrap_vars(sequence_lens),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            sequence_lens=get_value(sequence_lens),
+        )
+        .Y
+    )
 
 
 def roi_align(
@@ -12996,27 +13491,32 @@ def roi_align(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int64)`
     """
-    return _RoiAlign(
-        _RoiAlign.Attributes(
-            coordinate_transformation_mode=AttrString(
-                coordinate_transformation_mode, name="coordinate_transformation_mode"
+    return (
+        _RoiAlign(
+            _RoiAlign.Attributes(
+                coordinate_transformation_mode=AttrString(
+                    coordinate_transformation_mode,
+                    name="coordinate_transformation_mode",
+                ),
+                mode=AttrString(mode, name="mode"),
+                output_height=AttrInt64(output_height, name="output_height"),
+                output_width=AttrInt64(output_width, name="output_width"),
+                sampling_ratio=AttrInt64(sampling_ratio, name="sampling_ratio"),
+                spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
             ),
-            mode=AttrString(mode, name="mode"),
-            output_height=AttrInt64(output_height, name="output_height"),
-            output_width=AttrInt64(output_width, name="output_width"),
-            sampling_ratio=AttrInt64(sampling_ratio, name="sampling_ratio"),
-            spatial_scale=AttrFloat32(spatial_scale, name="spatial_scale"),
-        ),
-        _RoiAlign.Inputs(
-            X=unwrap_vars(X),
-            rois=unwrap_vars(rois),
-            batch_indices=unwrap_vars(batch_indices),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        rois=get_value(rois),
-        batch_indices=get_value(batch_indices),
-    )["Y"]
+            _RoiAlign.Inputs(
+                X=unwrap_vars(X),
+                rois=unwrap_vars(rois),
+                batch_indices=unwrap_vars(batch_indices),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            rois=get_value(rois),
+            batch_indices=get_value(batch_indices),
+        )
+        .Y
+    )
 
 
 def round(
@@ -13058,14 +13558,18 @@ def round(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Round(
-        _Round.Attributes(),
-        _Round.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Round(
+            _Round.Attributes(),
+            _Round.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def stft(
@@ -13129,22 +13633,26 @@ def stft(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int32)`, `tensor(int64)`
     """
-    return _STFT(
-        _STFT.Attributes(
-            onesided=AttrInt64(onesided, name="onesided"),
-        ),
-        _STFT.Inputs(
-            signal=unwrap_vars(signal),
-            frame_step=unwrap_vars(frame_step),
-            window=unwrap_vars(window),
-            frame_length=unwrap_vars(frame_length),
-        ),
-    ).get_output_vars(
-        signal=get_value(signal),
-        frame_step=get_value(frame_step),
-        window=get_value(window),
-        frame_length=get_value(frame_length),
-    )["output"]
+    return (
+        _STFT(
+            _STFT.Attributes(
+                onesided=AttrInt64(onesided, name="onesided"),
+            ),
+            _STFT.Inputs(
+                signal=unwrap_vars(signal),
+                frame_step=unwrap_vars(frame_step),
+                window=unwrap_vars(window),
+                frame_length=unwrap_vars(frame_length),
+            ),
+        )
+        .get_output_vars(
+            signal=get_value(signal),
+            frame_step=get_value(frame_step),
+            window=get_value(window),
+            frame_length=get_value(frame_length),
+        )
+        .output
+    )
 
 
 def scan(
@@ -13368,28 +13876,36 @@ def scan(
         ],
         body,
     )
-    return _Scan(
-        _Scan.Attributes(
-            body=AttrGraph(_body_subgraph, name="body"),
-            num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
-            scan_input_axes=AttrInt64s.maybe(scan_input_axes, name="scan_input_axes"),
-            scan_input_directions=AttrInt64s.maybe(
-                scan_input_directions, name="scan_input_directions"
+    return (
+        _Scan(
+            _Scan.Attributes(
+                body=AttrGraph(_body_subgraph, name="body"),
+                num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
+                scan_input_axes=AttrInt64s.maybe(
+                    scan_input_axes, name="scan_input_axes"
+                ),
+                scan_input_directions=AttrInt64s.maybe(
+                    scan_input_directions, name="scan_input_directions"
+                ),
+                scan_output_axes=AttrInt64s.maybe(
+                    scan_output_axes, name="scan_output_axes"
+                ),
+                scan_output_directions=AttrInt64s.maybe(
+                    scan_output_directions, name="scan_output_directions"
+                ),
             ),
-            scan_output_axes=AttrInt64s.maybe(
-                scan_output_axes, name="scan_output_axes"
+            _Scan.Inputs(
+                initial_state_and_scan_inputs=unwrap_vars(
+                    initial_state_and_scan_inputs
+                ),
             ),
-            scan_output_directions=AttrInt64s.maybe(
-                scan_output_directions, name="scan_output_directions"
-            ),
-        ),
-        _Scan.Inputs(
-            initial_state_and_scan_inputs=unwrap_vars(initial_state_and_scan_inputs),
-        ),
-        out_variadic=len(_body_subgraph.requested_results),
-    ).get_output_vars(
-        initial_state_and_scan_inputs=get_value(initial_state_and_scan_inputs),
-    )["final_state_and_scan_outputs"]
+            out_variadic=len(_body_subgraph.requested_results),
+        )
+        .get_output_vars(
+            initial_state_and_scan_inputs=get_value(initial_state_and_scan_inputs),
+        )
+        .final_state_and_scan_outputs
+    )
 
 
 def scatter_elements(
@@ -13512,21 +14028,25 @@ def scatter_elements(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _ScatterElements(
-        _ScatterElements.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            reduction=AttrString(reduction, name="reduction"),
-        ),
-        _ScatterElements.Inputs(
-            data=unwrap_vars(data),
-            indices=unwrap_vars(indices),
-            updates=unwrap_vars(updates),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        indices=get_value(indices),
-        updates=get_value(updates),
-    )["output"]
+    return (
+        _ScatterElements(
+            _ScatterElements.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                reduction=AttrString(reduction, name="reduction"),
+            ),
+            _ScatterElements.Inputs(
+                data=unwrap_vars(data),
+                indices=unwrap_vars(indices),
+                updates=unwrap_vars(updates),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            indices=get_value(indices),
+            updates=get_value(updates),
+        )
+        .output
+    )
 
 
 def scatter_nd(
@@ -13638,20 +14158,24 @@ def scatter_nd(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ScatterND(
-        _ScatterND.Attributes(
-            reduction=AttrString(reduction, name="reduction"),
-        ),
-        _ScatterND.Inputs(
-            data=unwrap_vars(data),
-            indices=unwrap_vars(indices),
-            updates=unwrap_vars(updates),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        indices=get_value(indices),
-        updates=get_value(updates),
-    )["output"]
+    return (
+        _ScatterND(
+            _ScatterND.Attributes(
+                reduction=AttrString(reduction, name="reduction"),
+            ),
+            _ScatterND.Inputs(
+                data=unwrap_vars(data),
+                indices=unwrap_vars(indices),
+                updates=unwrap_vars(updates),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            indices=get_value(indices),
+            updates=get_value(updates),
+        )
+        .output
+    )
 
 
 def selu(
@@ -13693,17 +14217,21 @@ def selu(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Selu(
-        _Selu.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-            gamma=AttrFloat32(gamma, name="gamma"),
-        ),
-        _Selu.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Selu(
+            _Selu.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+                gamma=AttrFloat32(gamma, name="gamma"),
+            ),
+            _Selu.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def sequence_at(
@@ -13744,16 +14272,20 @@ def sequence_at(
      - I: `tensor(int32)`, `tensor(int64)`
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _SequenceAt(
-        _SequenceAt.Attributes(),
-        _SequenceAt.Inputs(
-            input_sequence=unwrap_vars(input_sequence),
-            position=unwrap_vars(position),
-        ),
-    ).get_output_vars(
-        input_sequence=get_value(input_sequence),
-        position=get_value(position),
-    )["tensor"]
+    return (
+        _SequenceAt(
+            _SequenceAt.Attributes(),
+            _SequenceAt.Inputs(
+                input_sequence=unwrap_vars(input_sequence),
+                position=unwrap_vars(position),
+            ),
+        )
+        .get_output_vars(
+            input_sequence=get_value(input_sequence),
+            position=get_value(position),
+        )
+        .tensor
+    )
 
 
 def sequence_construct(
@@ -13783,14 +14315,18 @@ def sequence_construct(
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
     """
-    return _SequenceConstruct(
-        _SequenceConstruct.Attributes(),
-        _SequenceConstruct.Inputs(
-            inputs=unwrap_vars(inputs),
-        ),
-    ).get_output_vars(
-        inputs=get_value(inputs),
-    )["output_sequence"]
+    return (
+        _SequenceConstruct(
+            _SequenceConstruct.Attributes(),
+            _SequenceConstruct.Inputs(
+                inputs=unwrap_vars(inputs),
+            ),
+        )
+        .get_output_vars(
+            inputs=get_value(inputs),
+        )
+        .output_sequence
+    )
 
 
 def sequence_empty(
@@ -13820,12 +14356,16 @@ def sequence_empty(
     Type constraints:
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
     """
-    return _SequenceEmpty(
-        _SequenceEmpty.Attributes(
-            dtype=AttrDtype.maybe(dtype, name="dtype"),
-        ),
-        _SequenceEmpty.Inputs(),
-    ).get_output_vars()["output"]
+    return (
+        _SequenceEmpty(
+            _SequenceEmpty.Attributes(
+                dtype=AttrDtype.maybe(dtype, name="dtype"),
+            ),
+            _SequenceEmpty.Inputs(),
+        )
+        .get_output_vars()
+        .output
+    )
 
 
 def sequence_erase(
@@ -13866,16 +14406,20 @@ def sequence_erase(
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - I: `tensor(int32)`, `tensor(int64)`
     """
-    return _SequenceErase(
-        _SequenceErase.Attributes(),
-        _SequenceErase.Inputs(
-            input_sequence=unwrap_vars(input_sequence),
-            position=unwrap_vars(position),
-        ),
-    ).get_output_vars(
-        input_sequence=get_value(input_sequence),
-        position=get_value(position),
-    )["output_sequence"]
+    return (
+        _SequenceErase(
+            _SequenceErase.Attributes(),
+            _SequenceErase.Inputs(
+                input_sequence=unwrap_vars(input_sequence),
+                position=unwrap_vars(position),
+            ),
+        )
+        .get_output_vars(
+            input_sequence=get_value(input_sequence),
+            position=get_value(position),
+        )
+        .output_sequence
+    )
 
 
 def sequence_insert(
@@ -13923,18 +14467,22 @@ def sequence_insert(
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - I: `tensor(int32)`, `tensor(int64)`
     """
-    return _SequenceInsert(
-        _SequenceInsert.Attributes(),
-        _SequenceInsert.Inputs(
-            input_sequence=unwrap_vars(input_sequence),
-            tensor=unwrap_vars(tensor),
-            position=unwrap_vars(position),
-        ),
-    ).get_output_vars(
-        input_sequence=get_value(input_sequence),
-        tensor=get_value(tensor),
-        position=get_value(position),
-    )["output_sequence"]
+    return (
+        _SequenceInsert(
+            _SequenceInsert.Attributes(),
+            _SequenceInsert.Inputs(
+                input_sequence=unwrap_vars(input_sequence),
+                tensor=unwrap_vars(tensor),
+                position=unwrap_vars(position),
+            ),
+        )
+        .get_output_vars(
+            input_sequence=get_value(input_sequence),
+            tensor=get_value(tensor),
+            position=get_value(position),
+        )
+        .output_sequence
+    )
 
 
 def sequence_length(
@@ -13964,14 +14512,18 @@ def sequence_length(
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - I: `tensor(int64)`
     """
-    return _SequenceLength(
-        _SequenceLength.Attributes(),
-        _SequenceLength.Inputs(
-            input_sequence=unwrap_vars(input_sequence),
-        ),
-    ).get_output_vars(
-        input_sequence=get_value(input_sequence),
-    )["length"]
+    return (
+        _SequenceLength(
+            _SequenceLength.Attributes(),
+            _SequenceLength.Inputs(
+                input_sequence=unwrap_vars(input_sequence),
+            ),
+        )
+        .get_output_vars(
+            input_sequence=get_value(input_sequence),
+        )
+        .length
+    )
 
 
 def sequence_map(
@@ -14034,19 +14586,23 @@ def sequence_map(
         ],
         body,
     )
-    return _SequenceMap(
-        _SequenceMap.Attributes(
-            body=AttrGraph(_body_subgraph, name="body"),
-        ),
-        _SequenceMap.Inputs(
-            input_sequence=unwrap_vars(input_sequence),
-            additional_inputs=unwrap_vars(additional_inputs),
-        ),
-        out_variadic=len(_body_subgraph.requested_results),
-    ).get_output_vars(
-        input_sequence=get_value(input_sequence),
-        additional_inputs=get_value(additional_inputs),
-    )["out_sequence"]
+    return (
+        _SequenceMap(
+            _SequenceMap.Attributes(
+                body=AttrGraph(_body_subgraph, name="body"),
+            ),
+            _SequenceMap.Inputs(
+                input_sequence=unwrap_vars(input_sequence),
+                additional_inputs=unwrap_vars(additional_inputs),
+            ),
+            out_variadic=len(_body_subgraph.requested_results),
+        )
+        .get_output_vars(
+            input_sequence=get_value(input_sequence),
+            additional_inputs=get_value(additional_inputs),
+        )
+        .out_sequence
+    )
 
 
 def shape(
@@ -14125,17 +14681,21 @@ def shape(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
-    return _Shape(
-        _Shape.Attributes(
-            end=AttrInt64.maybe(end, name="end"),
-            start=AttrInt64(start, name="start"),
-        ),
-        _Shape.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["shape"]
+    return (
+        _Shape(
+            _Shape.Attributes(
+                end=AttrInt64.maybe(end, name="end"),
+                start=AttrInt64(start, name="start"),
+            ),
+            _Shape.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .shape
+    )
 
 
 def shrink(
@@ -14175,17 +14735,21 @@ def shrink(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Shrink(
-        _Shrink.Attributes(
-            bias=AttrFloat32(bias, name="bias"),
-            lambd=AttrFloat32(lambd, name="lambd"),
-        ),
-        _Shrink.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Shrink(
+            _Shrink.Attributes(
+                bias=AttrFloat32(bias, name="bias"),
+                lambd=AttrFloat32(lambd, name="lambd"),
+            ),
+            _Shrink.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def sigmoid(
@@ -14215,14 +14779,18 @@ def sigmoid(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Sigmoid(
-        _Sigmoid.Attributes(),
-        _Sigmoid.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Sigmoid(
+            _Sigmoid.Attributes(),
+            _Sigmoid.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def sign(
@@ -14252,14 +14820,18 @@ def sign(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Sign(
-        _Sign.Attributes(),
-        _Sign.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Sign(
+            _Sign.Attributes(),
+            _Sign.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def sin(
@@ -14287,14 +14859,18 @@ def sin(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Sin(
-        _Sin.Attributes(),
-        _Sin.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Sin(
+            _Sin.Attributes(),
+            _Sin.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def sinh(
@@ -14322,14 +14898,18 @@ def sinh(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Sinh(
-        _Sinh.Attributes(),
-        _Sinh.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Sinh(
+            _Sinh.Attributes(),
+            _Sinh.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def size(
@@ -14359,14 +14939,18 @@ def size(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
-    return _Size(
-        _Size.Attributes(),
-        _Size.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["size"]
+    return (
+        _Size(
+            _Size.Attributes(),
+            _Size.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .size
+    )
 
 
 def slice(
@@ -14482,22 +15066,26 @@ def slice(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _Slice(
-        _Slice.Attributes(),
-        _Slice.Inputs(
-            data=unwrap_vars(data),
-            starts=unwrap_vars(starts),
-            ends=unwrap_vars(ends),
-            axes=unwrap_vars(axes),
-            steps=unwrap_vars(steps),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        starts=get_value(starts),
-        ends=get_value(ends),
-        axes=get_value(axes),
-        steps=get_value(steps),
-    )["output"]
+    return (
+        _Slice(
+            _Slice.Attributes(),
+            _Slice.Inputs(
+                data=unwrap_vars(data),
+                starts=unwrap_vars(starts),
+                ends=unwrap_vars(ends),
+                axes=unwrap_vars(axes),
+                steps=unwrap_vars(steps),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            starts=get_value(starts),
+            ends=get_value(ends),
+            axes=get_value(axes),
+            steps=get_value(steps),
+        )
+        .output
+    )
 
 
 def softmax(
@@ -14540,16 +15128,20 @@ def softmax(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Softmax(
-        _Softmax.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _Softmax.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Softmax(
+            _Softmax.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _Softmax.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def softmax_cross_entropy_loss(
@@ -14678,7 +15270,7 @@ def softmax_cross_entropy_loss(
             labels=get_value(labels),
             weights=get_value(weights),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -14709,14 +15301,18 @@ def softplus(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Softplus(
-        _Softplus.Attributes(),
-        _Softplus.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Softplus(
+            _Softplus.Attributes(),
+            _Softplus.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def softsign(
@@ -14746,14 +15342,18 @@ def softsign(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Softsign(
-        _Softsign.Attributes(),
-        _Softsign.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Softsign(
+            _Softsign.Attributes(),
+            _Softsign.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def space_to_depth(
@@ -14790,16 +15390,20 @@ def space_to_depth(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _SpaceToDepth(
-        _SpaceToDepth.Attributes(
-            blocksize=AttrInt64(blocksize, name="blocksize"),
-        ),
-        _SpaceToDepth.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _SpaceToDepth(
+            _SpaceToDepth.Attributes(
+                blocksize=AttrInt64(blocksize, name="blocksize"),
+            ),
+            _SpaceToDepth.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def split(
@@ -14844,19 +15448,23 @@ def split(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Split(
-        _Split.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _Split.Inputs(
-            input=unwrap_vars(input),
-            split=unwrap_vars(split),
-        ),
-        out_variadic=outputs_count,
-    ).get_output_vars(
-        input=get_value(input),
-        split=get_value(split),
-    )["outputs"]
+    return (
+        _Split(
+            _Split.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _Split.Inputs(
+                input=unwrap_vars(input),
+                split=unwrap_vars(split),
+            ),
+            out_variadic=outputs_count,
+        )
+        .get_output_vars(
+            input=get_value(input),
+            split=get_value(split),
+        )
+        .outputs
+    )
 
 
 def split_to_sequence(
@@ -14914,19 +15522,23 @@ def split_to_sequence(
      - I: `tensor(int32)`, `tensor(int64)`
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
     """
-    return _SplitToSequence(
-        _SplitToSequence.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-        ),
-        _SplitToSequence.Inputs(
-            input=unwrap_vars(input),
-            split=unwrap_vars(split),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        split=get_value(split),
-    )["output_sequence"]
+    return (
+        _SplitToSequence(
+            _SplitToSequence.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+            ),
+            _SplitToSequence.Inputs(
+                input=unwrap_vars(input),
+                split=unwrap_vars(split),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            split=get_value(split),
+        )
+        .output_sequence
+    )
 
 
 def sqrt(
@@ -14956,14 +15568,18 @@ def sqrt(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Sqrt(
-        _Sqrt.Attributes(),
-        _Sqrt.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Sqrt(
+            _Sqrt.Attributes(),
+            _Sqrt.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def squeeze(
@@ -15001,16 +15617,20 @@ def squeeze(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Squeeze(
-        _Squeeze.Attributes(),
-        _Squeeze.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["squeezed"]
+    return (
+        _Squeeze(
+            _Squeeze.Attributes(),
+            _Squeeze.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .squeezed
+    )
 
 
 def string_normalizer(
@@ -15065,21 +15685,27 @@ def string_normalizer(
     Signature: ``ai.onnx@10::StringNormalizer``.
 
     """
-    return _StringNormalizer(
-        _StringNormalizer.Attributes(
-            case_change_action=AttrString(
-                case_change_action, name="case_change_action"
+    return (
+        _StringNormalizer(
+            _StringNormalizer.Attributes(
+                case_change_action=AttrString(
+                    case_change_action, name="case_change_action"
+                ),
+                is_case_sensitive=AttrInt64(
+                    is_case_sensitive, name="is_case_sensitive"
+                ),
+                locale=AttrString.maybe(locale, name="locale"),
+                stopwords=AttrStrings.maybe(stopwords, name="stopwords"),
             ),
-            is_case_sensitive=AttrInt64(is_case_sensitive, name="is_case_sensitive"),
-            locale=AttrString.maybe(locale, name="locale"),
-            stopwords=AttrStrings.maybe(stopwords, name="stopwords"),
-        ),
-        _StringNormalizer.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+            _StringNormalizer.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def sub(
@@ -15119,16 +15745,20 @@ def sub(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Sub(
-        _Sub.Attributes(),
-        _Sub.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Sub(
+            _Sub.Attributes(),
+            _Sub.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def sum(
@@ -15160,14 +15790,18 @@ def sum(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Sum(
-        _Sum.Attributes(),
-        _Sum.Inputs(
-            data_0=unwrap_vars(data_0),
-        ),
-    ).get_output_vars(
-        data_0=get_value(data_0),
-    )["sum"]
+    return (
+        _Sum(
+            _Sum.Attributes(),
+            _Sum.Inputs(
+                data_0=unwrap_vars(data_0),
+            ),
+        )
+        .get_output_vars(
+            data_0=get_value(data_0),
+        )
+        .sum
+    )
 
 
 def tan(
@@ -15195,14 +15829,18 @@ def tan(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Tan(
-        _Tan.Attributes(),
-        _Tan.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Tan(
+            _Tan.Attributes(),
+            _Tan.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def tanh(
@@ -15231,14 +15869,18 @@ def tanh(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Tanh(
-        _Tanh.Attributes(),
-        _Tanh.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Tanh(
+            _Tanh.Attributes(),
+            _Tanh.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def tf_idf_vectorizer(
@@ -15370,24 +16012,28 @@ def tf_idf_vectorizer(
      - T: `tensor(int32)`, `tensor(int64)`, `tensor(string)`
      - T1: `tensor(float)`
     """
-    return _TfIdfVectorizer(
-        _TfIdfVectorizer.Attributes(
-            max_gram_length=AttrInt64(max_gram_length, name="max_gram_length"),
-            max_skip_count=AttrInt64(max_skip_count, name="max_skip_count"),
-            min_gram_length=AttrInt64(min_gram_length, name="min_gram_length"),
-            mode=AttrString(mode, name="mode"),
-            ngram_counts=AttrInt64s(ngram_counts, name="ngram_counts"),
-            ngram_indexes=AttrInt64s(ngram_indexes, name="ngram_indexes"),
-            pool_int64s=AttrInt64s.maybe(pool_int64s, name="pool_int64s"),
-            pool_strings=AttrStrings.maybe(pool_strings, name="pool_strings"),
-            weights=AttrFloat32s.maybe(weights, name="weights"),
-        ),
-        _TfIdfVectorizer.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _TfIdfVectorizer(
+            _TfIdfVectorizer.Attributes(
+                max_gram_length=AttrInt64(max_gram_length, name="max_gram_length"),
+                max_skip_count=AttrInt64(max_skip_count, name="max_skip_count"),
+                min_gram_length=AttrInt64(min_gram_length, name="min_gram_length"),
+                mode=AttrString(mode, name="mode"),
+                ngram_counts=AttrInt64s(ngram_counts, name="ngram_counts"),
+                ngram_indexes=AttrInt64s(ngram_indexes, name="ngram_indexes"),
+                pool_int64s=AttrInt64s.maybe(pool_int64s, name="pool_int64s"),
+                pool_strings=AttrStrings.maybe(pool_strings, name="pool_strings"),
+                weights=AttrFloat32s.maybe(weights, name="weights"),
+            ),
+            _TfIdfVectorizer.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def thresholded_relu(
@@ -15422,16 +16068,20 @@ def thresholded_relu(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _ThresholdedRelu(
-        _ThresholdedRelu.Attributes(
-            alpha=AttrFloat32(alpha, name="alpha"),
-        ),
-        _ThresholdedRelu.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _ThresholdedRelu(
+            _ThresholdedRelu.Attributes(
+                alpha=AttrFloat32(alpha, name="alpha"),
+            ),
+            _ThresholdedRelu.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def tile(
@@ -15468,16 +16118,20 @@ def tile(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
-    return _Tile(
-        _Tile.Attributes(),
-        _Tile.Inputs(
-            input=unwrap_vars(input),
-            repeats=unwrap_vars(repeats),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        repeats=get_value(repeats),
-    )["output"]
+    return (
+        _Tile(
+            _Tile.Attributes(),
+            _Tile.Inputs(
+                input=unwrap_vars(input),
+                repeats=unwrap_vars(repeats),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            repeats=get_value(repeats),
+        )
+        .output
+    )
 
 
 def top_k(
@@ -15571,7 +16225,7 @@ def top_k(
             X=get_value(X),
             K=get_value(K),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -15608,16 +16262,20 @@ def transpose(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Transpose(
-        _Transpose.Attributes(
-            perm=AttrInt64s.maybe(perm, name="perm"),
-        ),
-        _Transpose.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["transposed"]
+    return (
+        _Transpose(
+            _Transpose.Attributes(
+                perm=AttrInt64s.maybe(perm, name="perm"),
+            ),
+            _Transpose.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .transposed
+    )
 
 
 def trilu(
@@ -15673,18 +16331,22 @@ def trilu(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Trilu(
-        _Trilu.Attributes(
-            upper=AttrInt64(upper, name="upper"),
-        ),
-        _Trilu.Inputs(
-            input=unwrap_vars(input),
-            k=unwrap_vars(k),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        k=get_value(k),
-    )["output"]
+    return (
+        _Trilu(
+            _Trilu.Attributes(
+                upper=AttrInt64(upper, name="upper"),
+            ),
+            _Trilu.Inputs(
+                input=unwrap_vars(input),
+                k=unwrap_vars(k),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            k=get_value(k),
+        )
+        .output
+    )
 
 
 def unique(
@@ -15869,7 +16531,7 @@ def unique(
         .get_output_vars(
             X=get_value(X),
         )
-        .values()
+        ._unpack_to_any()
     )
 
 
@@ -15918,16 +16580,20 @@ def unsqueeze(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Unsqueeze(
-        _Unsqueeze.Attributes(),
-        _Unsqueeze.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["expanded"]
+    return (
+        _Unsqueeze(
+            _Unsqueeze.Attributes(),
+            _Unsqueeze.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .expanded
+    )
 
 
 def where(
@@ -15971,18 +16637,22 @@ def where(
      - B: `tensor(bool)`
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Where(
-        _Where.Attributes(),
-        _Where.Inputs(
-            condition=unwrap_vars(condition),
-            X=unwrap_vars(X),
-            Y=unwrap_vars(Y),
-        ),
-    ).get_output_vars(
-        condition=get_value(condition),
-        X=get_value(X),
-        Y=get_value(Y),
-    )["output"]
+    return (
+        _Where(
+            _Where.Attributes(),
+            _Where.Inputs(
+                condition=unwrap_vars(condition),
+                X=unwrap_vars(X),
+                Y=unwrap_vars(Y),
+            ),
+        )
+        .get_output_vars(
+            condition=get_value(condition),
+            X=get_value(X),
+            Y=get_value(Y),
+        )
+        .output
+    )
 
 
 def xor(
@@ -16021,16 +16691,20 @@ def xor(
      - T: `tensor(bool)`
      - T1: `tensor(bool)`
     """
-    return _Xor(
-        _Xor.Attributes(),
-        _Xor.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _Xor(
+            _Xor.Attributes(),
+            _Xor.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

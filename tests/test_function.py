@@ -62,13 +62,17 @@ def linear():
     def linear_inner(
         x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
     ) -> Var:
-        return LinearFunction(
-            LinearFunction.Attributes(
-                slope_outer=AttrFloat32(a, "slope_outer"),
-                shift_outer=AttrFloat32(b, "shift_outer"),
-            ),
-            LinearFunction.Inputs(x._var_info),
-        ).get_output_vars(X=x._value)["Y"]
+        return (
+            LinearFunction(
+                LinearFunction.Attributes(
+                    slope_outer=AttrFloat32(a, "slope_outer"),
+                    shift_outer=AttrFloat32(b, "shift_outer"),
+                ),
+                LinearFunction.Inputs(x._var_info),
+            )
+            .get_output_vars(X=x._value)
+            .Y
+        )
 
     return linear_inner
 
@@ -107,12 +111,17 @@ def linear2(linear):
     def linear_inner(
         x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
     ) -> Var:
-        return LinearFunction2(
-            LinearFunction2.Attributes(
-                slope1=AttrFloat32(a, name="slope1"), shift1=AttrFloat32(b, "shift1")
-            ),
-            LinearFunction2.Inputs(x._var_info),
-        ).get_output_vars(X=x._value)["Y"]
+        return (
+            LinearFunction2(
+                LinearFunction2.Attributes(
+                    slope1=AttrFloat32(a, name="slope1"),
+                    shift1=AttrFloat32(b, "shift1"),
+                ),
+                LinearFunction2.Inputs(x._var_info),
+            )
+            .get_output_vars(X=x._value)
+            .Y
+        )
 
     return linear_inner
 
@@ -168,15 +177,19 @@ def cubic(linear):
             return self.Outputs(y._var_info)
 
     def cubic_inner(x: Var, a3: float, a2: float, a1: float, a0: float) -> Var:
-        return CubicFunction(
-            CubicFunction.Attributes(
-                a3=AttrFloat32(a3, name="a3"),
-                a2=AttrFloat32(a2, name="a2"),
-                a1=AttrFloat32(a1, name="a1"),
-                a0=AttrFloat32(a0, name="a0"),
-            ),
-            CubicFunction.Inputs(X=x._var_info),
-        ).get_output_vars()["Y"]
+        return (
+            CubicFunction(
+                CubicFunction.Attributes(
+                    a3=AttrFloat32(a3, name="a3"),
+                    a2=AttrFloat32(a2, name="a2"),
+                    a1=AttrFloat32(a1, name="a1"),
+                    a0=AttrFloat32(a0, name="a0"),
+                ),
+                CubicFunction.Inputs(X=x._var_info),
+            )
+            .get_output_vars()
+            .Y
+        )
 
     return cubic_inner
 

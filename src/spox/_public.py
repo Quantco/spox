@@ -35,9 +35,13 @@ def argument(typ: Type) -> Var:
         An unnamed argument variable of given type that may be used as
         a model input to build a graph.
     """
-    return _internal_op.Argument(
-        _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
-    ).get_output_vars()["arg"]
+    return (
+        _internal_op.Argument(
+            _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
+        )
+        .get_output_vars()
+        .arg
+    )
 
 
 @contextlib.contextmanager
@@ -303,9 +307,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             model=model,
         )
 
-        return dict(
-            zip(out_names, node.get_output_vars(flatten_variadic=True).values())
-        )
+        return dict(zip(out_names, node.get_output_vars().get_vars().values()))
 
     return inline_inner
 

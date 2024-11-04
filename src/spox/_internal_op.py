@@ -213,9 +213,11 @@ def intros(*args: Var) -> Sequence[Var]:
     Sequence[Var]
         Vars of the same value as ``args``, but with a shared dependency.
     """
-    return _Introduce(
-        None, _Introduce.Inputs(unwrap_vars(args)), out_variadic=len(args)
-    ).get_output_vars()["outputs"]
+    return (
+        _Introduce(None, _Introduce.Inputs(unwrap_vars(args)), out_variadic=len(args))
+        .get_output_vars()
+        .outputs
+    )
 
 
 def intro(*args: Var) -> Var:

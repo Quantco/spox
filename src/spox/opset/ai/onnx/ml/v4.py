@@ -191,27 +191,31 @@ def label_encoder(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    return _LabelEncoder(
-        _LabelEncoder.Attributes(
-            default_float=AttrFloat32(default_float, name="default_float"),
-            default_int64=AttrInt64(default_int64, name="default_int64"),
-            default_string=AttrString(default_string, name="default_string"),
-            default_tensor=AttrTensor.maybe(default_tensor, name="default_tensor"),
-            keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
-            keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
-            keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),
-            keys_tensor=AttrTensor.maybe(keys_tensor, name="keys_tensor"),
-            values_floats=AttrFloat32s.maybe(values_floats, name="values_floats"),
-            values_int64s=AttrInt64s.maybe(values_int64s, name="values_int64s"),
-            values_strings=AttrStrings.maybe(values_strings, name="values_strings"),
-            values_tensor=AttrTensor.maybe(values_tensor, name="values_tensor"),
-        ),
-        _LabelEncoder.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _LabelEncoder(
+            _LabelEncoder.Attributes(
+                default_float=AttrFloat32(default_float, name="default_float"),
+                default_int64=AttrInt64(default_int64, name="default_int64"),
+                default_string=AttrString(default_string, name="default_string"),
+                default_tensor=AttrTensor.maybe(default_tensor, name="default_tensor"),
+                keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
+                keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
+                keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),
+                keys_tensor=AttrTensor.maybe(keys_tensor, name="keys_tensor"),
+                values_floats=AttrFloat32s.maybe(values_floats, name="values_floats"),
+                values_int64s=AttrInt64s.maybe(values_int64s, name="values_int64s"),
+                values_strings=AttrStrings.maybe(values_strings, name="values_strings"),
+                values_tensor=AttrTensor.maybe(values_tensor, name="values_tensor"),
+            ),
+            _LabelEncoder.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 _OPERATORS = {

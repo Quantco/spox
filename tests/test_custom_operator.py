@@ -67,9 +67,11 @@ class Inverse(Node):
 
 # Define the operator constructor which is actually used
 def inverse(matrix: Var) -> Var:
-    return Inverse(
-        Inverse.Attributes(), Inverse.Inputs(matrix._var_info)
-    ).get_output_vars(X=matrix._value)["Y"]
+    return (
+        Inverse(Inverse.Attributes(), Inverse.Inputs(matrix._var_info))
+        .get_output_vars(X=matrix._value)
+        .Y
+    )
 
 
 # Test the correct runtime behaviour with ORT

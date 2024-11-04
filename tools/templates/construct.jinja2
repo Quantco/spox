@@ -42,6 +42,6 @@ endif %}).get_output_vars(
 endfor %}
     ){%
 if schema.outputs | length <= 1
-    %}["{{ schema.outputs[0].name }}"]{%
-else %}.values(){%
+    %}.{{ schema.outputs[0].name }}{%
+else %}._unpack_to_any(){%
 endif %}

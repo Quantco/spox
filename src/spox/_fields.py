@@ -34,6 +34,54 @@ class VarFieldKind(enum.Enum):
     VARIADIC = 2
 
 
+class BaseVars:
+    def _unpack_to_any(self) -> Any:
+        """Unpack the stored fields into a tuple of appropriate length, typed as Any."""
+        return tuple(self.__dict__.values())
+
+    def _flatten(self) -> Iterable[tuple[str, Optional[Var]]]:
+        """Iterate over the pairs of names and values of fields in this object."""
+        for key, value in self.__dict__.items():
+            if value is None or isinstance(value, Var):
+                yield key, value
+            else:
+                yield from ((f"{key}_{i}", v) for i, v in enumerate(value))
+
+    def get_vars(self) -> dict[str, Var]:
+        """Return a flat mapping by name of all the VarInfos in this object."""
+        return {key: var for key, var in self._flatten() if var is not None}
+
+
+class BaseVarsMeta(type):
+    def __new__(cls, name, bases, namespace):
+        new_cls = super().__new__(cls, name, bases, namespace)
+
+        if bases and "__annotations__" in namespace:
+            annotations: dict[str, Any] = {}
+            for name, typ in namespace["__annotations__"].items():
+                if typ == VarInfo:
+                    annotations[name] = Var
+                elif typ == Optional[VarInfo]:
+                    annotations[name] = Optional[Var]
+                elif typ == Sequence[VarInfo]:
+                    annotations[name] = Sequence[Var]
+
+            vars_cls = dataclass(
+                type(
+                    "Vars",
+                    (
+                        BaseVars,
+                        object,
+                    ),
+                    {"__annotations__": annotations},
+                )
+            )  # type: ignore
+
+            setattr(new_cls, "Vars", vars_cls)
+
+        return new_cls
+
+
 @dataclass
 class BaseVarInfos(BaseFields):
     def __post_init__(self):
@@ -110,12 +158,45 @@ class BaseVarInfos(BaseFields):
 
 
 @dataclass
-class BaseInputs(BaseVarInfos):
-    pass
+class BaseInputs(BaseVarInfos, metaclass=BaseVarsMeta):
+    @dataclass
+    class Vars(BaseVars):
+        pass
+
+    def vars(self, prop_values) -> Vars:
+        vars_structure: dict[str, Union[Var, Sequence[Var]]] = {}
+
+        for field in dataclasses.fields(self):
+            field_type = self._get_field_type(field)
+            field_value = getattr(self, field.name)
+
+            if field_type == VarFieldKind.SINGLE:
+                vars_structure[field.name] = Var(field_value, prop_values[field.name])
+
+            elif (
+                field_type == VarFieldKind.OPTIONAL
+                and prop_values.get(field.name, None) is not None
+            ):
+                vars_structure[field.name] = Var(field_value, prop_values[field.name])
+
+            elif field_type == VarFieldKind.VARIADIC:
+                vars = []
+
+                for i, var_info in enumerate(field_value):
+                    var_value = prop_values.get(f"{field.name}_{i}", None)
+                    vars.append(Var(var_info, var_value))
+
+                vars_structure[field.name] = vars
+
+        return self.Vars(**vars_structure)
 
 
 @dataclass
-class BaseOutputs(BaseVarInfos):
+class BaseOutputs(BaseVarInfos, metaclass=BaseVarsMeta):
+    @dataclass
+    class Vars(BaseVars):
+        pass
+
     def _propagate_vars(
         self,
         prop_values={},

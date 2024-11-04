@@ -12,8 +12,8 @@ import spox.opset.ai.onnx.v20 as op
 from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
-from spox._var import VarInfo
 from spox._value_prop import ORTValue, PropValue
+from spox._var import VarInfo
 
 
 @pytest.fixture(

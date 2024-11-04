@@ -934,16 +934,20 @@ def bitwise_and(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _BitwiseAnd(
-        _BitwiseAnd.Attributes(),
-        _BitwiseAnd.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _BitwiseAnd(
+            _BitwiseAnd.Attributes(),
+            _BitwiseAnd.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def bitwise_not(
@@ -971,14 +975,18 @@ def bitwise_not(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _BitwiseNot(
-        _BitwiseNot.Attributes(),
-        _BitwiseNot.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _BitwiseNot(
+            _BitwiseNot.Attributes(),
+            _BitwiseNot.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def bitwise_or(
@@ -1016,16 +1024,20 @@ def bitwise_or(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _BitwiseOr(
-        _BitwiseOr.Attributes(),
-        _BitwiseOr.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _BitwiseOr(
+            _BitwiseOr.Attributes(),
+            _BitwiseOr.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def bitwise_xor(
@@ -1063,16 +1075,20 @@ def bitwise_xor(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _BitwiseXor(
-        _BitwiseXor.Attributes(),
-        _BitwiseXor.Inputs(
-            A=unwrap_vars(A),
-            B=unwrap_vars(B),
-        ),
-    ).get_output_vars(
-        A=get_value(A),
-        B=get_value(B),
-    )["C"]
+    return (
+        _BitwiseXor(
+            _BitwiseXor.Attributes(),
+            _BitwiseXor.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(
+            A=get_value(A),
+            B=get_value(B),
+        )
+        .C
+    )
 
 
 def center_crop_pad(
@@ -1122,18 +1138,22 @@ def center_crop_pad(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _CenterCropPad(
-        _CenterCropPad.Attributes(
-            axes=AttrInt64s.maybe(axes, name="axes"),
-        ),
-        _CenterCropPad.Inputs(
-            input_data=unwrap_vars(input_data),
-            shape=unwrap_vars(shape),
-        ),
-    ).get_output_vars(
-        input_data=get_value(input_data),
-        shape=get_value(shape),
-    )["output_data"]
+    return (
+        _CenterCropPad(
+            _CenterCropPad.Attributes(
+                axes=AttrInt64s.maybe(axes, name="axes"),
+            ),
+            _CenterCropPad.Inputs(
+                input_data=unwrap_vars(input_data),
+                shape=unwrap_vars(shape),
+            ),
+        )
+        .get_output_vars(
+            input_data=get_value(input_data),
+            shape=get_value(shape),
+        )
+        .output_data
+    )
 
 
 def col2_im(
@@ -1216,22 +1236,26 @@ def col2_im(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Col2Im(
-        _Col2Im.Attributes(
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _Col2Im.Inputs(
-            input=unwrap_vars(input),
-            image_shape=unwrap_vars(image_shape),
-            block_shape=unwrap_vars(block_shape),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        image_shape=get_value(image_shape),
-        block_shape=get_value(block_shape),
-    )["output"]
+    return (
+        _Col2Im(
+            _Col2Im.Attributes(
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _Col2Im.Inputs(
+                input=unwrap_vars(input),
+                image_shape=unwrap_vars(image_shape),
+                block_shape=unwrap_vars(block_shape),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            image_shape=get_value(image_shape),
+            block_shape=get_value(block_shape),
+        )
+        .output
+    )
 
 
 def group_normalization(
@@ -1299,21 +1323,25 @@ def group_normalization(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _GroupNormalization(
-        _GroupNormalization.Attributes(
-            epsilon=AttrFloat32(epsilon, name="epsilon"),
-            num_groups=AttrInt64(num_groups, name="num_groups"),
-        ),
-        _GroupNormalization.Inputs(
-            X=unwrap_vars(X),
-            scale=unwrap_vars(scale),
-            bias=unwrap_vars(bias),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        scale=get_value(scale),
-        bias=get_value(bias),
-    )["Y"]
+    return (
+        _GroupNormalization(
+            _GroupNormalization.Attributes(
+                epsilon=AttrFloat32(epsilon, name="epsilon"),
+                num_groups=AttrInt64(num_groups, name="num_groups"),
+            ),
+            _GroupNormalization.Inputs(
+                X=unwrap_vars(X),
+                scale=unwrap_vars(scale),
+                bias=unwrap_vars(bias),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            scale=get_value(scale),
+            bias=get_value(bias),
+        )
+        .Y
+    )
 
 
 def lp_pool(
@@ -1424,22 +1452,26 @@ def lp_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _LpPool(
-        _LpPool.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
-            p=AttrInt64(p, name="p"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _LpPool.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _LpPool(
+            _LpPool.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+                p=AttrInt64(p, name="p"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _LpPool.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def mish(
@@ -1474,14 +1506,18 @@ def mish(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Mish(
-        _Mish.Attributes(),
-        _Mish.Inputs(
-            X=unwrap_vars(X),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-    )["Y"]
+    return (
+        _Mish(
+            _Mish.Attributes(),
+            _Mish.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+        )
+        .Y
+    )
 
 
 def optional_get_element(
@@ -1513,14 +1549,18 @@ def optional_get_element(
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _OptionalGetElement(
-        _OptionalGetElement.Attributes(),
-        _OptionalGetElement.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _OptionalGetElement(
+            _OptionalGetElement.Attributes(),
+            _OptionalGetElement.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def optional_has_element(
@@ -1552,14 +1592,18 @@ def optional_has_element(
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - B: `tensor(bool)`
     """
-    return _OptionalHasElement(
-        _OptionalHasElement.Attributes(),
-        _OptionalHasElement.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _OptionalHasElement(
+            _OptionalHasElement.Attributes(),
+            _OptionalHasElement.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def pad(
@@ -1696,22 +1740,26 @@ def pad(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _Pad(
-        _Pad.Attributes(
-            mode=AttrString(mode, name="mode"),
-        ),
-        _Pad.Inputs(
-            data=unwrap_vars(data),
-            pads=unwrap_vars(pads),
-            constant_value=unwrap_vars(constant_value),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        pads=get_value(pads),
-        constant_value=get_value(constant_value),
-        axes=get_value(axes),
-    )["output"]
+    return (
+        _Pad(
+            _Pad.Attributes(
+                mode=AttrString(mode, name="mode"),
+            ),
+            _Pad.Inputs(
+                data=unwrap_vars(data),
+                pads=unwrap_vars(pads),
+                constant_value=unwrap_vars(constant_value),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            pads=get_value(pads),
+            constant_value=get_value(constant_value),
+            axes=get_value(axes),
+        )
+        .output
+    )
 
 
 def reduce_l1(
@@ -1767,21 +1815,25 @@ def reduce_l1(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceL1(
-        _ReduceL1.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceL1(
+            _ReduceL1.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceL1.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceL1.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_l2(
@@ -1837,21 +1889,25 @@ def reduce_l2(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceL2(
-        _ReduceL2.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceL2(
+            _ReduceL2.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceL2.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceL2.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_log_sum(
@@ -1908,21 +1964,25 @@ def reduce_log_sum(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceLogSum(
-        _ReduceLogSum.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceLogSum(
+            _ReduceLogSum.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceLogSum.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceLogSum.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_log_sum_exp(
@@ -1979,21 +2039,25 @@ def reduce_log_sum_exp(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceLogSumExp(
-        _ReduceLogSumExp.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceLogSumExp(
+            _ReduceLogSumExp.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceLogSumExp.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceLogSumExp.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_max(
@@ -2051,21 +2115,25 @@ def reduce_max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ReduceMax(
-        _ReduceMax.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceMax(
+            _ReduceMax.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceMax.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceMax.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_mean(
@@ -2121,21 +2189,25 @@ def reduce_mean(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceMean(
-        _ReduceMean.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceMean(
+            _ReduceMean.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceMean.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceMean.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_min(
@@ -2192,21 +2264,25 @@ def reduce_min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ReduceMin(
-        _ReduceMin.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceMin(
+            _ReduceMin.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceMin.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceMin.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_prod(
@@ -2262,21 +2338,25 @@ def reduce_prod(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceProd(
-        _ReduceProd.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceProd(
+            _ReduceProd.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceProd.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceProd.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def reduce_sum_square(
@@ -2332,21 +2412,25 @@ def reduce_sum_square(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    return _ReduceSumSquare(
-        _ReduceSumSquare.Attributes(
-            keepdims=AttrInt64(keepdims, name="keepdims"),
-            noop_with_empty_axes=AttrInt64(
-                noop_with_empty_axes, name="noop_with_empty_axes"
+    return (
+        _ReduceSumSquare(
+            _ReduceSumSquare.Attributes(
+                keepdims=AttrInt64(keepdims, name="keepdims"),
+                noop_with_empty_axes=AttrInt64(
+                    noop_with_empty_axes, name="noop_with_empty_axes"
+                ),
             ),
-        ),
-        _ReduceSumSquare.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["reduced"]
+            _ReduceSumSquare.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .reduced
+    )
 
 
 def resize(
@@ -2519,36 +2603,41 @@ def resize(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Resize(
-        _Resize.Attributes(
-            antialias=AttrInt64(antialias, name="antialias"),
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            coordinate_transformation_mode=AttrString(
-                coordinate_transformation_mode, name="coordinate_transformation_mode"
+    return (
+        _Resize(
+            _Resize.Attributes(
+                antialias=AttrInt64(antialias, name="antialias"),
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                coordinate_transformation_mode=AttrString(
+                    coordinate_transformation_mode,
+                    name="coordinate_transformation_mode",
+                ),
+                cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
+                exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
+                extrapolation_value=AttrFloat32(
+                    extrapolation_value, name="extrapolation_value"
+                ),
+                keep_aspect_ratio_policy=AttrString(
+                    keep_aspect_ratio_policy, name="keep_aspect_ratio_policy"
+                ),
+                mode=AttrString(mode, name="mode"),
+                nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
             ),
-            cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
-            exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
-            extrapolation_value=AttrFloat32(
-                extrapolation_value, name="extrapolation_value"
+            _Resize.Inputs(
+                X=unwrap_vars(X),
+                roi=unwrap_vars(roi),
+                scales=unwrap_vars(scales),
+                sizes=unwrap_vars(sizes),
             ),
-            keep_aspect_ratio_policy=AttrString(
-                keep_aspect_ratio_policy, name="keep_aspect_ratio_policy"
-            ),
-            mode=AttrString(mode, name="mode"),
-            nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
-        ),
-        _Resize.Inputs(
-            X=unwrap_vars(X),
-            roi=unwrap_vars(roi),
-            scales=unwrap_vars(scales),
-            sizes=unwrap_vars(sizes),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        roi=get_value(roi),
-        scales=get_value(scales),
-        sizes=get_value(sizes),
-    )["Y"]
+        )
+        .get_output_vars(
+            X=get_value(X),
+            roi=get_value(roi),
+            scales=get_value(scales),
+            sizes=get_value(sizes),
+        )
+        .Y
+    )
 
 
 def scatter_elements(
@@ -2674,21 +2763,25 @@ def scatter_elements(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _ScatterElements(
-        _ScatterElements.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            reduction=AttrString(reduction, name="reduction"),
-        ),
-        _ScatterElements.Inputs(
-            data=unwrap_vars(data),
-            indices=unwrap_vars(indices),
-            updates=unwrap_vars(updates),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        indices=get_value(indices),
-        updates=get_value(updates),
-    )["output"]
+    return (
+        _ScatterElements(
+            _ScatterElements.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                reduction=AttrString(reduction, name="reduction"),
+            ),
+            _ScatterElements.Inputs(
+                data=unwrap_vars(data),
+                indices=unwrap_vars(indices),
+                updates=unwrap_vars(updates),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            indices=get_value(indices),
+            updates=get_value(updates),
+        )
+        .output
+    )
 
 
 def scatter_nd(
@@ -2816,20 +2909,24 @@ def scatter_nd(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ScatterND(
-        _ScatterND.Attributes(
-            reduction=AttrString(reduction, name="reduction"),
-        ),
-        _ScatterND.Inputs(
-            data=unwrap_vars(data),
-            indices=unwrap_vars(indices),
-            updates=unwrap_vars(updates),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        indices=get_value(indices),
-        updates=get_value(updates),
-    )["output"]
+    return (
+        _ScatterND(
+            _ScatterND.Attributes(
+                reduction=AttrString(reduction, name="reduction"),
+            ),
+            _ScatterND.Inputs(
+                data=unwrap_vars(data),
+                indices=unwrap_vars(indices),
+                updates=unwrap_vars(updates),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            indices=get_value(indices),
+            updates=get_value(updates),
+        )
+        .output
+    )
 
 
 def split(
@@ -2879,20 +2976,24 @@ def split(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Split(
-        _Split.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            num_outputs=AttrInt64.maybe(num_outputs, name="num_outputs"),
-        ),
-        _Split.Inputs(
-            input=unwrap_vars(input),
-            split=unwrap_vars(split),
-        ),
-        out_variadic=num_outputs,
-    ).get_output_vars(
-        input=get_value(input),
-        split=get_value(split),
-    )["outputs"]
+    return (
+        _Split(
+            _Split.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                num_outputs=AttrInt64.maybe(num_outputs, name="num_outputs"),
+            ),
+            _Split.Inputs(
+                input=unwrap_vars(input),
+                split=unwrap_vars(split),
+            ),
+            out_variadic=num_outputs,
+        )
+        .get_output_vars(
+            input=get_value(input),
+            split=get_value(split),
+        )
+        .outputs
+    )
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

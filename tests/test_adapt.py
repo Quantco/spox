@@ -97,10 +97,14 @@ class Squeeze11(StandardNode):
 
 
 def squeeze11(_data: Var, _axes: Iterable[int]):
-    return Squeeze11(
-        Squeeze11.Attributes(AttrInt64s(_axes, "axes")),
-        Squeeze11.Inputs(_data._var_info),
-    ).get_output_vars()["squeezed"]
+    return (
+        Squeeze11(
+            Squeeze11.Attributes(AttrInt64s(_axes, "axes")),
+            Squeeze11.Inputs(_data._var_info),
+        )
+        .get_output_vars()
+        .squeezed
+    )
 
 
 @pytest.fixture

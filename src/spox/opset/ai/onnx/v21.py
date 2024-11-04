@@ -964,17 +964,21 @@ def cast(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Cast(
-        _Cast.Attributes(
-            saturate=AttrInt64(saturate, name="saturate"),
-            to=AttrDtype(to, name="to"),
-        ),
-        _Cast.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Cast(
+            _Cast.Attributes(
+                saturate=AttrInt64(saturate, name="saturate"),
+                to=AttrDtype(to, name="to"),
+            ),
+            _Cast.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def cast_like(
@@ -1020,18 +1024,22 @@ def cast_like(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _CastLike(
-        _CastLike.Attributes(
-            saturate=AttrInt64(saturate, name="saturate"),
-        ),
-        _CastLike.Inputs(
-            input=unwrap_vars(input),
-            target_type=unwrap_vars(target_type),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-        target_type=get_value(target_type),
-    )["output"]
+    return (
+        _CastLike(
+            _CastLike.Attributes(
+                saturate=AttrInt64(saturate, name="saturate"),
+            ),
+            _CastLike.Inputs(
+                input=unwrap_vars(input),
+                target_type=unwrap_vars(target_type),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+            target_type=get_value(target_type),
+        )
+        .output
+    )
 
 
 def constant(
@@ -1089,18 +1097,22 @@ def constant(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Constant(
-        _Constant.Attributes(
-            value=AttrTensor.maybe(value, name="value"),
-            value_float=AttrFloat32.maybe(value_float, name="value_float"),
-            value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
-            value_int=AttrInt64.maybe(value_int, name="value_int"),
-            value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
-            value_string=AttrString.maybe(value_string, name="value_string"),
-            value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
-        ),
-        _Constant.Inputs(),
-    ).get_output_vars()["output"]
+    return (
+        _Constant(
+            _Constant.Attributes(
+                value=AttrTensor.maybe(value, name="value"),
+                value_float=AttrFloat32.maybe(value_float, name="value_float"),
+                value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
+                value_int=AttrInt64.maybe(value_int, name="value_int"),
+                value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
+                value_string=AttrString.maybe(value_string, name="value_string"),
+                value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
+            ),
+            _Constant.Inputs(),
+        )
+        .get_output_vars()
+        .output
+    )
 
 
 def constant_of_shape(
@@ -1140,16 +1152,20 @@ def constant_of_shape(
      - T1: `tensor(int64)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _ConstantOfShape(
-        _ConstantOfShape.Attributes(
-            value=AttrTensor.maybe(value, name="value"),
-        ),
-        _ConstantOfShape.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _ConstantOfShape(
+            _ConstantOfShape.Attributes(
+                value=AttrTensor.maybe(value, name="value"),
+            ),
+            _ConstantOfShape.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def dequantize_linear(
@@ -1220,21 +1236,25 @@ def dequantize_linear(
      - T1: `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint4)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`
     """
-    return _DequantizeLinear(
-        _DequantizeLinear.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            block_size=AttrInt64(block_size, name="block_size"),
-        ),
-        _DequantizeLinear.Inputs(
-            x=unwrap_vars(x),
-            x_scale=unwrap_vars(x_scale),
-            x_zero_point=unwrap_vars(x_zero_point),
-        ),
-    ).get_output_vars(
-        x=get_value(x),
-        x_scale=get_value(x_scale),
-        x_zero_point=get_value(x_zero_point),
-    )["y"]
+    return (
+        _DequantizeLinear(
+            _DequantizeLinear.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                block_size=AttrInt64(block_size, name="block_size"),
+            ),
+            _DequantizeLinear.Inputs(
+                x=unwrap_vars(x),
+                x_scale=unwrap_vars(x_scale),
+                x_zero_point=unwrap_vars(x_zero_point),
+            ),
+        )
+        .get_output_vars(
+            x=get_value(x),
+            x_scale=get_value(x_scale),
+            x_zero_point=get_value(x_zero_point),
+        )
+        .y
+    )
 
 
 def flatten(
@@ -1276,16 +1296,20 @@ def flatten(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Flatten(
-        _Flatten.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _Flatten.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Flatten(
+            _Flatten.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _Flatten.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def group_normalization(
@@ -1367,22 +1391,26 @@ def group_normalization(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _GroupNormalization(
-        _GroupNormalization.Attributes(
-            epsilon=AttrFloat32(epsilon, name="epsilon"),
-            num_groups=AttrInt64(num_groups, name="num_groups"),
-            stash_type=AttrInt64(stash_type, name="stash_type"),
-        ),
-        _GroupNormalization.Inputs(
-            X=unwrap_vars(X),
-            scale=unwrap_vars(scale),
-            bias=unwrap_vars(bias),
-        ),
-    ).get_output_vars(
-        X=get_value(X),
-        scale=get_value(scale),
-        bias=get_value(bias),
-    )["Y"]
+    return (
+        _GroupNormalization(
+            _GroupNormalization.Attributes(
+                epsilon=AttrFloat32(epsilon, name="epsilon"),
+                num_groups=AttrInt64(num_groups, name="num_groups"),
+                stash_type=AttrInt64(stash_type, name="stash_type"),
+            ),
+            _GroupNormalization.Inputs(
+                X=unwrap_vars(X),
+                scale=unwrap_vars(scale),
+                bias=unwrap_vars(bias),
+            ),
+        )
+        .get_output_vars(
+            X=get_value(X),
+            scale=get_value(scale),
+            bias=get_value(bias),
+        )
+        .Y
+    )
 
 
 def identity(
@@ -1410,14 +1438,18 @@ def identity(
     Type constraints:
      - V: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Identity(
-        _Identity.Attributes(),
-        _Identity.Inputs(
-            input=unwrap_vars(input),
-        ),
-    ).get_output_vars(
-        input=get_value(input),
-    )["output"]
+    return (
+        _Identity(
+            _Identity.Attributes(),
+            _Identity.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(
+            input=get_value(input),
+        )
+        .output
+    )
 
 
 def if_(
@@ -1474,18 +1506,22 @@ def if_(
     """
     _else_branch_subgraph: Graph = subgraph((), else_branch)
     _then_branch_subgraph: Graph = subgraph((), then_branch)
-    return _If(
-        _If.Attributes(
-            else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
-            then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
-        ),
-        _If.Inputs(
-            cond=unwrap_vars(cond),
-        ),
-        out_variadic=len(_else_branch_subgraph.requested_results),
-    ).get_output_vars(
-        cond=get_value(cond),
-    )["outputs"]
+    return (
+        _If(
+            _If.Attributes(
+                else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
+                then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
+            ),
+            _If.Inputs(
+                cond=unwrap_vars(cond),
+            ),
+            out_variadic=len(_else_branch_subgraph.requested_results),
+        )
+        .get_output_vars(
+            cond=get_value(cond),
+        )
+        .outputs
+    )
 
 
 def loop(
@@ -1669,21 +1705,25 @@ def loop(
         + [var.unwrap_type() for var in v_initial],
         body,
     )
-    return _Loop(
-        _Loop.Attributes(
-            body=AttrGraph(_body_subgraph, name="body"),
-        ),
-        _Loop.Inputs(
-            M=unwrap_vars(M),
-            cond=unwrap_vars(cond),
-            v_initial=unwrap_vars(v_initial),
-        ),
-        out_variadic=len(_body_subgraph.requested_results) - 1,
-    ).get_output_vars(
-        M=get_value(M),
-        cond=get_value(cond),
-        v_initial=get_value(v_initial),
-    )["v_final_and_scan_outputs"]
+    return (
+        _Loop(
+            _Loop.Attributes(
+                body=AttrGraph(_body_subgraph, name="body"),
+            ),
+            _Loop.Inputs(
+                M=unwrap_vars(M),
+                cond=unwrap_vars(cond),
+                v_initial=unwrap_vars(v_initial),
+            ),
+            out_variadic=len(_body_subgraph.requested_results) - 1,
+        )
+        .get_output_vars(
+            M=get_value(M),
+            cond=get_value(cond),
+            v_initial=get_value(v_initial),
+        )
+        .v_final_and_scan_outputs
+    )
 
 
 def pad(
@@ -1846,22 +1886,26 @@ def pad(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _Pad(
-        _Pad.Attributes(
-            mode=AttrString(mode, name="mode"),
-        ),
-        _Pad.Inputs(
-            data=unwrap_vars(data),
-            pads=unwrap_vars(pads),
-            constant_value=unwrap_vars(constant_value),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        pads=get_value(pads),
-        constant_value=get_value(constant_value),
-        axes=get_value(axes),
-    )["output"]
+    return (
+        _Pad(
+            _Pad.Attributes(
+                mode=AttrString(mode, name="mode"),
+            ),
+            _Pad.Inputs(
+                data=unwrap_vars(data),
+                pads=unwrap_vars(pads),
+                constant_value=unwrap_vars(constant_value),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            pads=get_value(pads),
+            constant_value=get_value(constant_value),
+            axes=get_value(axes),
+        )
+        .output
+    )
 
 
 def qlinear_matmul(
@@ -1937,28 +1981,32 @@ def qlinear_matmul(
      - T2: `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int8)`, `tensor(uint8)`
      - T3: `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int8)`, `tensor(uint8)`
     """
-    return _QLinearMatMul(
-        _QLinearMatMul.Attributes(),
-        _QLinearMatMul.Inputs(
-            a=unwrap_vars(a),
-            a_scale=unwrap_vars(a_scale),
-            a_zero_point=unwrap_vars(a_zero_point),
-            b=unwrap_vars(b),
-            b_scale=unwrap_vars(b_scale),
-            b_zero_point=unwrap_vars(b_zero_point),
-            y_scale=unwrap_vars(y_scale),
-            y_zero_point=unwrap_vars(y_zero_point),
-        ),
-    ).get_output_vars(
-        a=get_value(a),
-        a_scale=get_value(a_scale),
-        a_zero_point=get_value(a_zero_point),
-        b=get_value(b),
-        b_scale=get_value(b_scale),
-        b_zero_point=get_value(b_zero_point),
-        y_scale=get_value(y_scale),
-        y_zero_point=get_value(y_zero_point),
-    )["y"]
+    return (
+        _QLinearMatMul(
+            _QLinearMatMul.Attributes(),
+            _QLinearMatMul.Inputs(
+                a=unwrap_vars(a),
+                a_scale=unwrap_vars(a_scale),
+                a_zero_point=unwrap_vars(a_zero_point),
+                b=unwrap_vars(b),
+                b_scale=unwrap_vars(b_scale),
+                b_zero_point=unwrap_vars(b_zero_point),
+                y_scale=unwrap_vars(y_scale),
+                y_zero_point=unwrap_vars(y_zero_point),
+            ),
+        )
+        .get_output_vars(
+            a=get_value(a),
+            a_scale=get_value(a_scale),
+            a_zero_point=get_value(a_zero_point),
+            b=get_value(b),
+            b_scale=get_value(b_scale),
+            b_zero_point=get_value(b_zero_point),
+            y_scale=get_value(y_scale),
+            y_zero_point=get_value(y_zero_point),
+        )
+        .y
+    )
 
 
 def quantize_linear(
@@ -2066,23 +2114,27 @@ def quantize_linear(
      - T1: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`
      - T2: `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int4)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint4)`, `tensor(uint8)`
     """
-    return _QuantizeLinear(
-        _QuantizeLinear.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            block_size=AttrInt64(block_size, name="block_size"),
-            output_dtype=AttrInt64(output_dtype, name="output_dtype"),
-            saturate=AttrInt64(saturate, name="saturate"),
-        ),
-        _QuantizeLinear.Inputs(
-            x=unwrap_vars(x),
-            y_scale=unwrap_vars(y_scale),
-            y_zero_point=unwrap_vars(y_zero_point),
-        ),
-    ).get_output_vars(
-        x=get_value(x),
-        y_scale=get_value(y_scale),
-        y_zero_point=get_value(y_zero_point),
-    )["y"]
+    return (
+        _QuantizeLinear(
+            _QuantizeLinear.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                block_size=AttrInt64(block_size, name="block_size"),
+                output_dtype=AttrInt64(output_dtype, name="output_dtype"),
+                saturate=AttrInt64(saturate, name="saturate"),
+            ),
+            _QuantizeLinear.Inputs(
+                x=unwrap_vars(x),
+                y_scale=unwrap_vars(y_scale),
+                y_zero_point=unwrap_vars(y_zero_point),
+            ),
+        )
+        .get_output_vars(
+            x=get_value(x),
+            y_scale=get_value(y_scale),
+            y_zero_point=get_value(y_zero_point),
+        )
+        .y
+    )
 
 
 def reshape(
@@ -2136,18 +2188,22 @@ def reshape(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Reshape(
-        _Reshape.Attributes(
-            allowzero=AttrInt64(allowzero, name="allowzero"),
-        ),
-        _Reshape.Inputs(
-            data=unwrap_vars(data),
-            shape=unwrap_vars(shape),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        shape=get_value(shape),
-    )["reshaped"]
+    return (
+        _Reshape(
+            _Reshape.Attributes(
+                allowzero=AttrInt64(allowzero, name="allowzero"),
+            ),
+            _Reshape.Inputs(
+                data=unwrap_vars(data),
+                shape=unwrap_vars(shape),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            shape=get_value(shape),
+        )
+        .reshaped
+    )
 
 
 def scan(
@@ -2371,28 +2427,36 @@ def scan(
         ],
         body,
     )
-    return _Scan(
-        _Scan.Attributes(
-            body=AttrGraph(_body_subgraph, name="body"),
-            num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
-            scan_input_axes=AttrInt64s.maybe(scan_input_axes, name="scan_input_axes"),
-            scan_input_directions=AttrInt64s.maybe(
-                scan_input_directions, name="scan_input_directions"
+    return (
+        _Scan(
+            _Scan.Attributes(
+                body=AttrGraph(_body_subgraph, name="body"),
+                num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
+                scan_input_axes=AttrInt64s.maybe(
+                    scan_input_axes, name="scan_input_axes"
+                ),
+                scan_input_directions=AttrInt64s.maybe(
+                    scan_input_directions, name="scan_input_directions"
+                ),
+                scan_output_axes=AttrInt64s.maybe(
+                    scan_output_axes, name="scan_output_axes"
+                ),
+                scan_output_directions=AttrInt64s.maybe(
+                    scan_output_directions, name="scan_output_directions"
+                ),
             ),
-            scan_output_axes=AttrInt64s.maybe(
-                scan_output_axes, name="scan_output_axes"
+            _Scan.Inputs(
+                initial_state_and_scan_inputs=unwrap_vars(
+                    initial_state_and_scan_inputs
+                ),
             ),
-            scan_output_directions=AttrInt64s.maybe(
-                scan_output_directions, name="scan_output_directions"
-            ),
-        ),
-        _Scan.Inputs(
-            initial_state_and_scan_inputs=unwrap_vars(initial_state_and_scan_inputs),
-        ),
-        out_variadic=len(_body_subgraph.requested_results),
-    ).get_output_vars(
-        initial_state_and_scan_inputs=get_value(initial_state_and_scan_inputs),
-    )["final_state_and_scan_outputs"]
+            out_variadic=len(_body_subgraph.requested_results),
+        )
+        .get_output_vars(
+            initial_state_and_scan_inputs=get_value(initial_state_and_scan_inputs),
+        )
+        .final_state_and_scan_outputs
+    )
 
 
 def shape(
@@ -2471,17 +2535,21 @@ def shape(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
-    return _Shape(
-        _Shape.Attributes(
-            end=AttrInt64.maybe(end, name="end"),
-            start=AttrInt64(start, name="start"),
-        ),
-        _Shape.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["shape"]
+    return (
+        _Shape(
+            _Shape.Attributes(
+                end=AttrInt64.maybe(end, name="end"),
+                start=AttrInt64(start, name="start"),
+            ),
+            _Shape.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .shape
+    )
 
 
 def size(
@@ -2511,14 +2579,18 @@ def size(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
-    return _Size(
-        _Size.Attributes(),
-        _Size.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["size"]
+    return (
+        _Size(
+            _Size.Attributes(),
+            _Size.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .size
+    )
 
 
 def squeeze(
@@ -2556,16 +2628,20 @@ def squeeze(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Squeeze(
-        _Squeeze.Attributes(),
-        _Squeeze.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["squeezed"]
+    return (
+        _Squeeze(
+            _Squeeze.Attributes(),
+            _Squeeze.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .squeezed
+    )
 
 
 def transpose(
@@ -2602,16 +2678,20 @@ def transpose(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Transpose(
-        _Transpose.Attributes(
-            perm=AttrInt64s.maybe(perm, name="perm"),
-        ),
-        _Transpose.Inputs(
-            data=unwrap_vars(data),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-    )["transposed"]
+    return (
+        _Transpose(
+            _Transpose.Attributes(
+                perm=AttrInt64s.maybe(perm, name="perm"),
+            ),
+            _Transpose.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+        )
+        .transposed
+    )
 
 
 def unsqueeze(
@@ -2659,16 +2739,20 @@ def unsqueeze(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Unsqueeze(
-        _Unsqueeze.Attributes(),
-        _Unsqueeze.Inputs(
-            data=unwrap_vars(data),
-            axes=unwrap_vars(axes),
-        ),
-    ).get_output_vars(
-        data=get_value(data),
-        axes=get_value(axes),
-    )["expanded"]
+    return (
+        _Unsqueeze(
+            _Unsqueeze.Attributes(),
+            _Unsqueeze.Inputs(
+                data=unwrap_vars(data),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(
+            data=get_value(data),
+            axes=get_value(axes),
+        )
+        .expanded
+    )
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

@@ -236,8 +236,10 @@ class Node(ABC):
     def get_output_vars(self, flatten_variadic=False, **initializers):
         # After typing everything, try to get values for outputs
         out_values = self.propagate_values(initializers)
-        return self.outputs._propagate_vars(
-            out_values, flatten_variadic=flatten_variadic
+        return type(self.outputs).Vars(
+            **self.outputs._propagate_vars(
+                out_values, flatten_variadic=flatten_variadic
+            )
         )
 
     def validate_types(self) -> None:
