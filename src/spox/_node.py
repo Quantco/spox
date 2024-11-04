@@ -181,9 +181,7 @@ class Node(ABC):
         """Get a signature of this Node, including its inputs and attributes (but not outputs)."""
 
         def fmt_input(key, var):
-            return f"{key}: {var.type}" + (
-                f" = {var._value}" if var._value is not None else ""
-            )
+            return f"{key}: {var.type}"
 
         sign = ", ".join(
             fmt_input(key, var) for key, var in self.inputs.get_vars().items()

@@ -56,8 +56,8 @@ def linear():
                     attrs["shift_outer"], outer_name="shift_outer", name="value_float"
                 )  # type: ignore
             )
-            x = inputs.X
-            return self.Outputs(op.add(op.mul(a, x), b))
+            x = Var(inputs.X)
+            return self.Outputs(op.add(op.mul(a, x), b)._var_info)
 
     def linear_inner(
         x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
@@ -98,10 +98,10 @@ def linear2(linear):
         def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
             return self.Outputs(
                 linear(
-                    inputs.X,
+                    Var(inputs.X),
                     _Ref(attrs["slope1"], outer_name="slope1", name="slope_outer"),
                     _Ref(attrs["shift1"], outer_name="shift1", name="shift_outer"),
-                )
+                )._var_info
             )
 
     def linear_inner(
@@ -142,7 +142,7 @@ def cubic(linear):
         outputs: Outputs
 
         def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
-            x = inputs.X
+            x = Var(inputs.X)
             a = op.mul(
                 linear(
                     x,
@@ -165,7 +165,7 @@ def cubic(linear):
                 ),
             )
             y = op.add(a, b)
-            return self.Outputs(y)
+            return self.Outputs(y._var_info)
 
     def cubic_inner(x: Var, a3: float, a2: float, a1: float, a0: float) -> Var:
         return CubicFunction(
@@ -175,8 +175,8 @@ def cubic(linear):
                 a1=AttrFloat32(a1, name="a1"),
                 a0=AttrFloat32(a0, name="a0"),
             ),
-            CubicFunction.Inputs(X=x),
-        ).outputs.Y
+            CubicFunction.Inputs(X=x._var_info),
+        ).get_output_vars()["Y"]
 
     return cubic_inner
 

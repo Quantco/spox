@@ -4687,7 +4687,7 @@ def batch_normalization(
             input_mean=get_value(input_mean),
             input_var=get_value(input_var),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -6383,7 +6383,7 @@ def dropout(
             ratio=get_value(ratio),
             training_mode=get_value(training_mode),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -6464,7 +6464,7 @@ def dynamic_quantize_linear(
         .get_output_vars(
             x=get_value(x),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -7113,7 +7113,7 @@ def gru(
             sequence_lens=get_value(sequence_lens),
             initial_h=get_value(initial_h),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -8707,7 +8707,7 @@ def lstm(
             initial_c=get_value(initial_c),
             P=get_value(P),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -8812,7 +8812,7 @@ def layer_normalization(
             Scale=get_value(Scale),
             B=get_value(B),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -9678,7 +9678,7 @@ def max_pool(
         .get_output_vars(
             X=get_value(X),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -11616,7 +11616,7 @@ def rnn(
             sequence_lens=get_value(sequence_lens),
             initial_h=get_value(initial_h),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -14678,7 +14678,7 @@ def softmax_cross_entropy_loss(
             labels=get_value(labels),
             weights=get_value(weights),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -15571,7 +15571,7 @@ def top_k(
             X=get_value(X),
             K=get_value(K),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -15869,7 +15869,7 @@ def unique(
         .get_output_vars(
             X=get_value(X),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 

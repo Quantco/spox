@@ -43,5 +43,5 @@ endfor %}
     ){%
 if schema.outputs | length <= 1
     %}["{{ schema.outputs[0].name }}"]{%
-else %}._unpack_to_any(){%
+else %}.values(){%
 endif %}

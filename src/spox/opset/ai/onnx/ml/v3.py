@@ -1217,7 +1217,7 @@ def linear_classifier(
         .get_output_vars(
             X=get_value(X),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -1508,7 +1508,7 @@ def svmclassifier(
         .get_output_vars(
             X=get_value(X),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 
@@ -1833,7 +1833,7 @@ def tree_ensemble_classifier(
         .get_output_vars(
             X=get_value(X),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 

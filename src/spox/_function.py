@@ -14,7 +14,7 @@ from ._fields import BaseAttributes, BaseInputs, BaseOutputs
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
-from ._var import Var, VarInfo
+from ._var import Var, VarInfo, unwrap_vars, wrap_vars
 
 if TYPE_CHECKING:
     from . import _graph
@@ -42,7 +42,7 @@ class Function(_InternalNode):
     via the ``to_onnx_function`` method.
     """
 
-    func_args: dict[str, Var]
+    func_args: dict[str, VarInfo]
     func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
@@ -64,9 +64,11 @@ class Function(_InternalNode):
     def infer_output_types(self) -> dict[str, Type]:
         from . import _graph
 
-        self.func_args = _graph.arguments_dict(
+        func_args_var = _graph.arguments_dict(
             **{name: var.type for name, var in self.inputs.get_vars().items()}
         )
+
+        self.func_args = unwrap_vars(func_args_var)
 
         self.func_attrs = {}
         for name, attr in self.attrs.get_fields().items():
@@ -78,9 +80,9 @@ class Function(_InternalNode):
 
         self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
-        self.func_graph = _graph.results(**self.func_outputs.get_vars()).with_arguments(
-            *self.func_args.values()
-        )
+        self.func_graph = _graph.results(
+            **self.func_outputs._propagate_vars()
+        ).with_arguments(*func_args_var.values())
 
         return {
             name: var.type
@@ -157,7 +159,7 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
     The function must be deterministic in the performed operations, as otherwise an error will be raised at build
     due to inconsistent function bodies.
 
-    ``fun`` is assumed to take only VarInfo arguments and return an iterable of them. These will be used to generate the
+    ``fun`` is assumed to take only Var arguments and return an iterable of them. These will be used to generate the
     function class signature.
 
     Keep in mind that functions with the same name & domain will be merged together.
@@ -172,13 +174,13 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
         _num_outputs = None
         _cls = None
 
-        def get_num_outputs(*args: VarInfo) -> int:
+        def get_num_outputs(*args: Var) -> int:
             nonlocal _num_outputs
             if _num_outputs is None:
                 _num_outputs = sum(1 for _ in fun(*args))
             return _num_outputs
 
-        def init(*args: VarInfo):
+        def init(*args: Var):
             nonlocal _cls
             if _cls is not None:
                 return _cls
@@ -188,10 +190,12 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
             )
             return _cls
 
-        def alt_fun(*args: VarInfo) -> Iterable[VarInfo]:
+        def alt_fun(*args: Var) -> Iterable[Var]:
             cls = init(*args)
-            return (
-                cls(cls.Attributes(), cls.Inputs(*args)).outputs.get_fields().values()
+            return wrap_vars(
+                cls(cls.Attributes(), cls.Inputs(*unwrap_vars(args)))
+                .outputs.get_fields()
+                .values()
             )
 
         return alt_fun  # type: ignore

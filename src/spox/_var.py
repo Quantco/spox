@@ -312,6 +312,35 @@ T = TypeVar("T")
 
 
 @overload
+def wrap_vars(var_info: VarInfo) -> Var: ...
+
+
+@overload
+def wrap_vars(var_info: Optional[VarInfo]) -> Optional[Var]: ...
+
+
+@overload
+def wrap_vars(var_info: dict[T, VarInfo]) -> dict[T, Var]: ...  # type: ignore[misc]
+
+
+@overload
+def wrap_vars(var_info: Union[Sequence[VarInfo], Iterable[VarInfo]]) -> list[Var]: ...
+
+
+def wrap_vars(var_info):
+    if var_info is None:
+        return None
+    elif isinstance(var_info, VarInfo):
+        return Var(var_info)
+    elif isinstance(var_info, dict):
+        return {k: wrap_vars(v) for k, v in var_info.items()}
+    elif isinstance(var_info, (Sequence, Iterable)):
+        return [wrap_vars(v) for v in var_info]
+    else:
+        raise ValueError("Unsupported type for wrap_vars")
+
+
+@overload
 def unwrap_vars(var: Var) -> VarInfo: ...
 
 
@@ -320,7 +349,7 @@ def unwrap_vars(var: Optional[Var]) -> Optional[VarInfo]: ...
 
 
 @overload
-def unwrap_vars(var: dict[T, Var]) -> dict[T, VarInfo]: ...
+def unwrap_vars(var: dict[T, Var]) -> dict[T, VarInfo]: ...  # type: ignore[misc]
 
 
 @overload
@@ -349,15 +378,15 @@ def get_value(var: Optional[Var]) -> Optional[_value_prop.PropValue]: ...
 
 
 @overload
+def get_value(var: dict[T, Var]) -> dict[T, Optional[_value_prop.PropValue]]: ...  # type: ignore[misc]
+
+
+@overload
 def get_value(
     var: Union[Sequence[Var], Iterable[Var]],
 ) -> Union[
     Sequence[Optional[_value_prop.PropValue]], Iterable[Optional[_value_prop.PropValue]]
 ]: ...
-
-
-@overload
-def get_value(var: dict[T, Var]) -> dict[T, Optional[_value_prop.PropValue]]: ...
 
 
 def get_value(var):

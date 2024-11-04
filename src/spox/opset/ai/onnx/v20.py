@@ -1550,7 +1550,7 @@ def string_split(
         .get_output_vars(
             X=get_value(X),
         )
-        ._unpack_to_any()
+        .values()
     )
 
 

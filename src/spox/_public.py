@@ -49,7 +49,7 @@ def _temporary_renames(**kwargs: Var):
     pre: dict[Var, Optional[str]] = {}
     try:
         for name, arg in kwargs.items():
-            pre[arg._var_info] = arg._var_info._name
+            pre[arg] = arg._var_info._name
             arg._var_info._rename(name)
         yield
     finally:
