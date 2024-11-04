@@ -18,7 +18,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._var import Var
+from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.ml.v4 import (
     _ArrayFeatureExtractor,
     _Binarizer,
@@ -77,11 +77,11 @@ class _TreeEnsemble(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: VarInfo
 
     op_type = OpType("TreeEnsemble", "ai.onnx.ml", 5)
 
@@ -250,9 +250,11 @@ def tree_ensemble(
             tree_roots=AttrInt64s(tree_roots, name="tree_roots"),
         ),
         _TreeEnsemble.Inputs(
-            X=X,
+            X=unwrap_vars(X),
         ),
-    ).outputs.Y
+    ).get_output_vars(
+        X=get_value(X),
+    )["Y"]
 
 
 _OPERATORS = {

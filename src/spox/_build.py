@@ -289,7 +289,7 @@ class Builder:
             self.arguments_of[graph] = list(all_arguments - claimed_arguments)
         else:
             # If there is a request, we may not have found it by traversal if an argument was unused.
-            all_arguments |= set(graph.requested_arguments)
+            all_arguments |= set(unwrap_vars(graph.requested_arguments))
             self.arguments_of[graph] = unwrap_vars(graph.requested_arguments)
 
         if set(self.arguments_of[graph]) & claimed_arguments:
