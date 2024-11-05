@@ -64,10 +64,10 @@ class StandardNode(Node):
         # Prepare names for the values in scope of the node
         scope = Scope()
         scope.node[self] = "_this_"
-        for key, var in self.inputs.get_vars().items():
+        for key, var in self.inputs.get_var_infos().items():
             if var not in scope.var:
                 scope.var[var] = key
-        for key, var in self.outputs.get_vars().items():
+        for key, var in self.outputs.get_var_infos().items():
             if var not in scope.var:
                 scope.var[var] = key
         # We inject the evaluated attribute values here and then substitute back
@@ -89,7 +89,7 @@ class StandardNode(Node):
         # Input types
         input_info = [
             var.unwrap_type()._to_onnx_value_info(key)
-            for key, var in self.inputs.get_vars().items()
+            for key, var in self.inputs.get_var_infos().items()
         ]
 
         # Output types with placeholder empty TypeProto (or actual type if not using dummies)
@@ -99,7 +99,8 @@ class StandardNode(Node):
             return curr_var.unwrap_type()._to_onnx_value_info(curr_key)
 
         output_info = [
-            out_value_info(key, var) for key, var in self.outputs.get_vars().items()
+            out_value_info(key, var)
+            for key, var in self.outputs.get_var_infos().items()
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
@@ -145,7 +146,7 @@ class StandardNode(Node):
     def infer_output_types_onnx(self, initializers={}) -> dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
-        if any(var.type is None for var in self.inputs.get_vars().values()):
+        if any(var.type is None for var in self.inputs.get_var_infos().values()):
             return {}
 
         model, _ = self.to_singleton_onnx_model(prop_values=initializers)
@@ -180,7 +181,7 @@ class StandardNode(Node):
         # Cannot do propagation when some inputs were not propagated/inferred
         if any(
             var_info.type is None or initializers.get(name, None) is None
-            for name, var_info in self.inputs.get_vars().items()
+            for name, var_info in self.inputs.get_var_infos().items()
         ):
             return {}
         if next(iter(self.subgraphs), None) is not None:
@@ -192,7 +193,7 @@ class StandardNode(Node):
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
             scope.var[var_info]: wrap_feed(initializers[name])
-            for name, var_info in self.inputs.get_vars().items()
+            for name, var_info in self.inputs.get_var_infos().items()
             if initializers[name]
         }
 

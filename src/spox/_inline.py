@@ -129,8 +129,8 @@ class _Inline(_InternalNode):
 
     def propagate_values(self, initializers) -> dict[str, _value_prop.PropValueType]:
         if any(
-            var_info.type is None or initializers.get(name) is None
-            for name, var_info in self.inputs.get_vars().items()
+            var_info.type is None or initializers.get(var_info.name) is None
+            for var_info in self.model.graph.input
         ):
             return {}
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()

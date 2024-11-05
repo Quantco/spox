@@ -184,7 +184,7 @@ class Node(ABC):
             return f"{key}: {var.type}"
 
         sign = ", ".join(
-            fmt_input(key, var) for key, var in self.inputs.get_vars().items()
+            fmt_input(key, var) for key, var in self.inputs.get_var_infos().items()
         )
         sign = f"inputs [{sign}]"
         shown_attrs = {
@@ -230,7 +230,7 @@ class Node(ABC):
             self.infer_output_types(initializers=initializers) if infer_types else {}
         )
 
-        for key, var in self.outputs.get_vars().items():
+        for key, var in self.outputs.get_var_infos().items():
             if var.type is None:  # If no existing type from init_output_vars
                 # Attempt to use the ones from kwargs, if none then what type inference gave
                 var.type = out_types.get(key)
@@ -281,7 +281,7 @@ class Node(ABC):
         return None
 
     def _list_types(self, source):
-        return ((key, var.type) for key, var in source.get_vars().items())
+        return ((key, var.type) for key, var in source.get_var_infos().items())
 
     def _init_output_vars(self) -> BaseOutputs:
         """
@@ -311,12 +311,12 @@ class Node(ABC):
     @property
     def dependencies(self) -> Iterable[VarInfo]:
         """List of input VarInfos into this Node."""
-        return (var for var in self.inputs.get_vars().values())
+        return (var for var in self.inputs.get_var_infos().values())
 
     @property
     def dependents(self) -> Iterable[VarInfo]:
         """List of output VarInfos from this Node."""
-        return (var for var in self.outputs.get_vars().values())
+        return (var for var in self.outputs.get_var_infos().values())
 
     @property
     def incident(self) -> Iterable[VarInfo]:

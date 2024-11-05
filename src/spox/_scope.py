@@ -210,7 +210,7 @@ class Scope:
         """
         if force or node not in self.node:
             self.node[node] = self.node.enum(prefix + node.op_type.identifier)
-        for field, arr in node.outputs.get_vars().items():
+        for field, arr in node.outputs.get_var_infos().items():
             if arr._name is None:
                 base = f"{self.node[node]}_{field}"
                 name = self.var.maybe_enum(base)

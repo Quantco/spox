@@ -307,7 +307,18 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             model=model,
         )
 
-        return dict(zip(out_names, node.get_output_vars().get_vars().values()))
+        prop_values = {
+            name: kwargs[name]._value
+            for i, name in enumerate(in_names)
+            if kwargs[name]._value is not None
+        }
+
+        return dict(
+            zip(
+                out_names,
+                node.get_output_vars(**prop_values).get_var_infos().values(),
+            )
+        )
 
     return inline_inner
 

@@ -1775,12 +1775,12 @@ class _Loop(StandardNode):
         v_final_and_scan_outputs: Sequence[VarInfo]
 
     def infer_output_types(self, initializers={}) -> dict[str, Type]:
-        output_types = super().infer_output_types(initializers)
+        output_types = super().infer_output_types()
 
         body = self.attrs.body.value
         n = len(body.requested_arguments) - 2
 
-        carried_names = list(self.outputs.get_vars())[:n]
+        carried_names = list(self.outputs.get_var_infos())[:n]
         carried_types = [v.type for v in list(body.requested_results.values())[1:][:n]]
 
         for name, typ in zip(carried_names, carried_types):
@@ -9524,11 +9524,6 @@ def loop(
                 v_initial=unwrap_vars(v_initial),
             ),
             out_variadic=len(_body_subgraph.requested_results) - 1,
-            initializers={
-                "M": get_value(M),
-                "cond": get_value(cond),
-                "v_initial": get_value(v_initial),
-            },
         )
         .get_output_vars(
             M=get_value(M),

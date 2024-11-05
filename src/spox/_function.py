@@ -65,7 +65,7 @@ class Function(_InternalNode):
         from . import _graph
 
         func_args_var = _graph.arguments_dict(
-            **{name: var.type for name, var in self.inputs.get_vars().items()}
+            **{name: var.type for name, var in self.inputs.get_var_infos().items()}
         )
 
         self.func_args = unwrap_vars(func_args_var)
@@ -81,12 +81,12 @@ class Function(_InternalNode):
         self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
         self.func_graph = _graph.results(
-            **self.func_outputs._propagate_vars(initializers).get_vars()
+            **self.func_outputs._propagate_vars(initializers).get_var_infos()
         ).with_arguments(*func_args_var.values())
 
         return {
             name: var.type
-            for name, var in self.func_outputs.get_vars().items()
+            for name, var in self.func_outputs.get_var_infos().items()
             if var.type
         }
 

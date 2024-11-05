@@ -74,7 +74,7 @@ class VarInfo:
         """Return the name of the output field that this var is stored in under ``self._op``."""
         if self._op is None:
             return None
-        op_outs = self._op.outputs.get_vars()
+        op_outs = self._op.outputs.get_var_infos()
         candidates = [key for key, var in op_outs.items() if var is self]
         return candidates[0] if candidates else None
 

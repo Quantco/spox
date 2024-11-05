@@ -33,15 +33,14 @@ def adapt_node(
             var_names[var]: var.unwrap_type()._to_onnx_value_info(
                 var_names[var], _traceback_name=f"adapt-input {key}"
             )
-            for key, var in node.inputs.get_vars().items()
+            for key, var in node.inputs.get_var_infos().items()
         }
         output_info = [
             var.unwrap_type()._to_onnx_value_info(
                 var_names[var], _traceback_name=f"adapt-output {key}"
             )
-            for key, var in node.outputs.get_vars().items()
+            for key, var in node.outputs.get_var_infos().items()
         ]
-        initializers = []
     except ValueError:
         return None
 
@@ -51,7 +50,6 @@ def adapt_node(
             "spox__singleton_adapter_graph",
             list(input_info.values()),
             output_info,
-            initializers,
         ),
         opset_imports=[onnx.helper.make_operatorsetid("", source_version)],
     )

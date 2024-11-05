@@ -47,7 +47,7 @@ class BaseVars:
             else:
                 yield from ((f"{key}_{i}", v) for i, v in enumerate(value))
 
-    def get_vars(self) -> dict[str, Var]:
+    def get_var_infos(self) -> dict[str, Var]:
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
@@ -136,7 +136,7 @@ class BaseVarInfos(BaseFields):
         """Count the number of fields in this object (should be same as declared in the class)."""
         return sum(1 for _ in self)
 
-    def get_vars(self) -> dict[str, VarInfo]:
+    def get_var_infos(self) -> dict[str, VarInfo]:
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
@@ -153,7 +153,7 @@ class BaseVarInfos(BaseFields):
         """Check if all stored variables have a concrete type."""
         return all(
             var.type is not None and var.type._is_concrete
-            for var in self.get_vars().values()
+            for var in self.get_var_infos().values()
         )
 
 
