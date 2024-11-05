@@ -88,7 +88,7 @@ class Argument(_InternalNode):
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, initializers={}) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         return {"arg": self.attrs.type.value}
 
@@ -121,7 +121,7 @@ class _Initializer(_InternalNode):
     inputs: BaseInputs
     outputs: Outputs
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, initializers={}) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         arr = self.attrs.value.value
         return {"arg": Tensor(arr.dtype, arr.shape)}
@@ -161,7 +161,7 @@ class _Introduce(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, initializers={}) -> dict[str, Type]:
         return {
             f"outputs_{i}": arr.type
             for i, arr in enumerate(self.inputs.inputs)

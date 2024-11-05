@@ -6,9 +6,11 @@
 from typing import TYPE_CHECKING, Callable
 
 import onnx
+from onnx.numpy_helper import from_array
 import onnx.reference
 import onnx.shape_inference
 from onnx.defs import OpSchema
+import numpy as np
 
 from . import _value_prop
 from ._exceptions import InferenceError
@@ -18,6 +20,7 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._value_prop import PropValueType
+from ._utils import from_array
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -48,7 +51,7 @@ class StandardNode(Node):
         return self.schema.min_output
 
     def to_singleton_onnx_model(
-        self, *, dummy_outputs: bool = True, with_dummy_subgraphs: bool = True
+        self, *, dummy_outputs: bool = True, with_dummy_subgraphs: bool = True, prop_values={}
     ) -> tuple[onnx.ModelProto, Scope]:
         """
         Build a singleton model consisting of just this StandardNode. Used for type inference.
@@ -97,7 +100,11 @@ class StandardNode(Node):
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
-        initializers = []
+        initializers = [
+            from_array(prop.value, name)  # type: ignore
+            for name, prop in prop_values.items()
+            if prop is not None and isinstance(prop.value, np.ndarray)
+        ]
         #  Graph and model
         graph = onnx.helper.make_graph(
             [node_proto],
@@ -117,13 +124,13 @@ class StandardNode(Node):
         )
         return model, scope
 
-    def infer_output_types_onnx(self) -> dict[str, Type]:
+    def infer_output_types_onnx(self, initializers={}) -> dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
         if any(var.type is None for var in self.inputs.get_vars().values()):
             return {}
 
-        model, _ = self.to_singleton_onnx_model()
+        model, _ = self.to_singleton_onnx_model(prop_values=initializers)
 
         # Attempt to do shape inference - if an error is caught, we extend the traceback a bit
         try:
@@ -161,7 +168,7 @@ class StandardNode(Node):
         if next(iter(self.subgraphs), None) is not None:
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
-        model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False)
+        model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False, prop_values=initializers)
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
             scope.var[var_info]: wrap_feed(initializers[name])
@@ -179,8 +186,8 @@ class StandardNode(Node):
         }
         return {k: v for k, v in results.items() if k is not None}
 
-    def infer_output_types(self) -> dict[str, Type]:
-        return self.infer_output_types_onnx()
+    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+        return self.infer_output_types_onnx(initializers)
 
     def propagate_values(self, initializers) -> dict[str, PropValueType]:
         if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:

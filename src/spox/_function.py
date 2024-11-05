@@ -61,7 +61,7 @@ class Function(_InternalNode):
             f"Function {type(self).__name__} does not implement a constructor."
         )
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, initializers={}) -> dict[str, Type]:
         from . import _graph
 
         func_args_var = _graph.arguments_dict(
@@ -147,7 +147,7 @@ def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
         op_type = OpType(name, domain, version)
 
         def constructor(self, attrs, inputs):
-            return self.Outputs(*fun(*inputs.get_fields().values()))
+            return self.Outputs(*unwrap_vars(fun(*wrap_vars(inputs.get_fields().values()))))
 
     return _Func
 
@@ -192,11 +192,12 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
 
         def alt_fun(*args: Var) -> Iterable[Var]:
             cls = init(*args)
-            return wrap_vars(
-                cls(cls.Attributes(), cls.Inputs(*unwrap_vars(args)))
+            return [
+                Var(var_info)
+                for var_info in cls(cls.Attributes(), cls.Inputs(*unwrap_vars(args)))
                 .outputs.get_fields()
                 .values()
-            )
+            ]
 
         return alt_fun  # type: ignore
 

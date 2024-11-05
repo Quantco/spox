@@ -95,7 +95,7 @@ class Node(ABC):
         out_variadic: Optional[int] = None,
         infer_types: bool = True,
         validate: bool = True,
-        initializers=[],
+        initializers={},
         **kwargs,
     ):
         """
@@ -127,7 +127,7 @@ class Node(ABC):
             # As inference functions may access which output vars we initialized (e.g. variadics)
             # we inject uninitialized vars first
             self.outputs = self._init_output_vars()
-            self.inference(infer_types)
+            self.inference(infer_types, initializers)
         else:
             self.outputs = outputs
 
@@ -215,7 +215,7 @@ class Node(ABC):
         """
         return {}
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, initializers) -> dict[str, Type]:
         """
         Inference routine for output types. Often overriden by inheriting Node types.
 
@@ -223,10 +223,10 @@ class Node(ABC):
         """
         return {}
 
-    def inference(self, infer_types: bool = True):
+    def inference(self, infer_types: bool = True, initializers={}):
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
-        out_types = self.infer_output_types() if infer_types else {}
+        out_types = self.infer_output_types(initializers=initializers) if infer_types else {}
 
         for key, var in self.outputs.get_vars().items():
             if var.type is None:  # If no existing type from init_output_vars

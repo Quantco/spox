@@ -7,6 +7,7 @@ import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any, Optional, Union
+from typing_extensions import Self
 
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
@@ -189,7 +190,6 @@ class BaseInputs(BaseVarInfos, metaclass=BaseVarsMeta):
                 vars_structure[field.name] = vars
 
         return self.Vars(**vars_structure)
-
 
 @dataclass
 class BaseOutputs(BaseVarInfos, metaclass=BaseVarsMeta):

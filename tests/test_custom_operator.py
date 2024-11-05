@@ -44,7 +44,7 @@ class Inverse(Node):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, initializers={}) -> dict[str, Type]:
         # This is technically optional, but using an operator without type inference may be inconvenient.
         if self.inputs.X.type is None:
             return {}

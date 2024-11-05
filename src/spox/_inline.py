@@ -111,7 +111,7 @@ class _Inline(_InternalNode):
             ("", INTERNAL_MIN_OPSET)
         }
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, initializers={}) -> dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
         for i, var in zip(self.graph.input, self.inputs.inputs):
             if var.type is not None and not (
