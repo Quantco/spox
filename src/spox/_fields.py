@@ -6,8 +6,7 @@ import enum
 import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Any, Optional, Union
-from typing_extensions import Self
+from typing import Any, Generic, Optional, TypeVar, Union
 
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
@@ -158,13 +157,16 @@ class BaseVarInfos(BaseFields):
         )
 
 
+TypeBaseVars = TypeVar("TypeBaseVars", bound=BaseVars)
+
+
 @dataclass
-class BaseInputs(BaseVarInfos, metaclass=BaseVarsMeta):
+class BaseInputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
     @dataclass
     class Vars(BaseVars):
         pass
 
-    def vars(self, prop_values) -> Vars:
+    def vars(self, prop_values) -> TypeBaseVars:
         vars_structure: dict[str, Union[Var, Sequence[Var]]] = {}
 
         for field in dataclasses.fields(self):
@@ -189,10 +191,11 @@ class BaseInputs(BaseVarInfos, metaclass=BaseVarsMeta):
 
                 vars_structure[field.name] = vars
 
-        return self.Vars(**vars_structure)
+        return self.__class__.Vars(**vars_structure)  # type: ignore
+
 
 @dataclass
-class BaseOutputs(BaseVarInfos, metaclass=BaseVarsMeta):
+class BaseOutputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
     @dataclass
     class Vars(BaseVars):
         pass
@@ -201,7 +204,7 @@ class BaseOutputs(BaseVarInfos, metaclass=BaseVarsMeta):
         self,
         prop_values={},
         flatten_variadic=False,
-    ):
+    ) -> TypeBaseVars:
         def _create_var(key, var_info):
             ret = Var(var_info, None)
 
@@ -234,4 +237,4 @@ class BaseOutputs(BaseVarInfos, metaclass=BaseVarsMeta):
                     _create_var(f"{key}_{i}", v) for i, v in enumerate(var_info)
                 ]
 
-        return ret_dict
+        return self.__class__.Vars(**ret_dict)  # type: ignore

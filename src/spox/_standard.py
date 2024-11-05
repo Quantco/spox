@@ -3,14 +3,13 @@
 
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING, Callable
 
 import onnx
-from onnx.numpy_helper import from_array
 import onnx.reference
 import onnx.shape_inference
 from onnx.defs import OpSchema
-import numpy as np
 
 from . import _value_prop
 from ._exceptions import InferenceError
@@ -19,8 +18,8 @@ from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
-from ._value_prop import PropValueType
 from ._utils import from_array
+from ._value_prop import PropValue, PropValueType
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -51,7 +50,11 @@ class StandardNode(Node):
         return self.schema.min_output
 
     def to_singleton_onnx_model(
-        self, *, dummy_outputs: bool = True, with_dummy_subgraphs: bool = True, prop_values={}
+        self,
+        *,
+        dummy_outputs: bool = True,
+        with_dummy_subgraphs: bool = True,
+        prop_values={},
     ) -> tuple[onnx.ModelProto, Scope]:
         """
         Build a singleton model consisting of just this StandardNode. Used for type inference.
@@ -100,11 +103,26 @@ class StandardNode(Node):
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
-        initializers = [
+        # TODO: fix this
+        initializers_from_array = [
             from_array(prop.value, name)  # type: ignore
             for name, prop in prop_values.items()
-            if prop is not None and isinstance(prop.value, np.ndarray)
+            if isinstance(prop, PropValue)
+            and prop.value is not None
+            and not isinstance(prop.type, Sequence)
         ]
+
+        initializers_from_sequence = [
+            from_array(prop.value, f"{name}_{i}")  # type: ignore
+            for name, prop_list in prop_values.items()
+            if isinstance(prop_list, list)
+            for i, prop in enumerate(prop_list)
+            if prop is not None and not isinstance(prop.value, Iterable)
+        ]
+
+        initializers = initializers_from_array
+        initializers.extend(initializers_from_sequence)
+
         #  Graph and model
         graph = onnx.helper.make_graph(
             [node_proto],
@@ -168,7 +186,9 @@ class StandardNode(Node):
         if next(iter(self.subgraphs), None) is not None:
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
-        model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False, prop_values=initializers)
+        model, scope = self.to_singleton_onnx_model(
+            with_dummy_subgraphs=False, prop_values=initializers
+        )
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
             scope.var[var_info]: wrap_feed(initializers[name])

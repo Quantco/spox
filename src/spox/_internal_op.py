@@ -73,11 +73,11 @@ class Argument(_InternalNode):
         default: Optional[AttrTensor] = None
 
     @dataclass
-    class Inputs(BaseInputs):
+    class Inputs(BaseInputs["Argument.Outputs.Vars"]):
         pass
 
     @dataclass
-    class Outputs(BaseOutputs):
+    class Outputs(BaseOutputs["Argument.Outputs.Vars"]):
         arg: VarInfo
 
     attrs: Attributes

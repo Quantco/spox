@@ -226,7 +226,9 @@ class Node(ABC):
     def inference(self, infer_types: bool = True, initializers={}):
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
-        out_types = self.infer_output_types(initializers=initializers) if infer_types else {}
+        out_types = (
+            self.infer_output_types(initializers=initializers) if infer_types else {}
+        )
 
         for key, var in self.outputs.get_vars().items():
             if var.type is None:  # If no existing type from init_output_vars
@@ -236,10 +238,8 @@ class Node(ABC):
     def get_output_vars(self, flatten_variadic=False, **initializers):
         # After typing everything, try to get values for outputs
         out_values = self.propagate_values(initializers)
-        return type(self.outputs).Vars(
-            **self.outputs._propagate_vars(
-                out_values, flatten_variadic=flatten_variadic
-            )
+        return self.outputs._propagate_vars(
+            out_values, flatten_variadic=flatten_variadic
         )
 
     def validate_types(self) -> None:

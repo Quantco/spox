@@ -81,7 +81,7 @@ class Function(_InternalNode):
         self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
         self.func_graph = _graph.results(
-            **self.func_outputs._propagate_vars()
+            **self.func_outputs._propagate_vars(initializers).get_vars()
         ).with_arguments(*func_args_var.values())
 
         return {
@@ -147,7 +147,9 @@ def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
         op_type = OpType(name, domain, version)
 
         def constructor(self, attrs, inputs):
-            return self.Outputs(*unwrap_vars(fun(*wrap_vars(inputs.get_fields().values()))))
+            return self.Outputs(
+                *unwrap_vars(fun(*wrap_vars(inputs.get_fields().values())))
+            )
 
     return _Func
 
