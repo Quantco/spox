@@ -14,6 +14,11 @@ _{{ attr.name }}_subgraph: Graph = subgraph(
 )
     {% endif %}
 {% endfor %}
+input_prop_values = {
+{% for param in schema.inputs
+        %}"{{param.name}}":get_value({{param.name}}), {%
+endfor %}
+    }
 return _{{ schema.name }}(
     _{{ schema.name }}.Attributes(
 {% for attr in attributes %}
@@ -36,11 +41,9 @@ endfor %}
     ), {%
 if schema.outputs and is_variadic(schema.outputs[-1])
     %}out_variadic={{ out_variadic_solution if out_variadic_solution else "{}_count".format(schema.outputs[-1].name) }}, {%
-endif %}).get_output_vars(input_prop_values={
-{% for param in schema.inputs
-        %}"{{param.name}}":get_value({{param.name}}), {%
-endfor %}
-    }){%
+endif %}
+    input_prop_values=input_prop_values
+    ).get_output_vars(input_prop_values=input_prop_values){%
 if schema.outputs | length <= 1
     %}.{{ schema.outputs[0].name }}{%
 else %}._unpack_to_any(){%

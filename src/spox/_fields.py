@@ -203,7 +203,6 @@ class BaseOutputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
     def _propagate_vars(
         self,
         prop_values={},
-        flatten_variadic=False,
     ) -> TypeBaseVars:
         def _create_var(key, var_info):
             ret = Var(var_info, None)
@@ -229,9 +228,6 @@ class BaseOutputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
         for key, var_info in self.__dict__.items():
             if var_info is None or isinstance(var_info, VarInfo):
                 ret_dict[key] = _create_var(key, var_info)
-            elif flatten_variadic:
-                for i, v in enumerate(var_info):
-                    ret_dict[f"{key}_{i}"] = _create_var(f"{key}_{i}", v)
             else:
                 ret_dict[key] = [
                     _create_var(f"{key}_{i}", v) for i, v in enumerate(var_info)

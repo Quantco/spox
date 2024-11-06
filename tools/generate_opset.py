@@ -647,7 +647,7 @@ def main(
 
     if pre_commit_hooks:
         print("Running pre-commit hooks to format & verify...")
-        if False and run_pre_commit_hooks(str(path)).returncode:
+        if run_pre_commit_hooks(str(path)).returncode:
             print("Running second pass of pre-commit hooks...")
             if run_pre_commit_hooks(str(path)).returncode:
                 raise RuntimeError(

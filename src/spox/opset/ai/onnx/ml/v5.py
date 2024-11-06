@@ -224,6 +224,9 @@ def tree_ensemble(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _TreeEnsemble(
             _TreeEnsemble.Attributes(
@@ -258,12 +261,9 @@ def tree_ensemble(
             _TreeEnsemble.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 

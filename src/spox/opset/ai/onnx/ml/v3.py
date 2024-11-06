@@ -662,6 +662,10 @@ def array_feature_extractor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+        "Y": get_value(Y),
+    }
     return (
         _ArrayFeatureExtractor(
             _ArrayFeatureExtractor.Attributes(),
@@ -669,13 +673,9 @@ def array_feature_extractor(
                 X=unwrap_vars(X),
                 Y=unwrap_vars(Y),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-                "Y": get_value(Y),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Z
     )
 
@@ -711,6 +711,9 @@ def binarizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _Binarizer(
             _Binarizer.Attributes(
@@ -719,12 +722,9 @@ def binarizer(
             _Binarizer.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -776,6 +776,9 @@ def cast_map(
      - T1: `map(int64,tensor(float))`, `map(int64,tensor(string))`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _CastMap(
             _CastMap.Attributes(
@@ -786,12 +789,9 @@ def cast_map(
             _CastMap.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -851,6 +851,9 @@ def category_mapper(
      - T1: `tensor(int64)`, `tensor(string)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _CategoryMapper(
             _CategoryMapper.Attributes(
@@ -862,12 +865,9 @@ def category_mapper(
             _CategoryMapper.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -922,6 +922,9 @@ def dict_vectorizer(
      - T1: `map(int64,tensor(double))`, `map(int64,tensor(float))`, `map(int64,tensor(string))`, `map(string,tensor(double))`, `map(string,tensor(float))`, `map(string,tensor(int64))`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _DictVectorizer(
             _DictVectorizer.Attributes(
@@ -935,12 +938,9 @@ def dict_vectorizer(
             _DictVectorizer.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -979,6 +979,9 @@ def feature_vectorizer(
     Type constraints:
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _FeatureVectorizer(
             _FeatureVectorizer.Attributes(
@@ -989,12 +992,9 @@ def feature_vectorizer(
             _FeatureVectorizer.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1054,6 +1054,9 @@ def imputer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _Imputer(
             _Imputer.Attributes(
@@ -1073,12 +1076,9 @@ def imputer(
             _Imputer.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1163,6 +1163,9 @@ def label_encoder(
      - T1: `tensor(float)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _LabelEncoder(
             _LabelEncoder.Attributes(
@@ -1179,12 +1182,9 @@ def label_encoder(
             _LabelEncoder.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1246,6 +1246,9 @@ def linear_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _LinearClassifier(
             _LinearClassifier.Attributes(
@@ -1263,12 +1266,9 @@ def linear_classifier(
             _LinearClassifier.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
 
@@ -1322,6 +1322,9 @@ def linear_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _LinearRegressor(
             _LinearRegressor.Attributes(
@@ -1333,12 +1336,9 @@ def linear_regressor(
             _LinearRegressor.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1379,6 +1379,9 @@ def normalizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _Normalizer(
             _Normalizer.Attributes(
@@ -1387,12 +1390,9 @@ def normalizer(
             _Normalizer.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1446,6 +1446,9 @@ def one_hot_encoder(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _OneHotEncoder(
             _OneHotEncoder.Attributes(
@@ -1456,12 +1459,9 @@ def one_hot_encoder(
             _OneHotEncoder.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1548,6 +1548,9 @@ def svmclassifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _SVMClassifier(
             _SVMClassifier.Attributes(
@@ -1574,12 +1577,9 @@ def svmclassifier(
             _SVMClassifier.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
 
@@ -1645,6 +1645,9 @@ def svmregressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _SVMRegressor(
             _SVMRegressor.Attributes(
@@ -1662,12 +1665,9 @@ def svmregressor(
             _SVMRegressor.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1711,6 +1711,9 @@ def scaler(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _Scaler(
             _Scaler.Attributes(
@@ -1720,12 +1723,9 @@ def scaler(
             _Scaler.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -1864,6 +1864,9 @@ def tree_ensemble_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _TreeEnsembleClassifier(
             _TreeEnsembleClassifier.Attributes(
@@ -1915,12 +1918,9 @@ def tree_ensemble_classifier(
             _TreeEnsembleClassifier.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
 
@@ -2057,6 +2057,9 @@ def tree_ensemble_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _TreeEnsembleRegressor(
             _TreeEnsembleRegressor.Attributes(
@@ -2108,12 +2111,9 @@ def tree_ensemble_regressor(
             _TreeEnsembleRegressor.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 
@@ -2158,6 +2158,9 @@ def zip_map(
     Type constraints:
      - T: `seq(map(int64,tensor(float)))`, `seq(map(string,tensor(float)))`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _ZipMap(
             _ZipMap.Attributes(
@@ -2171,12 +2174,9 @@ def zip_map(
             _ZipMap.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Z
     )
 

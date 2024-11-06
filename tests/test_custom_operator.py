@@ -69,7 +69,7 @@ class Inverse(Node):
 def inverse(matrix: Var) -> Var:
     return (
         Inverse(Inverse.Attributes(), Inverse.Inputs(matrix._var_info))
-        .get_output_vars(X=matrix._value)
+        .get_output_vars(input_prop_values={"X": matrix._value})
         .Y
     )
 

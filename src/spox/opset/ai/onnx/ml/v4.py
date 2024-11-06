@@ -191,6 +191,9 @@ def label_encoder(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
+    input_prop_values = {
+        "X": get_value(X),
+    }
     return (
         _LabelEncoder(
             _LabelEncoder.Attributes(
@@ -210,12 +213,9 @@ def label_encoder(
             _LabelEncoder.Inputs(
                 X=unwrap_vars(X),
             ),
+            input_prop_values=input_prop_values,
         )
-        .get_output_vars(
-            input_prop_values={
-                "X": get_value(X),
-            }
-        )
+        .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
 

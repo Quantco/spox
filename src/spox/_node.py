@@ -237,12 +237,10 @@ class Node(ABC):
                 # Attempt to use the ones from kwargs, if none then what type inference gave
                 var.type = out_types.get(key)
 
-    def get_output_vars(self, flatten_variadic=False, input_prop_values={}):
+    def get_output_vars(self, input_prop_values={}):
         # After typing everything, try to get values for outputs
         out_values = self.propagate_values(input_prop_values)
-        return self.outputs._propagate_vars(
-            out_values, flatten_variadic=flatten_variadic
-        )
+        return self.outputs._propagate_vars(out_values)
 
     def validate_types(self) -> None:
         """Validation of types, ran at the end of Node creation."""

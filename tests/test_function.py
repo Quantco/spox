@@ -70,7 +70,7 @@ def linear():
                 ),
                 LinearFunction.Inputs(x._var_info),
             )
-            .get_output_vars(X=x._value)
+            .get_output_vars(input_prop_values={"x": x._value})
             .Y
         )
 
