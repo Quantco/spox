@@ -744,8 +744,10 @@ def affine_grid(
             ),
         )
         .get_output_vars(
-            theta=get_value(theta),
-            size=get_value(size),
+            input_prop_values={
+                "theta": get_value(theta),
+                "size": get_value(size),
+            }
         )
         .grid
     )
@@ -798,7 +800,9 @@ def constant_of_shape(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
+            input_prop_values={
+                "input": get_value(input),
+            }
         )
         .output
     )
@@ -907,9 +911,11 @@ def dft(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
-            dft_length=get_value(dft_length),
-            axis=get_value(axis),
+            input_prop_values={
+                "input": get_value(input),
+                "dft_length": get_value(dft_length),
+                "axis": get_value(axis),
+            }
         )
         .output
     )
@@ -963,7 +969,9 @@ def gelu(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1084,8 +1092,10 @@ def grid_sample(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
-            grid=get_value(grid),
+            input_prop_values={
+                "X": get_value(X),
+                "grid": get_value(grid),
+            }
         )
         .Y
     )
@@ -1159,7 +1169,9 @@ def image_decoder(
             ),
         )
         .get_output_vars(
-            encoded_stream=get_value(encoded_stream),
+            input_prop_values={
+                "encoded_stream": get_value(encoded_stream),
+            }
         )
         .image
     )
@@ -1215,7 +1227,9 @@ def isinf(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1255,7 +1269,9 @@ def isnan(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1333,8 +1349,10 @@ def reduce_max(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -1411,8 +1429,10 @@ def reduce_min(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -1464,7 +1484,9 @@ def regex_full_match(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1509,8 +1531,10 @@ def string_concat(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
-            Y=get_value(Y),
+            input_prop_values={
+                "X": get_value(X),
+                "Y": get_value(Y),
+            }
         )
         .Z
     )
@@ -1596,7 +1620,9 @@ def string_split(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         ._unpack_to_any()
     )

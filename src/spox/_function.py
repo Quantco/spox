@@ -61,7 +61,7 @@ class Function(_InternalNode):
             f"Function {type(self).__name__} does not implement a constructor."
         )
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         from . import _graph
 
         func_args_var = _graph.arguments_dict(
@@ -81,7 +81,7 @@ class Function(_InternalNode):
         self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
         self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
         self.func_graph = _graph.results(
-            **self.func_outputs._propagate_vars(initializers).get_var_infos()
+            **self.func_outputs._propagate_vars(input_prop_values).get_var_infos()
         ).with_arguments(*func_args_var.values())
 
         return {

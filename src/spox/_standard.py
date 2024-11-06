@@ -143,13 +143,13 @@ class StandardNode(Node):
         )
         return model, scope
 
-    def infer_output_types_onnx(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types_onnx(self, input_prop_values={}) -> dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
         if any(var.type is None for var in self.inputs.get_var_infos().values()):
             return {}
 
-        model, _ = self.to_singleton_onnx_model(prop_values=initializers)
+        model, _ = self.to_singleton_onnx_model(prop_values=input_prop_values)
 
         # Attempt to do shape inference - if an error is caught, we extend the traceback a bit
         try:
@@ -173,14 +173,14 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
-    def propagate_values_onnx(self, initializers) -> dict[str, PropValueType]:
+    def propagate_values_onnx(self, input_prop_values) -> dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
         """
         # Cannot do propagation when some inputs were not propagated/inferred
         if any(
-            var_info.type is None or initializers.get(name, None) is None
+            var_info.type is None or input_prop_values.get(name, None) is None
             for name, var_info in self.inputs.get_var_infos().items()
         ):
             return {}
@@ -188,13 +188,13 @@ class StandardNode(Node):
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
         model, scope = self.to_singleton_onnx_model(
-            with_dummy_subgraphs=False, prop_values=initializers
+            with_dummy_subgraphs=False, prop_values=input_prop_values
         )
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
-            scope.var[var_info]: wrap_feed(initializers[name])
+            scope.var[var_info]: wrap_feed(input_prop_values[name])
             for name, var_info in self.inputs.get_var_infos().items()
-            if initializers[name]
+            if input_prop_values[name]
         }
 
         output_feed = run(model, input_feed)
@@ -207,12 +207,12 @@ class StandardNode(Node):
         }
         return {k: v for k, v in results.items() if k is not None}
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
-        return self.infer_output_types_onnx(initializers)
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+        return self.infer_output_types_onnx(input_prop_values)
 
-    def propagate_values(self, initializers) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
         if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
-            return self.propagate_values_onnx(initializers)
+            return self.propagate_values_onnx(input_prop_values)
         return {}
 
 

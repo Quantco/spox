@@ -436,7 +436,7 @@ class _Constant(StandardNode):
     class Outputs(BaseOutputs):
         output: VarInfo
 
-    def propagate_values(self, initializers) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
         )
@@ -975,7 +975,9 @@ def cast(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
+            input_prop_values={
+                "input": get_value(input),
+            }
         )
         .output
     )
@@ -1035,8 +1037,10 @@ def cast_like(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
-            target_type=get_value(target_type),
+            input_prop_values={
+                "input": get_value(input),
+                "target_type": get_value(target_type),
+            }
         )
         .output
     )
@@ -1110,7 +1114,7 @@ def constant(
             ),
             _Constant.Inputs(),
         )
-        .get_output_vars()
+        .get_output_vars(input_prop_values={})
         .output
     )
 
@@ -1162,7 +1166,9 @@ def constant_of_shape(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
+            input_prop_values={
+                "input": get_value(input),
+            }
         )
         .output
     )
@@ -1249,9 +1255,11 @@ def dequantize_linear(
             ),
         )
         .get_output_vars(
-            x=get_value(x),
-            x_scale=get_value(x_scale),
-            x_zero_point=get_value(x_zero_point),
+            input_prop_values={
+                "x": get_value(x),
+                "x_scale": get_value(x_scale),
+                "x_zero_point": get_value(x_zero_point),
+            }
         )
         .y
     )
@@ -1306,7 +1314,9 @@ def flatten(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
+            input_prop_values={
+                "input": get_value(input),
+            }
         )
         .output
     )
@@ -1405,9 +1415,11 @@ def group_normalization(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
-            scale=get_value(scale),
-            bias=get_value(bias),
+            input_prop_values={
+                "X": get_value(X),
+                "scale": get_value(scale),
+                "bias": get_value(bias),
+            }
         )
         .Y
     )
@@ -1446,7 +1458,9 @@ def identity(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
+            input_prop_values={
+                "input": get_value(input),
+            }
         )
         .output
     )
@@ -1518,7 +1532,9 @@ def if_(
             out_variadic=len(_else_branch_subgraph.requested_results),
         )
         .get_output_vars(
-            cond=get_value(cond),
+            input_prop_values={
+                "cond": get_value(cond),
+            }
         )
         .outputs
     )
@@ -1718,9 +1734,11 @@ def loop(
             out_variadic=len(_body_subgraph.requested_results) - 1,
         )
         .get_output_vars(
-            M=get_value(M),
-            cond=get_value(cond),
-            v_initial=get_value(v_initial),
+            input_prop_values={
+                "M": get_value(M),
+                "cond": get_value(cond),
+                "v_initial": get_value(v_initial),
+            }
         )
         .v_final_and_scan_outputs
     )
@@ -1899,10 +1917,12 @@ def pad(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            pads=get_value(pads),
-            constant_value=get_value(constant_value),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "pads": get_value(pads),
+                "constant_value": get_value(constant_value),
+                "axes": get_value(axes),
+            }
         )
         .output
     )
@@ -1996,14 +2016,16 @@ def qlinear_matmul(
             ),
         )
         .get_output_vars(
-            a=get_value(a),
-            a_scale=get_value(a_scale),
-            a_zero_point=get_value(a_zero_point),
-            b=get_value(b),
-            b_scale=get_value(b_scale),
-            b_zero_point=get_value(b_zero_point),
-            y_scale=get_value(y_scale),
-            y_zero_point=get_value(y_zero_point),
+            input_prop_values={
+                "a": get_value(a),
+                "a_scale": get_value(a_scale),
+                "a_zero_point": get_value(a_zero_point),
+                "b": get_value(b),
+                "b_scale": get_value(b_scale),
+                "b_zero_point": get_value(b_zero_point),
+                "y_scale": get_value(y_scale),
+                "y_zero_point": get_value(y_zero_point),
+            }
         )
         .y
     )
@@ -2129,9 +2151,11 @@ def quantize_linear(
             ),
         )
         .get_output_vars(
-            x=get_value(x),
-            y_scale=get_value(y_scale),
-            y_zero_point=get_value(y_zero_point),
+            input_prop_values={
+                "x": get_value(x),
+                "y_scale": get_value(y_scale),
+                "y_zero_point": get_value(y_zero_point),
+            }
         )
         .y
     )
@@ -2199,8 +2223,10 @@ def reshape(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            shape=get_value(shape),
+            input_prop_values={
+                "data": get_value(data),
+                "shape": get_value(shape),
+            }
         )
         .reshaped
     )
@@ -2453,7 +2479,11 @@ def scan(
             out_variadic=len(_body_subgraph.requested_results),
         )
         .get_output_vars(
-            initial_state_and_scan_inputs=get_value(initial_state_and_scan_inputs),
+            input_prop_values={
+                "initial_state_and_scan_inputs": get_value(
+                    initial_state_and_scan_inputs
+                ),
+            }
         )
         .final_state_and_scan_outputs
     )
@@ -2546,7 +2576,9 @@ def shape(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
+            input_prop_values={
+                "data": get_value(data),
+            }
         )
         .shape
     )
@@ -2587,7 +2619,9 @@ def size(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
+            input_prop_values={
+                "data": get_value(data),
+            }
         )
         .size
     )
@@ -2637,8 +2671,10 @@ def squeeze(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .squeezed
     )
@@ -2688,7 +2724,9 @@ def transpose(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
+            input_prop_values={
+                "data": get_value(data),
+            }
         )
         .transposed
     )
@@ -2748,8 +2786,10 @@ def unsqueeze(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .expanded
     )

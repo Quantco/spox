@@ -119,7 +119,7 @@ def linear2(linear):
                 ),
                 LinearFunction2.Inputs(x._var_info),
             )
-            .get_output_vars(X=x._value)
+            .get_output_vars({"X": x._value})
             .Y
         )
 

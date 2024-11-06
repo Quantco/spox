@@ -95,7 +95,7 @@ class Node(ABC):
         out_variadic: Optional[int] = None,
         infer_types: bool = True,
         validate: bool = True,
-        initializers={},
+        input_prop_values={},
         **kwargs,
     ):
         """
@@ -127,7 +127,7 @@ class Node(ABC):
             # As inference functions may access which output vars we initialized (e.g. variadics)
             # we inject uninitialized vars first
             self.outputs = self._init_output_vars()
-            self.inference(infer_types, initializers)
+            self.inference(infer_types, input_prop_values)
         else:
             self.outputs = outputs
 
@@ -207,7 +207,7 @@ class Node(ABC):
     def post_init(self, **kwargs):
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
-    def propagate_values(self, initializers) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
         """
         Propagate values from inputs, and, if possible, compute values for outputs as well.
         This method is used to implement ONNX partial data propagation - for example so that
@@ -215,7 +215,7 @@ class Node(ABC):
         """
         return {}
 
-    def infer_output_types(self, initializers) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values) -> dict[str, Type]:
         """
         Inference routine for output types. Often overriden by inheriting Node types.
 
@@ -223,11 +223,13 @@ class Node(ABC):
         """
         return {}
 
-    def inference(self, infer_types: bool = True, initializers={}):
+    def inference(self, infer_types: bool = True, input_prop_values={}):
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
         out_types = (
-            self.infer_output_types(initializers=initializers) if infer_types else {}
+            self.infer_output_types(input_prop_values=input_prop_values)
+            if infer_types
+            else {}
         )
 
         for key, var in self.outputs.get_var_infos().items():
@@ -235,9 +237,9 @@ class Node(ABC):
                 # Attempt to use the ones from kwargs, if none then what type inference gave
                 var.type = out_types.get(key)
 
-    def get_output_vars(self, flatten_variadic=False, **initializers):
+    def get_output_vars(self, flatten_variadic=False, input_prop_values={}):
         # After typing everything, try to get values for outputs
-        out_values = self.propagate_values(initializers)
+        out_values = self.propagate_values(input_prop_values)
         return self.outputs._propagate_vars(
             out_values, flatten_variadic=flatten_variadic
         )

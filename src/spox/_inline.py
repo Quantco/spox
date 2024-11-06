@@ -111,7 +111,7 @@ class _Inline(_InternalNode):
             ("", INTERNAL_MIN_OPSET)
         }
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
         for i, var in zip(self.graph.input, self.inputs.inputs):
             if var.type is not None and not (
@@ -127,15 +127,18 @@ class _Inline(_InternalNode):
             for k, o in enumerate(self.graph.output)
         }
 
-    def propagate_values(self, initializers) -> dict[str, _value_prop.PropValueType]:
+    def propagate_values(
+        self, input_prop_values={}
+    ) -> dict[str, _value_prop.PropValueType]:
         if any(
-            var_info.type is None or initializers.get(var_info.name) is None
+            var_info.type is None or input_prop_values.get(var_info.name) is None
             for var_info in self.model.graph.input
         ):
             return {}
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
-            i.name: wrap_feed(initializers.get(i.name)) for i in self.model.graph.input
+            i.name: wrap_feed(input_prop_values.get(i.name))
+            for i in self.model.graph.input
         }
         output_feed = run(self.model, input_feed)
         return {

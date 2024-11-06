@@ -943,8 +943,10 @@ def bitwise_and(
             ),
         )
         .get_output_vars(
-            A=get_value(A),
-            B=get_value(B),
+            input_prop_values={
+                "A": get_value(A),
+                "B": get_value(B),
+            }
         )
         .C
     )
@@ -983,7 +985,9 @@ def bitwise_not(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1033,8 +1037,10 @@ def bitwise_or(
             ),
         )
         .get_output_vars(
-            A=get_value(A),
-            B=get_value(B),
+            input_prop_values={
+                "A": get_value(A),
+                "B": get_value(B),
+            }
         )
         .C
     )
@@ -1084,8 +1090,10 @@ def bitwise_xor(
             ),
         )
         .get_output_vars(
-            A=get_value(A),
-            B=get_value(B),
+            input_prop_values={
+                "A": get_value(A),
+                "B": get_value(B),
+            }
         )
         .C
     )
@@ -1149,8 +1157,10 @@ def center_crop_pad(
             ),
         )
         .get_output_vars(
-            input_data=get_value(input_data),
-            shape=get_value(shape),
+            input_prop_values={
+                "input_data": get_value(input_data),
+                "shape": get_value(shape),
+            }
         )
         .output_data
     )
@@ -1250,9 +1260,11 @@ def col2_im(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
-            image_shape=get_value(image_shape),
-            block_shape=get_value(block_shape),
+            input_prop_values={
+                "input": get_value(input),
+                "image_shape": get_value(image_shape),
+                "block_shape": get_value(block_shape),
+            }
         )
         .output
     )
@@ -1336,9 +1348,11 @@ def group_normalization(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
-            scale=get_value(scale),
-            bias=get_value(bias),
+            input_prop_values={
+                "X": get_value(X),
+                "scale": get_value(scale),
+                "bias": get_value(bias),
+            }
         )
         .Y
     )
@@ -1468,7 +1482,9 @@ def lp_pool(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1514,7 +1530,9 @@ def mish(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1557,7 +1575,9 @@ def optional_get_element(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
+            input_prop_values={
+                "input": get_value(input),
+            }
         )
         .output
     )
@@ -1600,7 +1620,9 @@ def optional_has_element(
             ),
         )
         .get_output_vars(
-            input=get_value(input),
+            input_prop_values={
+                "input": get_value(input),
+            }
         )
         .output
     )
@@ -1753,10 +1775,12 @@ def pad(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            pads=get_value(pads),
-            constant_value=get_value(constant_value),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "pads": get_value(pads),
+                "constant_value": get_value(constant_value),
+                "axes": get_value(axes),
+            }
         )
         .output
     )
@@ -1829,8 +1853,10 @@ def reduce_l1(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -1903,8 +1929,10 @@ def reduce_l2(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -1978,8 +2006,10 @@ def reduce_log_sum(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -2053,8 +2083,10 @@ def reduce_log_sum_exp(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -2129,8 +2161,10 @@ def reduce_max(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -2203,8 +2237,10 @@ def reduce_mean(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -2278,8 +2314,10 @@ def reduce_min(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -2352,8 +2390,10 @@ def reduce_prod(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -2426,8 +2466,10 @@ def reduce_sum_square(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            axes=get_value(axes),
+            input_prop_values={
+                "data": get_value(data),
+                "axes": get_value(axes),
+            }
         )
         .reduced
     )
@@ -2631,10 +2673,12 @@ def resize(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
-            roi=get_value(roi),
-            scales=get_value(scales),
-            sizes=get_value(sizes),
+            input_prop_values={
+                "X": get_value(X),
+                "roi": get_value(roi),
+                "scales": get_value(scales),
+                "sizes": get_value(sizes),
+            }
         )
         .Y
     )
@@ -2776,9 +2820,11 @@ def scatter_elements(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            indices=get_value(indices),
-            updates=get_value(updates),
+            input_prop_values={
+                "data": get_value(data),
+                "indices": get_value(indices),
+                "updates": get_value(updates),
+            }
         )
         .output
     )
@@ -2921,9 +2967,11 @@ def scatter_nd(
             ),
         )
         .get_output_vars(
-            data=get_value(data),
-            indices=get_value(indices),
-            updates=get_value(updates),
+            input_prop_values={
+                "data": get_value(data),
+                "indices": get_value(indices),
+                "updates": get_value(updates),
+            }
         )
         .output
     )
@@ -2989,8 +3037,10 @@ def split(
             out_variadic=num_outputs,
         )
         .get_output_vars(
-            input=get_value(input),
-            split=get_value(split),
+            input_prop_values={
+                "input": get_value(input),
+                "split": get_value(split),
+            }
         )
         .outputs
     )

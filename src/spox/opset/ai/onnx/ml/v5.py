@@ -260,7 +260,9 @@ def tree_ensemble(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )

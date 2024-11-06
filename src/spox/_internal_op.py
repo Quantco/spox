@@ -88,7 +88,7 @@ class Argument(_InternalNode):
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         return {"arg": self.attrs.type.value}
 
@@ -121,12 +121,12 @@ class _Initializer(_InternalNode):
     inputs: BaseInputs
     outputs: Outputs
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         arr = self.attrs.value.value
         return {"arg": Tensor(arr.dtype, arr.shape)}
 
-    def propagate_values(self, initializers) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
         return {"arg": self.attrs.value.value}
 
     def update_metadata(self, opset_req, initializers, functions):
@@ -161,7 +161,7 @@ class _Introduce(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         return {
             f"outputs_{i}": arr.type
             for i, arr in enumerate(self.inputs.inputs)

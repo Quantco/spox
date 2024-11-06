@@ -40,7 +40,7 @@ class _ArrayFeatureExtractor(StandardNode):
     class Outputs(BaseOutputs):
         Z: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
@@ -75,7 +75,7 @@ class _Binarizer(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
@@ -123,7 +123,7 @@ class _CategoryMapper(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
@@ -199,7 +199,7 @@ class _Imputer(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         t = self.inputs.X.unwrap_tensor()
@@ -311,7 +311,7 @@ class _LinearRegressor(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         sim = self.inputs.X.unwrap_tensor().shape
@@ -345,7 +345,7 @@ class _Normalizer(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if self.attrs.norm.value not in ("MAX", "L1", "L2"):
             raise InferenceError(
                 f"Unknown normalisation method `{self.attrs.norm.value}`"
@@ -374,7 +374,7 @@ class _OneHotEncoder(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         if self.attrs.cats_int64s:
@@ -467,7 +467,7 @@ class _Scaler(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if self.inputs.X.type is None:
             return {}
         sc, off = self.attrs.scale, self.attrs.offset
@@ -527,7 +527,7 @@ class _TreeEnsembleClassifier(StandardNode):
         Y: VarInfo
         Z: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         e = (
             len(self.attrs.class_ids.value)
             if self.attrs.class_ids is not None
@@ -591,7 +591,7 @@ class _TreeEnsembleRegressor(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, initializers={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
         if self.inputs.fully_typed:
             shape = self.inputs.X.unwrap_tensor().shape
             assert shape is not None  # already checked with fully_typed
@@ -671,8 +671,10 @@ def array_feature_extractor(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
-            Y=get_value(Y),
+            input_prop_values={
+                "X": get_value(X),
+                "Y": get_value(Y),
+            }
         )
         .Z
     )
@@ -719,7 +721,9 @@ def binarizer(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -784,7 +788,9 @@ def cast_map(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -858,7 +864,9 @@ def category_mapper(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -929,7 +937,9 @@ def dict_vectorizer(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -981,7 +991,9 @@ def feature_vectorizer(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1063,7 +1075,9 @@ def imputer(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1167,7 +1181,9 @@ def label_encoder(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1249,7 +1265,9 @@ def linear_classifier(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         ._unpack_to_any()
     )
@@ -1317,7 +1335,9 @@ def linear_regressor(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1369,7 +1389,9 @@ def normalizer(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1436,7 +1458,9 @@ def one_hot_encoder(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1552,7 +1576,9 @@ def svmclassifier(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         ._unpack_to_any()
     )
@@ -1638,7 +1664,9 @@ def svmregressor(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1694,7 +1722,9 @@ def scaler(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -1887,7 +1917,9 @@ def tree_ensemble_classifier(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         ._unpack_to_any()
     )
@@ -2078,7 +2110,9 @@ def tree_ensemble_regressor(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Y
     )
@@ -2139,7 +2173,9 @@ def zip_map(
             ),
         )
         .get_output_vars(
-            X=get_value(X),
+            input_prop_values={
+                "X": get_value(X),
+            }
         )
         .Z
     )
