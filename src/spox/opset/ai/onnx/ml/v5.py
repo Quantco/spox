@@ -4,9 +4,7 @@
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
+from typing import Optional
 
 import numpy as np
 
@@ -18,6 +16,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
+from spox._type_system import PropDict
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.ml.v4 import (
     _ArrayFeatureExtractor,
@@ -224,7 +223,7 @@ def tree_ensemble(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (

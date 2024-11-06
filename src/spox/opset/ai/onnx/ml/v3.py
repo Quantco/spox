@@ -4,9 +4,7 @@
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
+from typing import Optional
 
 import numpy as np
 
@@ -22,7 +20,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import InferenceError, StandardNode
-from spox._type_system import Tensor, Type
+from spox._type_system import PropDict, Tensor, Type
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 
 
@@ -662,7 +660,7 @@ def array_feature_extractor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
         "Y": get_value(Y),
     }
@@ -711,7 +709,7 @@ def binarizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -776,7 +774,7 @@ def cast_map(
      - T1: `map(int64,tensor(float))`, `map(int64,tensor(string))`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -851,7 +849,7 @@ def category_mapper(
      - T1: `tensor(int64)`, `tensor(string)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -922,7 +920,7 @@ def dict_vectorizer(
      - T1: `map(int64,tensor(double))`, `map(int64,tensor(float))`, `map(int64,tensor(string))`, `map(string,tensor(double))`, `map(string,tensor(float))`, `map(string,tensor(int64))`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -979,7 +977,7 @@ def feature_vectorizer(
     Type constraints:
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1054,7 +1052,7 @@ def imputer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1163,7 +1161,7 @@ def label_encoder(
      - T1: `tensor(float)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1246,7 +1244,7 @@ def linear_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1322,7 +1320,7 @@ def linear_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1379,7 +1377,7 @@ def normalizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1446,7 +1444,7 @@ def one_hot_encoder(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1548,7 +1546,7 @@ def svmclassifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1645,7 +1643,7 @@ def svmregressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1711,7 +1709,7 @@ def scaler(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1864,7 +1862,7 @@ def tree_ensemble_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -2057,7 +2055,7 @@ def tree_ensemble_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -2158,7 +2156,7 @@ def zip_map(
     Type constraints:
      - T: `seq(map(int64,tensor(float)))`, `seq(map(string,tensor(float)))`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (

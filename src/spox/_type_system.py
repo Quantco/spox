@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 import numpy.typing as npt
@@ -13,6 +13,9 @@ from ._utils import dtype_to_tensor_type, tensor_type_to_dtype
 
 T = TypeVar("T")
 S = TypeVar("S")
+
+# TODO: Fix typing
+PropDict = dict[str, Any]
 
 
 @dataclass(frozen=True)

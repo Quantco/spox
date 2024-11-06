@@ -18,8 +18,7 @@ from ._attributes import AttrGraph
 from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
 from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
-from ._type_system import Type
-from ._value_prop import PropValueType
+from ._type_system import PropDict, Type
 from ._var import VarInfo
 
 if typing.TYPE_CHECKING:
@@ -95,7 +94,7 @@ class Node(ABC):
         out_variadic: Optional[int] = None,
         infer_types: bool = True,
         validate: bool = True,
-        input_prop_values={},
+        input_prop_values: PropDict = {},
         **kwargs,
     ):
         """
@@ -207,7 +206,7 @@ class Node(ABC):
     def post_init(self, **kwargs):
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
-    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> PropDict:
         """
         Propagate values from inputs, and, if possible, compute values for outputs as well.
         This method is used to implement ONNX partial data propagation - for example so that

@@ -3,9 +3,7 @@
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
+from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -18,6 +16,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
+from spox._type_system import PropDict
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v19 import (
     _GRU,
@@ -733,7 +732,7 @@ def affine_grid(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "theta": get_value(theta),
         "size": get_value(size),
     }
@@ -790,7 +789,7 @@ def constant_of_shape(
      - T1: `tensor(int64)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "input": get_value(input),
     }
     return (
@@ -898,7 +897,7 @@ def dft(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "input": get_value(input),
         "dft_length": get_value(dft_length),
         "axis": get_value(axis),
@@ -959,7 +958,7 @@ def gelu(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1079,7 +1078,7 @@ def grid_sample(
      - T1: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
         "grid": get_value(grid),
     }
@@ -1159,7 +1158,7 @@ def image_decoder(
      - T1: `tensor(uint8)`
      - T2: `tensor(uint8)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "encoded_stream": get_value(encoded_stream),
     }
     return (
@@ -1216,7 +1215,7 @@ def isinf(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`
      - T2: `tensor(bool)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1261,7 +1260,7 @@ def isnan(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`
      - T2: `tensor(bool)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1335,7 +1334,7 @@ def reduce_max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "data": get_value(data),
         "axes": get_value(axes),
     }
@@ -1415,7 +1414,7 @@ def reduce_min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "data": get_value(data),
         "axes": get_value(axes),
     }
@@ -1474,7 +1473,7 @@ def regex_full_match(
      - T1: `tensor(string)`
      - T2: `tensor(bool)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (
@@ -1522,7 +1521,7 @@ def string_concat(
     Type constraints:
      - T: `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
         "Y": get_value(Y),
     }
@@ -1609,7 +1608,7 @@ def string_split(
      - T2: `tensor(string)`
      - T3: `tensor(int64)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (

@@ -14,7 +14,7 @@ _{{ attr.name }}_subgraph: Graph = subgraph(
 )
     {% endif %}
 {% endfor %}
-input_prop_values = {
+input_prop_values:PropDict = {
 {% for param in schema.inputs
         %}"{{param.name}}":get_value({{param.name}}), {%
 endfor %}

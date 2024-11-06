@@ -4,9 +4,7 @@
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
+from typing import Optional
 
 import numpy as np
 
@@ -22,6 +20,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
+from spox._type_system import PropDict
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.ml.v3 import (
     _ArrayFeatureExtractor,
@@ -191,7 +190,7 @@ def label_encoder(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values = {
+    input_prop_values: PropDict = {
         "X": get_value(X),
     }
     return (

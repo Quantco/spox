@@ -17,7 +17,7 @@ from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._shape import SimpleShape
-from ._type_system import Optional, Sequence, Tensor, Type
+from ._type_system import Optional, PropDict, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValue, PropValueType
 
@@ -54,7 +54,7 @@ class StandardNode(Node):
         *,
         dummy_outputs: bool = True,
         with_dummy_subgraphs: bool = True,
-        prop_values={},
+        input_prop_values: PropDict = {},
     ) -> tuple[onnx.ModelProto, Scope]:
         """
         Build a singleton model consisting of just this StandardNode. Used for type inference.
@@ -107,7 +107,7 @@ class StandardNode(Node):
         # TODO: fix this
         initializers_from_array = [
             from_array(prop.value, name)  # type: ignore
-            for name, prop in prop_values.items()
+            for name, prop in input_prop_values.items()
             if isinstance(prop, PropValue)
             and prop.value is not None
             and not isinstance(prop.type, Sequence)
@@ -115,7 +115,7 @@ class StandardNode(Node):
 
         initializers_from_sequence = [
             from_array(prop.value, f"{name}_{i}")  # type: ignore
-            for name, prop_list in prop_values.items()
+            for name, prop_list in input_prop_values.items()
             if isinstance(prop_list, list)
             for i, prop in enumerate(prop_list)
             if prop is not None and not isinstance(prop.value, Iterable)
@@ -149,7 +149,7 @@ class StandardNode(Node):
         if any(var.type is None for var in self.inputs.get_var_infos().values()):
             return {}
 
-        model, _ = self.to_singleton_onnx_model(prop_values=input_prop_values)
+        model, _ = self.to_singleton_onnx_model(input_prop_values=input_prop_values)
 
         # Attempt to do shape inference - if an error is caught, we extend the traceback a bit
         try:
@@ -173,7 +173,9 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
-    def propagate_values_onnx(self, input_prop_values) -> dict[str, PropValueType]:
+    def propagate_values_onnx(
+        self, input_prop_values: PropDict
+    ) -> dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
@@ -188,7 +190,7 @@ class StandardNode(Node):
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
         model, scope = self.to_singleton_onnx_model(
-            with_dummy_subgraphs=False, prop_values=input_prop_values
+            with_dummy_subgraphs=False, input_prop_values=input_prop_values
         )
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
