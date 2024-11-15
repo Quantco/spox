@@ -42,7 +42,6 @@ endfor %}
 if schema.outputs and is_variadic(schema.outputs[-1])
     %}out_variadic={{ out_variadic_solution if out_variadic_solution else "{}_count".format(schema.outputs[-1].name) }}, {%
 endif %}
-    input_prop_values=input_prop_values
     ).get_output_vars(input_prop_values=input_prop_values){%
 if schema.outputs | length <= 1
     %}.{{ schema.outputs[0].name }}{%

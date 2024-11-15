@@ -44,7 +44,7 @@ def linear():
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: dict[str, Attr], inputs: Inputs.Vars) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
             # FIXME: At some point, attribute references should be properly type-hinted.
             a = op.constant(
                 value_float=_Ref(

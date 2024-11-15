@@ -670,8 +670,7 @@ def array_feature_extractor(
             _ArrayFeatureExtractor.Inputs(
                 X=unwrap_vars(X),
                 Y=unwrap_vars(Y),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
@@ -719,8 +718,7 @@ def binarizer(
             ),
             _Binarizer.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -786,8 +784,7 @@ def cast_map(
             ),
             _CastMap.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -862,8 +859,7 @@ def category_mapper(
             ),
             _CategoryMapper.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -935,8 +931,7 @@ def dict_vectorizer(
             ),
             _DictVectorizer.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -989,8 +984,7 @@ def feature_vectorizer(
             ),
             _FeatureVectorizer.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1073,8 +1067,7 @@ def imputer(
             ),
             _Imputer.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1179,8 +1172,7 @@ def label_encoder(
             ),
             _LabelEncoder.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1263,8 +1255,7 @@ def linear_classifier(
             ),
             _LinearClassifier.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
@@ -1333,8 +1324,7 @@ def linear_regressor(
             ),
             _LinearRegressor.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1387,8 +1377,7 @@ def normalizer(
             ),
             _Normalizer.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1456,8 +1445,7 @@ def one_hot_encoder(
             ),
             _OneHotEncoder.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1574,8 +1562,7 @@ def svmclassifier(
             ),
             _SVMClassifier.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
@@ -1662,8 +1649,7 @@ def svmregressor(
             ),
             _SVMRegressor.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1720,8 +1706,7 @@ def scaler(
             ),
             _Scaler.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1915,8 +1900,7 @@ def tree_ensemble_classifier(
             ),
             _TreeEnsembleClassifier.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
@@ -2108,8 +2092,7 @@ def tree_ensemble_regressor(
             ),
             _TreeEnsembleRegressor.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -2171,8 +2154,7 @@ def zip_map(
             ),
             _ZipMap.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Z

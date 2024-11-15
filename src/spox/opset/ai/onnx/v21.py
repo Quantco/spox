@@ -877,26 +877,26 @@ def cast(
     In more detail, the conversion among numerical types should follow these
     rules if the destination type is not a float 8 type.
 
-    - Casting from floating point to:
+    -  Casting from floating point to:
 
-      - floating point: +/- infinity if OOR (out of range).
-      - fixed point: undefined if OOR.
-      - bool: +/- 0.0 to False; all else to True.
+       -  floating point: +/- infinity if OOR (out of range).
+       -  fixed point: undefined if OOR.
+       -  bool: +/- 0.0 to False; all else to True.
 
-    - Casting from fixed point to:
+    -  Casting from fixed point to:
 
-      - floating point: +/- infinity if OOR. (+ infinity in the case of
-        uint)
-      - fixed point: when OOR, discard higher bits and reinterpret (with
-        respect to two's complement representation for signed types). For
-        example, 200 (int16) -> -56 (int8).
-      - bool: zero to False; nonzero to True.
+       -  floating point: +/- infinity if OOR. (+ infinity in the case of
+          uint)
+       -  fixed point: when OOR, discard higher bits and reinterpret (with
+          respect to two's complement representation for signed types). For
+          example, 200 (int16) -> -56 (int8).
+       -  bool: zero to False; nonzero to True.
 
-    - Casting from bool to:
+    -  Casting from bool to:
 
-      - floating point: ``{1.0, 0.0}``.
-      - fixed point: ``{1, 0}``.
-      - bool: no change.
+       -  floating point: ``{1.0, 0.0}``.
+       -  fixed point: ``{1, 0}``.
+       -  bool: no change.
 
     Float 8 type were introduced to speed up the training of deep models. By
     default the conversion of a float *x* obeys to the following rules.
@@ -972,8 +972,7 @@ def cast(
             ),
             _Cast.Inputs(
                 input=unwrap_vars(input),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1035,8 +1034,7 @@ def cast_like(
             _CastLike.Inputs(
                 input=unwrap_vars(input),
                 target_type=unwrap_vars(target_type),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1110,8 +1108,7 @@ def constant(
                 value_string=AttrString.maybe(value_string, name="value_string"),
                 value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
             ),
-            _Constant.Inputs(),
-            input_prop_values=input_prop_values,
+            _Constant.Inputs(),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1165,8 +1162,7 @@ def constant_of_shape(
             ),
             _ConstantOfShape.Inputs(
                 input=unwrap_vars(input),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1256,8 +1252,7 @@ def dequantize_linear(
                 x=unwrap_vars(x),
                 x_scale=unwrap_vars(x_scale),
                 x_zero_point=unwrap_vars(x_zero_point),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .y
@@ -1313,8 +1308,7 @@ def flatten(
             ),
             _Flatten.Inputs(
                 input=unwrap_vars(input),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1416,8 +1410,7 @@ def group_normalization(
                 X=unwrap_vars(X),
                 scale=unwrap_vars(scale),
                 bias=unwrap_vars(bias),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1457,8 +1450,7 @@ def identity(
             _Identity.Attributes(),
             _Identity.Inputs(
                 input=unwrap_vars(input),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1531,8 +1523,9 @@ def if_(
             _If.Inputs(
                 cond=unwrap_vars(cond),
             ),
-            out_variadic=len(_else_branch_subgraph.requested_results),
-            input_prop_values=input_prop_values,
+            out_variadic=len(
+                _else_branch_subgraph.requested_results
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs
@@ -1564,21 +1557,21 @@ def loop(
 
     Operator inputs defined as (max_trip_count, condition_var).
 
-    - input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
-      is ignored, but is required in the body }
+    -  input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
+       is ignored, but is required in the body }
 
-    - input ("", cond) // Note this is analogous to a while loop bool cond =
-      ...; for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", cond) // Note this is analogous to a while loop bool cond
+       = ...; for (int i=0; cond; ++i) { cond = ...; }
 
-    - input ("", 1) // Note this is analogous to a do-while loop bool cond =
-      true for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", 1) // Note this is analogous to a do-while loop bool cond
+       = true for (int i=0; cond; ++i) { cond = ...; }
 
-    - input (trip_count, "") // Note this is analogous to a for loop int
-      trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
-      ignored }
+    -  input (trip_count, "") // Note this is analogous to a for loop int
+       trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
+       ignored }
 
-    - input (trip_count, cond) int trip_count = ...; bool cond = ...; for
-      (int i=0; i < trip_count && cond; ++i) { cond = ...; }
+    -  input (trip_count, cond) int trip_count = ...; bool cond = ...; for
+       (int i=0; i < trip_count && cond; ++i) { cond = ...; }
 
     *Sample usage - cond as well as trip count*
 
@@ -1735,8 +1728,7 @@ def loop(
                 cond=unwrap_vars(cond),
                 v_initial=unwrap_vars(v_initial),
             ),
-            out_variadic=len(_body_subgraph.requested_results) - 1,
-            input_prop_values=input_prop_values,
+            out_variadic=len(_body_subgraph.requested_results) - 1,  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .v_final_and_scan_outputs
@@ -1919,8 +1911,7 @@ def pad(
                 pads=unwrap_vars(pads),
                 constant_value=unwrap_vars(constant_value),
                 axes=unwrap_vars(axes),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1938,8 +1929,8 @@ def qlinear_matmul(
     y_zero_point: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like
-    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
+    Matrix product that behaves like numpy.matmul:
+    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
     It consumes two quantized input tensors, their scales and zero points,
     scale and zero point of output, and computes the quantized output. The
     quantization formula is y = saturate((x / y_scale) + y_zero_point). For
@@ -2022,8 +2013,7 @@ def qlinear_matmul(
                 b_zero_point=unwrap_vars(b_zero_point),
                 y_scale=unwrap_vars(y_scale),
                 y_zero_point=unwrap_vars(y_zero_point),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .y
@@ -2049,12 +2039,12 @@ def quantize_linear(
 
     Saturation is done according to:
 
-    - uint16: [0, 65535]
-    - int16: [-32768, 32767]
-    - uint8: [0, 255]
-    - int8: [-128, 127]
-    - uint4: [0, 15]
-    - int4: [-8, 7]
+    -  uint16: [0, 65535]
+    -  int16: [-32768, 32767]
+    -  uint8: [0, 255]
+    -  int8: [-128, 127]
+    -  uint4: [0, 15]
+    -  int4: [-8, 7]
 
     For ``(x / y_scale)``, it rounds to the nearest even. Refer to
     https://en.wikipedia.org/wiki/Rounding for details.
@@ -2068,15 +2058,15 @@ def quantize_linear(
     shape of ``y_scale``. In all cases, ``y_zero_point`` must have the same
     shape as ``y_scale``.
 
-    - Per-tensor (per-layer) quantization: ``y_scale`` is a scalar.
-    - Per-axis quantization: The scale must be a 1-D tensor, with the length
-      of the quantization axis. For an input shape
-      ``(D0, ..., Di, ..., Dn)`` and ``axis=i``, ``y_scale`` is a 1-D tensor
-      of length ``Di``.
-    - Blocked quantization: The scale's shape is identical to the input's
-      shape, except for one dimension, in which blocking is performed. Given
-      ``x`` shape ``(D0, ..., Di, ..., Dn)``, ``axis=i``, and block size
-      ``B``: ``y_scale`` shape is ``(D0, ..., ceil(Di/B), ..., Dn)``.
+    -  Per-tensor (per-layer) quantization: ``y_scale`` is a scalar.
+    -  Per-axis quantization: The scale must be a 1-D tensor, with the
+       length of the quantization axis. For an input shape
+       ``(D0, ..., Di, ..., Dn)`` and ``axis=i``, ``y_scale`` is a 1-D
+       tensor of length ``Di``.
+    -  Blocked quantization: The scale's shape is identical to the input's
+       shape, except for one dimension, in which blocking is performed.
+       Given ``x`` shape ``(D0, ..., Di, ..., Dn)``, ``axis=i``, and block
+       size ``B``: ``y_scale`` shape is ``(D0, ..., ceil(Di/B), ..., Dn)``.
 
     Parameters
     ==========
@@ -2096,11 +2086,9 @@ def quantize_linear(
     axis
         Attribute.
         (Optional) The axis of the dequantizing dimension of the input tensor.
-        Used only for per-axis and blocked quantization. Negative value means
+        Used for per-axis and blocked quantization. Negative value means
         counting dimensions from the back. Accepted range is ``[-r, r-1]`` where
-        ``r = rank(input)``. When the rank of the input is 1, per-tensor
-        quantization is applied, rendering the axis unnecessary in this
-        scenario.
+        ``r = rank(input)``.
     block_size
         Attribute.
         (Optional) The size of the quantization block (number of times every
@@ -2154,8 +2142,7 @@ def quantize_linear(
                 x=unwrap_vars(x),
                 y_scale=unwrap_vars(y_scale),
                 y_zero_point=unwrap_vars(y_zero_point),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .y
@@ -2225,8 +2212,7 @@ def reshape(
             _Reshape.Inputs(
                 data=unwrap_vars(data),
                 shape=unwrap_vars(shape),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reshaped
@@ -2480,8 +2466,7 @@ def scan(
                     initial_state_and_scan_inputs
                 ),
             ),
-            out_variadic=len(_body_subgraph.requested_results),
-            input_prop_values=input_prop_values,
+            out_variadic=len(_body_subgraph.requested_results),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .final_state_and_scan_outputs
@@ -2575,8 +2560,7 @@ def shape(
             ),
             _Shape.Inputs(
                 data=unwrap_vars(data),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .shape
@@ -2618,8 +2602,7 @@ def size(
             _Size.Attributes(),
             _Size.Inputs(
                 data=unwrap_vars(data),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .size
@@ -2671,8 +2654,7 @@ def squeeze(
             _Squeeze.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .squeezed
@@ -2723,8 +2705,7 @@ def transpose(
             ),
             _Transpose.Inputs(
                 data=unwrap_vars(data),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .transposed
@@ -2786,8 +2767,7 @@ def unsqueeze(
             _Unsqueeze.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .expanded

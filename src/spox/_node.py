@@ -126,7 +126,7 @@ class Node(ABC):
             # As inference functions may access which output vars we initialized (e.g. variadics)
             # we inject uninitialized vars first
             self.outputs = self._init_output_vars()
-            self.inference(infer_types, input_prop_values)
+            self.inference(infer_types=infer_types, input_prop_values={})
         else:
             self.outputs = outputs
 
@@ -222,7 +222,11 @@ class Node(ABC):
         """
         return {}
 
-    def inference(self, infer_types: bool = True, input_prop_values={}):
+    def inference(
+        self, input_prop_values: Optional[PropDict] = None, infer_types: bool = True
+    ):
+        if input_prop_values is None:
+            input_prop_values = {}
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
         out_types = (
@@ -232,12 +236,19 @@ class Node(ABC):
         )
 
         for key, var in self.outputs.get_var_infos().items():
-            if var.type is None:  # If no existing type from init_output_vars
-                # Attempt to use the ones from kwargs, if none then what type inference gave
+            typ = out_types.get(key)
+            if var.type is None or (typ is not None and typ._subtype(var.type)):
+                # If there is no type, or the infered type is a subtype
+                # we use the new type
                 var.type = out_types.get(key)
 
-    def get_output_vars(self, input_prop_values={}):
+    def get_output_vars(
+        self, input_prop_values: Optional[PropDict] = None, infer_types: bool = True
+    ):
+        if input_prop_values is None:
+            input_prop_values = {}
         # After typing everything, try to get values for outputs
+        self.inference(infer_types=infer_types, input_prop_values=input_prop_values)
         out_values = self.propagate_values(input_prop_values)
         return self.outputs._propagate_vars(out_values)
 

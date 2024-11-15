@@ -744,8 +744,7 @@ def affine_grid(
             _AffineGrid.Inputs(
                 theta=unwrap_vars(theta),
                 size=unwrap_vars(size),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .grid
@@ -799,8 +798,7 @@ def constant_of_shape(
             ),
             _ConstantOfShape.Inputs(
                 input=unwrap_vars(input),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -912,8 +910,7 @@ def dft(
                 input=unwrap_vars(input),
                 dft_length=unwrap_vars(dft_length),
                 axis=unwrap_vars(axis),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -968,8 +965,7 @@ def gelu(
             ),
             _Gelu.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1092,8 +1088,7 @@ def grid_sample(
             _GridSample.Inputs(
                 X=unwrap_vars(X),
                 grid=unwrap_vars(grid),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1110,21 +1105,21 @@ def image_decoder(
     reason (e.g. corrupted encoded stream, invalid format, it will return an
     empty matrix). The following image formats are supported:
 
-    - BMP
-    - JPEG (note: Lossless JPEG support is optional)
-    - JPEG2000
-    - TIFF
-    - PNG
-    - WebP
-    - Portable image format (PBM, PGM, PPM, PXM, PNM) Decoded images follow
-      a channel-last layout: (Height, Width, Channels). **JPEG chroma
-      upsampling method:** When upsampling the chroma components by a factor
-      of 2, the pixels are linearly interpolated so that the centers of the
-      output pixels are 1/4 and 3/4 of the way between input pixel centers.
-      When rounding, 0.5 is rounded down and up at alternative pixels
-      locations to prevent bias towards larger values (ordered dither
-      pattern). Considering adjacent input pixels A, B, and C, B is
-      upsampled to pixels B0 and B1 so that
+    -  BMP
+    -  JPEG (note: Lossless JPEG support is optional)
+    -  JPEG2000
+    -  TIFF
+    -  PNG
+    -  WebP
+    -  Portable image format (PBM, PGM, PPM, PXM, PNM) Decoded images follow
+       a channel-last layout: (Height, Width, Channels). **JPEG chroma
+       upsampling method:** When upsampling the chroma components by a
+       factor of 2, the pixels are linearly interpolated so that the centers
+       of the output pixels are 1/4 and 3/4 of the way between input pixel
+       centers. When rounding, 0.5 is rounded down and up at alternative
+       pixels locations to prevent bias towards larger values (ordered
+       dither pattern). Considering adjacent input pixels A, B, and C, B is
+       upsampled to pixels B0 and B1 so that
 
     ::
 
@@ -1168,8 +1163,7 @@ def image_decoder(
             ),
             _ImageDecoder.Inputs(
                 encoded_stream=unwrap_vars(encoded_stream),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .image
@@ -1226,8 +1220,7 @@ def isinf(
             ),
             _IsInf.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1268,8 +1261,7 @@ def isnan(
             _IsNaN.Attributes(),
             _IsNaN.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1349,8 +1341,7 @@ def reduce_max(
             _ReduceMax.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -1429,8 +1420,7 @@ def reduce_min(
             _ReduceMin.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -1483,8 +1473,7 @@ def regex_full_match(
             ),
             _RegexFullMatch.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1531,8 +1520,7 @@ def string_concat(
             _StringConcat.Inputs(
                 X=unwrap_vars(X),
                 Y=unwrap_vars(Y),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
@@ -1619,8 +1607,7 @@ def string_split(
             ),
             _StringSplit.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()

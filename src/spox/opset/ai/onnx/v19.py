@@ -818,7 +818,8 @@ def average_pool(
        output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - dilation[i] * (kernel_shape[i] - 1) - 1) / strides_spatial_shape[i] + 1)
 
     if ceil_mode is enabled. ``pad_shape[i]`` is the sum of pads along axis
-    ``i``.
+    ``i``. Sliding windows that would start in the right padded region are
+    ignored.
 
     ``auto_pad`` is a DEPRECATED attribute. If you are using them currently,
     the output spatial shape will be following when ceil_mode is enabled:
@@ -930,8 +931,7 @@ def average_pool(
             ),
             _AveragePool.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -975,26 +975,26 @@ def cast(
     In more detail, the conversion among numerical types should follow these
     rules if the destination type is not a float 8 type.
 
-    - Casting from floating point to:
+    -  Casting from floating point to:
 
-      - floating point: +/- infinity if OOR (out of range).
-      - fixed point: undefined if OOR.
-      - bool: +/- 0.0 to False; all else to True.
+       -  floating point: +/- infinity if OOR (out of range).
+       -  fixed point: undefined if OOR.
+       -  bool: +/- 0.0 to False; all else to True.
 
-    - Casting from fixed point to:
+    -  Casting from fixed point to:
 
-      - floating point: +/- infinity if OOR. (+ infinity in the case of
-        uint)
-      - fixed point: when OOR, discard higher bits and reinterpret (with
-        respect to two's complement representation for signed types). For
-        example, 200 (int16) -> -56 (int8).
-      - bool: zero to False; nonzero to True.
+       -  floating point: +/- infinity if OOR. (+ infinity in the case of
+          uint)
+       -  fixed point: when OOR, discard higher bits and reinterpret (with
+          respect to two's complement representation for signed types). For
+          example, 200 (int16) -> -56 (int8).
+       -  bool: zero to False; nonzero to True.
 
-    - Casting from bool to:
+    -  Casting from bool to:
 
-      - floating point: ``{1.0, 0.0}``.
-      - fixed point: ``{1, 0}``.
-      - bool: no change.
+       -  floating point: ``{1.0, 0.0}``.
+       -  fixed point: ``{1, 0}``.
+       -  bool: no change.
 
     Float 8 type were introduced to speed up the training of deep models. By
     default the conversion of a float *x* obeys to the following rules.
@@ -1070,8 +1070,7 @@ def cast(
             ),
             _Cast.Inputs(
                 input=unwrap_vars(input),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1133,8 +1132,7 @@ def cast_like(
             _CastLike.Inputs(
                 input=unwrap_vars(input),
                 target_type=unwrap_vars(target_type),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1208,8 +1206,7 @@ def constant(
                 value_string=AttrString.maybe(value_string, name="value_string"),
                 value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
             ),
-            _Constant.Inputs(),
-            input_prop_values=input_prop_values,
+            _Constant.Inputs(),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1335,8 +1332,7 @@ def deform_conv(
                 offset=unwrap_vars(offset),
                 B=unwrap_vars(B),
                 mask=unwrap_vars(mask),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1380,11 +1376,9 @@ def dequantize_linear(
     axis
         Attribute.
         (Optional) The axis of the dequantizing dimension of the input tensor.
-        Used only for per-axis quantization. Negative value means counting
-        dimensions from the back. Accepted range is ``[-r, r-1]`` where
-        ``r = rank(input)``. When the rank of the input is 1, per-tensor
-        quantization is applied, rendering the axis unnecessary in this
-        scenario.
+        Ignored for per-tensor quantization. Negative value means counting
+        dimensions from the back. Accepted range is [-r, r-1] where r =
+        rank(input).
 
     Returns
     =======
@@ -1414,8 +1408,7 @@ def dequantize_linear(
                 x=unwrap_vars(x),
                 x_scale=unwrap_vars(x_scale),
                 x_zero_point=unwrap_vars(x_zero_point),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .y
@@ -1468,8 +1461,7 @@ def equal(
             _Equal.Inputs(
                 A=unwrap_vars(A),
                 B=unwrap_vars(B),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .C
@@ -1509,8 +1501,7 @@ def identity(
             _Identity.Attributes(),
             _Identity.Inputs(
                 input=unwrap_vars(input),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1583,8 +1574,9 @@ def if_(
             _If.Inputs(
                 cond=unwrap_vars(cond),
             ),
-            out_variadic=len(_else_branch_subgraph.requested_results),
-            input_prop_values=input_prop_values,
+            out_variadic=len(
+                _else_branch_subgraph.requested_results
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs
@@ -1616,21 +1608,21 @@ def loop(
 
     Operator inputs defined as (max_trip_count, condition_var).
 
-    - input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
-      is ignored, but is required in the body }
+    -  input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
+       is ignored, but is required in the body }
 
-    - input ("", cond) // Note this is analogous to a while loop bool cond =
-      ...; for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", cond) // Note this is analogous to a while loop bool cond
+       = ...; for (int i=0; cond; ++i) { cond = ...; }
 
-    - input ("", 1) // Note this is analogous to a do-while loop bool cond =
-      true for (int i=0; cond; ++i) { cond = ...; }
+    -  input ("", 1) // Note this is analogous to a do-while loop bool cond
+       = true for (int i=0; cond; ++i) { cond = ...; }
 
-    - input (trip_count, "") // Note this is analogous to a for loop int
-      trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
-      ignored }
+    -  input (trip_count, "") // Note this is analogous to a for loop int
+       trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
+       ignored }
 
-    - input (trip_count, cond) int trip_count = ...; bool cond = ...; for
-      (int i=0; i < trip_count && cond; ++i) { cond = ...; }
+    -  input (trip_count, cond) int trip_count = ...; bool cond = ...; for
+       (int i=0; i < trip_count && cond; ++i) { cond = ...; }
 
     *Sample usage - cond as well as trip count*
 
@@ -1787,8 +1779,7 @@ def loop(
                 cond=unwrap_vars(cond),
                 v_initial=unwrap_vars(v_initial),
             ),
-            out_variadic=len(_body_subgraph.requested_results) - 1,
-            input_prop_values=input_prop_values,
+            out_variadic=len(_body_subgraph.requested_results) - 1,  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .v_final_and_scan_outputs
@@ -1971,8 +1962,7 @@ def pad(
                 pads=unwrap_vars(pads),
                 constant_value=unwrap_vars(constant_value),
                 axes=unwrap_vars(axes),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -2060,8 +2050,7 @@ def quantize_linear(
                 x=unwrap_vars(x),
                 y_scale=unwrap_vars(y_scale),
                 y_zero_point=unwrap_vars(y_zero_point),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .y
@@ -2131,8 +2120,7 @@ def reshape(
             _Reshape.Inputs(
                 data=unwrap_vars(data),
                 shape=unwrap_vars(shape),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reshaped
@@ -2378,8 +2366,7 @@ def resize(
                 roi=unwrap_vars(roi),
                 scales=unwrap_vars(scales),
                 sizes=unwrap_vars(sizes),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -2633,8 +2620,7 @@ def scan(
                     initial_state_and_scan_inputs
                 ),
             ),
-            out_variadic=len(_body_subgraph.requested_results),
-            input_prop_values=input_prop_values,
+            out_variadic=len(_body_subgraph.requested_results),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .final_state_and_scan_outputs
@@ -2728,8 +2714,7 @@ def shape(
             ),
             _Shape.Inputs(
                 data=unwrap_vars(data),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .shape
@@ -2771,8 +2756,7 @@ def size(
             _Size.Attributes(),
             _Size.Inputs(
                 data=unwrap_vars(data),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .size

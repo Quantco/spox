@@ -316,7 +316,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
         return dict(
             zip(
                 out_names,
-                node.get_output_vars(prop_values).get_var_infos().values(),
+                node.get_output_vars(prop_values).flatten_vars().values(),
             )
         )
 

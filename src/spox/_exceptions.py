@@ -8,7 +8,7 @@ ValidationError = onnx.checker.ValidationError
 
 
 class InferenceWarning(Warning):
-    """Warning related to partial typing of VarInfoiables.
+    """Warning related to partial typing of Variables.
 
     Incomplete type information may lead to reduced code safety or
     failure to build the model. The most common underlying cause for

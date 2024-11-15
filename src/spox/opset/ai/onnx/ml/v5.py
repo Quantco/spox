@@ -259,8 +259,7 @@ def tree_ensemble(
             ),
             _TreeEnsemble.Inputs(
                 X=unwrap_vars(X),
-            ),
-            input_prop_values=input_prop_values,
+            ),  # infer_types=False
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y

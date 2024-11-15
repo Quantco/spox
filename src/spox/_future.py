@@ -60,8 +60,8 @@ def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
 
     Returns
     -------
-    VarInfo
-        VarInfoiable with the given constant ``value``.
+    Var
+        Variable with the given constant ``value``.
 
     Notes
     -----

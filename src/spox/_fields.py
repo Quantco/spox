@@ -6,7 +6,7 @@ import enum
 import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Optional, Union
 
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
@@ -35,51 +35,48 @@ class VarFieldKind(enum.Enum):
 
 
 class BaseVars:
-    def _unpack_to_any(self) -> Any:
-        """Unpack the stored fields into a tuple of appropriate length, typed as Any."""
-        return tuple(self.__dict__.values())
+    def __init__(self, vars):
+        self.vars = vars
 
-    def _flatten(self) -> Iterable[tuple[str, Optional[Var]]]:
+    def _unpack_to_any(self):
+        """Unpack the stored fields into a tuple of appropriate length, typed as Any."""
+        return tuple(self.vars.values())
+
+    def _flatten(self):
         """Iterate over the pairs of names and values of fields in this object."""
-        for key, value in self.__dict__.items():
+        for key, value in self.vars.items():
             if value is None or isinstance(value, Var):
                 yield key, value
             else:
                 yield from ((f"{key}_{i}", v) for i, v in enumerate(value))
 
-    def get_var_infos(self) -> dict[str, Var]:
+    def flatten_vars(self):
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
+    def __getattr__(self, attr: str) -> Union["Var", Sequence["Var"]]:
+        """Retrieves the attribute if present in the stored variables."""
+        try:
+            return self.vars[attr]
+        except KeyError:
+            raise AttributeError(
+                f"{self.__class__.__name__!r} object has no attribute {attr!r}"
+            )
 
-class BaseVarsMeta(type):
-    def __new__(cls, name, bases, namespace):
-        new_cls = super().__new__(cls, name, bases, namespace)
+    def __setattr__(self, attr: str, value: Union["Var", Sequence["Var"]]) -> None:
+        """Sets the attribute to a value if the attribute is present in the stored variables."""
+        if attr == "vars":
+            super().__setattr__(attr, value)
+        else:
+            self.vars[attr] = value
 
-        if bases and "__annotations__" in namespace:
-            annotations: dict[str, Any] = {}
-            for name, typ in namespace["__annotations__"].items():
-                if typ == VarInfo:
-                    annotations[name] = Var
-                elif typ == Optional[VarInfo]:
-                    annotations[name] = Optional[Var]
-                elif typ == Sequence[VarInfo]:
-                    annotations[name] = Sequence[Var]
+    def __getitem__(self, key: str):
+        """Allows dictionary-like access to retrieve variables."""
+        return self.vars[key]
 
-            vars_cls = dataclass(
-                type(
-                    "Vars",
-                    (
-                        BaseVars,
-                        object,
-                    ),
-                    {"__annotations__": annotations},
-                )
-            )  # type: ignore
-
-            setattr(new_cls, "Vars", vars_cls)
-
-        return new_cls
+    def __setitem__(self, key: str, value) -> None:
+        """Allows dictionary-like access to set variables."""
+        self.vars[key] = value
 
 
 @dataclass
@@ -157,30 +154,23 @@ class BaseVarInfos(BaseFields):
         )
 
 
-TypeBaseVars = TypeVar("TypeBaseVars", bound=BaseVars)
-
-
 @dataclass
-class BaseInputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
-    @dataclass
-    class Vars(BaseVars):
-        pass
-
-    def vars(self, prop_values) -> TypeBaseVars:
-        vars_structure: dict[str, Union[Var, Sequence[Var]]] = {}
+class BaseInputs(BaseVarInfos):
+    def vars(self, prop_values):
+        vars_dict: dict[str, Union[Var, Sequence[Var]]] = {}
 
         for field in dataclasses.fields(self):
             field_type = self._get_field_type(field)
             field_value = getattr(self, field.name)
 
             if field_type == VarFieldKind.SINGLE:
-                vars_structure[field.name] = Var(field_value, prop_values[field.name])
+                vars_dict[field.name] = Var(field_value, prop_values[field.name])
 
             elif (
                 field_type == VarFieldKind.OPTIONAL
                 and prop_values.get(field.name, None) is not None
             ):
-                vars_structure[field.name] = Var(field_value, prop_values[field.name])
+                vars_dict[field.name] = Var(field_value, prop_values[field.name])
 
             elif field_type == VarFieldKind.VARIADIC:
                 vars = []
@@ -189,21 +179,17 @@ class BaseInputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
                     var_value = prop_values.get(f"{field.name}_{i}", None)
                     vars.append(Var(var_info, var_value))
 
-                vars_structure[field.name] = vars
+                vars_dict[field.name] = vars
 
-        return self.__class__.Vars(**vars_structure)  # type: ignore
+        return BaseVars(vars_dict)
 
 
 @dataclass
-class BaseOutputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
-    @dataclass
-    class Vars(BaseVars):
-        pass
-
+class BaseOutputs(BaseVarInfos):
     def _propagate_vars(
         self,
         prop_values={},
-    ) -> TypeBaseVars:
+    ):
         def _create_var(key, var_info):
             ret = Var(var_info, None)
 
@@ -233,4 +219,4 @@ class BaseOutputs(BaseVarInfos, Generic[TypeBaseVars], metaclass=BaseVarsMeta):
                     _create_var(f"{key}_{i}", v) for i, v in enumerate(var_info)
                 ]
 
-        return self.__class__.Vars(**ret_dict)  # type: ignore
+        return BaseVars(ret_dict)
