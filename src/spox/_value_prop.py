@@ -4,8 +4,10 @@
 import enum
 import logging
 import warnings
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Callable, Union
+from typing import Optional as tOptional
 
 import numpy as np
 import numpy.typing as npt
@@ -24,9 +26,10 @@ The internal representation for runtime values.
 - PropValue -> Optional, Some (has value)
 - None -> Optional, Nothing (no value)
 """
-PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
-ORTValue = Union[np.ndarray, list, None]
-RefValue = Union[np.ndarray, list, float, None]
+PropValueType = Union[np.ndarray, Iterable[tOptional["PropValue"]], "PropValue", None]
+PropDict = dict[str, Union[Iterable[tOptional["PropValue"]], "PropValue", None]]
+ORTValue = Union[np.ndarray, Iterable, None]
+RefValue = Union[np.ndarray, Iterable, float, None]
 
 VALUE_PROP_STRICT_CHECK: bool = False
 

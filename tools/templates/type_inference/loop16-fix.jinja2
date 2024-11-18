@@ -1,4 +1,4 @@
-output_types = super().infer_output_types()
+output_types = super().infer_output_types({})
 
 body = self.attrs.body.value
 n = len(body.requested_arguments) - 2

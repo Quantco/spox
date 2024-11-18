@@ -3,7 +3,9 @@
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
-from typing import Optional
+from typing import (
+    Optional,
+)
 
 import numpy as np
 import numpy.typing as npt
@@ -16,7 +18,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._type_system import PropDict
+from spox._value_prop import PropDict
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v19 import (
     _GRU,
@@ -744,7 +746,7 @@ def affine_grid(
             _AffineGrid.Inputs(
                 theta=unwrap_vars(theta),
                 size=unwrap_vars(size),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .grid
@@ -798,7 +800,7 @@ def constant_of_shape(
             ),
             _ConstantOfShape.Inputs(
                 input=unwrap_vars(input),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -910,7 +912,7 @@ def dft(
                 input=unwrap_vars(input),
                 dft_length=unwrap_vars(dft_length),
                 axis=unwrap_vars(axis),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -965,7 +967,7 @@ def gelu(
             ),
             _Gelu.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1088,7 +1090,7 @@ def grid_sample(
             _GridSample.Inputs(
                 X=unwrap_vars(X),
                 grid=unwrap_vars(grid),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1163,7 +1165,7 @@ def image_decoder(
             ),
             _ImageDecoder.Inputs(
                 encoded_stream=unwrap_vars(encoded_stream),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .image
@@ -1220,7 +1222,7 @@ def isinf(
             ),
             _IsInf.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1261,7 +1263,7 @@ def isnan(
             _IsNaN.Attributes(),
             _IsNaN.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1341,7 +1343,7 @@ def reduce_max(
             _ReduceMax.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -1420,7 +1422,7 @@ def reduce_min(
             _ReduceMin.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -1473,7 +1475,7 @@ def regex_full_match(
             ),
             _RegexFullMatch.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1520,7 +1522,7 @@ def string_concat(
             _StringConcat.Inputs(
                 X=unwrap_vars(X),
                 Y=unwrap_vars(Y),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
@@ -1607,7 +1609,7 @@ def string_split(
             ),
             _StringSplit.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()

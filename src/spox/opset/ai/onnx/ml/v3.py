@@ -4,7 +4,9 @@
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Optional
+from typing import (
+    Optional,
+)
 
 import numpy as np
 
@@ -20,7 +22,8 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import InferenceError, StandardNode
-from spox._type_system import PropDict, Tensor, Type
+from spox._type_system import Tensor, Type
+from spox._value_prop import PropDict
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 
 
@@ -38,7 +41,7 @@ class _ArrayFeatureExtractor(StandardNode):
     class Outputs(BaseOutputs):
         Z: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
@@ -73,7 +76,7 @@ class _Binarizer(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
@@ -121,7 +124,7 @@ class _CategoryMapper(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
@@ -197,7 +200,7 @@ class _Imputer(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         t = self.inputs.X.unwrap_tensor()
@@ -309,7 +312,7 @@ class _LinearRegressor(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         sim = self.inputs.X.unwrap_tensor().shape
@@ -343,7 +346,7 @@ class _Normalizer(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.attrs.norm.value not in ("MAX", "L1", "L2"):
             raise InferenceError(
                 f"Unknown normalisation method `{self.attrs.norm.value}`"
@@ -372,7 +375,7 @@ class _OneHotEncoder(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         if self.attrs.cats_int64s:
@@ -465,7 +468,7 @@ class _Scaler(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.inputs.X.type is None:
             return {}
         sc, off = self.attrs.scale, self.attrs.offset
@@ -525,7 +528,7 @@ class _TreeEnsembleClassifier(StandardNode):
         Y: VarInfo
         Z: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         e = (
             len(self.attrs.class_ids.value)
             if self.attrs.class_ids is not None
@@ -589,7 +592,7 @@ class _TreeEnsembleRegressor(StandardNode):
     class Outputs(BaseOutputs):
         Y: VarInfo
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.inputs.fully_typed:
             shape = self.inputs.X.unwrap_tensor().shape
             assert shape is not None  # already checked with fully_typed
@@ -670,7 +673,7 @@ def array_feature_extractor(
             _ArrayFeatureExtractor.Inputs(
                 X=unwrap_vars(X),
                 Y=unwrap_vars(Y),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
@@ -718,7 +721,7 @@ def binarizer(
             ),
             _Binarizer.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -784,7 +787,7 @@ def cast_map(
             ),
             _CastMap.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -859,7 +862,7 @@ def category_mapper(
             ),
             _CategoryMapper.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -931,7 +934,7 @@ def dict_vectorizer(
             ),
             _DictVectorizer.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -984,7 +987,7 @@ def feature_vectorizer(
             ),
             _FeatureVectorizer.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1067,7 +1070,7 @@ def imputer(
             ),
             _Imputer.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1172,7 +1175,7 @@ def label_encoder(
             ),
             _LabelEncoder.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1255,7 +1258,7 @@ def linear_classifier(
             ),
             _LinearClassifier.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
@@ -1324,7 +1327,7 @@ def linear_regressor(
             ),
             _LinearRegressor.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1377,7 +1380,7 @@ def normalizer(
             ),
             _Normalizer.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1445,7 +1448,7 @@ def one_hot_encoder(
             ),
             _OneHotEncoder.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1562,7 +1565,7 @@ def svmclassifier(
             ),
             _SVMClassifier.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
@@ -1649,7 +1652,7 @@ def svmregressor(
             ),
             _SVMRegressor.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1706,7 +1709,7 @@ def scaler(
             ),
             _Scaler.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1900,7 +1903,7 @@ def tree_ensemble_classifier(
             ),
             _TreeEnsembleClassifier.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
@@ -2092,7 +2095,7 @@ def tree_ensemble_regressor(
             ),
             _TreeEnsembleRegressor.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -2154,7 +2157,7 @@ def zip_map(
             ),
             _ZipMap.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Z

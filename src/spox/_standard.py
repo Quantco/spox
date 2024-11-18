@@ -17,9 +17,9 @@ from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._shape import SimpleShape
-from ._type_system import Optional, PropDict, Sequence, Tensor, Type
+from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
-from ._value_prop import PropValue, PropValueType
+from ._value_prop import PropDict, PropValue, PropValueType
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -209,7 +209,7 @@ class StandardNode(Node):
         }
         return {k: v for k, v in results.items() if k is not None}
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         return self.infer_output_types_onnx(input_prop_values)
 
     def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:

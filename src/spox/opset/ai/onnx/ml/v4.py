@@ -4,7 +4,9 @@
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Optional
+from typing import (
+    Optional,
+)
 
 import numpy as np
 
@@ -20,7 +22,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._type_system import PropDict
+from spox._value_prop import PropDict
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.ml.v3 import (
     _ArrayFeatureExtractor,
@@ -211,7 +213,7 @@ def label_encoder(
             ),
             _LabelEncoder.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y

@@ -19,7 +19,7 @@ from ._node import Node, OpType
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
-from ._value_prop import PropValueType
+from ._value_prop import PropDict, PropValueType
 from ._var import Var, VarInfo, unwrap_vars
 
 # This is a default used for internal operators that
@@ -121,12 +121,12 @@ class _Initializer(_InternalNode):
     inputs: BaseInputs
     outputs: Outputs
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         arr = self.attrs.value.value
         return {"arg": Tensor(arr.dtype, arr.shape)}
 
-    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
         return {"arg": self.attrs.value.value}
 
     def update_metadata(self, opset_req, initializers, functions):

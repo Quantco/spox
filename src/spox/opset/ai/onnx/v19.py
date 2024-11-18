@@ -4,7 +4,10 @@
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import (
+    Callable,
+    Optional,
+)
 from typing import cast as typing_cast
 
 import numpy as np
@@ -25,8 +28,8 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import Graph, subgraph
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._type_system import PropDict, Tensor, Type
-from spox._value_prop import PropValueType
+from spox._type_system import Tensor, Type
+from spox._value_prop import PropDict, PropValueType
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v18 import (
     _DFT,
@@ -453,7 +456,7 @@ class _Constant(StandardNode):
     class Outputs(BaseOutputs):
         output: VarInfo
 
-    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
         )
@@ -931,7 +934,7 @@ def average_pool(
             ),
             _AveragePool.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1070,7 +1073,7 @@ def cast(
             ),
             _Cast.Inputs(
                 input=unwrap_vars(input),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1132,7 +1135,7 @@ def cast_like(
             _CastLike.Inputs(
                 input=unwrap_vars(input),
                 target_type=unwrap_vars(target_type),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1206,7 +1209,7 @@ def constant(
                 value_string=AttrString.maybe(value_string, name="value_string"),
                 value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
             ),
-            _Constant.Inputs(),  # infer_types=False
+            _Constant.Inputs(),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1332,7 +1335,7 @@ def deform_conv(
                 offset=unwrap_vars(offset),
                 B=unwrap_vars(B),
                 mask=unwrap_vars(mask),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1408,7 +1411,7 @@ def dequantize_linear(
                 x=unwrap_vars(x),
                 x_scale=unwrap_vars(x_scale),
                 x_zero_point=unwrap_vars(x_zero_point),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .y
@@ -1461,7 +1464,7 @@ def equal(
             _Equal.Inputs(
                 A=unwrap_vars(A),
                 B=unwrap_vars(B),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .C
@@ -1501,7 +1504,7 @@ def identity(
             _Identity.Attributes(),
             _Identity.Inputs(
                 input=unwrap_vars(input),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1574,9 +1577,7 @@ def if_(
             _If.Inputs(
                 cond=unwrap_vars(cond),
             ),
-            out_variadic=len(
-                _else_branch_subgraph.requested_results
-            ),  # infer_types=False
+            out_variadic=len(_else_branch_subgraph.requested_results),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs
@@ -1779,7 +1780,7 @@ def loop(
                 cond=unwrap_vars(cond),
                 v_initial=unwrap_vars(v_initial),
             ),
-            out_variadic=len(_body_subgraph.requested_results) - 1,  # infer_types=False
+            out_variadic=len(_body_subgraph.requested_results) - 1,
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .v_final_and_scan_outputs
@@ -1962,7 +1963,7 @@ def pad(
                 pads=unwrap_vars(pads),
                 constant_value=unwrap_vars(constant_value),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -2050,7 +2051,7 @@ def quantize_linear(
                 x=unwrap_vars(x),
                 y_scale=unwrap_vars(y_scale),
                 y_zero_point=unwrap_vars(y_zero_point),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .y
@@ -2120,7 +2121,7 @@ def reshape(
             _Reshape.Inputs(
                 data=unwrap_vars(data),
                 shape=unwrap_vars(shape),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reshaped
@@ -2366,7 +2367,7 @@ def resize(
                 roi=unwrap_vars(roi),
                 scales=unwrap_vars(scales),
                 sizes=unwrap_vars(sizes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -2620,7 +2621,7 @@ def scan(
                     initial_state_and_scan_inputs
                 ),
             ),
-            out_variadic=len(_body_subgraph.requested_results),  # infer_types=False
+            out_variadic=len(_body_subgraph.requested_results),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .final_state_and_scan_outputs
@@ -2714,7 +2715,7 @@ def shape(
             ),
             _Shape.Inputs(
                 data=unwrap_vars(data),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .shape
@@ -2756,7 +2757,7 @@ def size(
             _Size.Attributes(),
             _Size.Inputs(
                 data=unwrap_vars(data),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .size

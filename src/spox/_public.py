@@ -17,6 +17,7 @@ from ._graph import Argument, initializer, results
 from ._inline import _Inline
 from ._standard import _strip_dim_symbol
 from ._type_system import Type
+from ._value_prop import PropDict
 from ._var import Var
 
 
@@ -307,9 +308,9 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             model=model,
         )
 
-        prop_values = {
+        prop_values: PropDict = {
             name: kwargs[name]._value
-            for i, name in enumerate(in_names)
+            for name in in_names
             if kwargs[name]._value is not None
         }
 

@@ -410,7 +410,7 @@ class Builder:
         self, graph: "Graph", scope: Scope, prefix: str = ""
     ) -> BuildResult:
         """
-        Compile a given Graph into a BuildResult. Handles naming of all the VarInfos/Nodes and only adds Nodes to a
+        Compile a given Graph into a BuildResult. Handles naming of all the Vars/Nodes and only adds Nodes to a
         Graph that should be present in the respective GraphProto. The passed Scope object is aware of values already
         available in the outer scope and may be the source of errors if the build fails.
 

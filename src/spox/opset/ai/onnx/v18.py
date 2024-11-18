@@ -4,7 +4,9 @@
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Optional
+from typing import (
+    Optional,
+)
 
 import numpy as np
 import numpy.typing as npt
@@ -18,7 +20,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._type_system import PropDict
+from spox._value_prop import PropDict
 from spox._var import Var, VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v17 import (
     _DFT,
@@ -943,7 +945,7 @@ def bitwise_and(
             _BitwiseAnd.Inputs(
                 A=unwrap_vars(A),
                 B=unwrap_vars(B),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .C
@@ -983,7 +985,7 @@ def bitwise_not(
             _BitwiseNot.Attributes(),
             _BitwiseNot.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1035,7 +1037,7 @@ def bitwise_or(
             _BitwiseOr.Inputs(
                 A=unwrap_vars(A),
                 B=unwrap_vars(B),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .C
@@ -1087,7 +1089,7 @@ def bitwise_xor(
             _BitwiseXor.Inputs(
                 A=unwrap_vars(A),
                 B=unwrap_vars(B),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .C
@@ -1153,7 +1155,7 @@ def center_crop_pad(
             _CenterCropPad.Inputs(
                 input_data=unwrap_vars(input_data),
                 shape=unwrap_vars(shape),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output_data
@@ -1256,7 +1258,7 @@ def col2_im(
                 input=unwrap_vars(input),
                 image_shape=unwrap_vars(image_shape),
                 block_shape=unwrap_vars(block_shape),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1343,7 +1345,7 @@ def group_normalization(
                 X=unwrap_vars(X),
                 scale=unwrap_vars(scale),
                 bias=unwrap_vars(bias),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1474,7 +1476,7 @@ def lp_pool(
             ),
             _LpPool.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1521,7 +1523,7 @@ def mish(
             _Mish.Attributes(),
             _Mish.Inputs(
                 X=unwrap_vars(X),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -1565,7 +1567,7 @@ def optional_get_element(
             _OptionalGetElement.Attributes(),
             _OptionalGetElement.Inputs(
                 input=unwrap_vars(input),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1609,7 +1611,7 @@ def optional_has_element(
             _OptionalHasElement.Attributes(),
             _OptionalHasElement.Inputs(
                 input=unwrap_vars(input),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1766,7 +1768,7 @@ def pad(
                 pads=unwrap_vars(pads),
                 constant_value=unwrap_vars(constant_value),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -1841,7 +1843,7 @@ def reduce_l1(
             _ReduceL1.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -1916,7 +1918,7 @@ def reduce_l2(
             _ReduceL2.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -1992,7 +1994,7 @@ def reduce_log_sum(
             _ReduceLogSum.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -2068,7 +2070,7 @@ def reduce_log_sum_exp(
             _ReduceLogSumExp.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -2145,7 +2147,7 @@ def reduce_max(
             _ReduceMax.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -2220,7 +2222,7 @@ def reduce_mean(
             _ReduceMean.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -2296,7 +2298,7 @@ def reduce_min(
             _ReduceMin.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -2371,7 +2373,7 @@ def reduce_prod(
             _ReduceProd.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -2446,7 +2448,7 @@ def reduce_sum_square(
             _ReduceSumSquare.Inputs(
                 data=unwrap_vars(data),
                 axes=unwrap_vars(axes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
@@ -2654,7 +2656,7 @@ def resize(
                 roi=unwrap_vars(roi),
                 scales=unwrap_vars(scales),
                 sizes=unwrap_vars(sizes),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
@@ -2799,7 +2801,7 @@ def scatter_elements(
                 data=unwrap_vars(data),
                 indices=unwrap_vars(indices),
                 updates=unwrap_vars(updates),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -2945,7 +2947,7 @@ def scatter_nd(
                 data=unwrap_vars(data),
                 indices=unwrap_vars(indices),
                 updates=unwrap_vars(updates),
-            ),  # infer_types=False
+            ),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
@@ -3013,7 +3015,7 @@ def split(
                 input=unwrap_vars(input),
                 split=unwrap_vars(split),
             ),
-            out_variadic=num_outputs,  # infer_types=False
+            out_variadic=num_outputs,
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs

@@ -18,7 +18,8 @@ from ._attributes import AttrGraph
 from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
 from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
-from ._type_system import PropDict, Type
+from ._type_system import Type
+from ._value_prop import PropDict
 from ._var import VarInfo
 
 if typing.TYPE_CHECKING:
@@ -94,7 +95,6 @@ class Node(ABC):
         out_variadic: Optional[int] = None,
         infer_types: bool = True,
         validate: bool = True,
-        input_prop_values: PropDict = {},
         **kwargs,
     ):
         """
@@ -126,7 +126,7 @@ class Node(ABC):
             # As inference functions may access which output vars we initialized (e.g. variadics)
             # we inject uninitialized vars first
             self.outputs = self._init_output_vars()
-            self.inference(infer_types=infer_types, input_prop_values={})
+            self.inference(infer_types=infer_types)
         else:
             self.outputs = outputs
 
@@ -214,7 +214,7 @@ class Node(ABC):
         """
         return {}
 
-    def infer_output_types(self, input_prop_values) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         """
         Inference routine for output types. Often overriden by inheriting Node types.
 

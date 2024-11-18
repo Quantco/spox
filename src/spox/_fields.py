@@ -6,11 +6,11 @@ import enum
 import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, cast
 
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
-from ._value_prop import PropValue
+from ._value_prop import PropDict, PropValue
 from ._var import Var, VarInfo
 
 
@@ -156,7 +156,10 @@ class BaseVarInfos(BaseFields):
 
 @dataclass
 class BaseInputs(BaseVarInfos):
-    def vars(self, prop_values):
+    def vars(self, prop_values: Optional[PropDict] = None) -> BaseVars:
+        if prop_values is None:
+            prop_values = {}
+
         vars_dict: dict[str, Union[Var, Sequence[Var]]] = {}
 
         for field in dataclasses.fields(self):
@@ -164,19 +167,22 @@ class BaseInputs(BaseVarInfos):
             field_value = getattr(self, field.name)
 
             if field_type == VarFieldKind.SINGLE:
-                vars_dict[field.name] = Var(field_value, prop_values[field.name])
+                prop_value = cast(PropValue, prop_values[field.name])
+                vars_dict[field.name] = Var(field_value, prop_value)
 
             elif (
                 field_type == VarFieldKind.OPTIONAL
                 and prop_values.get(field.name, None) is not None
             ):
-                vars_dict[field.name] = Var(field_value, prop_values[field.name])
+                prop_value = cast(PropValue, prop_values[field.name])
+                vars_dict[field.name] = Var(field_value, prop_value)
 
             elif field_type == VarFieldKind.VARIADIC:
                 vars = []
 
                 for i, var_info in enumerate(field_value):
                     var_value = prop_values.get(f"{field.name}_{i}", None)
+                    assert isinstance(var_value, PropValue)
                     vars.append(Var(var_info, var_value))
 
                 vars_dict[field.name] = vars
@@ -186,10 +192,10 @@ class BaseInputs(BaseVarInfos):
 
 @dataclass
 class BaseOutputs(BaseVarInfos):
-    def _propagate_vars(
-        self,
-        prop_values={},
-    ):
+    def _propagate_vars(self, prop_values: Optional[PropDict] = None) -> BaseVars:
+        if prop_values is None:
+            prop_values = {}
+
         def _create_var(key, var_info):
             ret = Var(var_info, None)
 
