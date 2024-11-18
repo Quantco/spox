@@ -24,28 +24,10 @@ class NotImplementedOperatorDispatcher:
 
 class VarInfo:
     """
-    Abstraction for a single ONNX value - like a tensor - that can be passed around in Python code.
-
-    A ``VarInfo`` represents some output of an operator.
-    This operator is stored internally to allow reproducing the graph.
-
-    The ``type`` field is inferred and checked by operators.
-    It may be ``None`` if type inference failed, in which case it is unknown and should pass all type checks.
-    However, untyped ``VarInfo`` objects may not be used in some contexts.
-    Keep in mind that the types themselves may have some information missing.
-    For instance, tensors allow missing rank and shape information.
-
-    There is an implicit value propagation mechanism, powered by the ONNX reference implementation.
-    Values may be propagated if a ``VarInfo`` always has a known and constant value at runtime.
-    This is used for type & shape inference. For instance, Reshape to a constant shape can have the shape inferred.
+    Internal information about a ``Var``. Should be mainly inaccessible for most uses of ``spox``.
 
     ``VarInfo`` should be treated as strictly immutable.
     If a ``VarInfo`` or any of its fields are modified, the behaviour is undefined and the produced graph may be invalid.
-
-    Protected fields are to be treated as internal.
-    Useful data is also shown by the string representation, but it should be treated as debug information.
-
-    Should not be constructed directly - the main source of ``VarInfo`` objects are operator constructors.
     """
 
     type: Optional[_type_system.Type]
@@ -131,8 +113,10 @@ class Var:
     """
     Abstraction for a single ONNX value - like a tensor - that can be passed around in Python code.
 
-    A ``VarInfo`` represents some output of an operator.
+    A ``Var`` represents some output of an operator.
     This operator is stored internally to allow reproducing the graph.
+
+    The ``VarInfo`` class holds all relevant information about a ``Var`` - like the ``type``.
 
     The ``type`` field is inferred and checked by operators.
     It may be ``None`` if type inference failed, in which case it is unknown and should pass all type checks.
@@ -144,8 +128,8 @@ class Var:
     Values may be propagated if a ``VarInfo`` always has a known and constant value at runtime.
     This is used for type & shape inference. For instance, Reshape to a constant shape can have the shape inferred.
 
-    ``VarInfo`` should be treated as strictly immutable.
-    If a ``VarInfo`` or any of its fields are modified, the behaviour is undefined and the produced graph may be invalid.
+    ``Var`` should be treated as strictly immutable.
+    If a ``Var`` or any of its fields are modified, the behaviour is undefined and the produced graph may be invalid.
 
     Protected fields are to be treated as internal.
     Useful data is also shown by the string representation, but it should be treated as debug information.
