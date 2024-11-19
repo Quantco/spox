@@ -4632,8 +4632,8 @@ def batch_normalization(
     (training_mode=True). There are multiple cases for the number of
     outputs, which we list below:
 
-    -  Output case #1: Y, running_mean, running_var (training_mode=True)
-    -  Output case #2: Y (training_mode=False)
+    - Output case #1: Y, running_mean, running_var (training_mode=True)
+    - Output case #2: Y (training_mode=False)
 
     When training_mode=False, extra outputs are invalid. The outputs are
     updated as follows when training_mode=True:
@@ -4985,26 +4985,26 @@ def cast(
     In more detail, the conversion among numerical types should follow these
     rules:
 
-    -  Casting from floating point to:
+    - Casting from floating point to:
 
-       -  floating point: +/- infinity if OOR (out of range).
-       -  fixed point: undefined if OOR.
-       -  bool: +/- 0.0 to False; all else to True.
+      - floating point: +/- infinity if OOR (out of range).
+      - fixed point: undefined if OOR.
+      - bool: +/- 0.0 to False; all else to True.
 
-    -  Casting from fixed point to:
+    - Casting from fixed point to:
 
-       -  floating point: +/- infinity if OOR. (+ infinity in the case of
-          uint)
-       -  fixed point: when OOR, discard higher bits and reinterpret (with
-          respect to two's complement representation for signed types). For
-          example, 200 (int16) -> -56 (int8).
-       -  bool: zero to False; nonzero to True.
+      - floating point: +/- infinity if OOR. (+ infinity in the case of
+        uint)
+      - fixed point: when OOR, discard higher bits and reinterpret (with
+        respect to two's complement representation for signed types). For
+        example, 200 (int16) -> -56 (int8).
+      - bool: zero to False; nonzero to True.
 
-    -  Casting from bool to:
+    - Casting from bool to:
 
-       -  floating point: ``{1.0, 0.0}``.
-       -  fixed point: ``{1, 0}``.
-       -  bool: no change.
+      - floating point: ``{1.0, 0.0}``.
+      - fixed point: ``{1, 0}``.
+      - bool: no change.
 
     Parameters
     ==========
@@ -6587,9 +6587,9 @@ def dynamic_quantize_linear(
 
        y_scale = (maximum(0, max(x)) - minimum(0, min(x))) / (qmax - qmin)
 
-    -  where qmax and qmin are max and min values for quantization range
-       i.e. [0, 255] in case of uint8
-    -  data range is adjusted to include 0.
+    - where qmax and qmin are max and min values for quantization range i.e.
+      [0, 255] in case of uint8
+    - data range is adjusted to include 0.
 
     Zero point is calculated as:
 
@@ -6598,11 +6598,11 @@ def dynamic_quantize_linear(
        intermediate_zero_point = qmin - min(x)/y_scale
        y_zero_point = cast(round(saturate(itermediate_zero_point)))
 
-    -  where qmax and qmin are max and min values for quantization range
-       .i.e [0, 255] in case of uint8
-    -  for saturation, it saturates to [0, 255] if it's uint8, or [-127,
-       127] if it's int8. Right now only uint8 is supported.
-    -  rounding to nearest ties to even.
+    - where qmax and qmin are max and min values for quantization range .i.e
+      [0, 255] in case of uint8
+    - for saturation, it saturates to [0, 255] if it's uint8, or [-127, 127]
+      if it's int8. Right now only uint8 is supported.
+    - rounding to nearest ties to even.
 
     Data quantization formula is:
 
@@ -6610,9 +6610,9 @@ def dynamic_quantize_linear(
 
        y = saturate (round (x / y_scale) + y_zero_point)
 
-    -  for saturation, it saturates to [0, 255] if it's uint8, or [-127,
-       127] if it's int8. Right now only uint8 is supported.
-    -  rounding to nearest ties to even.
+    - for saturation, it saturates to [0, 255] if it's uint8, or [-127, 127]
+      if it's int8. Right now only uint8 is supported.
+    - rounding to nearest ties to even.
 
     Parameters
     ==========
@@ -7163,60 +7163,60 @@ def gru(
 
     Notations:
 
-    -  ``X`` - input tensor
-    -  ``z`` - update gate
-    -  ``r`` - reset gate
-    -  ``h`` - hidden gate
-    -  ``t`` - time step (t-1 means previous time step)
-    -  ``W[zrh]`` - W parameter weight matrix for update, reset, and hidden
-       gates
-    -  ``R[zrh]`` - R recurrence weight matrix for update, reset, and hidden
-       gates
-    -  ``Wb[zrh]`` - W bias vectors for update, reset, and hidden gates
-    -  ``Rb[zrh]`` - R bias vectors for update, reset, and hidden gates
-    -  ``WB[zrh]`` - W parameter weight matrix for backward update, reset,
-       and hidden gates
-    -  ``RB[zrh]`` - R recurrence weight matrix for backward update, reset,
-       and hidden gates
-    -  ``WBb[zrh]`` - W bias vectors for backward update, reset, and hidden
-       gates
-    -  ``RBb[zrh]`` - R bias vectors for backward update, reset, and hidden
-       gates
-    -  ``H`` - Hidden state
-    -  ``num_directions`` - 2 if direction == bidirectional else 1
+    - ``X`` - input tensor
+    - ``z`` - update gate
+    - ``r`` - reset gate
+    - ``h`` - hidden gate
+    - ``t`` - time step (t-1 means previous time step)
+    - ``W[zrh]`` - W parameter weight matrix for update, reset, and hidden
+      gates
+    - ``R[zrh]`` - R recurrence weight matrix for update, reset, and hidden
+      gates
+    - ``Wb[zrh]`` - W bias vectors for update, reset, and hidden gates
+    - ``Rb[zrh]`` - R bias vectors for update, reset, and hidden gates
+    - ``WB[zrh]`` - W parameter weight matrix for backward update, reset,
+      and hidden gates
+    - ``RB[zrh]`` - R recurrence weight matrix for backward update, reset,
+      and hidden gates
+    - ``WBb[zrh]`` - W bias vectors for backward update, reset, and hidden
+      gates
+    - ``RBb[zrh]`` - R bias vectors for backward update, reset, and hidden
+      gates
+    - ``H`` - Hidden state
+    - ``num_directions`` - 2 if direction == bidirectional else 1
 
     Activation functions:
 
-    -  Relu(x) - max(0, x)
-    -  Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
-    -  Sigmoid(x) - 1/(1 + e^{-x})
+    - Relu(x) - max(0, x)
+    - Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
+    - Sigmoid(x) - 1/(1 + e^{-x})
 
     NOTE: Below are optional
 
-    -  Affine(x) - alpha \* x + beta
-    -  LeakyRelu(x) - x if x >= 0 else alpha \* x
-    -  ThresholdedRelu(x) - x if x >= alpha else 0
-    -  ScaledTanh(x) - alpha \* Tanh(beta \* x)
-    -  HardSigmoid(x) - min(max(alpha \* x + beta, 0), 1)
-    -  Elu(x) - x if x >= 0 else alpha \* (e^x - 1)
-    -  Softsign(x) - x/(1 + \|x\|)
-    -  Softplus(x) - log(1 + e^x)
+    - Affine(x) - alpha \* x + beta
+    - LeakyRelu(x) - x if x >= 0 else alpha \* x
+    - ThresholdedRelu(x) - x if x >= alpha else 0
+    - ScaledTanh(x) - alpha \* Tanh(beta \* x)
+    - HardSigmoid(x) - min(max(alpha \* x + beta, 0), 1)
+    - Elu(x) - x if x >= 0 else alpha \* (e^x - 1)
+    - Softsign(x) - x/(1 + \|x\|)
+    - Softplus(x) - log(1 + e^x)
 
     Equations (Default: f=Sigmoid, g=Tanh):
 
-    -  zt = f(Xt*(Wz^T) + Ht-1*(Rz^T) + Wbz + Rbz)
-    -  rt = f(Xt*(Wr^T) + Ht-1*(Rr^T) + Wbr + Rbr)
-    -  ht = g(Xt*(Wh^T) + (rt (.) Ht-1)*(Rh^T) + Rbh + Wbh) # default, when
-       linear_before_reset = 0
-    -  ht = g(Xt*(Wh^T) + (rt (.) (Ht-1*(Rh^T) + Rbh)) + Wbh) # when
-       linear_before_reset != 0
-    -  Ht = (1 - zt) (.) ht + zt (.) Ht-1 This operator has **optional**
-       inputs/outputs. See `the
-       doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
-       details about the representation of optional arguments. An empty
-       string may be used in the place of an actual argument's name to
-       indicate a missing argument. Trailing optional arguments (those not
-       followed by an argument that is present) may also be simply omitted.
+    - zt = f(Xt*(Wz^T) + Ht-1*(Rz^T) + Wbz + Rbz)
+    - rt = f(Xt*(Wr^T) + Ht-1*(Rr^T) + Wbr + Rbr)
+    - ht = g(Xt*(Wh^T) + (rt (.) Ht-1)*(Rh^T) + Rbh + Wbh) # default, when
+      linear_before_reset = 0
+    - ht = g(Xt*(Wh^T) + (rt (.) (Ht-1*(Rh^T) + Rbh)) + Wbh) # when
+      linear_before_reset != 0
+    - Ht = (1 - zt) (.) ht + zt (.) Ht-1 This operator has **optional**
+      inputs/outputs. See `the
+      doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
+      details about the representation of optional arguments. An empty
+      string may be used in the place of an actual argument's name to
+      indicate a missing argument. Trailing optional arguments (those not
+      followed by an argument that is present) may also be simply omitted.
 
     Parameters
     ==========
@@ -7742,8 +7742,8 @@ def gemm(
     General Matrix multiplication:
     https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms#Level_3
 
-    -  A' = transpose(A) if transA else A
-    -  B' = transpose(B) if transB else B
+    - A' = transpose(A) if transA else A
+    - B' = transpose(B) if transB else B
 
     Compute Y = alpha \* A' \* B' + beta \* C, where input tensor A has
     shape (M, K) or (K, M), input tensor B has shape (K, N) or (N, K), input
@@ -7911,7 +7911,7 @@ def global_lp_pool(
     Signature: ``ai.onnx@2::GlobalLpPool``.
 
     Type constraints:
-     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
+     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
     input_prop_values: PropDict = {
         "X": get_value(X),
@@ -8841,65 +8841,65 @@ def lstm(
 
     Notations:
 
-    -  ``X`` - input tensor
-    -  ``i`` - input gate
-    -  ``o`` - output gate
-    -  ``f`` - forget gate
-    -  ``c`` - cell gate
-    -  ``t`` - time step (t-1 means previous time step)
-    -  ``W[iofc]`` - W parameter weight matrix for input, output, forget,
-       and cell gates
-    -  ``R[iofc]`` - R recurrence weight matrix for input, output, forget,
-       and cell gates
-    -  ``Wb[iofc]`` - W bias vectors for input, output, forget, and cell
-       gates
-    -  ``Rb[iofc]`` - R bias vectors for input, output, forget, and cell
-       gates
-    -  ``P[iof]`` - P peephole weight vector for input, output, and forget
-       gates
-    -  ``WB[iofc]`` - W parameter weight matrix for backward input, output,
-       forget, and cell gates
-    -  ``RB[iofc]`` - R recurrence weight matrix for backward input, output,
-       forget, and cell gates
-    -  ``WBb[iofc]`` - W bias vectors for backward input, output, forget,
-       and cell gates
-    -  ``RBb[iofc]`` - R bias vectors for backward input, output, forget,
-       and cell gates
-    -  ``PB[iof]`` - P peephole weight vector for backward input, output,
-       and forget gates
-    -  ``H`` - Hidden state
-    -  ``num_directions`` - 2 if direction == bidirectional else 1
+    - ``X`` - input tensor
+    - ``i`` - input gate
+    - ``o`` - output gate
+    - ``f`` - forget gate
+    - ``c`` - cell gate
+    - ``t`` - time step (t-1 means previous time step)
+    - ``W[iofc]`` - W parameter weight matrix for input, output, forget, and
+      cell gates
+    - ``R[iofc]`` - R recurrence weight matrix for input, output, forget,
+      and cell gates
+    - ``Wb[iofc]`` - W bias vectors for input, output, forget, and cell
+      gates
+    - ``Rb[iofc]`` - R bias vectors for input, output, forget, and cell
+      gates
+    - ``P[iof]`` - P peephole weight vector for input, output, and forget
+      gates
+    - ``WB[iofc]`` - W parameter weight matrix for backward input, output,
+      forget, and cell gates
+    - ``RB[iofc]`` - R recurrence weight matrix for backward input, output,
+      forget, and cell gates
+    - ``WBb[iofc]`` - W bias vectors for backward input, output, forget, and
+      cell gates
+    - ``RBb[iofc]`` - R bias vectors for backward input, output, forget, and
+      cell gates
+    - ``PB[iof]`` - P peephole weight vector for backward input, output, and
+      forget gates
+    - ``H`` - Hidden state
+    - ``num_directions`` - 2 if direction == bidirectional else 1
 
     Activation functions:
 
-    -  Relu(x) - max(0, x)
-    -  Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
-    -  Sigmoid(x) - 1/(1 + e^{-x})
+    - Relu(x) - max(0, x)
+    - Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
+    - Sigmoid(x) - 1/(1 + e^{-x})
 
     NOTE: Below are optional
 
-    -  Affine(x) - alpha*x + beta
-    -  LeakyRelu(x) - x if x >= 0 else alpha \* x
-    -  ThresholdedRelu(x) - x if x >= alpha else 0
-    -  ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
-    -  HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
-    -  Elu(x) - x if x >= 0 else alpha*(e^x - 1)
-    -  Softsign(x) - x/(1 + \|x\|)
-    -  Softplus(x) - log(1 + e^x)
+    - Affine(x) - alpha*x + beta
+    - LeakyRelu(x) - x if x >= 0 else alpha \* x
+    - ThresholdedRelu(x) - x if x >= alpha else 0
+    - ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
+    - HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
+    - Elu(x) - x if x >= 0 else alpha*(e^x - 1)
+    - Softsign(x) - x/(1 + \|x\|)
+    - Softplus(x) - log(1 + e^x)
 
     Equations (Default: f=Sigmoid, g=Tanh, h=Tanh):
 
-    -  it = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Pi (.) Ct-1 + Wbi + Rbi)
-    -  ft = f(Xt*(Wf^T) + Ht-1*(Rf^T) + Pf (.) Ct-1 + Wbf + Rbf)
-    -  ct = g(Xt*(Wc^T) + Ht-1*(Rc^T) + Wbc + Rbc)
-    -  Ct = ft (.) Ct-1 + it (.) ct
-    -  ot = f(Xt*(Wo^T) + Ht-1*(Ro^T) + Po (.) Ct + Wbo + Rbo)
-    -  Ht = ot (.) h(Ct) This operator has **optional** inputs/outputs. See
-       `the doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for
-       more details about the representation of optional arguments. An empty
-       string may be used in the place of an actual argument's name to
-       indicate a missing argument. Trailing optional arguments (those not
-       followed by an argument that is present) may also be simply omitted.
+    - it = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Pi (.) Ct-1 + Wbi + Rbi)
+    - ft = f(Xt*(Wf^T) + Ht-1*(Rf^T) + Pf (.) Ct-1 + Wbf + Rbf)
+    - ct = g(Xt*(Wc^T) + Ht-1*(Rc^T) + Wbc + Rbc)
+    - Ct = ft (.) Ct-1 + it (.) ct
+    - ot = f(Xt*(Wo^T) + Ht-1*(Ro^T) + Po (.) Ct + Wbo + Rbo)
+    - Ht = ot (.) h(Ct) This operator has **optional** inputs/outputs. See
+      `the doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for
+      more details about the representation of optional arguments. An empty
+      string may be used in the place of an actual argument's name to
+      indicate a missing argument. Trailing optional arguments (those not
+      followed by an argument that is present) may also be simply omitted.
 
     Parameters
     ==========
@@ -9434,21 +9434,21 @@ def loop(
 
     Operator inputs defined as (max_trip_count, condition_var).
 
-    -  input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
-       is ignored, but is required in the body }
+    - input ("", ""): for (int i=0; ; ++i) { cond = ... // Note this value
+      is ignored, but is required in the body }
 
-    -  input ("", cond) // Note this is analogous to a while loop bool cond
-       = ...; for (int i=0; cond; ++i) { cond = ...; }
+    - input ("", cond) // Note this is analogous to a while loop bool cond =
+      ...; for (int i=0; cond; ++i) { cond = ...; }
 
-    -  input ("", 1) // Note this is analogous to a do-while loop bool cond
-       = true for (int i=0; cond; ++i) { cond = ...; }
+    - input ("", 1) // Note this is analogous to a do-while loop bool cond =
+      true for (int i=0; cond; ++i) { cond = ...; }
 
-    -  input (trip_count, "") // Note this is analogous to a for loop int
-       trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
-       ignored }
+    - input (trip_count, "") // Note this is analogous to a for loop int
+      trip_count = ... for (int i=0; i < trip_count; ++i) { cond = ...; //
+      ignored }
 
-    -  input (trip_count, cond) int trip_count = ...; bool cond = ...; for
-       (int i=0; i < trip_count && cond; ++i) { cond = ...; }
+    - input (trip_count, cond) int trip_count = ...; bool cond = ...; for
+      (int i=0; i < trip_count && cond; ++i) { cond = ...; }
 
     *Sample usage - cond as well as trip count*
 
@@ -9761,8 +9761,8 @@ def matmul(
     B: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
 
     Parameters
     ==========
@@ -9810,8 +9810,8 @@ def matmul_integer(
     b_zero_point: Optional[Var] = None,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
     The production MUST never overflow. The accumulation may overflow if and
     only if in 32 bits.
 
@@ -9953,8 +9953,7 @@ def max_pool(
        output_spatial_shape[i] = ceil((input_spatial_shape[i] + pad_shape[i] - dilation[i] * (kernel_shape[i] - 1) - 1) / strides_spatial_shape[i] + 1)
 
     if ceil_mode is enabled. ``pad_shape[i]`` is the sum of pads along axis
-    ``i``. Sliding windows that would start in the right padded region are
-    ignored.
+    ``i``.
 
     ``auto_pad`` is a DEPRECATED attribute. If you are using them currently,
     the output spatial shape will be following when ceil_mode is enabled:
@@ -11790,8 +11789,8 @@ def qlinear_matmul(
     y_zero_point: Var,
 ) -> Var:
     r"""
-    Matrix product that behaves like numpy.matmul:
-    https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
+    Matrix product that behaves like
+    `numpy.matmul <https://numpy.org/doc/stable/reference/generated/numpy.matmul.html>`__.
     It consumes two quantized input tensors, their scales and zero points,
     scale and zero point of output, and computes the quantized output. The
     quantization formula is y = saturate((x / y_scale) + y_zero_point). For
@@ -11977,46 +11976,46 @@ def rnn(
 
     Notations:
 
-    -  ``X`` - input tensor
-    -  ``i`` - input gate
-    -  ``t`` - time step (t-1 means previous time step)
-    -  ``Wi`` - W parameter weight matrix for input gate
-    -  ``Ri`` - R recurrence weight matrix for input gate
-    -  ``Wbi`` - W parameter bias vector for input gate
-    -  ``Rbi`` - R parameter bias vector for input gate
-    -  ``WBi`` - W parameter weight matrix for backward input gate
-    -  ``RBi`` - R recurrence weight matrix for backward input gate
-    -  ``WBbi`` - WR bias vectors for backward input gate
-    -  ``RBbi`` - RR bias vectors for backward input gate
-    -  ``H`` - Hidden state
-    -  ``num_directions`` - 2 if direction == bidirectional else 1
+    - ``X`` - input tensor
+    - ``i`` - input gate
+    - ``t`` - time step (t-1 means previous time step)
+    - ``Wi`` - W parameter weight matrix for input gate
+    - ``Ri`` - R recurrence weight matrix for input gate
+    - ``Wbi`` - W parameter bias vector for input gate
+    - ``Rbi`` - R parameter bias vector for input gate
+    - ``WBi`` - W parameter weight matrix for backward input gate
+    - ``RBi`` - R recurrence weight matrix for backward input gate
+    - ``WBbi`` - WR bias vectors for backward input gate
+    - ``RBbi`` - RR bias vectors for backward input gate
+    - ``H`` - Hidden state
+    - ``num_directions`` - 2 if direction == bidirectional else 1
 
     Activation functions:
 
-    -  Relu(x) - max(0, x)
-    -  Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
-    -  Sigmoid(x) - 1/(1 + e^{-x})
+    - Relu(x) - max(0, x)
+    - Tanh(x) - (1 - e^{-2x})/(1 + e^{-2x})
+    - Sigmoid(x) - 1/(1 + e^{-x})
 
     NOTE: Below are optional
 
-    -  Affine(x) - alpha*x + beta
-    -  LeakyRelu(x) - x if x >= 0 else alpha \* x
-    -  ThresholdedRelu(x) - x if x >= alpha else 0
-    -  ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
-    -  HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
-    -  Elu(x) - x if x >= 0 else alpha*(e^x - 1)
-    -  Softsign(x) - x/(1 + \|x\|)
-    -  Softplus(x) - log(1 + e^x)
+    - Affine(x) - alpha*x + beta
+    - LeakyRelu(x) - x if x >= 0 else alpha \* x
+    - ThresholdedRelu(x) - x if x >= alpha else 0
+    - ScaledTanh(x) - alpha\ *Tanh(beta*\ x)
+    - HardSigmoid(x) - min(max(alpha*x + beta, 0), 1)
+    - Elu(x) - x if x >= 0 else alpha*(e^x - 1)
+    - Softsign(x) - x/(1 + \|x\|)
+    - Softplus(x) - log(1 + e^x)
 
     Equations (Default: f=Tanh):
 
-    -  Ht = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Wbi + Rbi) This operator has
-       **optional** inputs/outputs. See `the
-       doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
-       details about the representation of optional arguments. An empty
-       string may be used in the place of an actual argument's name to
-       indicate a missing argument. Trailing optional arguments (those not
-       followed by an argument that is present) may also be simply omitted.
+    - Ht = f(Xt*(Wi^T) + Ht-1*(Ri^T) + Wbi + Rbi) This operator has
+      **optional** inputs/outputs. See `the
+      doc <https://github.com/onnx/onnx/blob/main/docs/IR.md>`__ for more
+      details about the representation of optional arguments. An empty
+      string may be used in the place of an actual argument's name to
+      indicate a missing argument. Trailing optional arguments (those not
+      followed by an argument that is present) may also be simply omitted.
 
     Parameters
     ==========
@@ -15315,10 +15314,10 @@ def softmax_cross_entropy_loss(
     L[i,][j_1][j_2]...[j_k] denotes a scalar element in L. After L is
     available, this operator can optionally do a reduction operator.
 
-    -  shape(scores): (N, C) where C is the number of classes, or (N, C, D1,
-       D2,..., Dk), with K >= 1 in case of K-dimensional loss.
-    -  shape(labels): (N) where each value is 0 <= labels[i] <= C-1, or (N,
-       D1, D2,..., Dk), with K >= 1 in case of K-dimensional loss.
+    - shape(scores): (N, C) where C is the number of classes, or (N, C, D1,
+      D2,..., Dk), with K >= 1 in case of K-dimensional loss.
+    - shape(labels): (N) where each value is 0 <= labels[i] <= C-1, or (N,
+      D1, D2,..., Dk), with K >= 1 in case of K-dimensional loss.
 
     The loss for one sample, l_i, can calculated as follows:
 
@@ -15348,13 +15347,13 @@ def softmax_cross_entropy_loss(
 
     Finally, L is optionally reduced:
 
-    -  If reduction = 'none', the output is L with shape (N, D1, D2, ...,
-       Dk).
-    -  If reduction = 'sum', the output is scalar: Sum(L).
-    -  If reduction = 'mean', the output is scalar: ReduceMean(L), or if
-       weight is provided: ``ReduceSum(L) / ReduceSum(W)``, where tensor W
-       is of shape ``(N, D1, D2, ..., Dk)`` and
-       ``W[n][d1][d2]...[dk] = weights[labels[i][d1][d2]...[dk]]``.
+    - If reduction = 'none', the output is L with shape (N, D1, D2, ...,
+      Dk).
+    - If reduction = 'sum', the output is scalar: Sum(L).
+    - If reduction = 'mean', the output is scalar: ReduceMean(L), or if
+      weight is provided: ``ReduceSum(L) / ReduceSum(W)``, where tensor W is
+      of shape ``(N, D1, D2, ..., Dk)`` and
+      ``W[n][d1][d2]...[dk] = weights[labels[i][d1][d2]...[dk]]``.
 
     Parameters
     ==========
@@ -16316,22 +16315,22 @@ def top_k(
     Given an input tensor of shape [a_0, a_1, ..., a\_{n-1}] and integer
     argument k, return two outputs:
 
-    -  Value tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1},
-       ... a\_{n-1}] which contains the values of the top k elements along
-       the specified axis
+    - Value tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
+      a\_{n-1}] which contains the values of the top k elements along the
+      specified axis
 
-    -  Index tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1},
-       ... a\_{n-1}] which contains the indices of the top k elements
-       (original indices from the input tensor).
+    - Index tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
+      a\_{n-1}] which contains the indices of the top k elements (original
+      indices from the input tensor).
 
-    -  If "largest" is 1 (the default value) then the k largest elements are
-       returned.
+    - If "largest" is 1 (the default value) then the k largest elements are
+      returned.
 
-    -  If "sorted" is 1 (the default value) then the resulting k elements
-       will be sorted.
+    - If "sorted" is 1 (the default value) then the resulting k elements
+      will be sorted.
 
-    -  If "sorted" is 0, order of returned 'Values' and 'Indices' are
-       undefined.
+    - If "sorted" is 0, order of returned 'Values' and 'Indices' are
+      undefined.
 
     Given two equivalent values, this operator uses the indices along the
     axis as a tiebreaker. That is, the element with the lower index will
