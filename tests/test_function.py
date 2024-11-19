@@ -14,7 +14,7 @@ import pytest
 
 import spox.opset.ai.onnx.v17 as op
 from spox._attributes import Attr, AttrFloat32, _Ref
-from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
+from spox._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars
 from spox._function import Function, to_function
 from spox._graph import arguments, results
 from spox._node import OpType
@@ -44,7 +44,7 @@ def linear():
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: BaseVars) -> Outputs:
             # FIXME: At some point, attribute references should be properly type-hinted.
             a = op.constant(
                 value_float=_Ref(
@@ -56,7 +56,7 @@ def linear():
                     attrs["shift_outer"], outer_name="shift_outer", name="value_float"
                 )  # type: ignore
             )
-            x = Var(inputs.X)
+            x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b)._var_info)
 
     def linear_inner(
@@ -99,10 +99,10 @@ def linear2(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: BaseVars) -> Outputs:
             return self.Outputs(
                 linear(
-                    Var(inputs.X),
+                    inputs.X,
                     _Ref(attrs["slope1"], outer_name="slope1", name="slope_outer"),
                     _Ref(attrs["shift1"], outer_name="shift1", name="shift_outer"),
                 )._var_info
@@ -150,8 +150,8 @@ def cubic(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
-            x = Var(inputs.X)
+        def constructor(self, attrs: dict[str, Attr], inputs: BaseVars) -> Outputs:
+            x = inputs["X"]
             a = op.mul(
                 linear(
                     x,

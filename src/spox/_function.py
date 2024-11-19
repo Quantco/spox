@@ -10,11 +10,11 @@ from typing import TYPE_CHECKING, Callable, TypeVar
 import onnx
 
 from . import _attributes
-from ._fields import BaseAttributes, BaseInputs, BaseOutputs
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
-from ._var import Var, VarInfo, unwrap_vars, wrap_vars
+from ._var import Var, VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
     from . import _graph
@@ -48,7 +48,7 @@ class Function(_InternalNode):
     func_outputs: BaseOutputs
     func_graph: "_graph.Graph"
 
-    def constructor(self, attrs, inputs):
+    def constructor(self, attrs: dict[str, _attributes.Attr], inputs: BaseVars):
         """
         Abstract method for functions.
 
@@ -79,7 +79,9 @@ class Function(_InternalNode):
             self.func_attrs[name] = attr
 
         self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
-        self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
+        self.func_outputs = self.constructor(
+            self.func_attrs, self.func_inputs.vars(input_prop_values)
+        )
         self.func_graph = _graph.results(
             **self.func_outputs._propagate_vars(input_prop_values).flatten_vars()
         ).with_arguments(*func_args_var.values())
@@ -146,10 +148,8 @@ def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
         Outputs = _FuncOutputs
         op_type = OpType(name, domain, version)
 
-        def constructor(self, attrs, inputs):
-            return self.Outputs(
-                *unwrap_vars(fun(*wrap_vars(inputs.get_fields().values())))
-            )
+        def constructor(self, attrs: dict[str, _attributes.Attr], inputs: BaseVars):
+            return self.Outputs(*unwrap_vars(fun(*inputs.flatten_vars().values())))
 
     return _Func
 

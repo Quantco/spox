@@ -167,14 +167,14 @@ class BaseInputs(BaseVarInfos):
             field_value = getattr(self, field.name)
 
             if field_type == VarFieldKind.SINGLE:
-                prop_value = cast(PropValue, prop_values[field.name])
+                prop_value = cast(PropValue, prop_values.get(field.name, None))
                 vars_dict[field.name] = Var(field_value, prop_value)
 
             elif (
                 field_type == VarFieldKind.OPTIONAL
                 and prop_values.get(field.name, None) is not None
             ):
-                prop_value = cast(PropValue, prop_values[field.name])
+                prop_value = cast(PropValue, prop_values.get(field.name, None))
                 vars_dict[field.name] = Var(field_value, prop_value)
 
             elif field_type == VarFieldKind.VARIADIC:
