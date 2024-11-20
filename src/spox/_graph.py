@@ -22,7 +22,7 @@ from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
 from ._utils import from_array
-from ._var import Var, VarInfo
+from ._var import Var, _VarInfo
 
 
 def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var]:
@@ -222,7 +222,7 @@ class Graph:
         """Results (named) requested by this Graph (for building)."""
         return self._results
 
-    def get_arguments(self) -> dict[str, VarInfo]:
+    def get_arguments(self) -> dict[str, _VarInfo]:
         """
         Get the effective named arguments (after build) of this Graph.
 
@@ -233,7 +233,7 @@ class Graph:
             for var in self._get_build_result().arguments
         }
 
-    def get_results(self) -> dict[str, VarInfo]:
+    def get_results(self) -> dict[str, _VarInfo]:
         """
         Get the effective named results (after build) of this Graph.
 

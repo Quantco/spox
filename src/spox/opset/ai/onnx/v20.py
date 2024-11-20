@@ -19,7 +19,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
 from spox._value_prop import PropDict
-from spox._var import Var, VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v19 import (
     _GRU,
     _LRN,
@@ -387,12 +387,12 @@ class _AffineGrid(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        theta: VarInfo
-        size: VarInfo
+        theta: _VarInfo
+        size: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        grid: VarInfo
+        grid: _VarInfo
 
     op_type = OpType("AffineGrid", "", 20)
 
@@ -408,11 +408,11 @@ class _ConstantOfShape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
+        input: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("ConstantOfShape", "", 20)
 
@@ -429,13 +429,13 @@ class _DFT(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
-        dft_length: Optional[VarInfo]
-        axis: Optional[VarInfo]
+        input: _VarInfo
+        dft_length: Optional[_VarInfo]
+        axis: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("DFT", "", 20)
 
@@ -451,11 +451,11 @@ class _Gelu(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("Gelu", "", 20)
 
@@ -473,12 +473,12 @@ class _GridSample(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
-        grid: VarInfo
+        X: _VarInfo
+        grid: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("GridSample", "", 20)
 
@@ -494,11 +494,11 @@ class _ImageDecoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        encoded_stream: VarInfo
+        encoded_stream: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        image: VarInfo
+        image: _VarInfo
 
     op_type = OpType("ImageDecoder", "", 20)
 
@@ -515,11 +515,11 @@ class _IsInf(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("IsInf", "", 20)
 
@@ -535,11 +535,11 @@ class _IsNaN(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("IsNaN", "", 20)
 
@@ -556,12 +556,12 @@ class _ReduceMax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceMax", "", 20)
 
@@ -578,12 +578,12 @@ class _ReduceMin(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceMin", "", 20)
 
@@ -599,11 +599,11 @@ class _RegexFullMatch(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("RegexFullMatch", "", 20)
 
@@ -619,12 +619,12 @@ class _StringConcat(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
-        Y: VarInfo
+        X: _VarInfo
+        Y: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: VarInfo
+        Z: _VarInfo
 
     op_type = OpType("StringConcat", "", 20)
 
@@ -641,12 +641,12 @@ class _StringSplit(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
-        Z: VarInfo
+        Y: _VarInfo
+        Z: _VarInfo
 
     op_type = OpType("StringSplit", "", 20)
 

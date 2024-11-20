@@ -14,7 +14,7 @@ from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._utils import from_array
-from ._var import VarInfo
+from ._var import _VarInfo
 
 
 def adapt_node(
@@ -22,7 +22,7 @@ def adapt_node(
     proto: onnx.NodeProto,
     source_version: int,
     target_version: int,
-    var_names: dict[VarInfo, str],
+    var_names: dict[_VarInfo, str],
 ) -> Optional[list[onnx.NodeProto]]:
     if source_version == target_version:
         return None
@@ -70,7 +70,7 @@ def adapt_inline(
     node: _Inline,
     protos: list[onnx.NodeProto],
     target_opsets: dict[str, int],
-    var_names: dict[VarInfo, str],
+    var_names: dict[_VarInfo, str],
     node_name: str,
 ) -> list[onnx.NodeProto]:
     source_version = max({v for d, v in node.opset_req if d in ("", "ai.onnx")})
@@ -98,7 +98,7 @@ def adapt_best_effort(
     node: Node,
     protos: list[onnx.NodeProto],
     opsets: dict[str, int],
-    var_names: dict[VarInfo, str],
+    var_names: dict[_VarInfo, str],
     node_names: dict[Node, str],
 ) -> Optional[list[onnx.NodeProto]]:
     if isinstance(node, _Inline):

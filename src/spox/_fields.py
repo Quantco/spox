@@ -11,7 +11,7 @@ from typing import Any, Optional, Union, cast
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
 from ._value_prop import PropDict, PropValue
-from ._var import Var, VarInfo
+from ._var import Var, _VarInfo
 
 
 @dataclass
@@ -87,10 +87,10 @@ class BaseVarInfos(BaseFields):
             value = getattr(self, field.name)
             field_type = self._get_field_type(field)
             if field_type == VarFieldKind.SINGLE:
-                if not isinstance(value, VarInfo):
+                if not isinstance(value, _VarInfo):
                     raise TypeError(f"Field expected VarInfo, got: {type(value)}.")
             elif field_type == VarFieldKind.OPTIONAL:
-                if value is not None and not isinstance(value, VarInfo):
+                if value is not None and not isinstance(value, _VarInfo):
                     raise TypeError(
                         f"Optional must be VarInfo or None, got: {type(value)}."
                     )
@@ -101,7 +101,7 @@ class BaseVarInfos(BaseFields):
                     )
                 # Cast to tuple to avoid accidental mutation
                 setattr(self, field.name, tuple(value))
-                if bad := {type(var) for var in value} - {VarInfo}:
+                if bad := {type(var) for var in value} - {_VarInfo}:
                     raise TypeError(
                         f"Variadic field must only consist of VarInfos, got: {bad}."
                     )
@@ -109,23 +109,23 @@ class BaseVarInfos(BaseFields):
     @classmethod
     def _get_field_type(cls, field) -> VarFieldKind:
         """Access the kind of the field (single, optional, variadic) based on its type annotation."""
-        if field.type == VarInfo:
+        if field.type == _VarInfo:
             return VarFieldKind.SINGLE
-        elif field.type == Optional[VarInfo]:
+        elif field.type == Optional[_VarInfo]:
             return VarFieldKind.OPTIONAL
-        elif field.type == Sequence[VarInfo]:
+        elif field.type == Sequence[_VarInfo]:
             return VarFieldKind.VARIADIC
         raise ValueError(f"Bad field type: '{field.type}'.")
 
-    def _flatten(self) -> Iterable[tuple[str, Optional[VarInfo]]]:
+    def _flatten(self) -> Iterable[tuple[str, Optional[_VarInfo]]]:
         """Iterate over the pairs of names and values of fields in this object."""
         for key, value in self.__dict__.items():
-            if value is None or isinstance(value, VarInfo):
+            if value is None or isinstance(value, _VarInfo):
                 yield key, value
             else:
                 yield from ((f"{key}_{i}", v) for i, v in enumerate(value))
 
-    def __iter__(self) -> Iterator[Optional[VarInfo]]:
+    def __iter__(self) -> Iterator[Optional[_VarInfo]]:
         """Iterate over the values of fields in this object."""
         yield from (v for _, v in self._flatten())
 
@@ -133,11 +133,11 @@ class BaseVarInfos(BaseFields):
         """Count the number of fields in this object (should be same as declared in the class)."""
         return sum(1 for _ in self)
 
-    def get_var_infos(self) -> dict[str, VarInfo]:
+    def get_var_infos(self) -> dict[str, _VarInfo]:
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
-    def get_fields(self) -> dict[str, Union[None, VarInfo, Sequence[VarInfo]]]:
+    def get_fields(self) -> dict[str, Union[None, _VarInfo, Sequence[_VarInfo]]]:
         """Return a mapping of all fields stored in this object by name."""
         return self.__dict__.copy()
 
@@ -218,7 +218,7 @@ class BaseOutputs(BaseVarInfos):
         ret_dict = {}
 
         for key, var_info in self.__dict__.items():
-            if var_info is None or isinstance(var_info, VarInfo):
+            if var_info is None or isinstance(var_info, _VarInfo):
                 ret_dict[key] = _create_var(key, var_info)
             else:
                 ret_dict[key] = [

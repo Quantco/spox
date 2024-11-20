@@ -5,7 +5,7 @@ from collections.abc import Hashable
 from typing import Generic, Optional, TypeVar, Union, overload
 
 from ._node import Node
-from ._var import VarInfo
+from ._var import _VarInfo
 
 H = TypeVar("H", bound=Hashable)
 
@@ -155,12 +155,12 @@ class Scope:
     Has namespaces (represented by a ScopeSpace) for VarInfos and Nodes.
     """
 
-    var: ScopeSpace[VarInfo]
+    var: ScopeSpace[_VarInfo]
     node: ScopeSpace[Node]
 
     def __init__(
         self,
-        sub_var: Optional[ScopeSpace[VarInfo]] = None,
+        sub_var: Optional[ScopeSpace[_VarInfo]] = None,
         sub_node: Optional[ScopeSpace[Node]] = None,
         parent: Optional["Scope"] = None,
     ):
@@ -180,7 +180,7 @@ class Scope:
             if not isinstance(key, str):
                 key, value = value, key
             assert isinstance(key, str)
-            if isinstance(value, VarInfo):
+            if isinstance(value, _VarInfo):
                 scope.var[key] = value
             elif isinstance(value, Node):
                 scope.node[key] = value

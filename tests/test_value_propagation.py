@@ -13,7 +13,7 @@ from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
 from spox._value_prop import ORTValue, PropValue
-from spox._var import VarInfo
+from spox._var import _VarInfo
 
 
 @pytest.fixture(
@@ -28,7 +28,7 @@ def value_prop_backend(request):
 
 def dummy_var(typ=None, value=None):
     """Function for creating a ``var`` without an operator but with a type and value."""
-    return Var(VarInfo(None, typ), value)  # type: ignore
+    return Var(_VarInfo(None, typ), value)  # type: ignore
 
 
 def assert_equal_value(var: Var, expected: ORTValue):

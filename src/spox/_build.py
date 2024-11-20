@@ -21,7 +21,7 @@ from ._internal_op import Argument, intros
 from ._node import Node
 from ._scope import Scope
 from ._traverse import iterative_dfs
-from ._var import Var, VarInfo, unwrap_vars
+from ._var import Var, _VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -58,11 +58,11 @@ class BuildResult:
 
     scope: Scope
     nodes: dict[Node, tuple[onnx.NodeProto, ...]]
-    arguments: tuple[VarInfo, ...]
-    results: tuple[VarInfo, ...]
+    arguments: tuple[_VarInfo, ...]
+    results: tuple[_VarInfo, ...]
     opset_req: set[tuple[str, int]]
     functions: tuple["_function.Function", ...]
-    initializers: dict[VarInfo, np.ndarray]
+    initializers: dict[_VarInfo, np.ndarray]
 
 
 class Builder:
@@ -164,12 +164,12 @@ class Builder:
     graphs: set["Graph"]
     graph_topo: list["Graph"]
     # Arguments, results
-    arguments_of: dict["Graph", list[VarInfo]]
-    results_of: dict["Graph", list[VarInfo]]
+    arguments_of: dict["Graph", list[_VarInfo]]
+    results_of: dict["Graph", list[_VarInfo]]
     source_of: dict["Graph", Node]
     # Arguments found by traversal
-    all_arguments_in: dict["Graph", set[VarInfo]]
-    claimed_arguments_in: dict["Graph", set[VarInfo]]
+    all_arguments_in: dict["Graph", set[_VarInfo]]
+    claimed_arguments_in: dict["Graph", set[_VarInfo]]
     # Scopes
     scope_tree: ScopeTree
     scope_own: dict["Graph", list[Node]]
@@ -218,7 +218,7 @@ class Builder:
                 var._rename(key)
         return vars
 
-    def discover(self, graph: "Graph") -> tuple[set[VarInfo], set[VarInfo]]:
+    def discover(self, graph: "Graph") -> tuple[set[_VarInfo], set[_VarInfo]]:
         """
         Run the discovery step of the build process. Resolves arguments and results for the involved graphs.
         Finds the topological ordering between (sub)graphs and sets their owners (nodes of which they are attributes).
@@ -432,7 +432,7 @@ class Builder:
         # A bunch of model metadata we're collecting
         opset_req: set[tuple[str, int]] = set()
         functions: list[_function.Function] = []
-        initializers: dict[VarInfo, np.ndarray] = {}
+        initializers: dict[_VarInfo, np.ndarray] = {}
 
         # Add arguments to our scope
         for arg in self.arguments_of[graph]:

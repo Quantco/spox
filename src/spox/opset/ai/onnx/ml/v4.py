@@ -23,7 +23,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
 from spox._value_prop import PropDict
-from spox._var import Var, VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.ml.v3 import (
     _ArrayFeatureExtractor,
     _Binarizer,
@@ -80,11 +80,11 @@ class _LabelEncoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("LabelEncoder", "ai.onnx.ml", 4)
 

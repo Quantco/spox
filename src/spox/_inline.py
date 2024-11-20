@@ -14,7 +14,7 @@ from spox._internal_op import INTERNAL_MIN_OPSET, _InternalNode
 from spox._node import OpType
 from spox._scope import Scope
 from spox._type_system import Type
-from spox._var import VarInfo
+from spox._var import _VarInfo
 
 from . import _value_prop
 
@@ -86,11 +86,11 @@ class _Inline(_InternalNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        inputs: Sequence[VarInfo]
+        inputs: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[VarInfo]
+        outputs: Sequence[_VarInfo]
 
     op_type = OpType("Inline", "spox.internal", 0)
 

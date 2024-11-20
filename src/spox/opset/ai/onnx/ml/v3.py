@@ -24,7 +24,7 @@ from spox._node import OpType
 from spox._standard import InferenceError, StandardNode
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict
-from spox._var import Var, VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, get_value, unwrap_vars
 
 
 class _ArrayFeatureExtractor(StandardNode):
@@ -34,12 +34,12 @@ class _ArrayFeatureExtractor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
-        Y: VarInfo
+        X: _VarInfo
+        Y: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: VarInfo
+        Z: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -70,11 +70,11 @@ class _Binarizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
@@ -95,11 +95,11 @@ class _CastMap(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("CastMap", "ai.onnx.ml", 1)
 
@@ -118,11 +118,11 @@ class _CategoryMapper(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -151,11 +151,11 @@ class _DictVectorizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("DictVectorizer", "ai.onnx.ml", 1)
 
@@ -171,11 +171,11 @@ class _FeatureVectorizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Sequence[VarInfo]
+        X: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("FeatureVectorizer", "ai.onnx.ml", 1)
 
@@ -194,11 +194,11 @@ class _Imputer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -257,11 +257,11 @@ class _LabelEncoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("LabelEncoder", "ai.onnx.ml", 2)
 
@@ -282,12 +282,12 @@ class _LinearClassifier(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
-        Z: VarInfo
+        Y: _VarInfo
+        Z: _VarInfo
 
     op_type = OpType("LinearClassifier", "ai.onnx.ml", 1)
 
@@ -306,11 +306,11 @@ class _LinearRegressor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -340,11 +340,11 @@ class _Normalizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.attrs.norm.value not in ("MAX", "L1", "L2"):
@@ -369,11 +369,11 @@ class _OneHotEncoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
@@ -413,12 +413,12 @@ class _SVMClassifier(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
-        Z: VarInfo
+        Y: _VarInfo
+        Z: _VarInfo
 
     op_type = OpType("SVMClassifier", "ai.onnx.ml", 1)
 
@@ -441,11 +441,11 @@ class _SVMRegressor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("SVMRegressor", "ai.onnx.ml", 1)
 
@@ -462,11 +462,11 @@ class _Scaler(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.inputs.X.type is None:
@@ -521,12 +521,12 @@ class _TreeEnsembleClassifier(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
-        Z: VarInfo
+        Y: _VarInfo
+        Z: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         e = (
@@ -586,11 +586,11 @@ class _TreeEnsembleRegressor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.inputs.fully_typed:
@@ -620,11 +620,11 @@ class _ZipMap(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: VarInfo
+        Z: _VarInfo
 
     op_type = OpType("ZipMap", "ai.onnx.ml", 1)
 

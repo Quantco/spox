@@ -30,7 +30,7 @@ from spox._node import OpType
 from spox._standard import StandardNode
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict, PropValueType
-from spox._var import Var, VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v18 import (
     _DFT,
     _GRU,
@@ -384,11 +384,11 @@ class _AveragePool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("AveragePool", "", 19)
 
@@ -405,11 +405,11 @@ class _Cast(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
+        input: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("Cast", "", 19)
 
@@ -425,12 +425,12 @@ class _CastLike(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
-        target_type: VarInfo
+        input: _VarInfo
+        target_type: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("CastLike", "", 19)
 
@@ -454,7 +454,7 @@ class _Constant(StandardNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
         ((key, raw),) = (
@@ -501,15 +501,15 @@ class _DeformConv(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
-        W: VarInfo
-        offset: VarInfo
-        B: Optional[VarInfo]
-        mask: Optional[VarInfo]
+        X: _VarInfo
+        W: _VarInfo
+        offset: _VarInfo
+        B: Optional[_VarInfo]
+        mask: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("DeformConv", "", 19)
 
@@ -525,13 +525,13 @@ class _DequantizeLinear(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: VarInfo
-        x_scale: VarInfo
-        x_zero_point: Optional[VarInfo]
+        x: _VarInfo
+        x_scale: _VarInfo
+        x_zero_point: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: VarInfo
+        y: _VarInfo
 
     op_type = OpType("DequantizeLinear", "", 19)
 
@@ -547,12 +547,12 @@ class _Equal(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: VarInfo
-        B: VarInfo
+        A: _VarInfo
+        B: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: VarInfo
+        C: _VarInfo
 
     op_type = OpType("Equal", "", 19)
 
@@ -568,11 +568,11 @@ class _Identity(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
+        input: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("Identity", "", 19)
 
@@ -589,11 +589,11 @@ class _If(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        cond: VarInfo
+        cond: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[VarInfo]
+        outputs: Sequence[_VarInfo]
 
     op_type = OpType("If", "", 19)
 
@@ -609,13 +609,13 @@ class _Loop(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        M: Optional[VarInfo]
-        cond: Optional[VarInfo]
-        v_initial: Sequence[VarInfo]
+        M: Optional[_VarInfo]
+        cond: Optional[_VarInfo]
+        v_initial: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        v_final_and_scan_outputs: Sequence[VarInfo]
+        v_final_and_scan_outputs: Sequence[_VarInfo]
 
     op_type = OpType("Loop", "", 19)
 
@@ -631,14 +631,14 @@ class _Pad(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        pads: VarInfo
-        constant_value: Optional[VarInfo]
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        pads: _VarInfo
+        constant_value: Optional[_VarInfo]
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("Pad", "", 19)
 
@@ -655,13 +655,13 @@ class _QuantizeLinear(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: VarInfo
-        y_scale: VarInfo
-        y_zero_point: Optional[VarInfo]
+        x: _VarInfo
+        y_scale: _VarInfo
+        y_zero_point: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: VarInfo
+        y: _VarInfo
 
     op_type = OpType("QuantizeLinear", "", 19)
 
@@ -677,12 +677,12 @@ class _Reshape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        shape: VarInfo
+        data: _VarInfo
+        shape: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reshaped: VarInfo
+        reshaped: _VarInfo
 
     op_type = OpType("Reshape", "", 19)
 
@@ -706,14 +706,14 @@ class _Resize(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
-        roi: Optional[VarInfo]
-        scales: Optional[VarInfo]
-        sizes: Optional[VarInfo]
+        X: _VarInfo
+        roi: Optional[_VarInfo]
+        scales: Optional[_VarInfo]
+        sizes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("Resize", "", 19)
 
@@ -734,11 +734,11 @@ class _Scan(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        initial_state_and_scan_inputs: Sequence[VarInfo]
+        initial_state_and_scan_inputs: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        final_state_and_scan_outputs: Sequence[VarInfo]
+        final_state_and_scan_outputs: Sequence[_VarInfo]
 
     op_type = OpType("Scan", "", 19)
 
@@ -755,11 +755,11 @@ class _Shape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
+        data: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        shape: VarInfo
+        shape: _VarInfo
 
     op_type = OpType("Shape", "", 19)
 
@@ -775,11 +775,11 @@ class _Size(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
+        data: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        size: VarInfo
+        size: _VarInfo
 
     op_type = OpType("Size", "", 19)
 

@@ -21,7 +21,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
 from spox._value_prop import PropDict
-from spox._var import Var, VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, get_value, unwrap_vars
 from spox.opset.ai.onnx.v17 import (
     _DFT,
     _GRU,
@@ -351,12 +351,12 @@ class _BitwiseAnd(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: VarInfo
-        B: VarInfo
+        A: _VarInfo
+        B: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: VarInfo
+        C: _VarInfo
 
     op_type = OpType("BitwiseAnd", "", 18)
 
@@ -372,11 +372,11 @@ class _BitwiseNot(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("BitwiseNot", "", 18)
 
@@ -392,12 +392,12 @@ class _BitwiseOr(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: VarInfo
-        B: VarInfo
+        A: _VarInfo
+        B: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: VarInfo
+        C: _VarInfo
 
     op_type = OpType("BitwiseOr", "", 18)
 
@@ -413,12 +413,12 @@ class _BitwiseXor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: VarInfo
-        B: VarInfo
+        A: _VarInfo
+        B: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: VarInfo
+        C: _VarInfo
 
     op_type = OpType("BitwiseXor", "", 18)
 
@@ -434,12 +434,12 @@ class _CenterCropPad(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input_data: VarInfo
-        shape: VarInfo
+        input_data: _VarInfo
+        shape: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output_data: VarInfo
+        output_data: _VarInfo
 
     op_type = OpType("CenterCropPad", "", 18)
 
@@ -457,13 +457,13 @@ class _Col2Im(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
-        image_shape: VarInfo
-        block_shape: VarInfo
+        input: _VarInfo
+        image_shape: _VarInfo
+        block_shape: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("Col2Im", "", 18)
 
@@ -480,13 +480,13 @@ class _GroupNormalization(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
-        scale: VarInfo
-        bias: VarInfo
+        X: _VarInfo
+        scale: _VarInfo
+        bias: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("GroupNormalization", "", 18)
 
@@ -508,11 +508,11 @@ class _LpPool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("LpPool", "", 18)
 
@@ -528,11 +528,11 @@ class _Mish(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("Mish", "", 18)
 
@@ -548,11 +548,11 @@ class _OptionalGetElement(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
+        input: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("OptionalGetElement", "", 18)
 
@@ -568,11 +568,11 @@ class _OptionalHasElement(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Optional[VarInfo]
+        input: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("OptionalHasElement", "", 18)
 
@@ -588,14 +588,14 @@ class _Pad(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        pads: VarInfo
-        constant_value: Optional[VarInfo]
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        pads: _VarInfo
+        constant_value: Optional[_VarInfo]
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("Pad", "", 18)
 
@@ -612,12 +612,12 @@ class _ReduceL1(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceL1", "", 18)
 
@@ -634,12 +634,12 @@ class _ReduceL2(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceL2", "", 18)
 
@@ -656,12 +656,12 @@ class _ReduceLogSum(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceLogSum", "", 18)
 
@@ -678,12 +678,12 @@ class _ReduceLogSumExp(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceLogSumExp", "", 18)
 
@@ -700,12 +700,12 @@ class _ReduceMax(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceMax", "", 18)
 
@@ -722,12 +722,12 @@ class _ReduceMean(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceMean", "", 18)
 
@@ -744,12 +744,12 @@ class _ReduceMin(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceMin", "", 18)
 
@@ -766,12 +766,12 @@ class _ReduceProd(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceProd", "", 18)
 
@@ -788,12 +788,12 @@ class _ReduceSumSquare(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        axes: Optional[VarInfo]
+        data: _VarInfo
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        reduced: VarInfo
+        reduced: _VarInfo
 
     op_type = OpType("ReduceSumSquare", "", 18)
 
@@ -817,14 +817,14 @@ class _Resize(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
-        roi: Optional[VarInfo]
-        scales: Optional[VarInfo]
-        sizes: Optional[VarInfo]
+        X: _VarInfo
+        roi: Optional[_VarInfo]
+        scales: Optional[_VarInfo]
+        sizes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     op_type = OpType("Resize", "", 18)
 
@@ -841,13 +841,13 @@ class _ScatterElements(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        indices: VarInfo
-        updates: VarInfo
+        data: _VarInfo
+        indices: _VarInfo
+        updates: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("ScatterElements", "", 18)
 
@@ -863,13 +863,13 @@ class _ScatterND(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: VarInfo
-        indices: VarInfo
-        updates: VarInfo
+        data: _VarInfo
+        indices: _VarInfo
+        updates: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: VarInfo
+        output: _VarInfo
 
     op_type = OpType("ScatterND", "", 18)
 
@@ -886,12 +886,12 @@ class _Split(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: VarInfo
-        split: Optional[VarInfo]
+        input: _VarInfo
+        split: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[VarInfo]
+        outputs: Sequence[_VarInfo]
 
     op_type = OpType("Split", "", 18)
 

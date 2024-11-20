@@ -20,7 +20,7 @@ from ._exceptions import InferenceWarning
 from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
 from ._type_system import Type
 from ._value_prop import PropDict
-from ._var import VarInfo
+from ._var import _VarInfo
 
 if typing.TYPE_CHECKING:
     from ._graph import Graph
@@ -308,28 +308,28 @@ class Node(ABC):
             (variadic,) = variadics
         else:
             variadic = None
-        outputs: dict[str, Union[VarInfo, Sequence[VarInfo]]] = {
-            field.name: VarInfo(self, None)
+        outputs: dict[str, Union[_VarInfo, Sequence[_VarInfo]]] = {
+            field.name: _VarInfo(self, None)
             for field in dataclasses.fields(self.Outputs)
             if field.name != variadic
         }
         if variadic is not None:
             assert self.out_variadic is not None
-            outputs[variadic] = [VarInfo(self, None) for _ in range(self.out_variadic)]
+            outputs[variadic] = [_VarInfo(self, None) for _ in range(self.out_variadic)]
         return self.Outputs(**outputs)  # type: ignore
 
     @property
-    def dependencies(self) -> Iterable[VarInfo]:
+    def dependencies(self) -> Iterable[_VarInfo]:
         """List of input VarInfos into this Node."""
         return (var for var in self.inputs.get_var_infos().values())
 
     @property
-    def dependents(self) -> Iterable[VarInfo]:
+    def dependents(self) -> Iterable[_VarInfo]:
         """List of output VarInfos from this Node."""
         return (var for var in self.outputs.get_var_infos().values())
 
     @property
-    def incident(self) -> Iterable[VarInfo]:
+    def incident(self) -> Iterable[_VarInfo]:
         """List of both input and output VarInfos for this Node."""
         return itertools.chain(self.dependencies, self.dependents)
 

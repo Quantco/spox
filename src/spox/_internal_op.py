@@ -20,7 +20,7 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
 from ._value_prop import PropDict, PropValueType
-from ._var import Var, VarInfo, unwrap_vars
+from ._var import Var, _VarInfo, unwrap_vars
 
 # This is a default used for internal operators that
 # require the default domain. The most common of these
@@ -78,7 +78,7 @@ class Argument(_InternalNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        arg: VarInfo
+        arg: _VarInfo
 
     attrs: Attributes
     inputs: Inputs
@@ -115,7 +115,7 @@ class _Initializer(_InternalNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        arg: VarInfo
+        arg: _VarInfo
 
     attrs: Attributes
     inputs: BaseInputs
@@ -149,11 +149,11 @@ class _Introduce(_InternalNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        inputs: Sequence[VarInfo]
+        inputs: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[VarInfo]
+        outputs: Sequence[_VarInfo]
 
     op_type = OpType("Introduce", "spox.internal", 0)
 

@@ -19,7 +19,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
 from spox._node import Node, OpType
 from spox._type_system import Tensor, Type
-from spox._var import VarInfo
+from spox._var import _VarInfo
 
 
 # Define the Node for this operator - need to know the attributes, inputs and outputs statically
@@ -33,11 +33,11 @@ class Inverse(Node):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: VarInfo
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: VarInfo
+        Y: _VarInfo
 
     # This is optional, but is useful when defining the inference functions below.
     attrs: Attributes

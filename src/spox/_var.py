@@ -22,7 +22,7 @@ class NotImplementedOperatorDispatcher:
     add = sub = mul = truediv = floordiv = neg = and_ = or_ = xor = not_ = _not_impl
 
 
-class VarInfo:
+class _VarInfo:
     """
     Internal information about a ``Var``. Should be mainly inaccessible for most uses of ``spox``.
 
@@ -100,12 +100,12 @@ class VarInfo:
         """Equivalent to ``self.unwrap_type().unwrap_optional()``."""
         return self.unwrap_type().unwrap_optional()
 
-    def __copy__(self) -> "VarInfo":
+    def __copy__(self) -> "_VarInfo":
         # Simply return `self` to ensure that "copies" are still equal
         # during the build process
         return self
 
-    def __deepcopy__(self, _) -> "VarInfo":
+    def __deepcopy__(self, _) -> "_VarInfo":
         raise ValueError("'VarInfo' objects cannot be deepcopied.")
 
 
@@ -137,14 +137,14 @@ class Var:
     Should not be constructed directly - the main source of ``VarInfo`` objects are operator constructors.
     """
 
-    _var_info: VarInfo
+    _var_info: _VarInfo
     _value: Optional[_value_prop.PropValue]
 
     _operator_dispatcher: ClassVar[Any] = NotImplementedOperatorDispatcher()
 
     def __init__(
         self,
-        var_info: VarInfo,
+        var_info: _VarInfo,
         value: Optional[_value_prop.PropValue] = None,
     ):
         """The initializer of ``Var`` is protected. Use operator constructors to construct them instead."""
@@ -296,25 +296,25 @@ T = TypeVar("T")
 
 
 @overload
-def wrap_vars(var_info: VarInfo) -> Var: ...
+def wrap_vars(var_info: _VarInfo) -> Var: ...
 
 
 @overload
-def wrap_vars(var_info: Optional[VarInfo]) -> Optional[Var]: ...
+def wrap_vars(var_info: Optional[_VarInfo]) -> Optional[Var]: ...
 
 
 @overload
-def wrap_vars(var_info: dict[T, VarInfo]) -> dict[T, Var]: ...  # type: ignore[misc]
+def wrap_vars(var_info: dict[T, _VarInfo]) -> dict[T, Var]: ...  # type: ignore[misc]
 
 
 @overload
-def wrap_vars(var_info: Union[Sequence[VarInfo], Iterable[VarInfo]]) -> list[Var]: ...
+def wrap_vars(var_info: Union[Sequence[_VarInfo], Iterable[_VarInfo]]) -> list[Var]: ...
 
 
 def wrap_vars(var_info):
     if var_info is None:
         return None
-    elif isinstance(var_info, VarInfo):
+    elif isinstance(var_info, _VarInfo):
         return Var(var_info)
     elif isinstance(var_info, dict):
         return {k: wrap_vars(v) for k, v in var_info.items()}
@@ -325,19 +325,19 @@ def wrap_vars(var_info):
 
 
 @overload
-def unwrap_vars(var: Var) -> VarInfo: ...
+def unwrap_vars(var: Var) -> _VarInfo: ...
 
 
 @overload
-def unwrap_vars(var: Optional[Var]) -> Optional[VarInfo]: ...
+def unwrap_vars(var: Optional[Var]) -> Optional[_VarInfo]: ...
 
 
 @overload
-def unwrap_vars(var: dict[T, Var]) -> dict[T, VarInfo]: ...  # type: ignore[misc]
+def unwrap_vars(var: dict[T, Var]) -> dict[T, _VarInfo]: ...  # type: ignore[misc]
 
 
 @overload
-def unwrap_vars(var: Union[Sequence[Var], Iterable[Var]]) -> list[VarInfo]: ...
+def unwrap_vars(var: Union[Sequence[Var], Iterable[Var]]) -> list[_VarInfo]: ...
 
 
 def unwrap_vars(var):
@@ -386,14 +386,14 @@ def get_value(var):
 
 
 def result_type(
-    *types: Union[VarInfo, np.generic, int, float],
+    *types: Union[_VarInfo, np.generic, int, float],
 ) -> type[np.generic]:
     """Promote type for all given element types/values using ``np.result_type``."""
     return np.dtype(
         np.result_type(
             *(
                 typ.unwrap_tensor().dtype
-                if isinstance(typ, Var) or isinstance(typ, VarInfo)
+                if isinstance(typ, Var) or isinstance(typ, _VarInfo)
                 else typ
                 for typ in types
             )

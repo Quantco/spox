@@ -14,14 +14,14 @@ from ._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
-from ._var import Var, VarInfo, unwrap_vars
+from ._var import Var, _VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
     from . import _graph
 
 DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
-ConstructorT = TypeVar("ConstructorT", bound=Callable[..., Iterable[VarInfo]])
+ConstructorT = TypeVar("ConstructorT", bound=Callable[..., Iterable[_VarInfo]])
 
 
 class Function(_InternalNode):
@@ -42,7 +42,7 @@ class Function(_InternalNode):
     via the ``to_onnx_function`` method.
     """
 
-    func_args: dict[str, VarInfo]
+    func_args: dict[str, _VarInfo]
     func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
@@ -130,12 +130,12 @@ class Function(_InternalNode):
 def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
     _FuncInputs = make_dataclass(
         "_FuncInputs",
-        ((f"in{i}", VarInfo) for i in range(num_inputs)),
+        ((f"in{i}", _VarInfo) for i in range(num_inputs)),
         bases=(BaseInputs,),
     )
     _FuncOutputs = make_dataclass(
         "_FuncOutputs",
-        ((f"out{i}", VarInfo) for i in range(num_outputs)),
+        ((f"out{i}", _VarInfo) for i in range(num_outputs)),
         bases=(BaseOutputs,),
     )
 
