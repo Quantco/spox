@@ -15,6 +15,7 @@ import spox.opset.ai.onnx.v19 as op19
 from spox import Tensor, Var, argument, build, inline
 from spox._attributes import AttrInt64s
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
+from spox._future import initializer
 from spox._graph import arguments, results
 from spox._node import OpType
 from spox._standard import StandardNode
@@ -155,6 +156,18 @@ def test_adapt_node_with_repeating_input_names():
     c = op19.identity(a)
 
     build({"a": a}, {"b": b, "c": c})
+
+
+def test_adapt_node_initializer():
+    init_data = [1.0, 2.0, 3.0]
+
+    a = argument(Tensor(np.float32, ("N",)))
+    b = initializer(init_data, np.float32)
+    c = op18.equal(a, b)
+    d = op19.identity(a)
+
+    model = build({"a": a}, {"b": b, "c": c, "d": d})
+    np.testing.assert_allclose(model.graph.initializer[0].float_data, init_data)
 
 
 def test_inline_model_custom_node_only():

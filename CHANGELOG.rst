@@ -18,6 +18,10 @@ Change log
 
 - Value propagation of string tensors no longer raises an erroneous ``ValueError`` in some instances.
 
+**Other changes**
+
+- The adaption logic is not using inferred values as initializers anymore.
+
 
 0.12.1 (2024-06-18)
 -------------------
