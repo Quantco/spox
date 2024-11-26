@@ -24,7 +24,7 @@ from spox._node import OpType
 from spox._standard import InferenceError, StandardNode
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict
-from spox._var import Var, _VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 
 
 class _ArrayFeatureExtractor(StandardNode):
@@ -663,10 +663,10 @@ def array_feature_extractor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-        "Y": get_value(Y),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+        Y=Y,
+    )
     return (
         _ArrayFeatureExtractor(
             _ArrayFeatureExtractor.Attributes(),
@@ -711,9 +711,9 @@ def binarizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _Binarizer(
             _Binarizer.Attributes(
@@ -775,9 +775,9 @@ def cast_map(
      - T1: `map(int64,tensor(float))`, `map(int64,tensor(string))`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _CastMap(
             _CastMap.Attributes(
@@ -849,9 +849,9 @@ def category_mapper(
      - T1: `tensor(int64)`, `tensor(string)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _CategoryMapper(
             _CategoryMapper.Attributes(
@@ -919,9 +919,9 @@ def dict_vectorizer(
      - T1: `map(int64,tensor(double))`, `map(int64,tensor(float))`, `map(int64,tensor(string))`, `map(string,tensor(double))`, `map(string,tensor(float))`, `map(string,tensor(int64))`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _DictVectorizer(
             _DictVectorizer.Attributes(
@@ -975,9 +975,9 @@ def feature_vectorizer(
     Type constraints:
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _FeatureVectorizer(
             _FeatureVectorizer.Attributes(
@@ -1049,9 +1049,9 @@ def imputer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _Imputer(
             _Imputer.Attributes(
@@ -1157,9 +1157,9 @@ def label_encoder(
      - T1: `tensor(float)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _LabelEncoder(
             _LabelEncoder.Attributes(
@@ -1239,9 +1239,9 @@ def linear_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _LinearClassifier(
             _LinearClassifier.Attributes(
@@ -1314,9 +1314,9 @@ def linear_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _LinearRegressor(
             _LinearRegressor.Attributes(
@@ -1370,9 +1370,9 @@ def normalizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _Normalizer(
             _Normalizer.Attributes(
@@ -1436,9 +1436,9 @@ def one_hot_encoder(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _OneHotEncoder(
             _OneHotEncoder.Attributes(
@@ -1537,9 +1537,9 @@ def svmclassifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _SVMClassifier(
             _SVMClassifier.Attributes(
@@ -1633,9 +1633,9 @@ def svmregressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _SVMRegressor(
             _SVMRegressor.Attributes(
@@ -1698,9 +1698,9 @@ def scaler(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _Scaler(
             _Scaler.Attributes(
@@ -1850,9 +1850,9 @@ def tree_ensemble_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _TreeEnsembleClassifier(
             _TreeEnsembleClassifier.Attributes(
@@ -2042,9 +2042,9 @@ def tree_ensemble_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _TreeEnsembleRegressor(
             _TreeEnsembleRegressor.Attributes(
@@ -2142,9 +2142,9 @@ def zip_map(
     Type constraints:
      - T: `seq(map(int64,tensor(float)))`, `seq(map(string,tensor(float)))`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _ZipMap(
             _ZipMap.Attributes(

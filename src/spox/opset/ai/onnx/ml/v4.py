@@ -22,8 +22,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._value_prop import PropDict
-from spox._var import Var, _VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 from spox.opset.ai.onnx.ml.v3 import (
     _ArrayFeatureExtractor,
     _Binarizer,
@@ -192,9 +191,9 @@ def label_encoder(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _LabelEncoder(
             _LabelEncoder.Attributes(

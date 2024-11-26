@@ -14,11 +14,11 @@ _{{ attr.name }}_subgraph: Graph = subgraph(
 )
     {% endif %}
 {% endfor %}
-input_prop_values:PropDict = {
+input_prop_values = create_prop_dict(
 {% for param in schema.inputs
-        %}"{{param.name}}":get_value({{param.name}}), {%
+        %}{{param.name}}={{param.name}}, {%
 endfor %}
-    }
+    )
 return _{{ schema.name }}(
     _{{ schema.name }}.Attributes(
 {% for attr in attributes %}

@@ -399,3 +399,21 @@ def result_type(
             )
         )
     ).type
+
+
+def create_prop_dict(
+    **kwargs: Union[Var, Sequence[Var], Optional[Var]],
+) -> _value_prop.PropDict:
+    from ._fields import BaseVars
+
+    flattened_vars = BaseVars(kwargs).flatten_vars()
+
+    return {
+        key: (
+            var._value
+            if isinstance(var, Var)
+            else {k: v._value for k, v in var.items()}
+        )
+        for key, var in flattened_vars.items()
+        if var is not None
+    }

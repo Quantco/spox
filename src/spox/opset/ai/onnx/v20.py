@@ -18,8 +18,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._value_prop import PropDict
-from spox._var import Var, _VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 from spox.opset.ai.onnx.v19 import (
     _GRU,
     _LRN,
@@ -734,10 +733,10 @@ def affine_grid(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "theta": get_value(theta),
-        "size": get_value(size),
-    }
+    input_prop_values = create_prop_dict(
+        theta=theta,
+        size=size,
+    )
     return (
         _AffineGrid(
             _AffineGrid.Attributes(
@@ -790,9 +789,9 @@ def constant_of_shape(
      - T1: `tensor(int64)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "input": get_value(input),
-    }
+    input_prop_values = create_prop_dict(
+        input=input,
+    )
     return (
         _ConstantOfShape(
             _ConstantOfShape.Attributes(
@@ -897,11 +896,11 @@ def dft(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
      - T2: `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "input": get_value(input),
-        "dft_length": get_value(dft_length),
-        "axis": get_value(axis),
-    }
+    input_prop_values = create_prop_dict(
+        input=input,
+        dft_length=dft_length,
+        axis=axis,
+    )
     return (
         _DFT(
             _DFT.Attributes(
@@ -957,9 +956,9 @@ def gelu(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _Gelu(
             _Gelu.Attributes(
@@ -1076,10 +1075,10 @@ def grid_sample(
      - T1: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-        "grid": get_value(grid),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+        grid=grid,
+    )
     return (
         _GridSample(
             _GridSample.Attributes(
@@ -1155,9 +1154,9 @@ def image_decoder(
      - T1: `tensor(uint8)`
      - T2: `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "encoded_stream": get_value(encoded_stream),
-    }
+    input_prop_values = create_prop_dict(
+        encoded_stream=encoded_stream,
+    )
     return (
         _ImageDecoder(
             _ImageDecoder.Attributes(
@@ -1211,9 +1210,9 @@ def isinf(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`
      - T2: `tensor(bool)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _IsInf(
             _IsInf.Attributes(
@@ -1255,9 +1254,9 @@ def isnan(
      - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`
      - T2: `tensor(bool)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _IsNaN(
             _IsNaN.Attributes(),
@@ -1328,10 +1327,10 @@ def reduce_max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceMax(
             _ReduceMax.Attributes(
@@ -1407,10 +1406,10 @@ def reduce_min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceMin(
             _ReduceMin.Attributes(
@@ -1465,9 +1464,9 @@ def regex_full_match(
      - T1: `tensor(string)`
      - T2: `tensor(bool)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _RegexFullMatch(
             _RegexFullMatch.Attributes(
@@ -1512,10 +1511,10 @@ def string_concat(
     Type constraints:
      - T: `tensor(string)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-        "Y": get_value(Y),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+        Y=Y,
+    )
     return (
         _StringConcat(
             _StringConcat.Attributes(),
@@ -1598,9 +1597,9 @@ def string_split(
      - T2: `tensor(string)`
      - T3: `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _StringSplit(
             _StringSplit.Attributes(

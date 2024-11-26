@@ -20,8 +20,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._value_prop import PropDict
-from spox._var import Var, _VarInfo, get_value, unwrap_vars
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 from spox.opset.ai.onnx.v17 import (
     _DFT,
     _GRU,
@@ -935,10 +934,10 @@ def bitwise_and(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "A": get_value(A),
-        "B": get_value(B),
-    }
+    input_prop_values = create_prop_dict(
+        A=A,
+        B=B,
+    )
     return (
         _BitwiseAnd(
             _BitwiseAnd.Attributes(),
@@ -977,9 +976,9 @@ def bitwise_not(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _BitwiseNot(
             _BitwiseNot.Attributes(),
@@ -1027,10 +1026,10 @@ def bitwise_or(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "A": get_value(A),
-        "B": get_value(B),
-    }
+    input_prop_values = create_prop_dict(
+        A=A,
+        B=B,
+    )
     return (
         _BitwiseOr(
             _BitwiseOr.Attributes(),
@@ -1079,10 +1078,10 @@ def bitwise_xor(
     Type constraints:
      - T: `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "A": get_value(A),
-        "B": get_value(B),
-    }
+    input_prop_values = create_prop_dict(
+        A=A,
+        B=B,
+    )
     return (
         _BitwiseXor(
             _BitwiseXor.Attributes(),
@@ -1143,10 +1142,10 @@ def center_crop_pad(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "input_data": get_value(input_data),
-        "shape": get_value(shape),
-    }
+    input_prop_values = create_prop_dict(
+        input_data=input_data,
+        shape=shape,
+    )
     return (
         _CenterCropPad(
             _CenterCropPad.Attributes(
@@ -1242,11 +1241,11 @@ def col2_im(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "input": get_value(input),
-        "image_shape": get_value(image_shape),
-        "block_shape": get_value(block_shape),
-    }
+    input_prop_values = create_prop_dict(
+        input=input,
+        image_shape=image_shape,
+        block_shape=block_shape,
+    )
     return (
         _Col2Im(
             _Col2Im.Attributes(
@@ -1330,11 +1329,11 @@ def group_normalization(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-        "scale": get_value(scale),
-        "bias": get_value(bias),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+        scale=scale,
+        bias=bias,
+    )
     return (
         _GroupNormalization(
             _GroupNormalization.Attributes(
@@ -1460,9 +1459,9 @@ def lp_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _LpPool(
             _LpPool.Attributes(
@@ -1515,9 +1514,9 @@ def mish(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
     return (
         _Mish(
             _Mish.Attributes(),
@@ -1559,9 +1558,9 @@ def optional_get_element(
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "input": get_value(input),
-    }
+    input_prop_values = create_prop_dict(
+        input=input,
+    )
     return (
         _OptionalGetElement(
             _OptionalGetElement.Attributes(),
@@ -1603,9 +1602,9 @@ def optional_has_element(
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - B: `tensor(bool)`
     """
-    input_prop_values: PropDict = {
-        "input": get_value(input),
-    }
+    input_prop_values = create_prop_dict(
+        input=input,
+    )
     return (
         _OptionalHasElement(
             _OptionalHasElement.Attributes(),
@@ -1752,12 +1751,12 @@ def pad(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "pads": get_value(pads),
-        "constant_value": get_value(constant_value),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        pads=pads,
+        constant_value=constant_value,
+        axes=axes,
+    )
     return (
         _Pad(
             _Pad.Attributes(
@@ -1828,10 +1827,10 @@ def reduce_l1(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceL1(
             _ReduceL1.Attributes(
@@ -1903,10 +1902,10 @@ def reduce_l2(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceL2(
             _ReduceL2.Attributes(
@@ -1979,10 +1978,10 @@ def reduce_log_sum(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceLogSum(
             _ReduceLogSum.Attributes(
@@ -2055,10 +2054,10 @@ def reduce_log_sum_exp(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceLogSumExp(
             _ReduceLogSumExp.Attributes(
@@ -2132,10 +2131,10 @@ def reduce_max(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceMax(
             _ReduceMax.Attributes(
@@ -2207,10 +2206,10 @@ def reduce_mean(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceMean(
             _ReduceMean.Attributes(
@@ -2283,10 +2282,10 @@ def reduce_min(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceMin(
             _ReduceMin.Attributes(
@@ -2358,10 +2357,10 @@ def reduce_prod(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceProd(
             _ReduceProd.Attributes(
@@ -2433,10 +2432,10 @@ def reduce_sum_square(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`, `tensor(int64)`, `tensor(uint32)`, `tensor(uint64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "axes": get_value(axes),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        axes=axes,
+    )
     return (
         _ReduceSumSquare(
             _ReduceSumSquare.Attributes(
@@ -2625,12 +2624,12 @@ def resize(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    input_prop_values: PropDict = {
-        "X": get_value(X),
-        "roi": get_value(roi),
-        "scales": get_value(scales),
-        "sizes": get_value(sizes),
-    }
+    input_prop_values = create_prop_dict(
+        X=X,
+        roi=roi,
+        scales=scales,
+        sizes=sizes,
+    )
     return (
         _Resize(
             _Resize.Attributes(
@@ -2786,11 +2785,11 @@ def scatter_elements(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "indices": get_value(indices),
-        "updates": get_value(updates),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        indices=indices,
+        updates=updates,
+    )
     return (
         _ScatterElements(
             _ScatterElements.Attributes(
@@ -2933,11 +2932,11 @@ def scatter_nd(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "data": get_value(data),
-        "indices": get_value(indices),
-        "updates": get_value(updates),
-    }
+    input_prop_values = create_prop_dict(
+        data=data,
+        indices=indices,
+        updates=updates,
+    )
     return (
         _ScatterND(
             _ScatterND.Attributes(
@@ -3001,10 +3000,10 @@ def split(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    input_prop_values: PropDict = {
-        "input": get_value(input),
-        "split": get_value(split),
-    }
+    input_prop_values = create_prop_dict(
+        input=input,
+        split=split,
+    )
     return (
         _Split(
             _Split.Attributes(

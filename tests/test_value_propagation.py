@@ -133,6 +133,13 @@ def test_sequence_append():
     )
 
 
+def test_variadict_max():
+    a = op.const([2, 1, 4])
+    b = op.const(3)
+    c = op.const([0])
+    assert_equal_value(op.max([a, b, c]), [3, 3, 4])
+
+
 def test_with_reconstruct():
     a, b = arguments(
         a=_type_system.Tensor(np.int64, ()),
