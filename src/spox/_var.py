@@ -1,7 +1,6 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 import typing
-import warnings
 from typing import Any, Callable, ClassVar, Optional, TypeVar, Union
 
 import numpy as np
@@ -144,129 +143,57 @@ class Var:
         raise ValueError("'Var' objects cannot be deepcopied.")
 
     def __add__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.add(self, other)
 
     def __sub__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.sub(self, other)
 
     def __mul__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.mul(self, other)
 
     def __truediv__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.truediv(self, other)
 
     def __floordiv__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.floordiv(self, other)
 
     def __neg__(self) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.neg(self)
 
     def __and__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.and_(self, other)
 
     def __or__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.or_(self, other)
 
     def __xor__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.xor(self, other)
 
     def __invert__(self) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.not_(self)
 
     def __radd__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.add(other, self)
 
     def __rsub__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.sub(other, self)
 
     def __rmul__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.mul(other, self)
 
     def __rtruediv__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.truediv(other, self)
 
     def __rfloordiv__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.floordiv(other, self)
 
     def __rand__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.and_(other, self)
 
     def __ror__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.or_(other, self)
 
     def __rxor__(self, other) -> "Var":
-        warnings.warn(
-            "using _operator_dispatcher is deprecated, consider using https://github.com/Quantco/ndonnx instead",
-            DeprecationWarning,
-        )
         return Var._operator_dispatcher.xor(other, self)
 
 

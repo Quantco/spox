@@ -3,6 +3,7 @@
 
 """Module containing experimental Spox features that may be standard in the future."""
 
+import warnings
 from collections.abc import Iterable
 from contextlib import contextmanager
 from typing import Optional, Union
@@ -201,6 +202,10 @@ def operator_overloading(
     ...    return x * y
     >>> assert foo()._get_value() == np.array(6)
     """
+    warnings.warn(
+        "using operator_overloading is deprecated, consider using https://github.com/Quantco/ndonnx instead",
+        DeprecationWarning,
+    )
     prev_dispatcher = Var._operator_dispatcher
     Var._operator_dispatcher = _NumpyLikeOperatorDispatcher(
         op, type_promotion, constant_promotion

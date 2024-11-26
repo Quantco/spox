@@ -20,7 +20,7 @@ Change log
 
 **Pending breaking changes**
 
-- Usage of operator overloading via ``_operator_dispatcher`` now triggers a ``DeprecationWarning``. This API is scheduled for removal in Spox ``0.14.0``. Consider using ``ndonnx`` as an alternative.
+- Usage of ``operator_overloading`` now triggers a ``DeprecationWarning``. This API is scheduled for removal in Spox ``0.14.0``. Consider using ``ndonnx`` as an alternative.
 
 **Other changes**
 
