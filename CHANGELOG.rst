@@ -18,6 +18,10 @@ Change log
 
 - Value propagation of string tensors no longer raises an erroneous ``ValueError`` in some instances.
 
+**Pending breaking changes**
+
+- Usage of operator overloading via ``_operator_dispatcher`` now triggers a ``DeprecationWarning``. This API is scheduled for removal in Spox ``0.14.0``. Consider using ``ndonnx`` as an alternative.
+
 **Other changes**
 
 - The adaption logic is not using inferred values as initializers anymore.
