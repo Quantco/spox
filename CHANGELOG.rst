@@ -20,7 +20,7 @@ Change log
 
 **Pending breaking changes**
 
-- Usage of ``operator_overloading`` now triggers a ``DeprecationWarning``. This API is scheduled for removal in Spox ``0.14.0``. Consider using ``ndonnx`` as an alternative.
+- Importing :func:`spox._future.operator_overloading`` now triggers a ``DeprecationWarning``. The function will be removed in a future release. Consider using ``ndonnx`` as an alternative.
 
 **Other changes**
 
