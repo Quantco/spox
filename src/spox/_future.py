@@ -48,7 +48,7 @@ def value_prop_backend(backend: ValuePropBackend):
 
 def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
     """
-    Create a VarInfo with a constant value.
+    Create a Var with a constant value.
 
     Parameters
     ----------

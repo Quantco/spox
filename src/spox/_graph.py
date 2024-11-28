@@ -43,24 +43,32 @@ def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var
     for name, info in kwargs.items():
         attr_name = AttrString(value=name, name="dummy")
         if isinstance(info, Type):
-            result[name] = Argument(
-                Argument.Attributes(
-                    name=attr_name,
-                    type=AttrType(value=info, name="dummy"),
-                    default=None,
-                ),
-                BaseInputs(),
-            ).get_output_vars()["arg"]
+            result[name] = (
+                Argument(
+                    Argument.Attributes(
+                        name=attr_name,
+                        type=AttrType(value=info, name="dummy"),
+                        default=None,
+                    ),
+                    BaseInputs(),
+                )
+                .get_output_vars()
+                .arg
+            )
         elif isinstance(info, np.ndarray):
             ty = Tensor(info.dtype, info.shape)
-            result[name] = Argument(
-                Argument.Attributes(
-                    name=attr_name,
-                    type=AttrType(value=ty, name="dummy"),
-                    default=AttrTensor(value=info, name="dummy"),
-                ),
-                BaseInputs(),
-            ).get_output_vars()["arg"]
+            result[name] = (
+                Argument(
+                    Argument.Attributes(
+                        name=attr_name,
+                        type=AttrType(value=ty, name="dummy"),
+                        default=AttrTensor(value=info, name="dummy"),
+                    ),
+                    BaseInputs(),
+                )
+                .get_output_vars()
+                .arg
+            )
         else:
             raise TypeError(f"Cannot construct argument from {type(info)}.")
     return result
