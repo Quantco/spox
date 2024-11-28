@@ -3,7 +3,6 @@
 
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING, Callable
 
 import onnx
@@ -105,24 +104,25 @@ class StandardNode(Node):
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
         # TODO: fix this
-        initializers_from_array = [
-            from_array(prop.value, name)  # type: ignore
-            for name, prop in input_prop_values.items()
-            if isinstance(prop, PropValue)
-            and prop.value is not None
-            and not isinstance(prop.type, Sequence)
-        ]
 
-        initializers_from_sequence = [
-            from_array(prop.value, f"{name}_{i}")  # type: ignore
-            for name, prop_list in input_prop_values.items()
-            if isinstance(prop_list, list)
-            for i, prop in enumerate(prop_list)
-            if prop is not None and not isinstance(prop.value, Iterable)
-        ]
+        initializers = []
 
-        initializers = initializers_from_array
-        initializers.extend(initializers_from_sequence)
+        for name, prop in input_prop_values.items():
+            if prop is None:
+                continue
+            elif not isinstance(prop, PropValue) or prop.value is None:
+                continue
+            elif isinstance(prop.type, Sequence):
+                initializers.extend(
+                    [
+                        from_array(elem.value, f"{name}_{i}")
+                        for i, elem in enumerate(prop.value)  # type: ignore
+                        if elem is not None
+                    ]
+                )
+            else:
+                initializers.append(from_array(prop.value, name))  # type: ignore
+                continue
 
         #  Graph and model
         graph = onnx.helper.make_graph(
@@ -143,7 +143,7 @@ class StandardNode(Node):
         )
         return model, scope
 
-    def infer_output_types_onnx(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types_onnx(self, input_prop_values: PropDict) -> dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
         if any(var.type is None for var in self.inputs.get_var_infos().values()):

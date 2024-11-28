@@ -9,11 +9,10 @@ import onnx.version_converter
 
 from ._attributes import AttrGraph
 from ._inline import _Inline
-from ._internal_op import _Initializer, _InternalNode
+from ._internal_op import _InternalNode
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
-from ._utils import from_array
 from ._var import _VarInfo
 
 
@@ -42,11 +41,6 @@ def adapt_node(
             )
             for key, var_info in node.outputs.get_var_infos().items()
         ]
-        initializers = [
-            from_array(var_info._op.attrs.get_fields()["value"].value, name)  # type: ignore
-            for name, var_info in node.inputs.get_var_infos().items()
-            if isinstance(var_info._op, _Initializer)
-        ]
     except ValueError:
         return None
 
@@ -56,7 +50,6 @@ def adapt_node(
             "spox__singleton_adapter_graph",
             list(input_info.values()),
             output_info,
-            initializers,
         ),
         opset_imports=[onnx.helper.make_operatorsetid("", source_version)],
     )

@@ -500,7 +500,7 @@ class _Compress(StandardNode):
         output: _VarInfo
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        self.infer_output_types_onnx()
+        self.infer_output_types_onnx(input_prop_values)
         inp, cond = (
             self.inputs.input.unwrap_tensor(),
             self.inputs.condition.unwrap_tensor(),

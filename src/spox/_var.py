@@ -318,7 +318,7 @@ def wrap_vars(var_info):
         return Var(var_info)
     elif isinstance(var_info, dict):
         return {k: wrap_vars(v) for k, v in var_info.items()}
-    elif isinstance(var_info, (Sequence, Iterable)):
+    elif isinstance(var_info, (Iterable)):
         return [wrap_vars(v) for v in var_info]
     else:
         raise ValueError("Unsupported type for wrap_vars")
@@ -337,7 +337,7 @@ def unwrap_vars(var: dict[T, Var]) -> dict[T, _VarInfo]: ...  # type: ignore[mis
 
 
 @overload
-def unwrap_vars(var: Union[Sequence[Var], Iterable[Var]]) -> list[_VarInfo]: ...
+def unwrap_vars(var: Union[Iterable[Var]]) -> list[_VarInfo]: ...
 
 
 def unwrap_vars(var):
@@ -347,42 +347,10 @@ def unwrap_vars(var):
         return var._var_info
     elif isinstance(var, dict):
         return {k: unwrap_vars(v) for k, v in var.items()}
-    elif isinstance(var, Sequence) or isinstance(var, Iterable):
+    elif isinstance(var, Iterable):
         return [unwrap_vars(v) for v in var]
     else:
         raise ValueError("Unsupported type for unwrap_vars")
-
-
-@overload
-def get_value(var: Var) -> Optional[_value_prop.PropValue]: ...
-
-
-@overload
-def get_value(var: Optional[Var]) -> Optional[_value_prop.PropValue]: ...
-
-
-@overload
-def get_value(var: dict[T, Var]) -> dict[T, Optional[_value_prop.PropValue]]: ...  # type: ignore[misc]
-
-
-@overload
-def get_value(
-    var: Union[Sequence[Var], Iterable[Var]],
-) -> Union[
-    Sequence[Optional[_value_prop.PropValue]], Iterable[Optional[_value_prop.PropValue]]
-]: ...
-
-
-def get_value(var):
-    if var is None:
-        return None
-    if isinstance(var, Var):
-        return var._value
-    if isinstance(var, Sequence) or isinstance(var, Iterable):
-        return [v._value if v is not None else None for v in var]
-    if isinstance(var, dict):
-        return {k: v._value if v is not None else None for k, v in var.items()}
-    raise ValueError("Unsupported type for get_value")
 
 
 def result_type(

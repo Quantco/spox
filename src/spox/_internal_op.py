@@ -88,7 +88,7 @@ class Argument(_InternalNode):
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         return {"arg": self.attrs.type.value}
 
@@ -161,7 +161,7 @@ class _Introduce(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self, input_prop_values={}) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values) -> dict[str, Type]:
         return {
             f"outputs_{i}": arr.type
             for i, arr in enumerate(self.inputs.inputs)
