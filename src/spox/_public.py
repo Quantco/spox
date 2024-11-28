@@ -78,7 +78,7 @@ def build(
         Model inputs. Keys are names, values must be results of
         ``argument``.
     outputs
-        Model outputs. Keys are names, values may be any ``VarInfo``.
+        Model outputs. Keys are names, values may be any ``Var``.
         Building will resolve what nodes were used in the construction
         of output variables.
     drop_unused_inputs

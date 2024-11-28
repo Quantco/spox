@@ -18,7 +18,7 @@ class ScopeError(Exception):
 
 class ScopeSpace(Generic[H]):
     """
-    Represents the namespace of a scope for some type H, like Node or VarInfo.
+    Represents the namespace of a scope for some type H, like ``Node`` or ``_VarInfo``.
 
     Methods (and operators) on the namespace work both ways: both with names (str) and the named type (H).
     So ``__getitem__`` (``ScopeSpace[item]``) may be used for both the name of an object and the object of a name.

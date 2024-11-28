@@ -118,10 +118,14 @@ def initializer(arr: np.ndarray) -> Var:
     -------
         Var which is always equal to the respective value provided by `arr`.
     """
-    return _Initializer(
-        _Initializer.Attributes(value=AttrTensor(value=arr, name="dummy")),
-        BaseInputs(),
-    ).get_output_vars()["arg"]
+    return (
+        _Initializer(
+            _Initializer.Attributes(value=AttrTensor(value=arr, name="dummy")),
+            BaseInputs(),
+        )
+        .get_output_vars()
+        .arg
+    )
 
 
 @dataclass(frozen=True, eq=False)
@@ -447,7 +451,7 @@ def results(**kwargs: Var) -> Graph:
     Parameters
     ----------
     kwargs
-        Var to be marked as results in the created Graph.
+        Vars to be marked as results in the created Graph.
     Returns
     -------
     Graph

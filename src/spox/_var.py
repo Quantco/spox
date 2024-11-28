@@ -120,12 +120,12 @@ class Var:
 
     The ``type`` field is inferred and checked by operators.
     It may be ``None`` if type inference failed, in which case it is unknown and should pass all type checks.
-    However, untyped ``VarInfo`` objects may not be used in some contexts.
+    However, untyped ``Var`` objects may not be used in some contexts.
     Keep in mind that the types themselves may have some information missing.
     For instance, tensors allow missing rank and shape information.
 
     There is an implicit value propagation mechanism, powered by the ONNX reference implementation.
-    Values may be propagated if a ``VarInfo`` always has a known and constant value at runtime.
+    Values may be propagated if a ``Var`` always has a known and constant value at runtime.
     This is used for type & shape inference. For instance, Reshape to a constant shape can have the shape inferred.
 
     ``Var`` should be treated as strictly immutable.
@@ -134,7 +134,7 @@ class Var:
     Protected fields are to be treated as internal.
     Useful data is also shown by the string representation, but it should be treated as debug information.
 
-    Should not be constructed directly - the main source of ``VarInfo`` objects are operator constructors.
+    Should not be constructed directly - the main source of ``Var`` objects are operator constructors.
     """
 
     _var_info: _VarInfo
@@ -149,21 +149,19 @@ class Var:
     ):
         """The initializer of ``Var`` is protected. Use operator constructors to construct them instead."""
         if value is not None and not isinstance(value, _value_prop.PropValue):
-            raise TypeError(
-                "The propagated value field of a VarInfo must be a PropValue."
-            )
+            raise TypeError("The propagated value field of a Var must be a PropValue.")
         if value is not None and value.type != var_info.type:
             raise ValueError(
-                f"The propagated value type ({value.type}) and actual VarInfo type ({var_info.type}) must be the same."
+                f"The propagated value type ({value.type}) and actual Var type ({var_info.type}) must be the same."
             )
 
         self._var_info = var_info
         self._value = value
 
     def _get_value(self) -> "_value_prop.ORTValue":
-        """Get the propagated value in this VarInfo and convert it to the ORT format. Raises if value is missing."""
+        """Get the propagated value in this Var and convert it to the ORT format. Raises if value is missing."""
         if self._value is None:
-            raise ValueError("No propagated value associated with this VarInfo.")
+            raise ValueError("No propagated value associated with this Var.")
         return self._value.to_ort_value()
 
     def __repr__(self) -> str:
@@ -184,17 +182,15 @@ class Var:
         Returns
         -------
         _type_system.Type
-            The type of the VarInfo.
+            The type of the Var.
 
         Raises
         ------
         TypeError
-            If ``type is None`` (the type of this ``VarInfo`` is unknown).
+            If ``type is None`` (the type of this ``Var`` is unknown).
         """
         if self.type is None:
-            raise TypeError(
-                "Cannot unwrap requested type for VarInfo, as it is unknown."
-            )
+            raise TypeError("Cannot unwrap requested type for Var, as it is unknown.")
         return self.type
 
     def unwrap_tensor(self) -> _type_system.Tensor:
