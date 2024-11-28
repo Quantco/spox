@@ -85,6 +85,7 @@ class Node(ABC):
 
     out_variadic: Optional[int]
     _traceback: Union[list[str], None]
+    _validate: bool
 
     def __init__(
         self,
@@ -130,13 +131,12 @@ class Node(ABC):
         else:
             self.outputs = outputs
 
+        # Store validate for when the values are actually propagated
+        self._validate = validate
+
         # Optionally store debug information about where this node was created
         self._traceback = traceback.format_stack() if STORE_TRACEBACK else None
 
-        # Performs type checking using known flags (like type_members)
-        # and warns if type inference failed (some types are None).
-        if validate:
-            self.validate_types()
         self.post_init(**kwargs)
 
     @property
@@ -249,6 +249,12 @@ class Node(ABC):
             input_prop_values = {}
         # After typing everything, try to get values for outputs
         self.inference(infer_types=infer_types, input_prop_values=input_prop_values)
+
+        # Performs type checking using known flags (like type_members)
+        # and warns if type inference failed (some types are None).
+        if self._validate:
+            self.validate_types()
+
         out_values = self.propagate_values(input_prop_values)
         return self.outputs._propagate_vars(out_values)
 
