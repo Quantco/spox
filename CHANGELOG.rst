@@ -18,7 +18,7 @@ Change log
 
 - Value propagation of string tensors no longer raises an erroneous ``ValueError`` in some instances.
 
-**Pending breaking changes**
+**Deprecation**
 
 - Importing :func:`spox._future.operator_overloading`` now triggers a ``DeprecationWarning``. The function will be removed in a future release. Consider using ``ndonnx`` as an alternative.
 
