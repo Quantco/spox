@@ -3,6 +3,7 @@
 
 """Module containing experimental Spox features that may be standard in the future."""
 
+import warnings
 from collections.abc import Iterable
 from contextlib import contextmanager
 from typing import Optional, Union
@@ -164,7 +165,7 @@ class _NumpyLikeOperatorDispatcher:
 
 
 @contextmanager
-def operator_overloading(
+def _operator_overloading(
     op, type_promotion: bool = False, constant_promotion: bool = True
 ):
     """Enable operator overloading on Var for this block.
@@ -209,6 +210,17 @@ def operator_overloading(
     Var._operator_dispatcher = prev_dispatcher
 
 
+def __getattr__(name):
+    if name == "operator_overloading":
+        warnings.warn(
+            "using 'operator_overloading' is deprecated, consider using https://github.com/Quantco/ndonnx instead",
+            DeprecationWarning,
+        )
+        return _operator_overloading
+
+    raise AttributeError(f"module {__name__} has no attribute {name}")
+
+
 __all__ = [
     # Type warning levels
     "TypeWarningLevel",
@@ -220,6 +232,4 @@ __all__ = [
     "ValuePropBackend",
     "set_value_prop_backend",
     "value_prop_backend",
-    # Operator overloading on Var
-    "operator_overloading",
 ]
