@@ -89,7 +89,7 @@ def linkcode_resolve(domain, info):
     try:
         source, line_number = inspect.getsourcelines(_object)
     except OSError:
-        line_number = None  # type: ignore
+        line_number = None
 
     if line_number:
         linespec = f"#L{line_number}-L{line_number + len(source) - 1}"

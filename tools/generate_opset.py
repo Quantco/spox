@@ -182,7 +182,7 @@ def get_attributes(
                 name=name,
                 _member_type=member_type,
                 constructor_type_hint=constructor_type_hint,
-                constructor_default=default,  # type: ignore
+                constructor_default=default,
                 subgraph_solution=subgraph_solutions.get(name),
                 allow_extra=allow_extra,
             )

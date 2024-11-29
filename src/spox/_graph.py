@@ -399,7 +399,7 @@ class Graph:
                 "Consider adding an Identity operator if you are just copying arguments."
             )
 
-        opset_req: list[tuple[str, int]] = list(opsets.items())  # type: ignore
+        opset_req: list[tuple[str, int]] = list(opsets.items())
         function_protos: dict[tuple[str, str], onnx.FunctionProto] = {}
         for fun in self._get_build_result().functions:
             proto = fun.to_onnx_function(extra_opset_req=opset_req)
