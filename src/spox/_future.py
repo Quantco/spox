@@ -233,6 +233,4 @@ __all__ = [
     "set_value_prop_backend",
     "value_prop_backend",
     # Operator overloading on Var
-    "operator_overloading",  # noqa: F822
-    "__getattr__",
 ]
