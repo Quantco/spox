@@ -319,7 +319,7 @@ class Node(ABC):
             outputs[variadic] = [
                 Var(self, None, None) for _ in range(self.out_variadic)
             ]
-        return self.Outputs(**outputs)  # type: ignore
+        return self.Outputs(**outputs)
 
     @property
     def dependencies(self) -> Iterable[Var]:
