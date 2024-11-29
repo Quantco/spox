@@ -232,5 +232,4 @@ __all__ = [
     "ValuePropBackend",
     "set_value_prop_backend",
     "value_prop_backend",
-    # Operator overloading on Var
 ]
