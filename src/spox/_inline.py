@@ -4,7 +4,7 @@
 import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 import onnx
 
@@ -98,7 +98,7 @@ class _Inline(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def pre_init(self, **kwargs) -> None:
+    def pre_init(self, **kwargs: Any) -> None:
         self.model = kwargs["model"]
 
     @property

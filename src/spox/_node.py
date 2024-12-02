@@ -10,7 +10,7 @@ import warnings
 from abc import ABC
 from collections.abc import Generator, Iterable, Sequence
 from dataclasses import dataclass
-from typing import ClassVar, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 import numpy as np
 import onnx
@@ -98,7 +98,7 @@ class Node(ABC):
         infer_types: bool = True,
         propagate_values: bool = True,
         validate: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Parameters
@@ -208,10 +208,10 @@ class Node(ABC):
         domain = cls.op_type.domain if cls.op_type.domain != "" else "ai.onnx"
         return f"{domain}@{cls.op_type.version}::{cls.op_type.identifier}"
 
-    def pre_init(self, **kwargs) -> None:
+    def pre_init(self, **kwargs: Any) -> None:
         """Pre-initialization hook. Called during ``__init__`` before any field on the object is set."""
 
-    def post_init(self, **kwargs) -> None:
+    def post_init(self, **kwargs: Any) -> None:
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
     def propagate_values(self) -> dict[str, PropValueType]:

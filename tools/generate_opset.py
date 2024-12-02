@@ -127,7 +127,7 @@ class Attribute:
     # Mark whether generating extra constructor arguments caused by this should raise
     allow_extra: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.attr_constructor != "AttrGraph" and self.subgraph_solution is not None:
             raise TypeError(
                 "Subgraph input types should only be specified for an AttrGraph."

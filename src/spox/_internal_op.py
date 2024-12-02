@@ -9,7 +9,7 @@ They behave like a normal Node, but their inference, building and translation be
 from abc import ABC
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 import numpy as np
 import onnx
@@ -88,7 +88,7 @@ class Argument(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def post_init(self, **kwargs) -> None:
+    def post_init(self, **kwargs: Any) -> None:
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 

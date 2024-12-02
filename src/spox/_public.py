@@ -5,7 +5,7 @@
 
 import contextlib
 import itertools
-from collections.abc import Generator
+from collections.abc import Iterator
 from typing import Optional, Protocol
 
 import numpy as np
@@ -42,7 +42,7 @@ def argument(typ: Type) -> Var:
 
 
 @contextlib.contextmanager
-def _temporary_renames(**kwargs: Var) -> Generator[None, None, None]:
+def _temporary_renames(**kwargs: Var) -> Iterator[None]:
     # The build code can't really special-case variable names that are
     # not just ``Var._name``.  So we set names here and reset them
     # afterwards.
