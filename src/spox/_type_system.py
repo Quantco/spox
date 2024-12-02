@@ -54,7 +54,7 @@ class Type:
             f"Cannot get Type from invalid protobuf (not tensor, sequence or optional): {proto}"
         )
 
-    def _assert_concrete(self, *, _traceback_name: str = "?"):
+    def _assert_concrete(self, *, _traceback_name: str = "?") -> "Type":
         """Function used by the build process to check if a type is
         well-specified (e.g. Tensor shape is defined).
 
@@ -225,17 +225,17 @@ class Tensor(Type):
             dtype_to_tensor_type(self._elem_type), self.shape
         )
 
-    def _assert_concrete(self, *, _traceback_name: str = "?"):
+    def _assert_concrete(self, *, _traceback_name: str = "?") -> "Tensor":
         if self.shape is None:
             raise ValueError(
                 f"Tensor {self} does not specify the shape -- in {_traceback_name}."
             )
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(dtype={self._elem_type.__name__}, shape={self.shape})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         dims = self.shape
         dims_repr = (
             "".join(f"[{dim if dim is not None else '?'}]" for dim in dims)
@@ -266,10 +266,10 @@ class Sequence(Type):
     def _to_onnx(self) -> onnx.TypeProto:
         return onnx.helper.make_sequence_type_proto(self.elem_type._to_onnx())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(elem_type={self.elem_type!r}"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"[{self.elem_type}]"
 
     def _subtype(self, other: Type) -> bool:
@@ -295,10 +295,10 @@ class Optional(Type):
     def _to_onnx(self) -> onnx.TypeProto:
         return onnx.helper.make_optional_type_proto(self.elem_type._to_onnx())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(elem_type={self.elem_type!r}"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.elem_type}?"
 
     def _subtype(self, other: Type) -> bool:

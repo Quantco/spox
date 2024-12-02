@@ -4,7 +4,7 @@
 import dataclasses
 import enum
 from collections.abc import Iterable, Iterator, Sequence
-from dataclasses import dataclass
+from dataclasses import Field, dataclass
 from typing import Any, Optional, Union
 
 from ._attributes import Attr
@@ -33,7 +33,7 @@ class VarFieldKind(enum.Enum):
 
 @dataclass
 class BaseVars(BaseFields):
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Check if passed fields are of the appropriate types based on field kinds
         for field in dataclasses.fields(self):
             value = getattr(self, field.name)
@@ -59,7 +59,7 @@ class BaseVars(BaseFields):
                     )
 
     @classmethod
-    def _get_field_type(cls, field) -> VarFieldKind:
+    def _get_field_type(cls, field: Field) -> VarFieldKind:
         """Access the kind of the field (single, optional, variadic) based on its type annotation."""
         if field.type == Var:
             return VarFieldKind.SINGLE

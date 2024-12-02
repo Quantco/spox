@@ -98,7 +98,7 @@ class _Inline(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def pre_init(self, **kwargs):
+    def pre_init(self, **kwargs) -> None:
         self.model = kwargs["model"]
 
     @property

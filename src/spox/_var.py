@@ -75,7 +75,7 @@ class Var:
         self._op = op
         self._name = None
 
-    def _rename(self, name: Optional[str]):
+    def _rename(self, name: Optional[str]) -> None:
         """Mutates the internal state of the Var, overriding its name as given."""
         self._name = name
 

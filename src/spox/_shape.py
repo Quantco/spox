@@ -127,7 +127,7 @@ class Shape:
 
     dims: Optional[tuple[Natural, ...]]
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self.dims is not None
 
     @classmethod
@@ -174,7 +174,7 @@ class Shape:
             raise ShapeError(f"Rank of {self} is unknown.")
         return r
 
-    def __getitem__(self, item) -> Union["Shape", Natural]:
+    def __getitem__(self, item: Union[slice, int]) -> Union["Shape", Natural]:
         """Indexing the dimensions, also provides iteration."""
         if self.dims is None:
             raise ShapeError(f"Cannot index unknown {self}.")

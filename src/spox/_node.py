@@ -8,7 +8,7 @@ import traceback
 import typing
 import warnings
 from abc import ABC
-from collections.abc import Iterable, Sequence
+from collections.abc import Generator, Iterable, Sequence
 from dataclasses import dataclass
 from typing import ClassVar, Optional, Union
 
@@ -17,7 +17,7 @@ import onnx
 from ._attributes import AttrGraph
 from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
-from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars, VarFieldKind
 from ._type_system import Type
 from ._value_prop import PropValue, PropValueType
 from ._var import Var
@@ -183,7 +183,7 @@ class Node(ABC):
     def signature(self) -> str:
         """Get a signature of this Node, including its inputs and attributes (but not outputs)."""
 
-        def fmt_input(key, var):
+        def fmt_input(key: str, var: Var) -> str:
             return f"{key}: {var.type}" + (
                 f" = {var._value}" if var._value is not None else ""
             )
@@ -206,10 +206,10 @@ class Node(ABC):
         domain = cls.op_type.domain if cls.op_type.domain != "" else "ai.onnx"
         return f"{domain}@{cls.op_type.version}::{cls.op_type.identifier}"
 
-    def pre_init(self, **kwargs):
+    def pre_init(self, **_) -> None:
         """Pre-initialization hook. Called during ``__init__`` before any field on the object is set."""
 
-    def post_init(self, **kwargs):
+    def post_init(self, **_) -> None:
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
     def propagate_values(self) -> dict[str, PropValueType]:
@@ -228,7 +228,9 @@ class Node(ABC):
         """
         return {}
 
-    def inference(self, infer_types: bool = True, propagate_values: bool = True):
+    def inference(
+        self, infer_types: bool = True, propagate_values: bool = True
+    ) -> None:
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
         out_types = self.infer_output_types() if infer_types else {}
@@ -291,7 +293,9 @@ class Node(ABC):
             return f"{type(e).__name__}: {str(e)}"
         return None
 
-    def _list_types(self, source):
+    def _list_types(
+        self, source: BaseVars
+    ) -> Generator[tuple[str, Optional[Type]], None, None]:
         return ((key, var.type) for key, var in source.get_vars().items())
 
     def _init_output_vars(self) -> BaseOutputs:
