@@ -128,23 +128,23 @@ class _NumpyLikeOperatorDispatcher:
 
         return tuple(var for var in map(_promote_target, args))
 
-    def add(self, a, b) -> Var:
+    def add(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         return self.op.add(a, b)
 
-    def sub(self, a, b) -> Var:
+    def sub(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         return self.op.sub(a, b)
 
-    def mul(self, a, b) -> Var:
+    def mul(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         return self.op.mul(a, b)
 
-    def truediv(self, a, b) -> Var:
+    def truediv(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b, to_floating=True)
         return self.op.div(a, b)
 
-    def floordiv(self, a, b) -> Var:
+    def floordiv(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         c = self.op.div(a, b)
         if isinstance(c.type, Tensor) and not issubclass(c.type._elem_type, np.integer):

@@ -62,6 +62,7 @@ ignore_missing_imports = true
 no_implicit_optional = true
 check_untyped_defs = true
 warn_unused_ignores = true
+disallow_untyped_defs = true
 
 [tool.pytest.ini_options]
 # This will be pytest's future default.
