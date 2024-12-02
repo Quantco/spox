@@ -5,6 +5,7 @@ import re
 import subprocess
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from io import TextIOWrapper
 from pathlib import Path
 from typing import Optional, Union
 
@@ -157,7 +158,7 @@ class Attribute:
 
 def get_attributes(
     schema: onnx.defs.OpSchema,
-    attr_type_overrides,
+    attr_type_overrides: dict[str, tuple[str, str]],
     subgraph_solutions: dict[str, str],
     allow_extra: bool,
 ) -> list[Attribute]:
@@ -190,7 +191,9 @@ def get_attributes(
     return out
 
 
-def _get_default_value(attr, attr_type_overrides) -> Optional[str]:
+def _get_default_value(
+    attr: onnx.defs.OpSchema.Attribute, attr_type_overrides: dict[str, tuple[str, str]]
+) -> Optional[str]:
     """Get default value if any as a string ready to be used in a template.
 
     This function has a special handling with respect to ``attr_type_overrides``.
@@ -256,15 +259,15 @@ _PANDOC_SEP = "\U0001f6a7"  # U+1F6A7 CONSTRUCTION SIGN
 _PANDOC_GFM_TO_RST_CACHE: dict[str, str] = {}
 
 
-def _pandoc_run(text: str):
+def _pandoc_run(text: str) -> str:
     return subprocess.run(
         ["pandoc", "--from=gfm", "--to=rst"], input=text.encode(), capture_output=True
     ).stdout.decode()
 
 
-def _pandoc_gfm_to_rst_run(*args: str) -> tuple[str, ...]:
+def _pandoc_gfm_to_rst_run(*args: str) -> list[str]:
     if not args:
-        return ()
+        return []
 
     sep = f"\n\n{_PANDOC_SEP}{_PANDOC_SEP}\n\n"
     acc = sep.join([_PANDOC_SEP] + list(args) + [_PANDOC_SEP])
@@ -336,7 +339,7 @@ def is_optional(param: onnx.defs.OpSchema.FormalParameter) -> bool:
     return param.option == onnx.defs.OpSchema.FormalParameterOption.Optional
 
 
-def get_env():
+def get_env() -> jinja2.Environment:
     """
     Construct the Jinja environment for the generator.
     Exposes some functions from the global scope of this script to the templating engine.
@@ -357,7 +360,7 @@ def get_env():
 
 
 def write_schemas_code(
-    file,
+    file: TextIOWrapper,
     domain: str,
     schemas: list[onnx.defs.OpSchema],
     type_inference: dict[str, str],
@@ -369,7 +372,7 @@ def write_schemas_code(
     inherited_schemas: dict[onnx.defs.OpSchema, str],
     extras: Sequence[str],
     gen_docstrings: bool,
-):
+) -> None:
     """Write code for all of ``schemas`` to ``file``. Uses parameters as documented in ``main``."""
     env = get_env()
 
@@ -510,7 +513,9 @@ def write_schemas_code(
     )
 
 
-def run_pre_commit_hooks(filenames: Union[str, Iterable[str]]):
+def run_pre_commit_hooks(
+    filenames: Union[str, Iterable[str]],
+) -> subprocess.CompletedProcess:
     """
     Calls repo pre-commit hooks for the given ``filenames``.
     Used by the script to verify that the generated files as valid, as usually failing pre-commit hooks
