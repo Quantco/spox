@@ -143,7 +143,7 @@ class Graph:
         default_factory=_build.Cached
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         name_repr = self._name if self._name is not None else "?"
         args_repr = (
             f"{', '.join(str(a) for a in self._arguments)}"
@@ -158,7 +158,7 @@ class Graph:
             comments.append(f"+{len(self._extra_opset_req)} opset req")
         return f"<Graph '{name_repr}' ({args_repr}) -> ({res_repr}){': ' if comments else ''}{', '.join(comments)}>"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if any(not isinstance(var, Var) for var in self._results.values()):
             seen_types = {type(obj) for obj in self._results.values()}
             raise TypeError(f"Graph results must be Vars, not {seen_types - {Var}}.")
@@ -362,7 +362,7 @@ class Graph:
         model_doc_string: str = "",
         infer_shapes: bool = False,
         check_model: Union[Literal[0], Literal[1], Literal[2]] = 1,
-        ir_version=8,
+        ir_version: int = 8,
         concrete: bool = True,
     ) -> onnx.ModelProto:
         """
@@ -448,7 +448,7 @@ def results(**kwargs: Var) -> Graph:
     return Graph(kwargs)
 
 
-def enum_results(*vars: Var, prefix="out") -> Graph:
+def enum_results(*vars: Var, prefix: str = "out") -> Graph:
     """
     Use this function to construct a ``Graph`` object, whenever the exact names are not important.
     Useful when creating subgraphs.

@@ -44,7 +44,7 @@ class Cached(Generic[T]):
         return self._value
 
     @value.setter
-    def value(self, to: T):
+    def value(self, to: T) -> None:
         self._value = to
 
 
@@ -124,7 +124,7 @@ class Builder:
         subgraph_owner: dict["Graph", Node]
         scope_of: dict[Node, "Graph"]
 
-        def __init__(self):
+        def __init__(self) -> None:
             self.subgraph_owner = {}
             self.scope_of = {}
 
@@ -255,7 +255,7 @@ class Builder:
         claimed_arguments = self.claimed_arguments_in[graph] = set()
         used_arguments = set()
 
-        def collect_arguments(nd: Node):
+        def collect_arguments(nd: Node) -> None:
             nonlocal all_arguments, claimed_arguments, used_arguments
             if isinstance(nd, Argument):
                 all_arguments.add(nd.outputs.arg)
@@ -329,7 +329,7 @@ class Builder:
         is completed 'bottom-up'.
         """
 
-        def satisfy_constraints(node):
+        def satisfy_constraints(node: Node) -> None:
             # By default, a node is bound to the scope it is found in.
             self.scope_tree.scope_of.setdefault(node, graph)
             # Bring up the scope of its node to its ancestors if it is too low to be accessible in the current graph.

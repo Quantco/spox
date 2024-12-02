@@ -80,7 +80,7 @@ def adapt_inline(
         base_model = node.model
         try:
             node.model = target_model
-            target_nodes = node.to_onnx(Scope.of((node, node_name), *var_names.items()))
+            target_nodes = node.to_onnx(Scope.of((node_name, node), *var_names.items()))
         finally:
             node.model = base_model
         return target_nodes

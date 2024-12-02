@@ -14,20 +14,21 @@ from typing import (
 
 from onnx.defs import OpSchema, get_all_schemas_with_history
 
-
-class _Comparable(Protocol):
-    def __lt__(self, other) -> bool: ...
-
-    def __gt__(self, other) -> bool: ...
-
-
 S = TypeVar("S")
 K = TypeVar("K")
 V = TypeVar("V")
-T = TypeVar("T", bound=_Comparable)
+T = TypeVar("T", bound="_Comparable", contravariant=True)
 
 
-def _key_groups(seq: Iterable[S], key: Callable[[S], T]):
+class _Comparable(Protocol[T]):
+    def __lt__(self: T, other: T) -> bool: ...
+
+    def __gt__(self: T, other: T) -> bool: ...
+
+
+def _key_groups(
+    seq: Iterable[S], key: Callable[[S], T]
+) -> Iterable[tuple[T, Iterable[S]]]:
     """Group a sequence by a given key."""
     return itertools.groupby(sorted(seq, key=key), key)
 

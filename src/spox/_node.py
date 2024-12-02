@@ -12,6 +12,7 @@ from collections.abc import Generator, Iterable, Sequence
 from dataclasses import dataclass
 from typing import ClassVar, Optional, Union
 
+import numpy as np
 import onnx
 
 from ._attributes import AttrGraph
@@ -23,6 +24,7 @@ from ._value_prop import PropValue, PropValueType
 from ._var import Var
 
 if typing.TYPE_CHECKING:
+    from ._function import Function
     from ._graph import Graph
     from ._scope import Scope
 
@@ -206,10 +208,10 @@ class Node(ABC):
         domain = cls.op_type.domain if cls.op_type.domain != "" else "ai.onnx"
         return f"{domain}@{cls.op_type.version}::{cls.op_type.identifier}"
 
-    def pre_init(self, **_) -> None:
+    def pre_init(self, **kwargs) -> None:
         """Pre-initialization hook. Called during ``__init__`` before any field on the object is set."""
 
-    def post_init(self, **_) -> None:
+    def post_init(self, **kwargs) -> None:
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
     def propagate_values(self) -> dict[str, PropValueType]:
@@ -284,7 +286,7 @@ class Node(ABC):
                     stacklevel=4,
                 )
 
-    def _check_concrete_type(self, value_type: Type) -> Optional[str]:
+    def _check_concrete_type(self, value_type: Optional[Type]) -> Optional[str]:
         if value_type is None:
             return "type is None"
         try:
@@ -346,7 +348,12 @@ class Node(ABC):
             if isinstance(attr, AttrGraph):
                 yield attr.value
 
-    def update_metadata(self, opset_req, initializers, functions):
+    def update_metadata(
+        self,
+        opset_req: set[tuple[str, int]],
+        initializers: dict[Var, np.ndarray],
+        functions: list["Function"],
+    ) -> None:
         opset_req.update(self.opset_req)
 
     def to_onnx(

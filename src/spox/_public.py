@@ -5,6 +5,7 @@
 
 import contextlib
 import itertools
+from collections.abc import Generator
 from typing import Optional, Protocol
 
 import numpy as np
@@ -41,7 +42,7 @@ def argument(typ: Type) -> Var:
 
 
 @contextlib.contextmanager
-def _temporary_renames(**kwargs: Var):
+def _temporary_renames(**kwargs: Var) -> Generator[None, None, None]:
     # The build code can't really special-case variable names that are
     # not just ``Var._name``.  So we set names here and reset them
     # afterwards.
@@ -58,7 +59,7 @@ def _temporary_renames(**kwargs: Var):
 
 
 def build(
-    inputs: dict[str, Var], outputs: dict[str, Var], *, drop_unused_inputs=False
+    inputs: dict[str, Var], outputs: dict[str, Var], *, drop_unused_inputs: bool = False
 ) -> onnx.ModelProto:
     """
     Builds an ONNX Model with given model inputs and outputs.

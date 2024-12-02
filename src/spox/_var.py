@@ -15,7 +15,7 @@ F = TypeVar("F", bound=Callable)
 
 
 class NotImplementedOperatorDispatcher:
-    def _not_impl(self, *_):
+    def _not_impl(self, *args):
         return NotImplemented
 
     add = sub = mul = truediv = floordiv = neg = and_ = or_ = xor = not_ = _not_impl

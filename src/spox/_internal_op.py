@@ -9,8 +9,9 @@ They behave like a normal Node, but their inference, building and translation be
 from abc import ABC
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Callable, Optional
 
+import numpy as np
 import onnx
 
 from ._attributes import AttrString, AttrTensor, AttrType
@@ -21,6 +22,9 @@ from ._shape import SimpleShape
 from ._type_system import Tensor, Type
 from ._value_prop import PropValueType
 from ._var import Var
+
+if TYPE_CHECKING:
+    from ._function import Function
 
 # This is a default used for internal operators that
 # require the default domain. The most common of these
@@ -84,7 +88,7 @@ class Argument(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def post_init(self, **kwargs):
+    def post_init(self, **kwargs) -> None:
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
@@ -92,14 +96,22 @@ class Argument(_InternalNode):
         # Output type is based on the value of the type attribute
         return {"arg": self.attrs.type.value}
 
-    def update_metadata(self, opset_req, initializers, functions):
+    def update_metadata(
+        self,
+        opset_req: set[tuple[str, int]],
+        initializers: dict[Var, np.ndarray],
+        functions: list["Function"],
+    ) -> None:
         super().update_metadata(opset_req, initializers, functions)
         var = self.outputs.arg
         if self.attrs.default is not None:
             initializers[var] = self.attrs.default.value
 
     def to_onnx(
-        self, scope: "Scope", doc_string: Optional[str] = None, build_subgraph=None
+        self,
+        scope: "Scope",
+        doc_string: Optional[str] = None,
+        build_subgraph: Optional[Callable] = None,
     ) -> list[onnx.NodeProto]:
         return []
 
@@ -129,12 +141,20 @@ class _Initializer(_InternalNode):
     def propagate_values(self) -> dict[str, PropValueType]:
         return {"arg": self.attrs.value.value}
 
-    def update_metadata(self, opset_req, initializers, functions):
+    def update_metadata(
+        self,
+        opset_req: set[tuple[str, int]],
+        initializers: dict[Var, np.ndarray],
+        functions: list["Function"],
+    ) -> None:
         super().update_metadata(opset_req, initializers, functions)
         initializers[self.outputs.arg] = self.attrs.value.value
 
     def to_onnx(
-        self, scope: "Scope", doc_string: Optional[str] = None, build_subgraph=None
+        self,
+        scope: "Scope",
+        doc_string: Optional[str] = None,
+        build_subgraph: Optional[Callable] = None,
     ) -> list[onnx.NodeProto]:
         # Initializers are added via update_metadata and don't affect the nodes proto list
         return []
@@ -173,7 +193,10 @@ class _Introduce(_InternalNode):
         return {("", INTERNAL_MIN_OPSET)}
 
     def to_onnx(
-        self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
+        self,
+        scope: Scope,
+        doc_string: Optional[str] = None,
+        build_subgraph: Optional[Callable] = None,
     ) -> list[onnx.NodeProto]:
         assert len(self.inputs.inputs) == len(self.outputs.outputs)
         # Just create a renaming identity from what we forwarded into our actual output
