@@ -22,6 +22,14 @@ Change log
 
 - Value propagation of string tensors no longer raises an erroneous ``ValueError`` in some instances.
 
+**Deprecation**
+
+- Importing :func:`spox._future.operator_overloading`` now triggers a ``DeprecationWarning``. The function will be removed in a future release. Consider using ``ndonnx`` as an alternative.
+
+**Other changes**
+
+- The adaption logic is not using inferred values as initializers anymore.
+
 
 0.12.1 (2024-06-18)
 -------------------

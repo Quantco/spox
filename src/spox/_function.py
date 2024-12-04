@@ -78,7 +78,7 @@ class Function(_InternalNode):
                 )
             self.func_attrs[name] = attr
 
-        self.func_inputs = self.Inputs(**self.func_args)  # type: ignore
+        self.func_inputs = self.Inputs(**self.func_args)
         self.func_outputs = self.constructor(
             self.func_attrs, self.func_inputs.vars(input_prop_values)
         )

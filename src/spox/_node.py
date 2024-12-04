@@ -322,7 +322,7 @@ class Node(ABC):
         if variadic is not None:
             assert self.out_variadic is not None
             outputs[variadic] = [_VarInfo(self, None) for _ in range(self.out_variadic)]
-        return self.Outputs(**outputs)  # type: ignore
+        return self.Outputs(**outputs)
 
     @property
     def dependencies(self) -> Iterable[_VarInfo]:

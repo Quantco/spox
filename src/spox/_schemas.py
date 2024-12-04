@@ -53,7 +53,7 @@ def _get_schemas_versioned(
     """Get a map into a list of schemas for all domain/names."""
     return {
         domain: {
-            name: sorted(op_group, key=lambda s: s.since_version)  # type: ignore
+            name: sorted(op_group, key=lambda s: s.since_version)
             for name, op_group in _key_groups(domain_group, lambda s: s.name)
         }
         for domain, domain_group in _key_groups(all_schemas, lambda s: s.domain)

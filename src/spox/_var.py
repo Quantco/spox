@@ -300,7 +300,7 @@ def wrap_vars(var_info: Optional[_VarInfo]) -> Optional[Var]: ...
 
 
 @overload
-def wrap_vars(var_info: dict[T, _VarInfo]) -> dict[T, Var]: ...  # type: ignore[misc]
+def wrap_vars(var_info: dict[T, _VarInfo]) -> dict[T, Var]: ...  # type: ignore[overload-overlap]
 
 
 @overload
@@ -329,7 +329,7 @@ def unwrap_vars(var: Optional[Var]) -> Optional[_VarInfo]: ...
 
 
 @overload
-def unwrap_vars(var: dict[T, Var]) -> dict[T, _VarInfo]: ...  # type: ignore[misc]
+def unwrap_vars(var: dict[T, Var]) -> dict[T, _VarInfo]: ...  # type: ignore[overload-overlap]
 
 
 @overload

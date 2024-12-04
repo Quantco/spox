@@ -53,7 +53,7 @@ class _ArrayFeatureExtractor(StandardNode):
             raise InferenceError("Input `Y` must be of rank 1.")
         if len(xt.shape) == 1:
             return {"Z": Tensor(xt.dtype, (1, yt.shape[-1]))}
-        shape = tuple(list(xt.shape[:-1]) + [yt.shape[-1]])  # type: ignore
+        shape = tuple(list(xt.shape[:-1]) + [yt.shape[-1]])
         return {"Z": Tensor(xt.dtype, shape)}
 
     op_type = OpType("ArrayFeatureExtractor", "ai.onnx.ml", 1)
@@ -133,7 +133,7 @@ class _CategoryMapper(StandardNode):
         if len(cats1.value) != len(cats2.value):
             raise InferenceError("Categories lists have mismatched lengths.")
         t = self.inputs.X.unwrap_tensor()
-        (elem_type,) = {np.int64, np.str_} - {t.dtype.type}  # type: ignore
+        (elem_type,) = {np.int64, np.str_} - {t.dtype.type}
         return {"Y": Tensor(elem_type, t.shape)}
 
     op_type = OpType("CategoryMapper", "ai.onnx.ml", 1)
