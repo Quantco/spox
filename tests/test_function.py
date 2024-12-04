@@ -14,12 +14,12 @@ import pytest
 
 import spox.opset.ai.onnx.v17 as op
 from spox._attributes import Attr, AttrFloat32, _Ref
-from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
+from spox._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars
 from spox._function import Function, to_function
 from spox._graph import arguments, results
 from spox._node import OpType
 from spox._type_system import Tensor
-from spox._var import Var
+from spox._var import Var, _VarInfo
 
 
 @pytest.fixture
@@ -32,11 +32,11 @@ def linear():
 
         @dataclass
         class Inputs(BaseInputs):
-            X: Var
+            X: _VarInfo
 
         @dataclass
         class Outputs(BaseOutputs):
-            Y: Var
+            Y: _VarInfo
 
         op_type = OpType("LinearFunction", "spox.test", 0)
 
@@ -44,7 +44,7 @@ def linear():
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: BaseVars) -> Outputs:
             # FIXME: At some point, attribute references should be properly type-hinted.
             a = op.constant(
                 value_float=_Ref(
@@ -57,18 +57,22 @@ def linear():
                 )  # type: ignore
             )
             x = inputs.X
-            return self.Outputs(op.add(op.mul(a, x), b))
+            return self.Outputs(op.add(op.mul(a, x), b)._var_info)
 
     def linear_inner(
         x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
     ) -> Var:
-        return LinearFunction(
-            LinearFunction.Attributes(
-                slope_outer=AttrFloat32(a, "slope_outer"),
-                shift_outer=AttrFloat32(b, "shift_outer"),
-            ),
-            LinearFunction.Inputs(x),
-        ).outputs.Y
+        return (
+            LinearFunction(
+                LinearFunction.Attributes(
+                    slope_outer=AttrFloat32(a, "slope_outer"),
+                    shift_outer=AttrFloat32(b, "shift_outer"),
+                ),
+                LinearFunction.Inputs(x._var_info),
+            )
+            .get_output_vars(input_prop_values={"x": x._value})
+            .Y
+        )
 
     return linear_inner
 
@@ -83,11 +87,11 @@ def linear2(linear):
 
         @dataclass
         class Inputs(BaseInputs):
-            X: Var
+            X: _VarInfo
 
         @dataclass
         class Outputs(BaseOutputs):
-            Y: Var
+            Y: _VarInfo
 
         op_type = OpType("LinearFunction2", "spox.test", 0)
 
@@ -95,24 +99,29 @@ def linear2(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: BaseVars) -> Outputs:
             return self.Outputs(
                 linear(
                     inputs.X,
                     _Ref(attrs["slope1"], outer_name="slope1", name="slope_outer"),
                     _Ref(attrs["shift1"], outer_name="shift1", name="shift_outer"),
-                )
+                )._var_info
             )
 
     def linear_inner(
         x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
     ) -> Var:
-        return LinearFunction2(
-            LinearFunction2.Attributes(
-                slope1=AttrFloat32(a, name="slope1"), shift1=AttrFloat32(b, "shift1")
-            ),
-            LinearFunction2.Inputs(x),
-        ).outputs.Y
+        return (
+            LinearFunction2(
+                LinearFunction2.Attributes(
+                    slope1=AttrFloat32(a, name="slope1"),
+                    shift1=AttrFloat32(b, "shift1"),
+                ),
+                LinearFunction2.Inputs(x._var_info),
+            )
+            .get_output_vars({"X": x._value})
+            .Y
+        )
 
     return linear_inner
 
@@ -129,11 +138,11 @@ def cubic(linear):
 
         @dataclass
         class Inputs(BaseInputs):
-            X: Var
+            X: _VarInfo
 
         @dataclass
         class Outputs(BaseOutputs):
-            Y: Var
+            Y: _VarInfo
 
         op_type = OpType("CubicFunction", "spox.test.extra", 0)
 
@@ -141,7 +150,7 @@ def cubic(linear):
         inputs: Inputs
         outputs: Outputs
 
-        def constructor(self, attrs: dict[str, Attr], inputs: Inputs) -> Outputs:
+        def constructor(self, attrs: dict[str, Attr], inputs: BaseVars) -> Outputs:
             x = inputs.X
             a = op.mul(
                 linear(
@@ -165,18 +174,22 @@ def cubic(linear):
                 ),
             )
             y = op.add(a, b)
-            return self.Outputs(y)
+            return self.Outputs(y._var_info)
 
     def cubic_inner(x: Var, a3: float, a2: float, a1: float, a0: float) -> Var:
-        return CubicFunction(
-            CubicFunction.Attributes(
-                a3=AttrFloat32(a3, name="a3"),
-                a2=AttrFloat32(a2, name="a2"),
-                a1=AttrFloat32(a1, name="a1"),
-                a0=AttrFloat32(a0, name="a0"),
-            ),
-            CubicFunction.Inputs(X=x),
-        ).outputs.Y
+        return (
+            CubicFunction(
+                CubicFunction.Attributes(
+                    a3=AttrFloat32(a3, name="a3"),
+                    a2=AttrFloat32(a2, name="a2"),
+                    a1=AttrFloat32(a1, name="a1"),
+                    a0=AttrFloat32(a0, name="a0"),
+                ),
+                CubicFunction.Inputs(X=x._var_info),
+            )
+            .get_output_vars()
+            .Y
+        )
 
     return cubic_inner
 

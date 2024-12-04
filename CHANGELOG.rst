@@ -10,6 +10,10 @@ Change log
 0.13.0 (unreleased)
 -------------------
 
+**Other changes**
+
+- Split `Var`-s internally to help the garbage collector in collecting propagated values.
+
 **Support change**
 
 - Support for ``Python 3.8`` has been dropped.

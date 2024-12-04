@@ -19,8 +19,8 @@ from ._node import Node, OpType
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
-from ._value_prop import PropValueType
-from ._var import Var
+from ._value_prop import PropDict, PropValueType
+from ._var import Var, _VarInfo, unwrap_vars
 
 # This is a default used for internal operators that
 # require the default domain. The most common of these
@@ -78,7 +78,7 @@ class Argument(_InternalNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        arg: Var
+        arg: _VarInfo
 
     attrs: Attributes
     inputs: Inputs
@@ -88,7 +88,7 @@ class Argument(_InternalNode):
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         return {"arg": self.attrs.type.value}
 
@@ -115,18 +115,18 @@ class _Initializer(_InternalNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        arg: Var
+        arg: _VarInfo
 
     attrs: Attributes
     inputs: BaseInputs
     outputs: Outputs
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         # Output type is based on the value of the type attribute
         arr = self.attrs.value.value
         return {"arg": Tensor(arr.dtype, arr.shape)}
 
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
         return {"arg": self.attrs.value.value}
 
     def update_metadata(self, opset_req, initializers, functions):
@@ -149,11 +149,11 @@ class _Introduce(_InternalNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        inputs: Sequence[Var]
+        inputs: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[Var]
+        outputs: Sequence[_VarInfo]
 
     op_type = OpType("Introduce", "spox.internal", 0)
 
@@ -161,7 +161,7 @@ class _Introduce(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         return {
             f"outputs_{i}": arr.type
             for i, arr in enumerate(self.inputs.inputs)
@@ -213,9 +213,11 @@ def intros(*args: Var) -> Sequence[Var]:
     Sequence[Var]
         Vars of the same value as ``args``, but with a shared dependency.
     """
-    return _Introduce(
-        None, _Introduce.Inputs(args), out_variadic=len(args)
-    ).outputs.outputs
+    return (
+        _Introduce(None, _Introduce.Inputs(unwrap_vars(args)), out_variadic=len(args))
+        .get_output_vars()
+        .outputs
+    )
 
 
 def intro(*args: Var) -> Var:
@@ -246,8 +248,7 @@ def unsafe_cast(x: Var, typ: Type) -> Var:
         Var with the type reset to whatever was given.
     """
     y = intro(x)
-    y.type = typ
-    y._value = x._value
+    y._var_info.type = typ
     return y
 
 

@@ -19,6 +19,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
 from spox._node import Node, OpType
 from spox._type_system import Tensor, Type
+from spox._var import _VarInfo
 
 
 # Define the Node for this operator - need to know the attributes, inputs and outputs statically
@@ -32,18 +33,18 @@ class Inverse(Node):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     # This is optional, but is useful when defining the inference functions below.
     attrs: Attributes
     inputs: Inputs
     outputs: Outputs
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values) -> dict[str, Type]:
         # This is technically optional, but using an operator without type inference may be inconvenient.
         if self.inputs.X.type is None:
             return {}
@@ -54,19 +55,23 @@ class Inverse(Node):
             )
         return {"Y": t}
 
-    def propagate_values(self) -> dict[str, np.ndarray]:
+    def propagate_values(self, initializers) -> dict[str, np.ndarray]:
         # This is optional and implements value propagation ('partial data propagation' in ONNX).
         # In essence constant folding carried through for purposes of type inference.
         return (
-            {"Y": np.linalg.inv(self.inputs.X._get_value())}
-            if self.inputs.X._value is not None
+            {"Y": np.linalg.inv(initializers["X"].value)}
+            if initializers["X"] is not None
             else {}
         )
 
 
 # Define the operator constructor which is actually used
 def inverse(matrix: Var) -> Var:
-    return Inverse(Inverse.Attributes(), Inverse.Inputs(matrix)).outputs.Y
+    return (
+        Inverse(Inverse.Attributes(), Inverse.Inputs(matrix._var_info))
+        .get_output_vars(input_prop_values={"X": matrix._value})
+        .Y
+    )
 
 
 # Test the correct runtime behaviour with ORT

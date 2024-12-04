@@ -17,6 +17,7 @@ from ._graph import Argument, initializer, results
 from ._inline import _Inline
 from ._standard import _strip_dim_symbol
 from ._type_system import Type
+from ._value_prop import PropDict
 from ._var import Var
 
 
@@ -35,9 +36,13 @@ def argument(typ: Type) -> Var:
         An unnamed argument variable of given type that may be used as
         a model input to build a graph.
     """
-    return _internal_op.Argument(
-        _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
-    ).outputs.arg
+    return (
+        _internal_op.Argument(
+            _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
+        )
+        .get_output_vars()
+        .arg
+    )
 
 
 @contextlib.contextmanager
@@ -49,8 +54,8 @@ def _temporary_renames(**kwargs: Var):
     pre: dict[Var, Optional[str]] = {}
     try:
         for name, arg in kwargs.items():
-            pre[arg] = arg._name
-            arg._rename(name)
+            pre[arg] = arg._var_info._name
+            arg._var_info._rename(name)
         yield
     finally:
         for arg, name in pre.items():
@@ -118,6 +123,7 @@ def build(
     if not all(isinstance(var, Var) for var in outputs.values()):
         seen_types = {type(obj) for obj in outputs.values()}
         raise TypeError(f"Build outputs must be Vars, not {seen_types - {Var}}.")
+
     if not all(isinstance(var._op, Argument) for var in inputs.values()):
         raise TypeError(
             "Build inputs must be `Var`s constructed using the `spox.argument` function. "
@@ -297,11 +303,23 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
                 f"Error processing arguments, got {set(kwargs)}, expected {set(in_names)}."
             )
         node = _Inline(
-            inputs=_Inline.Inputs([kwargs[name] for name in in_names]),
+            inputs=_Inline.Inputs([kwargs[name]._var_info for name in in_names]),
             out_variadic=len(model.graph.output),
             model=model,
         )
-        return dict(zip(out_names, node.outputs.outputs))
+
+        prop_values: PropDict = {
+            name: kwargs[name]._value
+            for name in in_names
+            if kwargs[name]._value is not None
+        }
+
+        return dict(
+            zip(
+                out_names,
+                node.get_output_vars(prop_values).flatten_vars().values(),
+            )
+        )
 
     return inline_inner
 
