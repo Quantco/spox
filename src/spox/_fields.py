@@ -61,11 +61,13 @@ class BaseVars(BaseFields):
     @classmethod
     def _get_field_type(cls, field: Field) -> VarFieldKind:
         """Access the kind of the field (single, optional, variadic) based on its type annotation."""
-        if field.type == Var:
+        # The field may be unannotated as per
+        # from __future__ import annotations
+        if field.type in [Var, "Var"]:
             return VarFieldKind.SINGLE
-        elif field.type == Optional[Var]:
+        elif field.type in [Optional[Var], "Optional[Var]"]:
             return VarFieldKind.OPTIONAL
-        elif field.type == Sequence[Var]:
+        elif field.type in [Sequence[Var], "Sequence[Var]"]:
             return VarFieldKind.VARIADIC
         raise ValueError(f"Bad field type: '{field.type}'.")
 

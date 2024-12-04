@@ -3,6 +3,8 @@
 
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
@@ -220,7 +222,7 @@ def _strip_dim_symbol(typ: Type, pred: Callable[[str], bool]) -> Type:
         return typ
 
 
-def _make_dummy_subgraph(_node: Node, key: str, graph: "Graph") -> onnx.GraphProto:
+def _make_dummy_subgraph(_node: Node, key: str, graph: Graph) -> onnx.GraphProto:
     """
     Make a dummy GraphProto that has inputs and outputs typed like Graph, without a graph body.
 

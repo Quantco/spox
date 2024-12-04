@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import inspect
 import itertools
 from collections.abc import Iterable, Sequence
@@ -47,7 +49,7 @@ class Function(_InternalNode):
     func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
-    func_graph: "_graph.Graph"
+    func_graph: _graph.Graph
 
     def constructor(
         self, attrs: dict[str, _attributes.Attr], inputs: BaseInputs
@@ -100,7 +102,7 @@ class Function(_InternalNode):
         self,
         opset_req: set[tuple[str, int]],
         initializers: dict[Var, np.ndarray],
-        functions: list["Function"],
+        functions: list[Function],
     ) -> None:
         super().update_metadata(opset_req, initializers, functions)
         functions.append(self)

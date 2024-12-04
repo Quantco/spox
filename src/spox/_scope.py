@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from collections.abc import Hashable
 from typing import Generic, Optional, TypeVar, Union, overload
 
@@ -28,14 +30,14 @@ class ScopeSpace(Generic[H]):
     of_name: dict[str, H]
     reserved: set[str]
     base_name_counters: dict[str, int]
-    parent: "Optional[ScopeSpace[H]]"
+    parent: Optional[ScopeSpace[H]]
 
     def __init__(
         self,
         name_of: Optional[dict[H, str]] = None,
         of_name: Optional[dict[str, H]] = None,
         reserved: Optional[set[str]] = None,
-        parent: "Optional[ScopeSpace[H]]" = None,
+        parent: Optional[ScopeSpace[H]] = None,
     ):
         """
         Parameters
@@ -162,7 +164,7 @@ class Scope:
         self,
         sub_var: Optional[ScopeSpace[Var]] = None,
         sub_node: Optional[ScopeSpace[Node]] = None,
-        parent: Optional["Scope"] = None,
+        parent: Optional[Scope] = None,
     ):
         self.var = sub_var if sub_var is not None else ScopeSpace()
         self.node = sub_node if sub_node is not None else ScopeSpace()
@@ -176,7 +178,7 @@ class Scope:
     def of(
         cls,
         *what: Union[tuple[str, Union[Var, Node]], tuple[Union[Var, Node], str]],
-    ) -> "Scope":
+    ) -> Scope:
         """Convenience constructor for filling a Scope with known names."""
         scope = cls()
         for key, value in what:

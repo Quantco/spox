@@ -14,6 +14,8 @@ Shapes may be unknown (when the rank is unknown, unknown dimensions are OK), but
 Unknown shapes may cause warnings or errors to be raised.
 """
 
+from __future__ import annotations
+
 import abc
 from dataclasses import dataclass
 from typing import Optional, TypeVar, Union
@@ -33,7 +35,7 @@ class Natural(abc.ABC):
     """Family of types used for storing known or unknown natural numbers, primarily for tensor shapes."""
 
     @classmethod
-    def from_simple(cls, value: SimpleShapeElem) -> "Natural":
+    def from_simple(cls, value: SimpleShapeElem) -> Natural:
         """Translate into Natural from simplified representation."""
         if isinstance(value, int):
             return Constant(value)
@@ -73,7 +75,7 @@ class Natural(abc.ABC):
         raise self.simple_to_onnx(self.to_simple())
 
     @classmethod
-    def from_onnx(cls, proto: onnx.TensorShapeProto.Dimension) -> "Natural":
+    def from_onnx(cls, proto: onnx.TensorShapeProto.Dimension) -> Natural:
         """Translate Natural from ONNX dimension element."""
         return cls.from_simple(cls.simple_from_onnx(proto))
 
@@ -81,7 +83,7 @@ class Natural(abc.ABC):
         """Translate self into simplified representation."""
         raise NotImplementedError(f"Cannot translate {self} to simple shape element.")
 
-    def __le__(self, other: "Natural") -> bool:
+    def __le__(self, other: Natural) -> bool:
         """Shape dimension membership comparison, with Unknown serving as an "any" quantifier."""
         if not isinstance(other, Natural):
             return NotImplemented
@@ -174,7 +176,7 @@ class Shape:
             raise ShapeError(f"Rank of {self} is unknown.")
         return r
 
-    def __getitem__(self, item: Union[slice, int]) -> Union["Shape", Natural]:
+    def __getitem__(self, item: Union[slice, int]) -> Union[Shape, Natural]:
         """Indexing the dimensions, also provides iteration."""
         if self.dims is None:
             raise ShapeError(f"Cannot index unknown {self}.")
@@ -182,7 +184,7 @@ class Shape:
             return Shape(self.dims[item])
         return self.dims[item]
 
-    def can_broadcast(self, other: "Shape") -> bool:
+    def can_broadcast(self, other: Shape) -> bool:
         """Check if this shape can be broadcast with ``other``."""
         try:
             self.broadcast(other)
@@ -191,7 +193,7 @@ class Shape:
         else:
             return True
 
-    def broadcast(self, other: Union["Shape", SimpleShape]) -> "Shape":
+    def broadcast(self, other: Union[Shape, SimpleShape]) -> Shape:
         """Return the result of shape broadcasting on ``self`` and ``other``."""
         if not isinstance(other, Shape):
             other = Shape.from_simple(other)
@@ -208,7 +210,7 @@ class Shape:
                 f"Could not broadcast shapes: {self.to_simple()}, {other.to_simple()}."
             ) from e
 
-    def __le__(self, other: "Shape") -> bool:
+    def __le__(self, other: Shape) -> bool:
         """Shape membership comparison. Unknown shapes are treated as "any" qualifiers."""
         if not isinstance(other, Shape):
             return NotImplemented

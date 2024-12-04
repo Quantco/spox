@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import dataclasses
 import enum
 import itertools
@@ -343,7 +345,7 @@ class Node(ABC):
         return itertools.chain(self.dependencies, self.dependents)
 
     @property
-    def subgraphs(self) -> Iterable["Graph"]:
+    def subgraphs(self) -> Iterable[Graph]:
         for attr in self.attrs.get_fields().values():
             if isinstance(attr, AttrGraph):
                 yield attr.value
@@ -352,16 +354,16 @@ class Node(ABC):
         self,
         opset_req: set[tuple[str, int]],
         initializers: dict[Var, np.ndarray],
-        functions: list["Function"],
+        functions: list[Function],
     ) -> None:
         opset_req.update(self.opset_req)
 
     def to_onnx(
         self,
-        scope: "Scope",
+        scope: Scope,
         doc_string: Optional[str] = None,
         build_subgraph: Optional[
-            typing.Callable[["Node", str, "Graph"], onnx.GraphProto]
+            typing.Callable[[Node, str, Graph], onnx.GraphProto]
         ] = None,
     ) -> list[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""

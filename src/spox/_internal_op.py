@@ -6,6 +6,8 @@ Module for Spox operators that implement special internal behaviour that does no
 They behave like a normal Node, but their inference, building and translation behaviour may be overriden.
 """
 
+from __future__ import annotations
+
 from abc import ABC
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -100,7 +102,7 @@ class Argument(_InternalNode):
         self,
         opset_req: set[tuple[str, int]],
         initializers: dict[Var, np.ndarray],
-        functions: list["Function"],
+        functions: list[Function],
     ) -> None:
         super().update_metadata(opset_req, initializers, functions)
         var = self.outputs.arg
@@ -109,7 +111,7 @@ class Argument(_InternalNode):
 
     def to_onnx(
         self,
-        scope: "Scope",
+        scope: Scope,
         doc_string: Optional[str] = None,
         build_subgraph: Optional[Callable] = None,
     ) -> list[onnx.NodeProto]:
@@ -145,14 +147,14 @@ class _Initializer(_InternalNode):
         self,
         opset_req: set[tuple[str, int]],
         initializers: dict[Var, np.ndarray],
-        functions: list["Function"],
+        functions: list[Function],
     ) -> None:
         super().update_metadata(opset_req, initializers, functions)
         initializers[self.outputs.arg] = self.attrs.value.value
 
     def to_onnx(
         self,
-        scope: "Scope",
+        scope: Scope,
         doc_string: Optional[str] = None,
         build_subgraph: Optional[Callable] = None,
     ) -> list[onnx.NodeProto]:
