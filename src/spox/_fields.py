@@ -62,8 +62,8 @@ class BaseVars(BaseFields):
     def _get_field_type(cls, field: Field) -> VarFieldKind:
         """Access the kind of the field (single, optional, variadic) based on its type annotation."""
         # The field.type may be unannotated as per
-        field_type = get_type_hints(cls)[field.name]
         # from __future__ import annotations
+        field_type = get_type_hints(cls)[field.name]
         if field_type == Var:
             return VarFieldKind.SINGLE
         elif field_type == Optional[Var]:
