@@ -5,25 +5,21 @@
 
 import itertools
 from collections.abc import Iterable
-from typing import (
-    Callable,
-    Optional,
-    Protocol,
-    TypeVar,
-)
+from typing import Any, Callable, Optional, Protocol, TypeVar
 
 from onnx.defs import OpSchema, get_all_schemas_with_history
+
+
+class _Comparable(Protocol):
+    def __lt__(self, other: Any) -> bool: ...
+
+    def __gt__(self, other: Any) -> bool: ...
+
 
 S = TypeVar("S")
 K = TypeVar("K")
 V = TypeVar("V")
-T = TypeVar("T", bound="_Comparable", contravariant=True)
-
-
-class _Comparable(Protocol[T]):
-    def __lt__(self: T, other: T) -> bool: ...
-
-    def __gt__(self: T, other: T) -> bool: ...
+T = TypeVar("T", bound=_Comparable)
 
 
 def _key_groups(
