@@ -8,7 +8,7 @@ import enum
 import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Any, Optional, Union, cast
+from typing import Optional, Union, cast
 
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
@@ -76,14 +76,6 @@ class BaseVars:
         else:
             self.vars[attr] = value
 
-    def __getitem__(self, key: str):
-        """Allows dictionary-like access to retrieve variables."""
-        return self.vars[key]
-
-    def __setitem__(self, key: str, value: Union) -> None:
-        """Allows dictionary-like access to set variables."""
-        self.vars[key] = value
-
 
 @dataclass
 class BaseVarInfos(BaseFields):
@@ -146,10 +138,6 @@ class BaseVarInfos(BaseFields):
     def get_fields(self) -> dict[str, Union[None, _VarInfo, Sequence[_VarInfo]]]:
         """Return a mapping of all fields stored in this object by name."""
         return self.__dict__.copy()
-
-    def _unpack_to_any(self) -> Any:
-        """Unpack the stored fields into a tuple of appropriate length, typed as Any."""
-        return tuple(self.__dict__.values())
 
     @property
     def fully_typed(self) -> bool:

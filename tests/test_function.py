@@ -151,7 +151,7 @@ def cubic(linear):
         outputs: Outputs
 
         def constructor(self, attrs: dict[str, Attr], inputs: BaseVars) -> Outputs:
-            x = inputs["X"]
+            x = inputs.X
             a = op.mul(
                 linear(
                     x,
