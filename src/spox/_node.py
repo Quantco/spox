@@ -17,7 +17,7 @@ import onnx
 from ._attributes import AttrGraph
 from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
-from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars, VarFieldKind
 from ._type_system import Type
 from ._value_prop import PropDict
 from ._var import _VarInfo
@@ -244,7 +244,7 @@ class Node(ABC):
 
     def get_output_vars(
         self, input_prop_values: Optional[PropDict] = None, infer_types: bool = True
-    ):
+    ) -> BaseVars:
         if input_prop_values is None:
             input_prop_values = {}
         # After typing everything, try to get values for outputs

@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import dataclasses
 import enum
 import warnings
@@ -35,14 +37,18 @@ class VarFieldKind(enum.Enum):
 
 
 class BaseVars:
-    def __init__(self, vars):
+    """A collection of `Var`-s used to carry around inputs/outputs of nodes"""
+
+    vars: dict[str, Union[Var, Optional[Var], Sequence[Var]]]
+
+    def __init__(self, vars: dict[str, Union[Var, Optional[Var], Sequence[Var]]]):
         self.vars = vars
 
     def _unpack_to_any(self):
         """Unpack the stored fields into a tuple of appropriate length, typed as Any."""
         return tuple(self.vars.values())
 
-    def _flatten(self):
+    def _flatten(self) -> Iterator[tuple[str, Optional[Var]]]:
         """Iterate over the pairs of names and values of fields in this object."""
         for key, value in self.vars.items():
             if value is None or isinstance(value, Var):
@@ -50,11 +56,11 @@ class BaseVars:
             else:
                 yield from ((f"{key}_{i}", v) for i, v in enumerate(value))
 
-    def flatten_vars(self):
+    def flatten_vars(self) -> dict[str, Var]:
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
-    def __getattr__(self, attr: str) -> Union["Var", Sequence["Var"]]:
+    def __getattr__(self, attr: str):
         """Retrieves the attribute if present in the stored variables."""
         try:
             return self.vars[attr]
@@ -63,7 +69,7 @@ class BaseVars:
                 f"{self.__class__.__name__!r} object has no attribute {attr!r}"
             )
 
-    def __setattr__(self, attr: str, value: Union["Var", Sequence["Var"]]) -> None:
+    def __setattr__(self, attr: str, value: Union[Var, Sequence[Var]]) -> None:
         """Sets the attribute to a value if the attribute is present in the stored variables."""
         if attr == "vars":
             super().__setattr__(attr, value)
@@ -74,7 +80,7 @@ class BaseVars:
         """Allows dictionary-like access to retrieve variables."""
         return self.vars[key]
 
-    def __setitem__(self, key: str, value) -> None:
+    def __setitem__(self, key: str, value: Union) -> None:
         """Allows dictionary-like access to set variables."""
         self.vars[key] = value
 
@@ -160,7 +166,7 @@ class BaseInputs(BaseVarInfos):
         if prop_values is None:
             prop_values = {}
 
-        vars_dict: dict[str, Union[Var, Sequence[Var]]] = {}
+        vars_dict: dict[str, Union[Var, Optional[Var], Sequence[Var]]] = {}
 
         for field in dataclasses.fields(self):
             field_type = self._get_field_type(field)

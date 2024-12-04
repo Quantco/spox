@@ -111,7 +111,9 @@ class _Inline(_InternalNode):
             ("", INTERNAL_MIN_OPSET)
         }
 
-    def infer_output_types(self, input_prop_values) -> dict[str, Type]:
+    def infer_output_types(
+        self, input_prop_values: _value_prop.PropDict
+    ) -> dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
         for i, var in zip(self.graph.input, self.inputs.inputs):
             if var.type is not None and not (
@@ -128,7 +130,7 @@ class _Inline(_InternalNode):
         }
 
     def propagate_values(
-        self, input_prop_values
+        self, input_prop_values: _value_prop.PropDict
     ) -> dict[str, _value_prop.PropValueType]:
         if any(
             var_info.type is None or input_prop_values.get(var_info.name) is None

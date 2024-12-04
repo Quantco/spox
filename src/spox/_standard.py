@@ -103,7 +103,6 @@ class StandardNode(Node):
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
-        # TODO: fix this
 
         initializers = []
 

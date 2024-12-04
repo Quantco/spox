@@ -3,11 +3,11 @@
 
 import enum
 import logging
+import typing
 import warnings
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Callable, Union
-from typing import Optional as tOptional
 
 import numpy as np
 import numpy.typing as npt
@@ -26,8 +26,10 @@ The internal representation for runtime values.
 - PropValue -> Optional, Some (has value)
 - None -> Optional, Nothing (no value)
 """
-PropValueType = Union[np.ndarray, Iterable[tOptional["PropValue"]], "PropValue", None]
-PropDict = dict[str, Union[Iterable[tOptional["PropValue"]], "PropValue", None]]
+PropValueType = Union[
+    np.ndarray, Iterable[typing.Optional["PropValue"]], "PropValue", None
+]
+PropDict = dict[str, Union[Iterable[typing.Optional["PropValue"]], "PropValue", None]]
 ORTValue = Union[np.ndarray, Iterable, None]
 RefValue = Union[np.ndarray, Iterable, float, None]
 
