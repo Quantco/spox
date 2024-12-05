@@ -52,6 +52,9 @@ namespaces = false
 [tool.ruff.lint]
 # Enable the isort rules.
 extend-select = ["I", "UP"]
+ignore = [
+    "UP007", # https://docs.astral.sh/ruff/rules/non-pep604-annotation/
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["spox"]
@@ -62,6 +65,7 @@ ignore_missing_imports = true
 no_implicit_optional = true
 check_untyped_defs = true
 warn_unused_ignores = true
+disallow_untyped_defs = true
 
 [tool.pytest.ini_options]
 # This will be pytest's future default.

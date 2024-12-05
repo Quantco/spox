@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import sys
+from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import Any
 
 from spox._var import Var
 
@@ -11,7 +13,9 @@ STORE_TRACEBACK = False
 
 
 @contextmanager
-def show_construction_tracebacks(debug_index):
+def show_construction_tracebacks(
+    debug_index: dict[str, Any],
+) -> Iterator[None]:
     """
     Context manager constructed with a ``Builder.build_result.debug_index``.
 

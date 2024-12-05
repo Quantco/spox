@@ -4,9 +4,10 @@
 """Module containing experimental Spox features that may be standard in the future."""
 
 import warnings
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
-from typing import Optional, Union
+from types import ModuleType
+from typing import Any, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -25,7 +26,7 @@ def set_type_warning_level(level: TypeWarningLevel) -> None:
 
 
 @contextmanager
-def type_warning_level(level: TypeWarningLevel):
+def type_warning_level(level: TypeWarningLevel) -> Iterator[None]:
     prev_level = spox._node._TYPE_WARNING_LEVEL
     set_type_warning_level(level)
     yield
@@ -40,7 +41,7 @@ def set_value_prop_backend(backend: ValuePropBackend) -> None:
 
 
 @contextmanager
-def value_prop_backend(backend: ValuePropBackend):
+def value_prop_backend(backend: ValuePropBackend) -> Iterator[None]:
     prev_backend = spox._value_prop._VALUE_PROP_BACKEND
     set_value_prop_backend(backend)
     yield
@@ -74,7 +75,9 @@ def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
 
 
 class _NumpyLikeOperatorDispatcher:
-    def __init__(self, op, type_promotion: bool, constant_promotion: bool):
+    def __init__(
+        self, op: ModuleType, type_promotion: bool, constant_promotion: bool
+    ) -> None:
         self.op = op
         self.type_promotion = type_promotion
         self.constant_promotion = constant_promotion
@@ -125,23 +128,23 @@ class _NumpyLikeOperatorDispatcher:
 
         return tuple(var for var in map(_promote_target, args))
 
-    def add(self, a, b) -> Var:
+    def add(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         return self.op.add(a, b)
 
-    def sub(self, a, b) -> Var:
+    def sub(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         return self.op.sub(a, b)
 
-    def mul(self, a, b) -> Var:
+    def mul(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         return self.op.mul(a, b)
 
-    def truediv(self, a, b) -> Var:
+    def truediv(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b, to_floating=True)
         return self.op.div(a, b)
 
-    def floordiv(self, a, b) -> Var:
+    def floordiv(self, a, b) -> Var:  # type: ignore
         a, b = self._promote(a, b)
         c = self.op.div(a, b)
         if isinstance(c.type, Tensor) and not issubclass(c.type._elem_type, np.integer):
@@ -166,8 +169,8 @@ class _NumpyLikeOperatorDispatcher:
 
 @contextmanager
 def _operator_overloading(
-    op, type_promotion: bool = False, constant_promotion: bool = True
-):
+    op: ModuleType, type_promotion: bool = False, constant_promotion: bool = True
+) -> Iterator[None]:
     """Enable operator overloading on Var for this block.
 
     May be used either as a context manager, or a decorator.
@@ -210,7 +213,7 @@ def _operator_overloading(
     Var._operator_dispatcher = prev_dispatcher
 
 
-def __getattr__(name):
+def __getattr__(name: str) -> Any:
     if name == "operator_overloading":
         warnings.warn(
             "using 'operator_overloading' is deprecated, consider using https://github.com/Quantco/ndonnx instead",

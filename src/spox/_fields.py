@@ -4,8 +4,8 @@
 import dataclasses
 import enum
 from collections.abc import Iterable, Iterator, Sequence
-from dataclasses import dataclass
-from typing import Any, Optional, Union
+from dataclasses import Field, dataclass
+from typing import Any, Optional, Union, get_type_hints
 
 from ._attributes import Attr
 from ._var import Var
@@ -33,7 +33,7 @@ class VarFieldKind(enum.Enum):
 
 @dataclass
 class BaseVars(BaseFields):
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Check if passed fields are of the appropriate types based on field kinds
         for field in dataclasses.fields(self):
             value = getattr(self, field.name)
@@ -59,13 +59,16 @@ class BaseVars(BaseFields):
                     )
 
     @classmethod
-    def _get_field_type(cls, field) -> VarFieldKind:
+    def _get_field_type(cls, field: Field) -> VarFieldKind:
         """Access the kind of the field (single, optional, variadic) based on its type annotation."""
-        if field.type == Var:
+        # The field.type may be unannotated as per
+        # from __future__ import annotations
+        field_type = get_type_hints(cls)[field.name]
+        if field_type == Var:
             return VarFieldKind.SINGLE
-        elif field.type == Optional[Var]:
+        elif field_type == Optional[Var]:
             return VarFieldKind.OPTIONAL
-        elif field.type == Sequence[Var]:
+        elif field_type == Sequence[Var]:
             return VarFieldKind.VARIADIC
         raise ValueError(f"Bad field type: '{field.type}'.")
 

@@ -3,6 +3,8 @@
 
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
@@ -20,6 +22,7 @@ from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropValueType
+from ._var import Var
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -89,7 +92,7 @@ class StandardNode(Node):
         ]
 
         # Output types with placeholder empty TypeProto (or actual type if not using dummies)
-        def out_value_info(curr_key, curr_var):
+        def out_value_info(curr_key: str, curr_var: Var) -> onnx.ValueInfoProto:
             if dummy_outputs or curr_var.type is None or not curr_var.type._is_concrete:
                 return onnx.helper.make_value_info(curr_key, onnx.TypeProto())
             return curr_var.unwrap_type()._to_onnx_value_info(curr_key)
@@ -219,7 +222,7 @@ def _strip_dim_symbol(typ: Type, pred: Callable[[str], bool]) -> Type:
         return typ
 
 
-def _make_dummy_subgraph(_node: Node, key: str, graph: "Graph") -> onnx.GraphProto:
+def _make_dummy_subgraph(_node: Node, key: str, graph: Graph) -> onnx.GraphProto:
     """
     Make a dummy GraphProto that has inputs and outputs typed like Graph, without a graph body.
 

@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import dataclasses
 import enum
 import itertools
@@ -8,21 +10,23 @@ import traceback
 import typing
 import warnings
 from abc import ABC
-from collections.abc import Iterable, Sequence
+from collections.abc import Generator, Iterable, Sequence
 from dataclasses import dataclass
-from typing import ClassVar, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
+import numpy as np
 import onnx
 
 from ._attributes import AttrGraph
 from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
-from ._fields import BaseAttributes, BaseInputs, BaseOutputs, VarFieldKind
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars, VarFieldKind
 from ._type_system import Type
 from ._value_prop import PropValue, PropValueType
 from ._var import Var
 
 if typing.TYPE_CHECKING:
+    from ._function import Function
     from ._graph import Graph
     from ._scope import Scope
 
@@ -96,7 +100,7 @@ class Node(ABC):
         infer_types: bool = True,
         propagate_values: bool = True,
         validate: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Parameters
@@ -183,7 +187,7 @@ class Node(ABC):
     def signature(self) -> str:
         """Get a signature of this Node, including its inputs and attributes (but not outputs)."""
 
-        def fmt_input(key, var):
+        def fmt_input(key: str, var: Var) -> str:
             return f"{key}: {var.type}" + (
                 f" = {var._value}" if var._value is not None else ""
             )
@@ -206,10 +210,10 @@ class Node(ABC):
         domain = cls.op_type.domain if cls.op_type.domain != "" else "ai.onnx"
         return f"{domain}@{cls.op_type.version}::{cls.op_type.identifier}"
 
-    def pre_init(self, **kwargs):
+    def pre_init(self, **kwargs: Any) -> None:
         """Pre-initialization hook. Called during ``__init__`` before any field on the object is set."""
 
-    def post_init(self, **kwargs):
+    def post_init(self, **kwargs: Any) -> None:
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
     def propagate_values(self) -> dict[str, PropValueType]:
@@ -228,7 +232,9 @@ class Node(ABC):
         """
         return {}
 
-    def inference(self, infer_types: bool = True, propagate_values: bool = True):
+    def inference(
+        self, infer_types: bool = True, propagate_values: bool = True
+    ) -> None:
         # Type inference routine - call infer_output_types if required
         # and check if it provides the expected outputs.
         out_types = self.infer_output_types() if infer_types else {}
@@ -282,7 +288,7 @@ class Node(ABC):
                     stacklevel=4,
                 )
 
-    def _check_concrete_type(self, value_type: Type) -> Optional[str]:
+    def _check_concrete_type(self, value_type: Optional[Type]) -> Optional[str]:
         if value_type is None:
             return "type is None"
         try:
@@ -291,7 +297,9 @@ class Node(ABC):
             return f"{type(e).__name__}: {str(e)}"
         return None
 
-    def _list_types(self, source):
+    def _list_types(
+        self, source: BaseVars
+    ) -> Generator[tuple[str, Optional[Type]], None, None]:
         return ((key, var.type) for key, var in source.get_vars().items())
 
     def _init_output_vars(self) -> BaseOutputs:
@@ -337,20 +345,25 @@ class Node(ABC):
         return itertools.chain(self.dependencies, self.dependents)
 
     @property
-    def subgraphs(self) -> Iterable["Graph"]:
+    def subgraphs(self) -> Iterable[Graph]:
         for attr in self.attrs.get_fields().values():
             if isinstance(attr, AttrGraph):
                 yield attr.value
 
-    def update_metadata(self, opset_req, initializers, functions):
+    def update_metadata(
+        self,
+        opset_req: set[tuple[str, int]],
+        initializers: dict[Var, np.ndarray],
+        functions: list[Function],
+    ) -> None:
         opset_req.update(self.opset_req)
 
     def to_onnx(
         self,
-        scope: "Scope",
+        scope: Scope,
         doc_string: Optional[str] = None,
         build_subgraph: Optional[
-            typing.Callable[["Node", str, "Graph"], onnx.GraphProto]
+            typing.Callable[[Node, str, Graph], onnx.GraphProto]
         ] = None,
     ) -> list[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""

@@ -63,7 +63,7 @@ def iterative_dfs(
     # Recursion stack - the state of a DFS is described with a stack of (vertex, nodes left to visit).
     recursion: list[tuple[V, Iterator[V]]] = []
 
-    def call(w: V):
+    def call(w: V) -> None:
         """Helper called when we attempt to enter a node ``w``."""
         if w in stack and raise_on_cycle:
             raise RuntimeError(

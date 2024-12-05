@@ -1,12 +1,15 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import inspect
 import itertools
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, make_dataclass
-from typing import TYPE_CHECKING, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, Union
 
+import numpy as np
 import onnx
 
 from . import _attributes
@@ -46,9 +49,11 @@ class Function(_InternalNode):
     func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
-    func_graph: "_graph.Graph"
+    func_graph: _graph.Graph
 
-    def constructor(self, attrs, inputs):
+    def constructor(
+        self, attrs: dict[str, _attributes.Attr], inputs: BaseInputs
+    ) -> BaseOutputs:
         """
         Abstract method for functions.
 
@@ -89,11 +94,16 @@ class Function(_InternalNode):
         }
 
     @property
-    def opset_req(self):
+    def opset_req(self) -> set[tuple[str, int]]:
         node_opset_req = Node.opset_req.fget(self)  # type: ignore
         return node_opset_req | self.func_graph._get_build_result().opset_req
 
-    def update_metadata(self, opset_req, initializers, functions):
+    def update_metadata(
+        self,
+        opset_req: set[tuple[str, int]],
+        initializers: dict[Var, np.ndarray],
+        functions: list[Function],
+    ) -> None:
         super().update_metadata(opset_req, initializers, functions)
         functions.append(self)
         functions.extend(self.func_graph._get_build_result().functions)
@@ -123,10 +133,18 @@ class Function(_InternalNode):
         )
 
 
-def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
+def _make_function_cls(
+    fun: Callable[..., Any],
+    num_inputs: int,
+    num_outputs: int,
+    domain: str,
+    version: int,
+    name: str,
+) -> type[Function]:
     _FuncInputs = make_dataclass(
         "_FuncInputs", ((f"in{i}", Var) for i in range(num_inputs)), bases=(BaseInputs,)
     )
+
     _FuncOutputs = make_dataclass(
         "_FuncOutputs",
         ((f"out{i}", Var) for i in range(num_outputs)),
@@ -142,13 +160,15 @@ def _make_function_cls(fun, num_inputs, num_outputs, domain, version, name):
         Outputs = _FuncOutputs
         op_type = OpType(name, domain, version)
 
-        def constructor(self, attrs, inputs):
+        def constructor(self, attrs: dict[str, _attributes.Attr], inputs: Any) -> Any:
             return self.Outputs(*fun(*inputs.get_fields().values()))
 
     return _Func
 
 
-def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
+def to_function(
+    name: str, domain: str = "spox.function", *, _version: int = 0
+) -> Callable:
     """
     Decorate a given function to make the operation performed by it add a Spox function to the graph.
 
@@ -176,7 +196,7 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
                 _num_outputs = sum(1 for _ in fun(*args))
             return _num_outputs
 
-        def init(*args: Var):
+        def init(*args: Var) -> type[Function]:
             nonlocal _cls
             if _cls is not None:
                 return _cls
@@ -186,9 +206,9 @@ def to_function(name: str, domain: str = "spox.function", *, _version: int = 0):
             )
             return _cls
 
-        def alt_fun(*args: Var) -> Iterable[Var]:
+        def alt_fun(*args: Var) -> Iterable[Union[Var, Optional[Var], Sequence[Var]]]:
             cls = init(*args)
-            return (
+            return list(
                 cls(cls.Attributes(), cls.Inputs(*args)).outputs.get_fields().values()
             )
 

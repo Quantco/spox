@@ -3,6 +3,8 @@
 
 """Internal module implementing the low-level Graph object and functions for creating arguments and Graphs."""
 
+from __future__ import annotations
+
 import dataclasses
 import itertools
 from collections.abc import Iterable
@@ -139,11 +141,11 @@ class Graph:
     _arguments: Optional[tuple[Var, ...]] = None
     _extra_opset_req: Optional[set[tuple[str, int]]] = None
     _constructor: Optional[Callable[..., Iterable[Var]]] = None
-    _build_result: "_build.Cached[_build.BuildResult]" = dataclasses.field(
+    _build_result: _build.Cached[_build.BuildResult] = dataclasses.field(
         default_factory=_build.Cached
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         name_repr = self._name if self._name is not None else "?"
         args_repr = (
             f"{', '.join(str(a) for a in self._arguments)}"
@@ -158,7 +160,7 @@ class Graph:
             comments.append(f"+{len(self._extra_opset_req)} opset req")
         return f"<Graph '{name_repr}' ({args_repr}) -> ({res_repr}){': ' if comments else ''}{', '.join(comments)}>"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if any(not isinstance(var, Var) for var in self._results.values()):
             seen_types = {type(obj) for obj in self._results.values()}
             raise TypeError(f"Graph results must be Vars, not {seen_types - {Var}}.")
@@ -168,22 +170,22 @@ class Graph:
             seen_types = {type(obj) for obj in self._arguments}
             raise TypeError(f"Build outputs must be Vars, not {seen_types - {Var}}.")
 
-    def with_name(self, name: str) -> "Graph":
+    def with_name(self, name: str) -> Graph:
         """Return a Graph with its name set to ``name``."""
         return replace(self, _name=name)
 
-    def with_doc(self, doc_string: str) -> "Graph":
+    def with_doc(self, doc_string: str) -> Graph:
         """Return a Graph with its doc string set to ``doc``."""
         return replace(self, _doc_string=doc_string)
 
-    def with_arguments(self, *args: Var) -> "Graph":
+    def with_arguments(self, *args: Var) -> Graph:
         """
         Return a Graph with given Vars marked as exactly its arguments.
         A useful idiom is ``results(...).with_arguments(...)`` when you want to specify both results and arguments.
         """
         return replace(self, _arguments=args)
 
-    def with_opset(self, *args: tuple[str, int]) -> "Graph":
+    def with_opset(self, *args: tuple[str, int]) -> Graph:
         """
         Add the given minimum opset requirements to the graph.
         Useful when the graph is using legacy nodes, but Spox should attempt to convert them to a required version.
@@ -193,11 +195,11 @@ class Graph:
             extra_opset_req |= self._extra_opset_req
         return replace(self, _extra_opset_req=extra_opset_req)
 
-    def _with_constructor(self, fun: Callable[..., Iterable[Var]]) -> "Graph":
+    def _with_constructor(self, fun: Callable[..., Iterable[Var]]) -> Graph:
         """Assign a constructor that constructed this Graph given ``self.requested_arguments``."""
         return replace(self, _constructor=fun)
 
-    def _reconstruct(self, *args: Var) -> "Graph":
+    def _reconstruct(self, *args: Var) -> Graph:
         assert self._constructor is not None
         return (
             results(**dict(zip(self._results, self._constructor(*args))))
@@ -205,7 +207,7 @@ class Graph:
             ._with_constructor(self._constructor)
         )
 
-    def _inject_build_result(self, what: "_build.BuildResult") -> "Graph":
+    def _inject_build_result(self, what: _build.BuildResult) -> Graph:
         """
         Internal function used to build a Graph with a custom build result.
         Used when building subgraphs to have further control over the build state.
@@ -252,7 +254,7 @@ class Graph:
         """
         return max_opset_policy(self._get_opset_req())
 
-    def _get_build_result(self) -> "_build.BuildResult":
+    def _get_build_result(self) -> _build.BuildResult:
         """Internal function for getting (with cache) the build result structure for this Graph."""
         if self._build_result._value is None:
             self._build_result.value = _build.Builder(self).build_main()
@@ -362,7 +364,7 @@ class Graph:
         model_doc_string: str = "",
         infer_shapes: bool = False,
         check_model: Union[Literal[0], Literal[1], Literal[2]] = 1,
-        ir_version=8,
+        ir_version: int = 8,
         concrete: bool = True,
     ) -> onnx.ModelProto:
         """
@@ -448,7 +450,7 @@ def results(**kwargs: Var) -> Graph:
     return Graph(kwargs)
 
 
-def enum_results(*vars: Var, prefix="out") -> Graph:
+def enum_results(*vars: Var, prefix: str = "out") -> Graph:
     """
     Use this function to construct a ``Graph`` object, whenever the exact names are not important.
     Useful when creating subgraphs.

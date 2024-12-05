@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import itertools
 from dataclasses import dataclass
 from typing import (
@@ -44,7 +46,7 @@ class Cached(Generic[T]):
         return self._value
 
     @value.setter
-    def value(self, to: T):
+    def value(self, to: T) -> None:
         self._value = to
 
 
@@ -61,7 +63,7 @@ class BuildResult:
     arguments: tuple[Var, ...]
     results: tuple[Var, ...]
     opset_req: set[tuple[str, int]]
-    functions: tuple["_function.Function", ...]
+    functions: tuple[_function.Function, ...]
     initializers: dict[Var, np.ndarray]
 
 
@@ -121,14 +123,14 @@ class Builder:
         (lowest common ancestor), which is a common operation on trees.
         """
 
-        subgraph_owner: dict["Graph", Node]
-        scope_of: dict[Node, "Graph"]
+        subgraph_owner: dict[Graph, Node]
+        scope_of: dict[Node, Graph]
 
-        def __init__(self):
+        def __init__(self) -> None:
             self.subgraph_owner = {}
             self.scope_of = {}
 
-        def parent(self, graph: "Graph") -> "Graph":
+        def parent(self, graph: Graph) -> Graph:
             """
             Return the parent of a scope in the represented scope tree.
 
@@ -141,7 +143,7 @@ class Builder:
                 else graph
             )
 
-        def lca(self, a: "Graph", b: "Graph") -> "Graph":
+        def lca(self, a: Graph, b: Graph) -> Graph:
             """
             A simple LCA algorithm without preprocessing that only accesses the parents.
 
@@ -160,21 +162,21 @@ class Builder:
             return a
 
     # Graphs needed in the build
-    main: "Graph"
-    graphs: set["Graph"]
-    graph_topo: list["Graph"]
+    main: Graph
+    graphs: set[Graph]
+    graph_topo: list[Graph]
     # Arguments, results
-    arguments_of: dict["Graph", list[Var]]
-    results_of: dict["Graph", list[Var]]
-    source_of: dict["Graph", Node]
+    arguments_of: dict[Graph, list[Var]]
+    results_of: dict[Graph, list[Var]]
+    source_of: dict[Graph, Node]
     # Arguments found by traversal
-    all_arguments_in: dict["Graph", set[Var]]
-    claimed_arguments_in: dict["Graph", set[Var]]
+    all_arguments_in: dict[Graph, set[Var]]
+    claimed_arguments_in: dict[Graph, set[Var]]
     # Scopes
     scope_tree: ScopeTree
-    scope_own: dict["Graph", list[Node]]
+    scope_own: dict[Graph, list[Node]]
 
-    def __init__(self, main: "Graph"):
+    def __init__(self, main: Graph):
         self.main = main
         self.graphs = set()
         self.graph_topo = list()
@@ -218,7 +220,7 @@ class Builder:
                 var._rename(key)
         return vars
 
-    def discover(self, graph: "Graph") -> tuple[set[Var], set[Var]]:
+    def discover(self, graph: Graph) -> tuple[set[Var], set[Var]]:
         """
         Run the discovery step of the build process. Resolves arguments and results for the involved graphs.
         Finds the topological ordering between (sub)graphs and sets their owners (nodes of which they are attributes).
@@ -255,7 +257,7 @@ class Builder:
         claimed_arguments = self.claimed_arguments_in[graph] = set()
         used_arguments = set()
 
-        def collect_arguments(nd: Node):
+        def collect_arguments(nd: Node) -> None:
             nonlocal all_arguments, claimed_arguments, used_arguments
             if isinstance(nd, Argument):
                 all_arguments.add(nd.outputs.arg)
@@ -309,7 +311,7 @@ class Builder:
 
         return all_arguments, claimed_arguments
 
-    def update_scope_tree(self, graph: "Graph") -> None:
+    def update_scope_tree(self, graph: Graph) -> None:
         """
         Traverse ``graph`` and update the Builder's scope tree to accommodate the input constraints inside it.
 
@@ -329,7 +331,7 @@ class Builder:
         is completed 'bottom-up'.
         """
 
-        def satisfy_constraints(node):
+        def satisfy_constraints(node: Node) -> None:
             # By default, a node is bound to the scope it is found in.
             self.scope_tree.scope_of.setdefault(node, graph)
             # Bring up the scope of its node to its ancestors if it is too low to be accessible in the current graph.
@@ -394,7 +396,7 @@ class Builder:
         subgraph_opset_req = set()  # Keeps track of all opset imports in subgraphs
 
         def build_subgraph(
-            subgraph_of: Node, key: str, subgraph: "Graph"
+            subgraph_of: Node, key: str, subgraph: Graph
         ) -> onnx.GraphProto:
             nonlocal subgraph_opset_req
             subgraph_name = scope.node[subgraph_of] + f"_{key}"
@@ -407,7 +409,7 @@ class Builder:
         return build_subgraph, subgraph_opset_req
 
     def compile_graph(
-        self, graph: "Graph", scope: Scope, prefix: str = ""
+        self, graph: Graph, scope: Scope, prefix: str = ""
     ) -> BuildResult:
         """
         Compile a given Graph into a BuildResult. Handles naming of all the Vars/Nodes and only adds Nodes to a
