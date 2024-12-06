@@ -60,7 +60,7 @@ class PropValue:
     type: Type
     value: PropValueType
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # The underlying numpy array might have been constructed with a
         # platform-dependent dtype - such as ulonglong.
         # Though very similar, it does not compare equal to the usual sized dtype.
@@ -79,7 +79,7 @@ class PropValue:
                 f"which does not match the expected type {self.type}."
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"<Propagated {self.value}: {self.type}>"
 
     def check(self) -> bool:
@@ -200,7 +200,14 @@ def _run_onnxruntime(
     return output_feed
 
 
-def get_backend_calls():
+def get_backend_calls() -> (
+    tuple[
+        Callable[..., RefValue],
+        Callable[..., dict[str, npt.ArrayLike]],
+        Callable[..., PropValue],
+    ]
+):
+    wrap_feed: Callable[..., RefValue]
     run: Callable[..., dict[str, npt.ArrayLike]]
     unwrap_feed: Callable[..., PropValue]
     if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:

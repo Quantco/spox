@@ -56,7 +56,7 @@ class Attr(ABC, Generic[T]):
             return _deref(self._value)
         return self._value
 
-    def _validate(self):
+    def _validate(self) -> None:
         try:
             type_in_onnx = self._to_onnx().type
         except Exception as e:
@@ -85,7 +85,7 @@ class Attr(ABC, Generic[T]):
         """Conversion method for the dereferenced case."""
         raise NotImplementedError()
 
-    def _get_pretty_type_exception(self):
+    def _get_pretty_type_exception(self) -> TypeError:
         if isinstance(self.value, tuple) and len(self.value):
             types = ", ".join(sorted({type(v).__name__ for v in self.value}))
             msg = f"Unable to instantiate `{type(self).__name__}` from items of type(s) `{types}`."
@@ -177,7 +177,7 @@ class AttrDtype(Attr[npt.DTypeLike]):
 
     _attribute_proto_type = AttributeProto.INT
 
-    def _validate(self):
+    def _validate(self) -> None:
         dtype_to_tensor_type(self.value)
 
     def _to_onnx_deref(self) -> AttributeProto:
@@ -187,7 +187,7 @@ class AttrDtype(Attr[npt.DTypeLike]):
 class AttrGraph(Attr[Any]):
     _attribute_proto_type = AttributeProto.GRAPH
 
-    def _validate(self):
+    def _validate(self) -> None:
         from spox._graph import Graph
 
         if not isinstance(self.value, Graph):

@@ -4,7 +4,7 @@
 import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 import onnx
 
@@ -26,7 +26,7 @@ def rename_in_graph(
     rename_node: Optional[Callable[[str], str]] = None,
     rename_op: Optional[Callable[[str, str], tuple[str, str]]] = None,
 ) -> onnx.GraphProto:
-    def rename_in_subgraph(subgraph):
+    def rename_in_subgraph(subgraph: onnx.GraphProto) -> onnx.GraphProto:
         return rename_in_graph(
             subgraph,
             rename,
@@ -98,7 +98,7 @@ class _Inline(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def pre_init(self, **kwargs):
+    def pre_init(self, **kwargs: Any) -> None:
         self.model = kwargs["model"]
 
     @property
@@ -150,7 +150,10 @@ class _Inline(_InternalNode):
         }
 
     def to_onnx(
-        self, scope: Scope, doc_string: Optional[str] = None, build_subgraph=None
+        self,
+        scope: Scope,
+        doc_string: Optional[str] = None,
+        build_subgraph: Optional[Callable] = None,
     ) -> list[onnx.NodeProto]:
         input_names: dict[str, int] = {
             p.name: i for i, p in enumerate(self.graph.input)

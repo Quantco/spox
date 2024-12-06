@@ -5,20 +5,15 @@
 
 import itertools
 from collections.abc import Iterable
-from typing import (
-    Callable,
-    Optional,
-    Protocol,
-    TypeVar,
-)
+from typing import Any, Callable, Optional, Protocol, TypeVar
 
 from onnx.defs import OpSchema, get_all_schemas_with_history
 
 
 class _Comparable(Protocol):
-    def __lt__(self, other): ...
+    def __lt__(self, other: Any) -> bool: ...
 
-    def __gt__(self, other): ...
+    def __gt__(self, other: Any) -> bool: ...
 
 
 S = TypeVar("S")
@@ -27,7 +22,9 @@ V = TypeVar("V")
 T = TypeVar("T", bound=_Comparable)
 
 
-def _key_groups(seq: Iterable[S], key: Callable[[S], T]):
+def _key_groups(
+    seq: Iterable[S], key: Callable[[S], T]
+) -> Iterable[tuple[T, Iterable[S]]]:
     """Group a sequence by a given key."""
     return itertools.groupby(sorted(seq, key=key), key)
 

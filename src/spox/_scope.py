@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from collections.abc import Hashable
 from typing import Generic, Optional, TypeVar, Union, overload
 
@@ -28,14 +30,14 @@ class ScopeSpace(Generic[H]):
     of_name: dict[str, H]
     reserved: set[str]
     base_name_counters: dict[str, int]
-    parent: "Optional[ScopeSpace[H]]"
+    parent: Optional[ScopeSpace[H]]
 
     def __init__(
         self,
         name_of: Optional[dict[H, str]] = None,
         of_name: Optional[dict[str, H]] = None,
         reserved: Optional[set[str]] = None,
-        parent: "Optional[ScopeSpace[H]]" = None,
+        parent: Optional[ScopeSpace[H]] = None,
     ):
         """
         Parameters
@@ -76,7 +78,7 @@ class ScopeSpace(Generic[H]):
     @overload
     def __getitem__(self, item: str) -> H: ...
 
-    def __getitem__(self, item: Union[str, H]):
+    def __getitem__(self, item: Union[str, H]) -> Union[str, H]:
         """Access the name of an object or an object with a given name in this (or outer) namespace."""
         if self.parent is not None and item in self.parent:
             return self.parent[item]
@@ -86,18 +88,18 @@ class ScopeSpace(Generic[H]):
             return self.name_of[item]
 
     @overload
-    def __setitem__(self, key: str, value: H): ...
+    def __setitem__(self, key: str, value: H) -> None: ...
 
     @overload
-    def __setitem__(self, key: H, value: str): ...
+    def __setitem__(self, key: H, value: str) -> None: ...
 
-    def __setitem__(self, _key, _value):
+    def __setitem__(self, _key: Union[str, H], _value: Union[H, str]) -> None:
         """Set the name of an object in exactly this namespace. Both ``[name] = obj`` and ``[obj] = name`` work."""
         if isinstance(_value, str):
             _key, _value = _value, _key
+        assert isinstance(_key, str)
         key: str = _key
-        value: H = _value
-        assert isinstance(key, str)
+        value: H = _value  # type: ignore
         if key in self and self[key] != value:
             raise ScopeError(
                 f"Failed to name {value}, as its name {key} "
@@ -113,7 +115,7 @@ class ScopeSpace(Generic[H]):
         self.of_name[key] = value
         self.name_of[value] = key
 
-    def __delitem__(self, item: Union[str, H]):
+    def __delitem__(self, item: Union[str, H]) -> None:
         """Delete a both the name and object from exactly this namespace."""
         if isinstance(item, str):
             key, value = item, self.of_name[item]
@@ -162,7 +164,7 @@ class Scope:
         self,
         sub_var: Optional[ScopeSpace[_VarInfo]] = None,
         sub_node: Optional[ScopeSpace[Node]] = None,
-        parent: Optional["Scope"] = None,
+        parent: Optional[Scope] = None,
     ):
         self.var = sub_var if sub_var is not None else ScopeSpace()
         self.node = sub_node if sub_node is not None else ScopeSpace()
@@ -173,7 +175,12 @@ class Scope:
             )
 
     @classmethod
-    def of(cls, *what):
+    def of(
+        cls,
+        *what: Union[
+            tuple[str, Union[_VarInfo, Node]], tuple[Union[_VarInfo, Node], str]
+        ],
+    ) -> Scope:
         """Convenience constructor for filling a Scope with known names."""
         scope = cls()
         for key, value in what:
@@ -188,7 +195,7 @@ class Scope:
                 raise TypeError(f"Unknown value type for Scope.of: {type(value)}")
         return scope
 
-    def update(self, node: Node, prefix: str = "", force: bool = True):
+    def update(self, node: Node, prefix: str = "", force: bool = True) -> None:
         """
         Function used for introducing a Node and its outputs into the scope in the build routine.
 

@@ -1,6 +1,8 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TypeVar
 
@@ -20,7 +22,7 @@ class Type:
     """Base class for classes representing ONNX types in Spox."""
 
     @classmethod
-    def _from_onnx(cls, proto: onnx.TypeProto) -> "Type":
+    def _from_onnx(cls, proto: onnx.TypeProto) -> Type:
         """
         Parameters
         ----------
@@ -54,7 +56,7 @@ class Type:
             f"Cannot get Type from invalid protobuf (not tensor, sequence or optional): {proto}"
         )
 
-    def _assert_concrete(self, *, _traceback_name: str = "?"):
+    def _assert_concrete(self, *, _traceback_name: str = "?") -> Type:
         """Function used by the build process to check if a type is
         well-specified (e.g. Tensor shape is defined).
 
@@ -72,7 +74,7 @@ class Type:
         else:
             return True
 
-    def unwrap_tensor(self) -> "Tensor":
+    def unwrap_tensor(self) -> Tensor:
         """
         Return ``self``, unless this Type is not a Tensor.
 
@@ -86,7 +88,7 @@ class Type:
             raise TypeError(f"Cannot unwrap requested Tensor type from {self}")
         return self
 
-    def unwrap_sequence(self) -> "Sequence":
+    def unwrap_sequence(self) -> Sequence:
         """
         Return ``self``, unless this Type is not a Sequence.
 
@@ -99,7 +101,7 @@ class Type:
             raise TypeError(f"Cannot unwrap requested Sequence type from {self}")
         return self
 
-    def unwrap_optional(self) -> "Optional":
+    def unwrap_optional(self) -> Optional:
         """
         Return ``self``, unless this Type is not an Optional.
 
@@ -136,7 +138,7 @@ class Type:
             doc_string,
         )
 
-    def _subtype(self, other: "Type") -> bool:
+    def _subtype(self, other: Type) -> bool:
         """
         Compare Types for membership.
         An Unknown field (like an unspecified Tensor shape) is treated as "any" in this comparison.
@@ -225,17 +227,17 @@ class Tensor(Type):
             dtype_to_tensor_type(self._elem_type), self.shape
         )
 
-    def _assert_concrete(self, *, _traceback_name: str = "?"):
+    def _assert_concrete(self, *, _traceback_name: str = "?") -> Tensor:
         if self.shape is None:
             raise ValueError(
                 f"Tensor {self} does not specify the shape -- in {_traceback_name}."
             )
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(dtype={self._elem_type.__name__}, shape={self.shape})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         dims = self.shape
         dims_repr = (
             "".join(f"[{dim if dim is not None else '?'}]" for dim in dims)
@@ -266,10 +268,10 @@ class Sequence(Type):
     def _to_onnx(self) -> onnx.TypeProto:
         return onnx.helper.make_sequence_type_proto(self.elem_type._to_onnx())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(elem_type={self.elem_type!r}"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"[{self.elem_type}]"
 
     def _subtype(self, other: Type) -> bool:
@@ -295,10 +297,10 @@ class Optional(Type):
     def _to_onnx(self) -> onnx.TypeProto:
         return onnx.helper.make_optional_type_proto(self.elem_type._to_onnx())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}(elem_type={self.elem_type!r}"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.elem_type}?"
 
     def _subtype(self, other: Type) -> bool:
