@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import inspect
 import itertools
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from dataclasses import dataclass, make_dataclass
-from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 import numpy as np
 import onnx
@@ -210,10 +210,10 @@ def to_function(
             )
             return _cls
 
-        def alt_fun(*args: Var) -> Iterable[Union[Var, Optional[Var], Sequence[Var]]]:
+        def alt_fun(*args: Var) -> Iterable[Var]:
             cls = init(*args)
             return [
-                Var(var_info)
+                Var(var_info)  # type: ignore
                 for var_info in cls(cls.Attributes(), cls.Inputs(*unwrap_vars(args)))
                 .outputs.get_fields()
                 .values()
