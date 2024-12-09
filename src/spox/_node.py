@@ -267,7 +267,7 @@ class Node(ABC):
             self.validate_types()
 
         out_values = self.propagate_values(input_prop_values)
-        return self.outputs._propagate_vars(out_values)
+        return self.outputs.into_vars(out_values)
 
     def validate_types(self) -> None:
         """Validation of types, ran at the end of Node creation."""
