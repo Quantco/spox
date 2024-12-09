@@ -737,7 +737,7 @@ def affine_grid(
         theta=theta,
         size=size,
     )
-    return (
+    output_vars = (
         _AffineGrid(
             _AffineGrid.Attributes(
                 align_corners=AttrInt64(align_corners, name="align_corners"),
@@ -750,6 +750,7 @@ def affine_grid(
         .get_output_vars(input_prop_values=input_prop_values)
         .grid
     )
+    return output_vars  # type: ignore
 
 
 def constant_of_shape(
@@ -792,7 +793,7 @@ def constant_of_shape(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _ConstantOfShape(
             _ConstantOfShape.Attributes(
                 value=AttrTensor.maybe(value, name="value"),
@@ -804,6 +805,7 @@ def constant_of_shape(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def dft(
@@ -901,7 +903,7 @@ def dft(
         dft_length=dft_length,
         axis=axis,
     )
-    return (
+    output_vars = (
         _DFT(
             _DFT.Attributes(
                 inverse=AttrInt64(inverse, name="inverse"),
@@ -916,6 +918,7 @@ def dft(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def gelu(
@@ -959,7 +962,7 @@ def gelu(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Gelu(
             _Gelu.Attributes(
                 approximate=AttrString(approximate, name="approximate"),
@@ -971,6 +974,7 @@ def gelu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def grid_sample(
@@ -1079,7 +1083,7 @@ def grid_sample(
         X=X,
         grid=grid,
     )
-    return (
+    output_vars = (
         _GridSample(
             _GridSample.Attributes(
                 align_corners=AttrInt64(align_corners, name="align_corners"),
@@ -1094,6 +1098,7 @@ def grid_sample(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def image_decoder(
@@ -1157,7 +1162,7 @@ def image_decoder(
     input_prop_values = create_prop_dict(
         encoded_stream=encoded_stream,
     )
-    return (
+    output_vars = (
         _ImageDecoder(
             _ImageDecoder.Attributes(
                 pixel_format=AttrString(pixel_format, name="pixel_format"),
@@ -1169,6 +1174,7 @@ def image_decoder(
         .get_output_vars(input_prop_values=input_prop_values)
         .image
     )
+    return output_vars  # type: ignore
 
 
 def isinf(
@@ -1213,7 +1219,7 @@ def isinf(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _IsInf(
             _IsInf.Attributes(
                 detect_negative=AttrInt64(detect_negative, name="detect_negative"),
@@ -1226,6 +1232,7 @@ def isinf(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def isnan(
@@ -1257,7 +1264,7 @@ def isnan(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _IsNaN(
             _IsNaN.Attributes(),
             _IsNaN.Inputs(
@@ -1267,6 +1274,7 @@ def isnan(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def reduce_max(
@@ -1331,7 +1339,7 @@ def reduce_max(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceMax(
             _ReduceMax.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -1347,6 +1355,7 @@ def reduce_max(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_min(
@@ -1410,7 +1419,7 @@ def reduce_min(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceMin(
             _ReduceMin.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -1426,6 +1435,7 @@ def reduce_min(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def regex_full_match(
@@ -1467,7 +1477,7 @@ def regex_full_match(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _RegexFullMatch(
             _RegexFullMatch.Attributes(
                 pattern=AttrString.maybe(pattern, name="pattern"),
@@ -1479,6 +1489,7 @@ def regex_full_match(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def string_concat(
@@ -1515,7 +1526,7 @@ def string_concat(
         X=X,
         Y=Y,
     )
-    return (
+    output_vars = (
         _StringConcat(
             _StringConcat.Attributes(),
             _StringConcat.Inputs(
@@ -1526,6 +1537,7 @@ def string_concat(
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
     )
+    return output_vars  # type: ignore
 
 
 def string_split(
@@ -1600,7 +1612,7 @@ def string_split(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _StringSplit(
             _StringSplit.Attributes(
                 delimiter=AttrString.maybe(delimiter, name="delimiter"),
@@ -1613,6 +1625,7 @@ def string_split(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

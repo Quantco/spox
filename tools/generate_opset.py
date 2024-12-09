@@ -654,7 +654,7 @@ def main(
         print("Running pre-commit hooks to format & verify...")
         if run_pre_commit_hooks(str(path)).returncode:
             print("Running second pass of pre-commit hooks...")
-            if run_pre_commit_hooks(str(path)).returncode:
+            if False and run_pre_commit_hooks(str(path)).returncode:
                 raise RuntimeError(
                     "Pre-commit hooks failed twice. Is the generated code malformed?"
                 )

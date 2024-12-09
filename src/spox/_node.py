@@ -10,7 +10,7 @@ import traceback
 import typing
 import warnings
 from abc import ABC
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
 
@@ -20,7 +20,14 @@ import onnx
 from ._attributes import AttrGraph
 from ._debug import STORE_TRACEBACK
 from ._exceptions import InferenceWarning
-from ._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars, VarFieldKind
+from ._fields import (
+    BaseAttributes,
+    BaseInputs,
+    BaseOutputs,
+    BaseVarInfos,
+    BaseVars,
+    VarFieldKind,
+)
 from ._type_system import Type
 from ._value_prop import PropDict
 from ._var import _VarInfo
@@ -183,7 +190,7 @@ class Node(ABC):
     def signature(self) -> str:
         """Get a signature of this Node, including its inputs and attributes (but not outputs)."""
 
-        def fmt_input(key, var):
+        def fmt_input(key: str, var: _VarInfo) -> str:
             return f"{key}: {var.type}"
 
         sign = ", ".join(
@@ -228,7 +235,7 @@ class Node(ABC):
 
     def inference(
         self, input_prop_values: Optional[PropDict] = None, infer_types: bool = True
-    ):
+    ) -> None:
         if input_prop_values is None:
             input_prop_values = {}
         # Type inference routine - call infer_output_types if required
@@ -300,7 +307,7 @@ class Node(ABC):
             return f"{type(e).__name__}: {str(e)}"
         return None
 
-    def _list_types(self, source):
+    def _list_types(self, source: BaseVarInfos) -> Iterator[tuple[str, Optional[Type]]]:
         return ((key, var.type) for key, var in source.get_var_infos().items())
 
     def _init_output_vars(self) -> BaseOutputs:

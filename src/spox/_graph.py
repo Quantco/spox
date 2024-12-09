@@ -73,7 +73,7 @@ def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var
             )
         else:
             raise TypeError(f"Cannot construct argument from {type(info)}.")
-    return result
+    return result  # type: ignore
 
 
 def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> tuple[Var, ...]:
@@ -126,7 +126,7 @@ def initializer(arr: np.ndarray) -> Var:
             BaseInputs(),
         )
         .get_output_vars()
-        .arg
+        .arg  # type: ignore
     )
 
 

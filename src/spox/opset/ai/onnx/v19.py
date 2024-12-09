@@ -918,7 +918,7 @@ def average_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _AveragePool(
             _AveragePool.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -938,6 +938,7 @@ def average_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def cast(
@@ -1064,7 +1065,7 @@ def cast(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Cast(
             _Cast.Attributes(
                 saturate=AttrInt64(saturate, name="saturate"),
@@ -1077,6 +1078,7 @@ def cast(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def cast_like(
@@ -1126,7 +1128,7 @@ def cast_like(
         input=input,
         target_type=target_type,
     )
-    return (
+    output_vars = (
         _CastLike(
             _CastLike.Attributes(
                 saturate=AttrInt64(saturate, name="saturate"),
@@ -1139,6 +1141,7 @@ def cast_like(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def constant(
@@ -1197,7 +1200,7 @@ def constant(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict()
-    return (
+    output_vars = (
         _Constant(
             _Constant.Attributes(
                 value=AttrTensor.maybe(value, name="value"),
@@ -1213,6 +1216,7 @@ def constant(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def deform_conv(
@@ -1318,7 +1322,7 @@ def deform_conv(
         B=B,
         mask=mask,
     )
-    return (
+    output_vars = (
         _DeformConv(
             _DeformConv.Attributes(
                 dilations=AttrInt64s.maybe(dilations, name="dilations"),
@@ -1339,6 +1343,7 @@ def deform_conv(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def dequantize_linear(
@@ -1403,7 +1408,7 @@ def dequantize_linear(
         x_scale=x_scale,
         x_zero_point=x_zero_point,
     )
-    return (
+    output_vars = (
         _DequantizeLinear(
             _DequantizeLinear.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -1417,6 +1422,7 @@ def dequantize_linear(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def equal(
@@ -1459,7 +1465,7 @@ def equal(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Equal(
             _Equal.Attributes(),
             _Equal.Inputs(
@@ -1470,6 +1476,7 @@ def equal(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def identity(
@@ -1500,7 +1507,7 @@ def identity(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Identity(
             _Identity.Attributes(),
             _Identity.Inputs(
@@ -1510,6 +1517,7 @@ def identity(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def if_(
@@ -1569,7 +1577,7 @@ def if_(
     input_prop_values = create_prop_dict(
         cond=cond,
     )
-    return (
+    output_vars = (
         _If(
             _If.Attributes(
                 else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
@@ -1583,6 +1591,7 @@ def if_(
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs
     )
+    return output_vars  # type: ignore
 
 
 def loop(
@@ -1771,7 +1780,7 @@ def loop(
         cond=cond,
         v_initial=v_initial,
     )
-    return (
+    output_vars = (
         _Loop(
             _Loop.Attributes(
                 body=AttrGraph(_body_subgraph, name="body"),
@@ -1786,6 +1795,7 @@ def loop(
         .get_output_vars(input_prop_values=input_prop_values)
         .v_final_and_scan_outputs
     )
+    return output_vars  # type: ignore
 
 
 def pad(
@@ -1954,7 +1964,7 @@ def pad(
         constant_value=constant_value,
         axes=axes,
     )
-    return (
+    output_vars = (
         _Pad(
             _Pad.Attributes(
                 mode=AttrString(mode, name="mode"),
@@ -1969,6 +1979,7 @@ def pad(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def quantize_linear(
@@ -2042,7 +2053,7 @@ def quantize_linear(
         y_scale=y_scale,
         y_zero_point=y_zero_point,
     )
-    return (
+    output_vars = (
         _QuantizeLinear(
             _QuantizeLinear.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -2057,6 +2068,7 @@ def quantize_linear(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def reshape(
@@ -2114,7 +2126,7 @@ def reshape(
         data=data,
         shape=shape,
     )
-    return (
+    output_vars = (
         _Reshape(
             _Reshape.Attributes(
                 allowzero=AttrInt64(allowzero, name="allowzero"),
@@ -2127,6 +2139,7 @@ def reshape(
         .get_output_vars(input_prop_values=input_prop_values)
         .reshaped
     )
+    return output_vars  # type: ignore
 
 
 def resize(
@@ -2343,7 +2356,7 @@ def resize(
         scales=scales,
         sizes=sizes,
     )
-    return (
+    output_vars = (
         _Resize(
             _Resize.Attributes(
                 antialias=AttrInt64(antialias, name="antialias"),
@@ -2373,6 +2386,7 @@ def resize(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def scan(
@@ -2599,7 +2613,7 @@ def scan(
     input_prop_values = create_prop_dict(
         initial_state_and_scan_inputs=initial_state_and_scan_inputs,
     )
-    return (
+    output_vars = (
         _Scan(
             _Scan.Attributes(
                 body=AttrGraph(_body_subgraph, name="body"),
@@ -2627,6 +2641,7 @@ def scan(
         .get_output_vars(input_prop_values=input_prop_values)
         .final_state_and_scan_outputs
     )
+    return output_vars  # type: ignore
 
 
 def shape(
@@ -2708,7 +2723,7 @@ def shape(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _Shape(
             _Shape.Attributes(
                 end=AttrInt64.maybe(end, name="end"),
@@ -2721,6 +2736,7 @@ def shape(
         .get_output_vars(input_prop_values=input_prop_values)
         .shape
     )
+    return output_vars  # type: ignore
 
 
 def size(
@@ -2753,7 +2769,7 @@ def size(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _Size(
             _Size.Attributes(),
             _Size.Inputs(
@@ -2763,6 +2779,7 @@ def size(
         .get_output_vars(input_prop_values=input_prop_values)
         .size
     )
+    return output_vars  # type: ignore
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

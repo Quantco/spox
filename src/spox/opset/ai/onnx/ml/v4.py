@@ -194,7 +194,7 @@ def label_encoder(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LabelEncoder(
             _LabelEncoder.Attributes(
                 default_float=AttrFloat32(default_float, name="default_float"),
@@ -217,6 +217,7 @@ def label_encoder(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 _OPERATORS = {

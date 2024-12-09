@@ -241,7 +241,7 @@ def intros(*args: Var) -> Sequence[Var]:
     return (
         _Introduce(None, _Introduce.Inputs(unwrap_vars(args)), out_variadic=len(args))
         .get_output_vars()
-        .outputs
+        .outputs  # type: ignore
     )
 
 

@@ -42,7 +42,7 @@ def argument(typ: Type) -> Var:
             _internal_op.Argument.Attributes(type=AttrType(typ, "dummy"), default=None)
         )
         .get_output_vars()
-        .arg
+        .arg  # type: ignore
     )
 
 

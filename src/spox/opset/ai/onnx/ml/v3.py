@@ -667,7 +667,7 @@ def array_feature_extractor(
         X=X,
         Y=Y,
     )
-    return (
+    output_vars = (
         _ArrayFeatureExtractor(
             _ArrayFeatureExtractor.Attributes(),
             _ArrayFeatureExtractor.Inputs(
@@ -678,6 +678,7 @@ def array_feature_extractor(
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
     )
+    return output_vars  # type: ignore
 
 
 def binarizer(
@@ -714,7 +715,7 @@ def binarizer(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Binarizer(
             _Binarizer.Attributes(
                 threshold=AttrFloat32(threshold, name="threshold"),
@@ -726,6 +727,7 @@ def binarizer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def cast_map(
@@ -778,7 +780,7 @@ def cast_map(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _CastMap(
             _CastMap.Attributes(
                 cast_to=AttrString(cast_to, name="cast_to"),
@@ -792,6 +794,7 @@ def cast_map(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def category_mapper(
@@ -852,7 +855,7 @@ def category_mapper(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _CategoryMapper(
             _CategoryMapper.Attributes(
                 cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
@@ -867,6 +870,7 @@ def category_mapper(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def dict_vectorizer(
@@ -922,7 +926,7 @@ def dict_vectorizer(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _DictVectorizer(
             _DictVectorizer.Attributes(
                 int64_vocabulary=AttrInt64s.maybe(
@@ -939,6 +943,7 @@ def dict_vectorizer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def feature_vectorizer(
@@ -978,7 +983,7 @@ def feature_vectorizer(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _FeatureVectorizer(
             _FeatureVectorizer.Attributes(
                 inputdimensions=AttrInt64s.maybe(
@@ -992,6 +997,7 @@ def feature_vectorizer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def imputer(
@@ -1052,7 +1058,7 @@ def imputer(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Imputer(
             _Imputer.Attributes(
                 imputed_value_floats=AttrFloat32s.maybe(
@@ -1075,6 +1081,7 @@ def imputer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def label_encoder(
@@ -1160,7 +1167,7 @@ def label_encoder(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LabelEncoder(
             _LabelEncoder.Attributes(
                 default_float=AttrFloat32(default_float, name="default_float"),
@@ -1180,6 +1187,7 @@ def label_encoder(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def linear_classifier(
@@ -1242,7 +1250,7 @@ def linear_classifier(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LinearClassifier(
             _LinearClassifier.Attributes(
                 classlabels_ints=AttrInt64s.maybe(
@@ -1263,6 +1271,7 @@ def linear_classifier(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def linear_regressor(
@@ -1317,7 +1326,7 @@ def linear_regressor(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LinearRegressor(
             _LinearRegressor.Attributes(
                 coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
@@ -1332,6 +1341,7 @@ def linear_regressor(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def normalizer(
@@ -1373,7 +1383,7 @@ def normalizer(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Normalizer(
             _Normalizer.Attributes(
                 norm=AttrString(norm, name="norm"),
@@ -1385,6 +1395,7 @@ def normalizer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def one_hot_encoder(
@@ -1439,7 +1450,7 @@ def one_hot_encoder(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _OneHotEncoder(
             _OneHotEncoder.Attributes(
                 cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
@@ -1453,6 +1464,7 @@ def one_hot_encoder(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def svmclassifier(
@@ -1540,7 +1552,7 @@ def svmclassifier(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _SVMClassifier(
             _SVMClassifier.Attributes(
                 classlabels_ints=AttrInt64s.maybe(
@@ -1570,6 +1582,7 @@ def svmclassifier(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def svmregressor(
@@ -1636,7 +1649,7 @@ def svmregressor(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _SVMRegressor(
             _SVMRegressor.Attributes(
                 coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
@@ -1657,6 +1670,7 @@ def svmregressor(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def scaler(
@@ -1701,7 +1715,7 @@ def scaler(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Scaler(
             _Scaler.Attributes(
                 offset=AttrFloat32s.maybe(offset, name="offset"),
@@ -1714,6 +1728,7 @@ def scaler(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def tree_ensemble_classifier(
@@ -1853,7 +1868,7 @@ def tree_ensemble_classifier(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _TreeEnsembleClassifier(
             _TreeEnsembleClassifier.Attributes(
                 base_values=AttrFloat32s.maybe(base_values, name="base_values"),
@@ -1908,6 +1923,7 @@ def tree_ensemble_classifier(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def tree_ensemble_regressor(
@@ -2045,7 +2061,7 @@ def tree_ensemble_regressor(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _TreeEnsembleRegressor(
             _TreeEnsembleRegressor.Attributes(
                 aggregate_function=AttrString(
@@ -2100,6 +2116,7 @@ def tree_ensemble_regressor(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def zip_map(
@@ -2145,7 +2162,7 @@ def zip_map(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _ZipMap(
             _ZipMap.Attributes(
                 classlabels_int64s=AttrInt64s.maybe(
@@ -2162,6 +2179,7 @@ def zip_map(
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
     )
+    return output_vars  # type: ignore
 
 
 _OPERATORS = {

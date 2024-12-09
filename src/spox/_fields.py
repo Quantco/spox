@@ -44,7 +44,7 @@ class BaseVars:
     def __init__(self, vars: dict[str, Union[Var, Optional[Var], Sequence[Var]]]):
         self.vars = vars
 
-    def _unpack_to_any(self):
+    def _unpack_to_any(self) -> tuple[Union[Var, Optional[Var], Sequence[Var]], ...]:
         """Unpack the stored fields into a tuple of appropriate length, typed as Any."""
         return tuple(self.vars.values())
 
@@ -60,7 +60,7 @@ class BaseVars:
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
-    def __getattr__(self, attr: str):
+    def __getattr__(self, attr: str) -> Union[Var, Optional[Var], Sequence[Var]]:
         """Retrieves the attribute if present in the stored variables."""
         try:
             return self.vars[attr]
@@ -69,7 +69,9 @@ class BaseVars:
                 f"{self.__class__.__name__!r} object has no attribute {attr!r}"
             )
 
-    def __setattr__(self, attr: str, value: Union[Var, Sequence[Var]]) -> None:
+    def __setattr__(
+        self, attr: str, value: Union[Var, Optional[Var], Sequence[Var]]
+    ) -> None:
         """Sets the attribute to a value if the attribute is present in the stored variables."""
         if attr == "vars":
             super().__setattr__(attr, value)
@@ -193,7 +195,7 @@ class BaseOutputs(BaseVarInfos):
         if prop_values is None:
             prop_values = {}
 
-        def _create_var(key, var_info):
+        def _create_var(key: str, var_info: _VarInfo) -> Var:
             ret = Var(var_info, None)
 
             if var_info.type is None or key not in prop_values:
@@ -212,10 +214,10 @@ class BaseOutputs(BaseVarInfos):
 
             return ret
 
-        ret_dict = {}
+        ret_dict: dict[str, Union[Var, Optional[Var], Sequence[Var]]] = {}
 
         for key, var_info in self.__dict__.items():
-            if var_info is None or isinstance(var_info, _VarInfo):
+            if isinstance(var_info, _VarInfo):
                 ret_dict[key] = _create_var(key, var_info)
             else:
                 ret_dict[key] = [

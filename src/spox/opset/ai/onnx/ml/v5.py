@@ -227,7 +227,7 @@ def tree_ensemble(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _TreeEnsemble(
             _TreeEnsemble.Attributes(
                 aggregate_function=AttrInt64(
@@ -265,6 +265,7 @@ def tree_ensemble(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 _OPERATORS = {

@@ -19,7 +19,7 @@ input_prop_values = create_prop_dict(
         %}{{param.name}}={{param.name}}, {%
 endfor %}
     )
-return _{{ schema.name }}(
+output_vars = _{{ schema.name }}(
     _{{ schema.name }}.Attributes(
 {% for attr in attributes %}
     {% if attr.constructor_type_hint.startswith("Optional[") and attr.constructor_type_hint.endswith("]") %}
@@ -47,3 +47,5 @@ if schema.outputs | length <= 1
     %}.{{ schema.outputs[0].name }}{%
 else %}._unpack_to_any(){%
 endif %}
+
+return output_vars # type: ignore

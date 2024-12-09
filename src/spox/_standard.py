@@ -56,7 +56,7 @@ class StandardNode(Node):
         *,
         dummy_outputs: bool = True,
         with_dummy_subgraphs: bool = True,
-        input_prop_values: PropDict = {},
+        input_prop_values: PropDict,
     ) -> tuple[onnx.ModelProto, Scope]:
         """
         Build a singleton model consisting of just this StandardNode. Used for type inference.
@@ -220,7 +220,7 @@ class StandardNode(Node):
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         return self.infer_output_types_onnx(input_prop_values)
 
-    def propagate_values(self, input_prop_values) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
         if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
             return self.propagate_values_onnx(input_prop_values)
         return {}

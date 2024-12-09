@@ -938,7 +938,7 @@ def bitwise_and(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _BitwiseAnd(
             _BitwiseAnd.Attributes(),
             _BitwiseAnd.Inputs(
@@ -949,6 +949,7 @@ def bitwise_and(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def bitwise_not(
@@ -979,7 +980,7 @@ def bitwise_not(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _BitwiseNot(
             _BitwiseNot.Attributes(),
             _BitwiseNot.Inputs(
@@ -989,6 +990,7 @@ def bitwise_not(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def bitwise_or(
@@ -1030,7 +1032,7 @@ def bitwise_or(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _BitwiseOr(
             _BitwiseOr.Attributes(),
             _BitwiseOr.Inputs(
@@ -1041,6 +1043,7 @@ def bitwise_or(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def bitwise_xor(
@@ -1082,7 +1085,7 @@ def bitwise_xor(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _BitwiseXor(
             _BitwiseXor.Attributes(),
             _BitwiseXor.Inputs(
@@ -1093,6 +1096,7 @@ def bitwise_xor(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def center_crop_pad(
@@ -1146,7 +1150,7 @@ def center_crop_pad(
         input_data=input_data,
         shape=shape,
     )
-    return (
+    output_vars = (
         _CenterCropPad(
             _CenterCropPad.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -1159,6 +1163,7 @@ def center_crop_pad(
         .get_output_vars(input_prop_values=input_prop_values)
         .output_data
     )
+    return output_vars  # type: ignore
 
 
 def col2_im(
@@ -1246,7 +1251,7 @@ def col2_im(
         image_shape=image_shape,
         block_shape=block_shape,
     )
-    return (
+    output_vars = (
         _Col2Im(
             _Col2Im.Attributes(
                 dilations=AttrInt64s.maybe(dilations, name="dilations"),
@@ -1262,6 +1267,7 @@ def col2_im(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def group_normalization(
@@ -1334,7 +1340,7 @@ def group_normalization(
         scale=scale,
         bias=bias,
     )
-    return (
+    output_vars = (
         _GroupNormalization(
             _GroupNormalization.Attributes(
                 epsilon=AttrFloat32(epsilon, name="epsilon"),
@@ -1349,6 +1355,7 @@ def group_normalization(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def lp_pool(
@@ -1462,7 +1469,7 @@ def lp_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LpPool(
             _LpPool.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -1480,6 +1487,7 @@ def lp_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def mish(
@@ -1517,7 +1525,7 @@ def mish(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Mish(
             _Mish.Attributes(),
             _Mish.Inputs(
@@ -1527,6 +1535,7 @@ def mish(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def optional_get_element(
@@ -1561,7 +1570,7 @@ def optional_get_element(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _OptionalGetElement(
             _OptionalGetElement.Attributes(),
             _OptionalGetElement.Inputs(
@@ -1571,6 +1580,7 @@ def optional_get_element(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def optional_has_element(
@@ -1605,7 +1615,7 @@ def optional_has_element(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _OptionalHasElement(
             _OptionalHasElement.Attributes(),
             _OptionalHasElement.Inputs(
@@ -1615,6 +1625,7 @@ def optional_has_element(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def pad(
@@ -1757,7 +1768,7 @@ def pad(
         constant_value=constant_value,
         axes=axes,
     )
-    return (
+    output_vars = (
         _Pad(
             _Pad.Attributes(
                 mode=AttrString(mode, name="mode"),
@@ -1772,6 +1783,7 @@ def pad(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def reduce_l1(
@@ -1831,7 +1843,7 @@ def reduce_l1(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceL1(
             _ReduceL1.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -1847,6 +1859,7 @@ def reduce_l1(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_l2(
@@ -1906,7 +1919,7 @@ def reduce_l2(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceL2(
             _ReduceL2.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -1922,6 +1935,7 @@ def reduce_l2(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_log_sum(
@@ -1982,7 +1996,7 @@ def reduce_log_sum(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceLogSum(
             _ReduceLogSum.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -1998,6 +2012,7 @@ def reduce_log_sum(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_log_sum_exp(
@@ -2058,7 +2073,7 @@ def reduce_log_sum_exp(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceLogSumExp(
             _ReduceLogSumExp.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -2074,6 +2089,7 @@ def reduce_log_sum_exp(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_max(
@@ -2135,7 +2151,7 @@ def reduce_max(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceMax(
             _ReduceMax.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -2151,6 +2167,7 @@ def reduce_max(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_mean(
@@ -2210,7 +2227,7 @@ def reduce_mean(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceMean(
             _ReduceMean.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -2226,6 +2243,7 @@ def reduce_mean(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_min(
@@ -2286,7 +2304,7 @@ def reduce_min(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceMin(
             _ReduceMin.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -2302,6 +2320,7 @@ def reduce_min(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_prod(
@@ -2361,7 +2380,7 @@ def reduce_prod(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceProd(
             _ReduceProd.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -2377,6 +2396,7 @@ def reduce_prod(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_sum_square(
@@ -2436,7 +2456,7 @@ def reduce_sum_square(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceSumSquare(
             _ReduceSumSquare.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -2452,6 +2472,7 @@ def reduce_sum_square(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def resize(
@@ -2630,7 +2651,7 @@ def resize(
         scales=scales,
         sizes=sizes,
     )
-    return (
+    output_vars = (
         _Resize(
             _Resize.Attributes(
                 antialias=AttrInt64(antialias, name="antialias"),
@@ -2660,6 +2681,7 @@ def resize(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def scatter_elements(
@@ -2790,7 +2812,7 @@ def scatter_elements(
         indices=indices,
         updates=updates,
     )
-    return (
+    output_vars = (
         _ScatterElements(
             _ScatterElements.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -2805,6 +2827,7 @@ def scatter_elements(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def scatter_nd(
@@ -2937,7 +2960,7 @@ def scatter_nd(
         indices=indices,
         updates=updates,
     )
-    return (
+    output_vars = (
         _ScatterND(
             _ScatterND.Attributes(
                 reduction=AttrString(reduction, name="reduction"),
@@ -2951,6 +2974,7 @@ def scatter_nd(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def split(
@@ -3004,7 +3028,7 @@ def split(
         input=input,
         split=split,
     )
-    return (
+    output_vars = (
         _Split(
             _Split.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -3019,6 +3043,7 @@ def split(
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs
     )
+    return output_vars  # type: ignore
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

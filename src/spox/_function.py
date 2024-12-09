@@ -21,6 +21,7 @@ from ._var import Var, _VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
     from . import _graph
+    from ._value_prop import PropDict
 
 DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
@@ -51,7 +52,9 @@ class Function(_InternalNode):
     func_outputs: BaseOutputs
     func_graph: _graph.Graph
 
-    def constructor(self, attrs: dict[str, _attributes.Attr], inputs: BaseVars):
+    def constructor(
+        self, attrs: dict[str, _attributes.Attr], inputs: BaseVars
+    ) -> BaseOutputs:
         """
         Abstract method for functions.
 
@@ -64,7 +67,7 @@ class Function(_InternalNode):
             f"Function {type(self).__name__} does not implement a constructor."
         )
 
-    def infer_output_types(self, input_prop_values) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         from . import _graph
 
         func_args_var = _graph.arguments_dict(
@@ -164,7 +167,9 @@ def _make_function_cls(
         Outputs = _FuncOutputs
         op_type = OpType(name, domain, version)
 
-        def constructor(self, attrs: dict[str, _attributes.Attr], inputs: BaseVars):
+        def constructor(
+            self, attrs: dict[str, _attributes.Attr], inputs: BaseVars
+        ) -> BaseOutputs:
             return self.Outputs(*unwrap_vars(fun(*inputs.flatten_vars().values())))
 
     return _Func

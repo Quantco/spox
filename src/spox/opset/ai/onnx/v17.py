@@ -3966,7 +3966,7 @@ def abs(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Abs(
             _Abs.Attributes(),
             _Abs.Inputs(
@@ -3976,6 +3976,7 @@ def abs(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def acos(
@@ -4007,7 +4008,7 @@ def acos(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Acos(
             _Acos.Attributes(),
             _Acos.Inputs(
@@ -4017,6 +4018,7 @@ def acos(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def acosh(
@@ -4049,7 +4051,7 @@ def acosh(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Acosh(
             _Acosh.Attributes(),
             _Acosh.Inputs(
@@ -4059,6 +4061,7 @@ def acosh(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def add(
@@ -4102,7 +4105,7 @@ def add(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Add(
             _Add.Attributes(),
             _Add.Inputs(
@@ -4113,6 +4116,7 @@ def add(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def and_(
@@ -4155,7 +4159,7 @@ def and_(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _And(
             _And.Attributes(),
             _And.Inputs(
@@ -4166,6 +4170,7 @@ def and_(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def arg_max(
@@ -4219,7 +4224,7 @@ def arg_max(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ArgMax(
             _ArgMax.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -4235,6 +4240,7 @@ def arg_max(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def arg_min(
@@ -4288,7 +4294,7 @@ def arg_min(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ArgMin(
             _ArgMin.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -4304,6 +4310,7 @@ def arg_min(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def asin(
@@ -4335,7 +4342,7 @@ def asin(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Asin(
             _Asin.Attributes(),
             _Asin.Inputs(
@@ -4345,6 +4352,7 @@ def asin(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def asinh(
@@ -4376,7 +4384,7 @@ def asinh(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Asinh(
             _Asinh.Attributes(),
             _Asinh.Inputs(
@@ -4386,6 +4394,7 @@ def asinh(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def atan(
@@ -4417,7 +4426,7 @@ def atan(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Atan(
             _Atan.Attributes(),
             _Atan.Inputs(
@@ -4427,6 +4436,7 @@ def atan(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def atanh(
@@ -4459,7 +4469,7 @@ def atanh(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Atanh(
             _Atanh.Attributes(),
             _Atanh.Inputs(
@@ -4469,6 +4479,7 @@ def atanh(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def average_pool(
@@ -4595,7 +4606,7 @@ def average_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _AveragePool(
             _AveragePool.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -4614,6 +4625,7 @@ def average_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def batch_normalization(
@@ -4743,7 +4755,7 @@ def batch_normalization(
         input_mean=input_mean,
         input_var=input_var,
     )
-    return (
+    output_vars = (
         _BatchNormalization(
             _BatchNormalization.Attributes(
                 epsilon=AttrFloat32(epsilon, name="epsilon"),
@@ -4761,6 +4773,7 @@ def batch_normalization(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def bernoulli(
@@ -4811,7 +4824,7 @@ def bernoulli(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Bernoulli(
             _Bernoulli.Attributes(
                 dtype=AttrDtype.maybe(dtype, name="dtype"),
@@ -4824,6 +4837,7 @@ def bernoulli(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def bit_shift(
@@ -4880,7 +4894,7 @@ def bit_shift(
         X=X,
         Y=Y,
     )
-    return (
+    output_vars = (
         _BitShift(
             _BitShift.Attributes(
                 direction=AttrString(direction, name="direction"),
@@ -4893,6 +4907,7 @@ def bit_shift(
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
     )
+    return output_vars  # type: ignore
 
 
 def blackman_window(
@@ -4939,7 +4954,7 @@ def blackman_window(
     input_prop_values = create_prop_dict(
         size=size,
     )
-    return (
+    output_vars = (
         _BlackmanWindow(
             _BlackmanWindow.Attributes(
                 output_datatype=AttrInt64(output_datatype, name="output_datatype"),
@@ -4952,6 +4967,7 @@ def blackman_window(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def cast(
@@ -5039,7 +5055,7 @@ def cast(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Cast(
             _Cast.Attributes(
                 to=AttrDtype(to, name="to"),
@@ -5051,6 +5067,7 @@ def cast(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def cast_like(
@@ -5091,7 +5108,7 @@ def cast_like(
         input=input,
         target_type=target_type,
     )
-    return (
+    output_vars = (
         _CastLike(
             _CastLike.Attributes(),
             _CastLike.Inputs(
@@ -5102,6 +5119,7 @@ def cast_like(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def ceil(
@@ -5135,7 +5153,7 @@ def ceil(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Ceil(
             _Ceil.Attributes(),
             _Ceil.Inputs(
@@ -5145,6 +5163,7 @@ def ceil(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def celu(
@@ -5186,7 +5205,7 @@ def celu(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Celu(
             _Celu.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -5198,6 +5217,7 @@ def celu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def clip(
@@ -5242,7 +5262,7 @@ def clip(
         min=min,
         max=max,
     )
-    return (
+    output_vars = (
         _Clip(
             _Clip.Attributes(),
             _Clip.Inputs(
@@ -5254,6 +5274,7 @@ def clip(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def compress(
@@ -5306,7 +5327,7 @@ def compress(
         input=input,
         condition=condition,
     )
-    return (
+    output_vars = (
         _Compress(
             _Compress.Attributes(
                 axis=AttrInt64.maybe(axis, name="axis"),
@@ -5319,6 +5340,7 @@ def compress(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def concat(
@@ -5357,7 +5379,7 @@ def concat(
     input_prop_values = create_prop_dict(
         inputs=inputs,
     )
-    return (
+    output_vars = (
         _Concat(
             _Concat.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -5369,6 +5391,7 @@ def concat(
         .get_output_vars(input_prop_values=input_prop_values)
         .concat_result
     )
+    return output_vars  # type: ignore
 
 
 def concat_from_sequence(
@@ -5416,7 +5439,7 @@ def concat_from_sequence(
     input_prop_values = create_prop_dict(
         input_sequence=input_sequence,
     )
-    return (
+    output_vars = (
         _ConcatFromSequence(
             _ConcatFromSequence.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -5429,6 +5452,7 @@ def concat_from_sequence(
         .get_output_vars(input_prop_values=input_prop_values)
         .concat_result
     )
+    return output_vars  # type: ignore
 
 
 def constant(
@@ -5487,7 +5511,7 @@ def constant(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict()
-    return (
+    output_vars = (
         _Constant(
             _Constant.Attributes(
                 value=AttrTensor.maybe(value, name="value"),
@@ -5503,6 +5527,7 @@ def constant(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def constant_of_shape(
@@ -5545,7 +5570,7 @@ def constant_of_shape(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _ConstantOfShape(
             _ConstantOfShape.Attributes(
                 value=AttrTensor.maybe(value, name="value"),
@@ -5557,6 +5582,7 @@ def constant_of_shape(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def conv(
@@ -5661,7 +5687,7 @@ def conv(
         W=W,
         B=B,
     )
-    return (
+    output_vars = (
         _Conv(
             _Conv.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -5680,6 +5706,7 @@ def conv(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def conv_integer(
@@ -5796,7 +5823,7 @@ def conv_integer(
         x_zero_point=x_zero_point,
         w_zero_point=w_zero_point,
     )
-    return (
+    output_vars = (
         _ConvInteger(
             _ConvInteger.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -5816,6 +5843,7 @@ def conv_integer(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def conv_transpose(
@@ -5951,7 +5979,7 @@ def conv_transpose(
         W=W,
         B=B,
     )
-    return (
+    output_vars = (
         _ConvTranspose(
             _ConvTranspose.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -5972,6 +6000,7 @@ def conv_transpose(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def cos(
@@ -6002,7 +6031,7 @@ def cos(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Cos(
             _Cos.Attributes(),
             _Cos.Inputs(
@@ -6012,6 +6041,7 @@ def cos(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def cosh(
@@ -6042,7 +6072,7 @@ def cosh(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Cosh(
             _Cosh.Attributes(),
             _Cosh.Inputs(
@@ -6052,6 +6082,7 @@ def cosh(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def cumsum(
@@ -6123,7 +6154,7 @@ def cumsum(
         x=x,
         axis=axis,
     )
-    return (
+    output_vars = (
         _CumSum(
             _CumSum.Attributes(
                 exclusive=AttrInt64(exclusive, name="exclusive"),
@@ -6137,6 +6168,7 @@ def cumsum(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def dft(
@@ -6216,7 +6248,7 @@ def dft(
         input=input,
         dft_length=dft_length,
     )
-    return (
+    output_vars = (
         _DFT(
             _DFT.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -6231,6 +6263,7 @@ def dft(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def depth_to_space(
@@ -6298,7 +6331,7 @@ def depth_to_space(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _DepthToSpace(
             _DepthToSpace.Attributes(
                 blocksize=AttrInt64(blocksize, name="blocksize"),
@@ -6311,6 +6344,7 @@ def depth_to_space(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def dequantize_linear(
@@ -6368,7 +6402,7 @@ def dequantize_linear(
         x_scale=x_scale,
         x_zero_point=x_zero_point,
     )
-    return (
+    output_vars = (
         _DequantizeLinear(
             _DequantizeLinear.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -6382,6 +6416,7 @@ def dequantize_linear(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def det(
@@ -6417,7 +6452,7 @@ def det(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Det(
             _Det.Attributes(),
             _Det.Inputs(
@@ -6427,6 +6462,7 @@ def det(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def div(
@@ -6470,7 +6506,7 @@ def div(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Div(
             _Div.Attributes(),
             _Div.Inputs(
@@ -6481,6 +6517,7 @@ def div(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def dropout(
@@ -6564,7 +6601,7 @@ def dropout(
         ratio=ratio,
         training_mode=training_mode,
     )
-    return (
+    output_vars = (
         _Dropout(
             _Dropout.Attributes(
                 seed=AttrInt64.maybe(seed, name="seed"),
@@ -6578,6 +6615,7 @@ def dropout(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def dynamic_quantize_linear(
@@ -6650,7 +6688,7 @@ def dynamic_quantize_linear(
     input_prop_values = create_prop_dict(
         x=x,
     )
-    return (
+    output_vars = (
         _DynamicQuantizeLinear(
             _DynamicQuantizeLinear.Attributes(),
             _DynamicQuantizeLinear.Inputs(
@@ -6660,6 +6698,7 @@ def dynamic_quantize_linear(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def einsum(
@@ -6727,7 +6766,7 @@ def einsum(
     input_prop_values = create_prop_dict(
         Inputs=Inputs,
     )
-    return (
+    output_vars = (
         _Einsum(
             _Einsum.Attributes(
                 equation=AttrString(equation, name="equation"),
@@ -6739,6 +6778,7 @@ def einsum(
         .get_output_vars(input_prop_values=input_prop_values)
         .Output
     )
+    return output_vars  # type: ignore
 
 
 def elu(
@@ -6777,7 +6817,7 @@ def elu(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Elu(
             _Elu.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -6789,6 +6829,7 @@ def elu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def equal(
@@ -6831,7 +6872,7 @@ def equal(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Equal(
             _Equal.Attributes(),
             _Equal.Inputs(
@@ -6842,6 +6883,7 @@ def equal(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def erf(
@@ -6873,7 +6915,7 @@ def erf(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Erf(
             _Erf.Attributes(),
             _Erf.Inputs(
@@ -6883,6 +6925,7 @@ def erf(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def exp(
@@ -6913,7 +6956,7 @@ def exp(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Exp(
             _Exp.Attributes(),
             _Exp.Inputs(
@@ -6923,6 +6966,7 @@ def exp(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def expand(
@@ -6967,7 +7011,7 @@ def expand(
         input=input,
         shape=shape,
     )
-    return (
+    output_vars = (
         _Expand(
             _Expand.Attributes(),
             _Expand.Inputs(
@@ -6978,6 +7022,7 @@ def expand(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def eye_like(
@@ -7031,7 +7076,7 @@ def eye_like(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _EyeLike(
             _EyeLike.Attributes(
                 dtype=AttrDtype.maybe(dtype, name="dtype"),
@@ -7044,6 +7089,7 @@ def eye_like(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def flatten(
@@ -7088,7 +7134,7 @@ def flatten(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Flatten(
             _Flatten.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -7100,6 +7146,7 @@ def flatten(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def floor(
@@ -7133,7 +7180,7 @@ def floor(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Floor(
             _Floor.Attributes(),
             _Floor.Inputs(
@@ -7143,6 +7190,7 @@ def floor(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def gru(
@@ -7325,7 +7373,7 @@ def gru(
         sequence_lens=sequence_lens,
         initial_h=initial_h,
     )
-    return (
+    output_vars = (
         _GRU(
             _GRU.Attributes(
                 activation_alpha=AttrFloat32s.maybe(
@@ -7355,6 +7403,7 @@ def gru(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def gather(
@@ -7447,7 +7496,7 @@ def gather(
         data=data,
         indices=indices,
     )
-    return (
+    output_vars = (
         _Gather(
             _Gather.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -7460,6 +7509,7 @@ def gather(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def gather_elements(
@@ -7560,7 +7610,7 @@ def gather_elements(
         data=data,
         indices=indices,
     )
-    return (
+    output_vars = (
         _GatherElements(
             _GatherElements.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -7573,6 +7623,7 @@ def gather_elements(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def gather_nd(
@@ -7718,7 +7769,7 @@ def gather_nd(
         data=data,
         indices=indices,
     )
-    return (
+    output_vars = (
         _GatherND(
             _GatherND.Attributes(
                 batch_dims=AttrInt64(batch_dims, name="batch_dims"),
@@ -7731,6 +7782,7 @@ def gather_nd(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def gemm(
@@ -7811,7 +7863,7 @@ def gemm(
         B=B,
         C=C,
     )
-    return (
+    output_vars = (
         _Gemm(
             _Gemm.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -7828,6 +7880,7 @@ def gemm(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def global_average_pool(
@@ -7867,7 +7920,7 @@ def global_average_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _GlobalAveragePool(
             _GlobalAveragePool.Attributes(),
             _GlobalAveragePool.Inputs(
@@ -7877,6 +7930,7 @@ def global_average_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def global_lp_pool(
@@ -7921,7 +7975,7 @@ def global_lp_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _GlobalLpPool(
             _GlobalLpPool.Attributes(
                 p=AttrInt64(p, name="p"),
@@ -7933,6 +7987,7 @@ def global_lp_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def global_max_pool(
@@ -7972,7 +8027,7 @@ def global_max_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _GlobalMaxPool(
             _GlobalMaxPool.Attributes(),
             _GlobalMaxPool.Inputs(
@@ -7982,6 +8037,7 @@ def global_max_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def greater(
@@ -8024,7 +8080,7 @@ def greater(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Greater(
             _Greater.Attributes(),
             _Greater.Inputs(
@@ -8035,6 +8091,7 @@ def greater(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def greater_or_equal(
@@ -8077,7 +8134,7 @@ def greater_or_equal(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _GreaterOrEqual(
             _GreaterOrEqual.Attributes(),
             _GreaterOrEqual.Inputs(
@@ -8088,6 +8145,7 @@ def greater_or_equal(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def grid_sample(
@@ -8176,7 +8234,7 @@ def grid_sample(
         X=X,
         grid=grid,
     )
-    return (
+    output_vars = (
         _GridSample(
             _GridSample.Attributes(
                 align_corners=AttrInt64(align_corners, name="align_corners"),
@@ -8191,6 +8249,7 @@ def grid_sample(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def hamming_window(
@@ -8237,7 +8296,7 @@ def hamming_window(
     input_prop_values = create_prop_dict(
         size=size,
     )
-    return (
+    output_vars = (
         _HammingWindow(
             _HammingWindow.Attributes(
                 output_datatype=AttrInt64(output_datatype, name="output_datatype"),
@@ -8250,6 +8309,7 @@ def hamming_window(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def hann_window(
@@ -8296,7 +8356,7 @@ def hann_window(
     input_prop_values = create_prop_dict(
         size=size,
     )
-    return (
+    output_vars = (
         _HannWindow(
             _HannWindow.Attributes(
                 output_datatype=AttrInt64(output_datatype, name="output_datatype"),
@@ -8309,6 +8369,7 @@ def hann_window(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def hard_sigmoid(
@@ -8350,7 +8411,7 @@ def hard_sigmoid(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _HardSigmoid(
             _HardSigmoid.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -8363,6 +8424,7 @@ def hard_sigmoid(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def hard_swish(
@@ -8396,7 +8458,7 @@ def hard_swish(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _HardSwish(
             _HardSwish.Attributes(),
             _HardSwish.Inputs(
@@ -8406,6 +8468,7 @@ def hard_swish(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def hardmax(
@@ -8450,7 +8513,7 @@ def hardmax(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Hardmax(
             _Hardmax.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -8462,6 +8525,7 @@ def hardmax(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def identity(
@@ -8492,7 +8556,7 @@ def identity(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Identity(
             _Identity.Attributes(),
             _Identity.Inputs(
@@ -8502,6 +8566,7 @@ def identity(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def if_(
@@ -8561,7 +8626,7 @@ def if_(
     input_prop_values = create_prop_dict(
         cond=cond,
     )
-    return (
+    output_vars = (
         _If(
             _If.Attributes(
                 else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
@@ -8575,6 +8640,7 @@ def if_(
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs
     )
+    return output_vars  # type: ignore
 
 
 def instance_normalization(
@@ -8628,7 +8694,7 @@ def instance_normalization(
         scale=scale,
         B=B,
     )
-    return (
+    output_vars = (
         _InstanceNormalization(
             _InstanceNormalization.Attributes(
                 epsilon=AttrFloat32(epsilon, name="epsilon"),
@@ -8642,6 +8708,7 @@ def instance_normalization(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def isinf(
@@ -8686,7 +8753,7 @@ def isinf(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _IsInf(
             _IsInf.Attributes(
                 detect_negative=AttrInt64(detect_negative, name="detect_negative"),
@@ -8699,6 +8766,7 @@ def isinf(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def isnan(
@@ -8730,7 +8798,7 @@ def isnan(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _IsNaN(
             _IsNaN.Attributes(),
             _IsNaN.Inputs(
@@ -8740,6 +8808,7 @@ def isnan(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def lrn(
@@ -8804,7 +8873,7 @@ def lrn(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LRN(
             _LRN.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -8819,6 +8888,7 @@ def lrn(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def lstm(
@@ -9025,7 +9095,7 @@ def lstm(
         initial_c=initial_c,
         P=P,
     )
-    return (
+    output_vars = (
         _LSTM(
             _LSTM.Attributes(
                 activation_alpha=AttrFloat32s.maybe(
@@ -9055,6 +9125,7 @@ def lstm(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def layer_normalization(
@@ -9145,7 +9216,7 @@ def layer_normalization(
         Scale=Scale,
         B=B,
     )
-    return (
+    output_vars = (
         _LayerNormalization(
             _LayerNormalization.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -9161,6 +9232,7 @@ def layer_normalization(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def leaky_relu(
@@ -9199,7 +9271,7 @@ def leaky_relu(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LeakyRelu(
             _LeakyRelu.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -9211,6 +9283,7 @@ def leaky_relu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def less(
@@ -9253,7 +9326,7 @@ def less(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Less(
             _Less.Attributes(),
             _Less.Inputs(
@@ -9264,6 +9337,7 @@ def less(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def less_or_equal(
@@ -9306,7 +9380,7 @@ def less_or_equal(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _LessOrEqual(
             _LessOrEqual.Attributes(),
             _LessOrEqual.Inputs(
@@ -9317,6 +9391,7 @@ def less_or_equal(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def log(
@@ -9347,7 +9422,7 @@ def log(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Log(
             _Log.Attributes(),
             _Log.Inputs(
@@ -9357,6 +9432,7 @@ def log(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def log_softmax(
@@ -9400,7 +9476,7 @@ def log_softmax(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _LogSoftmax(
             _LogSoftmax.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -9412,6 +9488,7 @@ def log_softmax(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def loop(
@@ -9600,7 +9677,7 @@ def loop(
         cond=cond,
         v_initial=v_initial,
     )
-    return (
+    output_vars = (
         _Loop(
             _Loop.Attributes(
                 body=AttrGraph(_body_subgraph, name="body"),
@@ -9615,6 +9692,7 @@ def loop(
         .get_output_vars(input_prop_values=input_prop_values)
         .v_final_and_scan_outputs
     )
+    return output_vars  # type: ignore
 
 
 def lp_normalization(
@@ -9654,7 +9732,7 @@ def lp_normalization(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _LpNormalization(
             _LpNormalization.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -9667,6 +9745,7 @@ def lp_normalization(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def lp_pool(
@@ -9743,7 +9822,7 @@ def lp_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _LpPool(
             _LpPool.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -9759,6 +9838,7 @@ def lp_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def matmul(
@@ -9795,7 +9875,7 @@ def matmul(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _MatMul(
             _MatMul.Attributes(),
             _MatMul.Inputs(
@@ -9806,6 +9886,7 @@ def matmul(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def matmul_integer(
@@ -9866,7 +9947,7 @@ def matmul_integer(
         a_zero_point=a_zero_point,
         b_zero_point=b_zero_point,
     )
-    return (
+    output_vars = (
         _MatMulInteger(
             _MatMulInteger.Attributes(),
             _MatMulInteger.Inputs(
@@ -9879,6 +9960,7 @@ def matmul_integer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def max(
@@ -9913,7 +9995,7 @@ def max(
     input_prop_values = create_prop_dict(
         data_0=data_0,
     )
-    return (
+    output_vars = (
         _Max(
             _Max.Attributes(),
             _Max.Inputs(
@@ -9923,6 +10005,7 @@ def max(
         .get_output_vars(input_prop_values=input_prop_values)
         .max
     )
+    return output_vars  # type: ignore
 
 
 def max_pool(
@@ -10064,7 +10147,7 @@ def max_pool(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _MaxPool(
             _MaxPool.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -10082,6 +10165,7 @@ def max_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def max_roi_pool(
@@ -10133,7 +10217,7 @@ def max_roi_pool(
         X=X,
         rois=rois,
     )
-    return (
+    output_vars = (
         _MaxRoiPool(
             _MaxRoiPool.Attributes(
                 pooled_shape=AttrInt64s(pooled_shape, name="pooled_shape"),
@@ -10147,6 +10231,7 @@ def max_roi_pool(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def max_unpool(
@@ -10250,7 +10335,7 @@ def max_unpool(
         I=I,
         output_shape=output_shape,
     )
-    return (
+    output_vars = (
         _MaxUnpool(
             _MaxUnpool.Attributes(
                 kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
@@ -10266,6 +10351,7 @@ def max_unpool(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def mean(
@@ -10300,7 +10386,7 @@ def mean(
     input_prop_values = create_prop_dict(
         data_0=data_0,
     )
-    return (
+    output_vars = (
         _Mean(
             _Mean.Attributes(),
             _Mean.Inputs(
@@ -10310,6 +10396,7 @@ def mean(
         .get_output_vars(input_prop_values=input_prop_values)
         .mean
     )
+    return output_vars  # type: ignore
 
 
 def mean_variance_normalization(
@@ -10350,7 +10437,7 @@ def mean_variance_normalization(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _MeanVarianceNormalization(
             _MeanVarianceNormalization.Attributes(
                 axes=AttrInt64s(axes, name="axes"),
@@ -10362,6 +10449,7 @@ def mean_variance_normalization(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def mel_weight_matrix(
@@ -10445,7 +10533,7 @@ def mel_weight_matrix(
         lower_edge_hertz=lower_edge_hertz,
         upper_edge_hertz=upper_edge_hertz,
     )
-    return (
+    output_vars = (
         _MelWeightMatrix(
             _MelWeightMatrix.Attributes(
                 output_datatype=AttrInt64(output_datatype, name="output_datatype"),
@@ -10461,6 +10549,7 @@ def mel_weight_matrix(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def min(
@@ -10495,7 +10584,7 @@ def min(
     input_prop_values = create_prop_dict(
         data_0=data_0,
     )
-    return (
+    output_vars = (
         _Min(
             _Min.Attributes(),
             _Min.Inputs(
@@ -10505,6 +10594,7 @@ def min(
         .get_output_vars(input_prop_values=input_prop_values)
         .min
     )
+    return output_vars  # type: ignore
 
 
 def mod(
@@ -10563,7 +10653,7 @@ def mod(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Mod(
             _Mod.Attributes(
                 fmod=AttrInt64(fmod, name="fmod"),
@@ -10576,6 +10666,7 @@ def mod(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def mul(
@@ -10619,7 +10710,7 @@ def mul(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Mul(
             _Mul.Attributes(),
             _Mul.Inputs(
@@ -10630,6 +10721,7 @@ def mul(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def multinomial(
@@ -10682,7 +10774,7 @@ def multinomial(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Multinomial(
             _Multinomial.Attributes(
                 dtype=AttrDtype(dtype, name="dtype"),
@@ -10696,6 +10788,7 @@ def multinomial(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def neg(
@@ -10728,7 +10821,7 @@ def neg(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Neg(
             _Neg.Attributes(),
             _Neg.Inputs(
@@ -10738,6 +10831,7 @@ def neg(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def negative_log_likelihood_loss(
@@ -10902,7 +10996,7 @@ def negative_log_likelihood_loss(
         target=target,
         weight=weight,
     )
-    return (
+    output_vars = (
         _NegativeLogLikelihoodLoss(
             _NegativeLogLikelihoodLoss.Attributes(
                 ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
@@ -10917,6 +11011,7 @@ def negative_log_likelihood_loss(
         .get_output_vars(input_prop_values=input_prop_values)
         .loss
     )
+    return output_vars  # type: ignore
 
 
 def non_max_suppression(
@@ -10992,7 +11087,7 @@ def non_max_suppression(
         iou_threshold=iou_threshold,
         score_threshold=score_threshold,
     )
-    return (
+    output_vars = (
         _NonMaxSuppression(
             _NonMaxSuppression.Attributes(
                 center_point_box=AttrInt64(center_point_box, name="center_point_box"),
@@ -11008,6 +11103,7 @@ def non_max_suppression(
         .get_output_vars(input_prop_values=input_prop_values)
         .selected_indices
     )
+    return output_vars  # type: ignore
 
 
 def non_zero(
@@ -11042,7 +11138,7 @@ def non_zero(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _NonZero(
             _NonZero.Attributes(),
             _NonZero.Inputs(
@@ -11052,6 +11148,7 @@ def non_zero(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def not_(
@@ -11082,7 +11179,7 @@ def not_(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Not(
             _Not.Attributes(),
             _Not.Inputs(
@@ -11092,6 +11189,7 @@ def not_(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def one_hot(
@@ -11180,7 +11278,7 @@ def one_hot(
         depth=depth,
         values=values,
     )
-    return (
+    output_vars = (
         _OneHot(
             _OneHot.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -11194,6 +11292,7 @@ def one_hot(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def optional(
@@ -11232,7 +11331,7 @@ def optional(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Optional(
             _Optional.Attributes(
                 type=AttrType.maybe(type, name="type"),
@@ -11244,6 +11343,7 @@ def optional(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def optional_get_element(
@@ -11277,7 +11377,7 @@ def optional_get_element(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _OptionalGetElement(
             _OptionalGetElement.Attributes(),
             _OptionalGetElement.Inputs(
@@ -11287,6 +11387,7 @@ def optional_get_element(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def optional_has_element(
@@ -11320,7 +11421,7 @@ def optional_has_element(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _OptionalHasElement(
             _OptionalHasElement.Attributes(),
             _OptionalHasElement.Inputs(
@@ -11330,6 +11431,7 @@ def optional_has_element(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def or_(
@@ -11372,7 +11474,7 @@ def or_(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Or(
             _Or.Attributes(),
             _Or.Inputs(
@@ -11383,6 +11485,7 @@ def or_(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def prelu(
@@ -11425,7 +11528,7 @@ def prelu(
         X=X,
         slope=slope,
     )
-    return (
+    output_vars = (
         _PRelu(
             _PRelu.Attributes(),
             _PRelu.Inputs(
@@ -11436,6 +11539,7 @@ def prelu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def pad(
@@ -11537,7 +11641,7 @@ def pad(
         pads=pads,
         constant_value=constant_value,
     )
-    return (
+    output_vars = (
         _Pad(
             _Pad.Attributes(
                 mode=AttrString(mode, name="mode"),
@@ -11551,6 +11655,7 @@ def pad(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def pow(
@@ -11592,7 +11697,7 @@ def pow(
         X=X,
         Y=Y,
     )
-    return (
+    output_vars = (
         _Pow(
             _Pow.Attributes(),
             _Pow.Inputs(
@@ -11603,6 +11708,7 @@ def pow(
         .get_output_vars(input_prop_values=input_prop_values)
         .Z
     )
+    return output_vars  # type: ignore
 
 
 def qlinear_conv(
@@ -11756,7 +11862,7 @@ def qlinear_conv(
         y_zero_point=y_zero_point,
         B=B,
     )
-    return (
+    output_vars = (
         _QLinearConv(
             _QLinearConv.Attributes(
                 auto_pad=AttrString(auto_pad, name="auto_pad"),
@@ -11781,6 +11887,7 @@ def qlinear_conv(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def qlinear_matmul(
@@ -11865,7 +11972,7 @@ def qlinear_matmul(
         y_scale=y_scale,
         y_zero_point=y_zero_point,
     )
-    return (
+    output_vars = (
         _QLinearMatMul(
             _QLinearMatMul.Attributes(),
             _QLinearMatMul.Inputs(
@@ -11882,6 +11989,7 @@ def qlinear_matmul(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def quantize_linear(
@@ -11943,7 +12051,7 @@ def quantize_linear(
         y_scale=y_scale,
         y_zero_point=y_zero_point,
     )
-    return (
+    output_vars = (
         _QuantizeLinear(
             _QuantizeLinear.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -11957,6 +12065,7 @@ def quantize_linear(
         .get_output_vars(input_prop_values=input_prop_values)
         .y
     )
+    return output_vars  # type: ignore
 
 
 def rnn(
@@ -12119,7 +12228,7 @@ def rnn(
         sequence_lens=sequence_lens,
         initial_h=initial_h,
     )
-    return (
+    output_vars = (
         _RNN(
             _RNN.Attributes(
                 activation_alpha=AttrFloat32s.maybe(
@@ -12146,6 +12255,7 @@ def rnn(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def random_normal(
@@ -12200,7 +12310,7 @@ def random_normal(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
     input_prop_values = create_prop_dict()
-    return (
+    output_vars = (
         _RandomNormal(
             _RandomNormal.Attributes(
                 dtype=AttrDtype(dtype, name="dtype"),
@@ -12214,6 +12324,7 @@ def random_normal(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def random_normal_like(
@@ -12272,7 +12383,7 @@ def random_normal_like(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _RandomNormalLike(
             _RandomNormalLike.Attributes(
                 dtype=AttrDtype.maybe(dtype, name="dtype"),
@@ -12287,6 +12398,7 @@ def random_normal_like(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def random_uniform(
@@ -12340,7 +12452,7 @@ def random_uniform(
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
     input_prop_values = create_prop_dict()
-    return (
+    output_vars = (
         _RandomUniform(
             _RandomUniform.Attributes(
                 dtype=AttrDtype(dtype, name="dtype"),
@@ -12354,6 +12466,7 @@ def random_uniform(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def random_uniform_like(
@@ -12412,7 +12525,7 @@ def random_uniform_like(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _RandomUniformLike(
             _RandomUniformLike.Attributes(
                 dtype=AttrDtype.maybe(dtype, name="dtype"),
@@ -12427,6 +12540,7 @@ def random_uniform_like(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def range(
@@ -12498,7 +12612,7 @@ def range(
         limit=limit,
         delta=delta,
     )
-    return (
+    output_vars = (
         _Range(
             _Range.Attributes(),
             _Range.Inputs(
@@ -12510,6 +12624,7 @@ def range(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def reciprocal(
@@ -12542,7 +12657,7 @@ def reciprocal(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Reciprocal(
             _Reciprocal.Attributes(),
             _Reciprocal.Inputs(
@@ -12552,6 +12667,7 @@ def reciprocal(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def reduce_l1(
@@ -12601,7 +12717,7 @@ def reduce_l1(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceL1(
             _ReduceL1.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -12614,6 +12730,7 @@ def reduce_l1(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_l2(
@@ -12663,7 +12780,7 @@ def reduce_l2(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceL2(
             _ReduceL2.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -12676,6 +12793,7 @@ def reduce_l2(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_log_sum(
@@ -12726,7 +12844,7 @@ def reduce_log_sum(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceLogSum(
             _ReduceLogSum.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -12739,6 +12857,7 @@ def reduce_log_sum(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_log_sum_exp(
@@ -12789,7 +12908,7 @@ def reduce_log_sum_exp(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceLogSumExp(
             _ReduceLogSumExp.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -12802,6 +12921,7 @@ def reduce_log_sum_exp(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_max(
@@ -12853,7 +12973,7 @@ def reduce_max(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceMax(
             _ReduceMax.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -12866,6 +12986,7 @@ def reduce_max(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_mean(
@@ -12915,7 +13036,7 @@ def reduce_mean(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceMean(
             _ReduceMean.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -12928,6 +13049,7 @@ def reduce_mean(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_min(
@@ -12978,7 +13100,7 @@ def reduce_min(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceMin(
             _ReduceMin.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -12991,6 +13113,7 @@ def reduce_min(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_prod(
@@ -13040,7 +13163,7 @@ def reduce_prod(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceProd(
             _ReduceProd.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -13053,6 +13176,7 @@ def reduce_prod(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_sum(
@@ -13112,7 +13236,7 @@ def reduce_sum(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _ReduceSum(
             _ReduceSum.Attributes(
                 keepdims=AttrInt64(keepdims, name="keepdims"),
@@ -13128,6 +13252,7 @@ def reduce_sum(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def reduce_sum_square(
@@ -13177,7 +13302,7 @@ def reduce_sum_square(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _ReduceSumSquare(
             _ReduceSumSquare.Attributes(
                 axes=AttrInt64s.maybe(axes, name="axes"),
@@ -13190,6 +13315,7 @@ def reduce_sum_square(
         .get_output_vars(input_prop_values=input_prop_values)
         .reduced
     )
+    return output_vars  # type: ignore
 
 
 def relu(
@@ -13222,7 +13348,7 @@ def relu(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Relu(
             _Relu.Attributes(),
             _Relu.Inputs(
@@ -13232,6 +13358,7 @@ def relu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def reshape(
@@ -13289,7 +13416,7 @@ def reshape(
         data=data,
         shape=shape,
     )
-    return (
+    output_vars = (
         _Reshape(
             _Reshape.Attributes(
                 allowzero=AttrInt64(allowzero, name="allowzero"),
@@ -13302,6 +13429,7 @@ def reshape(
         .get_output_vars(input_prop_values=input_prop_values)
         .reshaped
     )
+    return output_vars  # type: ignore
 
 
 def resize(
@@ -13429,7 +13557,7 @@ def resize(
         scales=scales,
         sizes=sizes,
     )
-    return (
+    output_vars = (
         _Resize(
             _Resize.Attributes(
                 coordinate_transformation_mode=AttrString(
@@ -13454,6 +13582,7 @@ def resize(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def reverse_sequence(
@@ -13522,7 +13651,7 @@ def reverse_sequence(
         input=input,
         sequence_lens=sequence_lens,
     )
-    return (
+    output_vars = (
         _ReverseSequence(
             _ReverseSequence.Attributes(
                 batch_axis=AttrInt64(batch_axis, name="batch_axis"),
@@ -13536,6 +13665,7 @@ def reverse_sequence(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def roi_align(
@@ -13630,7 +13760,7 @@ def roi_align(
         rois=rois,
         batch_indices=batch_indices,
     )
-    return (
+    output_vars = (
         _RoiAlign(
             _RoiAlign.Attributes(
                 coordinate_transformation_mode=AttrString(
@@ -13652,6 +13782,7 @@ def roi_align(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def round(
@@ -13696,7 +13827,7 @@ def round(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Round(
             _Round.Attributes(),
             _Round.Inputs(
@@ -13706,6 +13837,7 @@ def round(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def stft(
@@ -13775,7 +13907,7 @@ def stft(
         window=window,
         frame_length=frame_length,
     )
-    return (
+    output_vars = (
         _STFT(
             _STFT.Attributes(
                 onesided=AttrInt64(onesided, name="onesided"),
@@ -13790,6 +13922,7 @@ def stft(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def scan(
@@ -14016,7 +14149,7 @@ def scan(
     input_prop_values = create_prop_dict(
         initial_state_and_scan_inputs=initial_state_and_scan_inputs,
     )
-    return (
+    output_vars = (
         _Scan(
             _Scan.Attributes(
                 body=AttrGraph(_body_subgraph, name="body"),
@@ -14044,6 +14177,7 @@ def scan(
         .get_output_vars(input_prop_values=input_prop_values)
         .final_state_and_scan_outputs
     )
+    return output_vars  # type: ignore
 
 
 def scatter_elements(
@@ -14171,7 +14305,7 @@ def scatter_elements(
         indices=indices,
         updates=updates,
     )
-    return (
+    output_vars = (
         _ScatterElements(
             _ScatterElements.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -14186,6 +14320,7 @@ def scatter_elements(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def scatter_nd(
@@ -14302,7 +14437,7 @@ def scatter_nd(
         indices=indices,
         updates=updates,
     )
-    return (
+    output_vars = (
         _ScatterND(
             _ScatterND.Attributes(
                 reduction=AttrString(reduction, name="reduction"),
@@ -14316,6 +14451,7 @@ def scatter_nd(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def selu(
@@ -14360,7 +14496,7 @@ def selu(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Selu(
             _Selu.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -14373,6 +14509,7 @@ def selu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def sequence_at(
@@ -14417,7 +14554,7 @@ def sequence_at(
         input_sequence=input_sequence,
         position=position,
     )
-    return (
+    output_vars = (
         _SequenceAt(
             _SequenceAt.Attributes(),
             _SequenceAt.Inputs(
@@ -14428,6 +14565,7 @@ def sequence_at(
         .get_output_vars(input_prop_values=input_prop_values)
         .tensor
     )
+    return output_vars  # type: ignore
 
 
 def sequence_construct(
@@ -14460,7 +14598,7 @@ def sequence_construct(
     input_prop_values = create_prop_dict(
         inputs=inputs,
     )
-    return (
+    output_vars = (
         _SequenceConstruct(
             _SequenceConstruct.Attributes(),
             _SequenceConstruct.Inputs(
@@ -14470,6 +14608,7 @@ def sequence_construct(
         .get_output_vars(input_prop_values=input_prop_values)
         .output_sequence
     )
+    return output_vars  # type: ignore
 
 
 def sequence_empty(
@@ -14500,7 +14639,7 @@ def sequence_empty(
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
     """
     input_prop_values = create_prop_dict()
-    return (
+    output_vars = (
         _SequenceEmpty(
             _SequenceEmpty.Attributes(
                 dtype=AttrDtype.maybe(dtype, name="dtype"),
@@ -14510,6 +14649,7 @@ def sequence_empty(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def sequence_erase(
@@ -14554,7 +14694,7 @@ def sequence_erase(
         input_sequence=input_sequence,
         position=position,
     )
-    return (
+    output_vars = (
         _SequenceErase(
             _SequenceErase.Attributes(),
             _SequenceErase.Inputs(
@@ -14565,6 +14705,7 @@ def sequence_erase(
         .get_output_vars(input_prop_values=input_prop_values)
         .output_sequence
     )
+    return output_vars  # type: ignore
 
 
 def sequence_insert(
@@ -14617,7 +14758,7 @@ def sequence_insert(
         tensor=tensor,
         position=position,
     )
-    return (
+    output_vars = (
         _SequenceInsert(
             _SequenceInsert.Attributes(),
             _SequenceInsert.Inputs(
@@ -14629,6 +14770,7 @@ def sequence_insert(
         .get_output_vars(input_prop_values=input_prop_values)
         .output_sequence
     )
+    return output_vars  # type: ignore
 
 
 def sequence_length(
@@ -14661,7 +14803,7 @@ def sequence_length(
     input_prop_values = create_prop_dict(
         input_sequence=input_sequence,
     )
-    return (
+    output_vars = (
         _SequenceLength(
             _SequenceLength.Attributes(),
             _SequenceLength.Inputs(
@@ -14671,6 +14813,7 @@ def sequence_length(
         .get_output_vars(input_prop_values=input_prop_values)
         .length
     )
+    return output_vars  # type: ignore
 
 
 def sequence_map(
@@ -14737,7 +14880,7 @@ def sequence_map(
         input_sequence=input_sequence,
         additional_inputs=additional_inputs,
     )
-    return (
+    output_vars = (
         _SequenceMap(
             _SequenceMap.Attributes(
                 body=AttrGraph(_body_subgraph, name="body"),
@@ -14751,6 +14894,7 @@ def sequence_map(
         .get_output_vars(input_prop_values=input_prop_values)
         .out_sequence
     )
+    return output_vars  # type: ignore
 
 
 def shape(
@@ -14832,7 +14976,7 @@ def shape(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _Shape(
             _Shape.Attributes(
                 end=AttrInt64.maybe(end, name="end"),
@@ -14845,6 +14989,7 @@ def shape(
         .get_output_vars(input_prop_values=input_prop_values)
         .shape
     )
+    return output_vars  # type: ignore
 
 
 def shrink(
@@ -14887,7 +15032,7 @@ def shrink(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Shrink(
             _Shrink.Attributes(
                 bias=AttrFloat32(bias, name="bias"),
@@ -14900,6 +15045,7 @@ def shrink(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def sigmoid(
@@ -14932,7 +15078,7 @@ def sigmoid(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Sigmoid(
             _Sigmoid.Attributes(),
             _Sigmoid.Inputs(
@@ -14942,6 +15088,7 @@ def sigmoid(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def sign(
@@ -14974,7 +15121,7 @@ def sign(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Sign(
             _Sign.Attributes(),
             _Sign.Inputs(
@@ -14984,6 +15131,7 @@ def sign(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def sin(
@@ -15014,7 +15162,7 @@ def sin(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Sin(
             _Sin.Attributes(),
             _Sin.Inputs(
@@ -15024,6 +15172,7 @@ def sin(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def sinh(
@@ -15054,7 +15203,7 @@ def sinh(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Sinh(
             _Sinh.Attributes(),
             _Sinh.Inputs(
@@ -15064,6 +15213,7 @@ def sinh(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def size(
@@ -15096,7 +15246,7 @@ def size(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _Size(
             _Size.Attributes(),
             _Size.Inputs(
@@ -15106,6 +15256,7 @@ def size(
         .get_output_vars(input_prop_values=input_prop_values)
         .size
     )
+    return output_vars  # type: ignore
 
 
 def slice(
@@ -15228,7 +15379,7 @@ def slice(
         axes=axes,
         steps=steps,
     )
-    return (
+    output_vars = (
         _Slice(
             _Slice.Attributes(),
             _Slice.Inputs(
@@ -15242,6 +15393,7 @@ def slice(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def softmax(
@@ -15287,7 +15439,7 @@ def softmax(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Softmax(
             _Softmax.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -15299,6 +15451,7 @@ def softmax(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def softmax_cross_entropy_loss(
@@ -15415,7 +15568,7 @@ def softmax_cross_entropy_loss(
         labels=labels,
         weights=weights,
     )
-    return (
+    output_vars = (
         _SoftmaxCrossEntropyLoss(
             _SoftmaxCrossEntropyLoss.Attributes(
                 ignore_index=AttrInt64.maybe(ignore_index, name="ignore_index"),
@@ -15430,6 +15583,7 @@ def softmax_cross_entropy_loss(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def softplus(
@@ -15462,7 +15616,7 @@ def softplus(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Softplus(
             _Softplus.Attributes(),
             _Softplus.Inputs(
@@ -15472,6 +15626,7 @@ def softplus(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def softsign(
@@ -15504,7 +15659,7 @@ def softsign(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Softsign(
             _Softsign.Attributes(),
             _Softsign.Inputs(
@@ -15514,6 +15669,7 @@ def softsign(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def space_to_depth(
@@ -15553,7 +15709,7 @@ def space_to_depth(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _SpaceToDepth(
             _SpaceToDepth.Attributes(
                 blocksize=AttrInt64(blocksize, name="blocksize"),
@@ -15565,6 +15721,7 @@ def space_to_depth(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def split(
@@ -15613,7 +15770,7 @@ def split(
         input=input,
         split=split,
     )
-    return (
+    output_vars = (
         _Split(
             _Split.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -15627,6 +15784,7 @@ def split(
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs
     )
+    return output_vars  # type: ignore
 
 
 def split_to_sequence(
@@ -15688,7 +15846,7 @@ def split_to_sequence(
         input=input,
         split=split,
     )
-    return (
+    output_vars = (
         _SplitToSequence(
             _SplitToSequence.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -15702,6 +15860,7 @@ def split_to_sequence(
         .get_output_vars(input_prop_values=input_prop_values)
         .output_sequence
     )
+    return output_vars  # type: ignore
 
 
 def sqrt(
@@ -15734,7 +15893,7 @@ def sqrt(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Sqrt(
             _Sqrt.Attributes(),
             _Sqrt.Inputs(
@@ -15744,6 +15903,7 @@ def sqrt(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def squeeze(
@@ -15785,7 +15945,7 @@ def squeeze(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _Squeeze(
             _Squeeze.Attributes(),
             _Squeeze.Inputs(
@@ -15796,6 +15956,7 @@ def squeeze(
         .get_output_vars(input_prop_values=input_prop_values)
         .squeezed
     )
+    return output_vars  # type: ignore
 
 
 def string_normalizer(
@@ -15853,7 +16014,7 @@ def string_normalizer(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _StringNormalizer(
             _StringNormalizer.Attributes(
                 case_change_action=AttrString(
@@ -15872,6 +16033,7 @@ def string_normalizer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def sub(
@@ -15915,7 +16077,7 @@ def sub(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Sub(
             _Sub.Attributes(),
             _Sub.Inputs(
@@ -15926,6 +16088,7 @@ def sub(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def sum(
@@ -15960,7 +16123,7 @@ def sum(
     input_prop_values = create_prop_dict(
         data_0=data_0,
     )
-    return (
+    output_vars = (
         _Sum(
             _Sum.Attributes(),
             _Sum.Inputs(
@@ -15970,6 +16133,7 @@ def sum(
         .get_output_vars(input_prop_values=input_prop_values)
         .sum
     )
+    return output_vars  # type: ignore
 
 
 def tan(
@@ -16000,7 +16164,7 @@ def tan(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Tan(
             _Tan.Attributes(),
             _Tan.Inputs(
@@ -16010,6 +16174,7 @@ def tan(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def tanh(
@@ -16041,7 +16206,7 @@ def tanh(
     input_prop_values = create_prop_dict(
         input=input,
     )
-    return (
+    output_vars = (
         _Tanh(
             _Tanh.Attributes(),
             _Tanh.Inputs(
@@ -16051,6 +16216,7 @@ def tanh(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def tf_idf_vectorizer(
@@ -16185,7 +16351,7 @@ def tf_idf_vectorizer(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _TfIdfVectorizer(
             _TfIdfVectorizer.Attributes(
                 max_gram_length=AttrInt64(max_gram_length, name="max_gram_length"),
@@ -16205,6 +16371,7 @@ def tf_idf_vectorizer(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def thresholded_relu(
@@ -16242,7 +16409,7 @@ def thresholded_relu(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _ThresholdedRelu(
             _ThresholdedRelu.Attributes(
                 alpha=AttrFloat32(alpha, name="alpha"),
@@ -16254,6 +16421,7 @@ def thresholded_relu(
         .get_output_vars(input_prop_values=input_prop_values)
         .Y
     )
+    return output_vars  # type: ignore
 
 
 def tile(
@@ -16294,7 +16462,7 @@ def tile(
         input=input,
         repeats=repeats,
     )
-    return (
+    output_vars = (
         _Tile(
             _Tile.Attributes(),
             _Tile.Inputs(
@@ -16305,6 +16473,7 @@ def tile(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def top_k(
@@ -16386,7 +16555,7 @@ def top_k(
         X=X,
         K=K,
     )
-    return (
+    output_vars = (
         _TopK(
             _TopK.Attributes(
                 axis=AttrInt64(axis, name="axis"),
@@ -16401,6 +16570,7 @@ def top_k(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def transpose(
@@ -16439,7 +16609,7 @@ def transpose(
     input_prop_values = create_prop_dict(
         data=data,
     )
-    return (
+    output_vars = (
         _Transpose(
             _Transpose.Attributes(
                 perm=AttrInt64s.maybe(perm, name="perm"),
@@ -16451,6 +16621,7 @@ def transpose(
         .get_output_vars(input_prop_values=input_prop_values)
         .transposed
     )
+    return output_vars  # type: ignore
 
 
 def trilu(
@@ -16510,7 +16681,7 @@ def trilu(
         input=input,
         k=k,
     )
-    return (
+    output_vars = (
         _Trilu(
             _Trilu.Attributes(
                 upper=AttrInt64(upper, name="upper"),
@@ -16523,6 +16694,7 @@ def trilu(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def unique(
@@ -16697,7 +16869,7 @@ def unique(
     input_prop_values = create_prop_dict(
         X=X,
     )
-    return (
+    output_vars = (
         _Unique(
             _Unique.Attributes(
                 axis=AttrInt64.maybe(axis, name="axis"),
@@ -16710,6 +16882,7 @@ def unique(
         .get_output_vars(input_prop_values=input_prop_values)
         ._unpack_to_any()
     )
+    return output_vars  # type: ignore
 
 
 def unsqueeze(
@@ -16761,7 +16934,7 @@ def unsqueeze(
         data=data,
         axes=axes,
     )
-    return (
+    output_vars = (
         _Unsqueeze(
             _Unsqueeze.Attributes(),
             _Unsqueeze.Inputs(
@@ -16772,6 +16945,7 @@ def unsqueeze(
         .get_output_vars(input_prop_values=input_prop_values)
         .expanded
     )
+    return output_vars  # type: ignore
 
 
 def where(
@@ -16820,7 +16994,7 @@ def where(
         X=X,
         Y=Y,
     )
-    return (
+    output_vars = (
         _Where(
             _Where.Attributes(),
             _Where.Inputs(
@@ -16832,6 +17006,7 @@ def where(
         .get_output_vars(input_prop_values=input_prop_values)
         .output
     )
+    return output_vars  # type: ignore
 
 
 def xor(
@@ -16874,7 +17049,7 @@ def xor(
         A=A,
         B=B,
     )
-    return (
+    output_vars = (
         _Xor(
             _Xor.Attributes(),
             _Xor.Inputs(
@@ -16885,6 +17060,7 @@ def xor(
         .get_output_vars(input_prop_values=input_prop_values)
         .C
     )
+    return output_vars  # type: ignore
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
