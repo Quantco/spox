@@ -154,6 +154,8 @@ class BaseVarInfos(BaseFields):
         )
 
     def into_vars(self, prop_values: PropDict) -> BaseVars:
+        """Populate a `BaseVars` object with the propagated values and this object's var_infos"""
+
         def _create_var(key: str, var_info: _VarInfo) -> Var:
             ret = Var(var_info, None)
 
