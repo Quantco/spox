@@ -7,12 +7,15 @@
 Change log
 ==========
 
-0.13.0 (2024-12-06)
+0.14.0 (unreleased)
 -------------------
 
 **Other changes**
 
 - Split `Var`-s internally to help the garbage collector in collecting propagated values.
+
+0.13.0 (2024-12-06)
+-------------------
 
 **Support change**
 
