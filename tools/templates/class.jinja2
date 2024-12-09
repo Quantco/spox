@@ -14,11 +14,11 @@ class _{{ schema.name }}(StandardNode):
     {% for input in schema.inputs %}
         {{ input.name }}: {%
             if is_optional(input)
-                %}Optional[Var]{%
+                %}Optional[_VarInfo]{%
             elif is_variadic(input)
-                %}Sequence[Var]{%
+                %}Sequence[_VarInfo]{%
             else
-                %}Var{%
+                %}_VarInfo{%
             endif %}
 
     {% endfor %}
@@ -33,11 +33,11 @@ class _{{ schema.name }}(StandardNode):
     {% for output in schema.outputs %}
         {{ output.name }}: {%
             if is_optional(output)
-                %}Optional[Var]{%
+                %}Optional[_VarInfo]{%
             elif is_variadic(output)
-                %}Sequence[Var]{%
+                %}Sequence[_VarInfo]{%
             else
-                %}Var{%
+                %}_VarInfo{%
             endif %}
 
     {% endfor %}
@@ -47,14 +47,14 @@ class _{{ schema.name }}(StandardNode):
 
 {% endif %}
 {% if type_inference %}
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
 {% filter indent(width=8) %}
         {%+ include type_inference %}
 {% endfilter %}
 
 {% endif %}
 {% if value_propagation %}
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
 {% filter indent(width=8) %}
         {%+ include value_propagation %}
 {% endfilter %}

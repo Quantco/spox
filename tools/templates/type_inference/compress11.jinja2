@@ -1,4 +1,4 @@
-self.infer_output_types_onnx()
+self.infer_output_types_onnx(input_prop_values)
 inp, cond = self.inputs.input.unwrap_tensor(), self.inputs.condition.unwrap_tensor()
 if not inp.shape:
     return {'output': Tensor(inp.dtype, None)}

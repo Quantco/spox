@@ -29,8 +29,8 @@ from spox._graph import Graph, subgraph
 from spox._node import OpType
 from spox._standard import StandardNode
 from spox._type_system import Tensor, Type
-from spox._value_prop import PropValueType
-from spox._var import Var
+from spox._value_prop import PropDict, PropValueType
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 from spox.opset.ai.onnx.v18 import (
     _DFT,
     _GRU,
@@ -384,11 +384,11 @@ class _AveragePool(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("AveragePool", "", 19)
 
@@ -405,11 +405,11 @@ class _Cast(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: _VarInfo
 
     op_type = OpType("Cast", "", 19)
 
@@ -425,12 +425,12 @@ class _CastLike(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
-        target_type: Var
+        input: _VarInfo
+        target_type: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: _VarInfo
 
     op_type = OpType("CastLike", "", 19)
 
@@ -454,9 +454,9 @@ class _Constant(StandardNode):
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: _VarInfo
 
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
         ((key, raw),) = (
             (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
         )
@@ -501,15 +501,15 @@ class _DeformConv(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        W: Var
-        offset: Var
-        B: Optional[Var]
-        mask: Optional[Var]
+        X: _VarInfo
+        W: _VarInfo
+        offset: _VarInfo
+        B: Optional[_VarInfo]
+        mask: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("DeformConv", "", 19)
 
@@ -525,13 +525,13 @@ class _DequantizeLinear(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
-        x_scale: Var
-        x_zero_point: Optional[Var]
+        x: _VarInfo
+        x_scale: _VarInfo
+        x_zero_point: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: _VarInfo
 
     op_type = OpType("DequantizeLinear", "", 19)
 
@@ -547,12 +547,12 @@ class _Equal(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        A: Var
-        B: Var
+        A: _VarInfo
+        B: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        C: Var
+        C: _VarInfo
 
     op_type = OpType("Equal", "", 19)
 
@@ -568,11 +568,11 @@ class _Identity(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Var
+        input: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: _VarInfo
 
     op_type = OpType("Identity", "", 19)
 
@@ -589,11 +589,11 @@ class _If(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        cond: Var
+        cond: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[Var]
+        outputs: Sequence[_VarInfo]
 
     op_type = OpType("If", "", 19)
 
@@ -609,13 +609,13 @@ class _Loop(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        M: Optional[Var]
-        cond: Optional[Var]
-        v_initial: Sequence[Var]
+        M: Optional[_VarInfo]
+        cond: Optional[_VarInfo]
+        v_initial: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        v_final_and_scan_outputs: Sequence[Var]
+        v_final_and_scan_outputs: Sequence[_VarInfo]
 
     op_type = OpType("Loop", "", 19)
 
@@ -631,14 +631,14 @@ class _Pad(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        pads: Var
-        constant_value: Optional[Var]
-        axes: Optional[Var]
+        data: _VarInfo
+        pads: _VarInfo
+        constant_value: Optional[_VarInfo]
+        axes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        output: Var
+        output: _VarInfo
 
     op_type = OpType("Pad", "", 19)
 
@@ -655,13 +655,13 @@ class _QuantizeLinear(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        x: Var
-        y_scale: Var
-        y_zero_point: Optional[Var]
+        x: _VarInfo
+        y_scale: _VarInfo
+        y_zero_point: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        y: Var
+        y: _VarInfo
 
     op_type = OpType("QuantizeLinear", "", 19)
 
@@ -677,12 +677,12 @@ class _Reshape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
-        shape: Var
+        data: _VarInfo
+        shape: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        reshaped: Var
+        reshaped: _VarInfo
 
     op_type = OpType("Reshape", "", 19)
 
@@ -706,14 +706,14 @@ class _Resize(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        roi: Optional[Var]
-        scales: Optional[Var]
-        sizes: Optional[Var]
+        X: _VarInfo
+        roi: Optional[_VarInfo]
+        scales: Optional[_VarInfo]
+        sizes: Optional[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("Resize", "", 19)
 
@@ -734,11 +734,11 @@ class _Scan(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        initial_state_and_scan_inputs: Sequence[Var]
+        initial_state_and_scan_inputs: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        final_state_and_scan_outputs: Sequence[Var]
+        final_state_and_scan_outputs: Sequence[_VarInfo]
 
     op_type = OpType("Scan", "", 19)
 
@@ -755,11 +755,11 @@ class _Shape(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        shape: Var
+        shape: _VarInfo
 
     op_type = OpType("Shape", "", 19)
 
@@ -775,11 +775,11 @@ class _Size(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        data: Var
+        data: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        size: Var
+        size: _VarInfo
 
     op_type = OpType("Size", "", 19)
 
@@ -915,20 +915,30 @@ def average_pool(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _AveragePool(
-        _AveragePool.Attributes(
-            auto_pad=AttrString(auto_pad, name="auto_pad"),
-            ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
-            count_include_pad=AttrInt64(count_include_pad, name="count_include_pad"),
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _AveragePool.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _AveragePool(
+            _AveragePool.Attributes(
+                auto_pad=AttrString(auto_pad, name="auto_pad"),
+                ceil_mode=AttrInt64(ceil_mode, name="ceil_mode"),
+                count_include_pad=AttrInt64(
+                    count_include_pad, name="count_include_pad"
+                ),
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                kernel_shape=AttrInt64s(kernel_shape, name="kernel_shape"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _AveragePool.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def cast(
@@ -1052,15 +1062,23 @@ def cast(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Cast(
-        _Cast.Attributes(
-            saturate=AttrInt64(saturate, name="saturate"),
-            to=AttrDtype(to, name="to"),
-        ),
-        _Cast.Inputs(
-            input=input,
-        ),
-    ).outputs.output
+    input_prop_values = create_prop_dict(
+        input=input,
+    )
+    output_vars = (
+        _Cast(
+            _Cast.Attributes(
+                saturate=AttrInt64(saturate, name="saturate"),
+                to=AttrDtype(to, name="to"),
+            ),
+            _Cast.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .output
+    )
+    return output_vars  # type: ignore
 
 
 def cast_like(
@@ -1106,15 +1124,24 @@ def cast_like(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _CastLike(
-        _CastLike.Attributes(
-            saturate=AttrInt64(saturate, name="saturate"),
-        ),
-        _CastLike.Inputs(
-            input=input,
-            target_type=target_type,
-        ),
-    ).outputs.output
+    input_prop_values = create_prop_dict(
+        input=input,
+        target_type=target_type,
+    )
+    output_vars = (
+        _CastLike(
+            _CastLike.Attributes(
+                saturate=AttrInt64(saturate, name="saturate"),
+            ),
+            _CastLike.Inputs(
+                input=unwrap_vars(input),
+                target_type=unwrap_vars(target_type),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .output
+    )
+    return output_vars  # type: ignore
 
 
 def constant(
@@ -1172,18 +1199,24 @@ def constant(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Constant(
-        _Constant.Attributes(
-            value=AttrTensor.maybe(value, name="value"),
-            value_float=AttrFloat32.maybe(value_float, name="value_float"),
-            value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
-            value_int=AttrInt64.maybe(value_int, name="value_int"),
-            value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
-            value_string=AttrString.maybe(value_string, name="value_string"),
-            value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
-        ),
-        _Constant.Inputs(),
-    ).outputs.output
+    input_prop_values = create_prop_dict()
+    output_vars = (
+        _Constant(
+            _Constant.Attributes(
+                value=AttrTensor.maybe(value, name="value"),
+                value_float=AttrFloat32.maybe(value_float, name="value_float"),
+                value_floats=AttrFloat32s.maybe(value_floats, name="value_floats"),
+                value_int=AttrInt64.maybe(value_int, name="value_int"),
+                value_ints=AttrInt64s.maybe(value_ints, name="value_ints"),
+                value_string=AttrString.maybe(value_string, name="value_string"),
+                value_strings=AttrStrings.maybe(value_strings, name="value_strings"),
+            ),
+            _Constant.Inputs(),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .output
+    )
+    return output_vars  # type: ignore
 
 
 def deform_conv(
@@ -1282,23 +1315,35 @@ def deform_conv(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _DeformConv(
-        _DeformConv.Attributes(
-            dilations=AttrInt64s.maybe(dilations, name="dilations"),
-            group=AttrInt64(group, name="group"),
-            kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
-            offset_group=AttrInt64(offset_group, name="offset_group"),
-            pads=AttrInt64s.maybe(pads, name="pads"),
-            strides=AttrInt64s.maybe(strides, name="strides"),
-        ),
-        _DeformConv.Inputs(
-            X=X,
-            W=W,
-            offset=offset,
-            B=B,
-            mask=mask,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+        W=W,
+        offset=offset,
+        B=B,
+        mask=mask,
+    )
+    output_vars = (
+        _DeformConv(
+            _DeformConv.Attributes(
+                dilations=AttrInt64s.maybe(dilations, name="dilations"),
+                group=AttrInt64(group, name="group"),
+                kernel_shape=AttrInt64s.maybe(kernel_shape, name="kernel_shape"),
+                offset_group=AttrInt64(offset_group, name="offset_group"),
+                pads=AttrInt64s.maybe(pads, name="pads"),
+                strides=AttrInt64s.maybe(strides, name="strides"),
+            ),
+            _DeformConv.Inputs(
+                X=unwrap_vars(X),
+                W=unwrap_vars(W),
+                offset=unwrap_vars(offset),
+                B=unwrap_vars(B),
+                mask=unwrap_vars(mask),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def dequantize_linear(
@@ -1358,16 +1403,26 @@ def dequantize_linear(
      - T1: `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int32)`, `tensor(int8)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`
     """
-    return _DequantizeLinear(
-        _DequantizeLinear.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-        ),
-        _DequantizeLinear.Inputs(
-            x=x,
-            x_scale=x_scale,
-            x_zero_point=x_zero_point,
-        ),
-    ).outputs.y
+    input_prop_values = create_prop_dict(
+        x=x,
+        x_scale=x_scale,
+        x_zero_point=x_zero_point,
+    )
+    output_vars = (
+        _DequantizeLinear(
+            _DequantizeLinear.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+            ),
+            _DequantizeLinear.Inputs(
+                x=unwrap_vars(x),
+                x_scale=unwrap_vars(x_scale),
+                x_zero_point=unwrap_vars(x_zero_point),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .y
+    )
+    return output_vars  # type: ignore
 
 
 def equal(
@@ -1406,13 +1461,22 @@ def equal(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(bool)`
     """
-    return _Equal(
-        _Equal.Attributes(),
-        _Equal.Inputs(
-            A=A,
-            B=B,
-        ),
-    ).outputs.C
+    input_prop_values = create_prop_dict(
+        A=A,
+        B=B,
+    )
+    output_vars = (
+        _Equal(
+            _Equal.Attributes(),
+            _Equal.Inputs(
+                A=unwrap_vars(A),
+                B=unwrap_vars(B),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .C
+    )
+    return output_vars  # type: ignore
 
 
 def identity(
@@ -1440,12 +1504,20 @@ def identity(
     Type constraints:
      - V: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Identity(
-        _Identity.Attributes(),
-        _Identity.Inputs(
-            input=input,
-        ),
-    ).outputs.output
+    input_prop_values = create_prop_dict(
+        input=input,
+    )
+    output_vars = (
+        _Identity(
+            _Identity.Attributes(),
+            _Identity.Inputs(
+                input=unwrap_vars(input),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .output
+    )
+    return output_vars  # type: ignore
 
 
 def if_(
@@ -1502,16 +1574,24 @@ def if_(
     """
     _else_branch_subgraph: Graph = subgraph((), else_branch)
     _then_branch_subgraph: Graph = subgraph((), then_branch)
-    return _If(
-        _If.Attributes(
-            else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
-            then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
-        ),
-        _If.Inputs(
-            cond=cond,
-        ),
-        out_variadic=len(_else_branch_subgraph.requested_results),
-    ).outputs.outputs
+    input_prop_values = create_prop_dict(
+        cond=cond,
+    )
+    output_vars = (
+        _If(
+            _If.Attributes(
+                else_branch=AttrGraph(_else_branch_subgraph, name="else_branch"),
+                then_branch=AttrGraph(_then_branch_subgraph, name="then_branch"),
+            ),
+            _If.Inputs(
+                cond=unwrap_vars(cond),
+            ),
+            out_variadic=len(_else_branch_subgraph.requested_results),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .outputs
+    )
+    return output_vars  # type: ignore
 
 
 def loop(
@@ -1695,17 +1775,27 @@ def loop(
         + [var.unwrap_type() for var in v_initial],
         body,
     )
-    return _Loop(
-        _Loop.Attributes(
-            body=AttrGraph(_body_subgraph, name="body"),
-        ),
-        _Loop.Inputs(
-            M=M,
-            cond=cond,
-            v_initial=v_initial,
-        ),
-        out_variadic=len(_body_subgraph.requested_results) - 1,
-    ).outputs.v_final_and_scan_outputs
+    input_prop_values = create_prop_dict(
+        M=M,
+        cond=cond,
+        v_initial=v_initial,
+    )
+    output_vars = (
+        _Loop(
+            _Loop.Attributes(
+                body=AttrGraph(_body_subgraph, name="body"),
+            ),
+            _Loop.Inputs(
+                M=unwrap_vars(M),
+                cond=unwrap_vars(cond),
+                v_initial=unwrap_vars(v_initial),
+            ),
+            out_variadic=len(_body_subgraph.requested_results) - 1,
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .v_final_and_scan_outputs
+    )
+    return output_vars  # type: ignore
 
 
 def pad(
@@ -1868,17 +1958,28 @@ def pad(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
-    return _Pad(
-        _Pad.Attributes(
-            mode=AttrString(mode, name="mode"),
-        ),
-        _Pad.Inputs(
-            data=data,
-            pads=pads,
-            constant_value=constant_value,
-            axes=axes,
-        ),
-    ).outputs.output
+    input_prop_values = create_prop_dict(
+        data=data,
+        pads=pads,
+        constant_value=constant_value,
+        axes=axes,
+    )
+    output_vars = (
+        _Pad(
+            _Pad.Attributes(
+                mode=AttrString(mode, name="mode"),
+            ),
+            _Pad.Inputs(
+                data=unwrap_vars(data),
+                pads=unwrap_vars(pads),
+                constant_value=unwrap_vars(constant_value),
+                axes=unwrap_vars(axes),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .output
+    )
+    return output_vars  # type: ignore
 
 
 def quantize_linear(
@@ -1947,17 +2048,27 @@ def quantize_linear(
      - T1: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`
      - T2: `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int8)`, `tensor(uint8)`
     """
-    return _QuantizeLinear(
-        _QuantizeLinear.Attributes(
-            axis=AttrInt64(axis, name="axis"),
-            saturate=AttrInt64(saturate, name="saturate"),
-        ),
-        _QuantizeLinear.Inputs(
-            x=x,
-            y_scale=y_scale,
-            y_zero_point=y_zero_point,
-        ),
-    ).outputs.y
+    input_prop_values = create_prop_dict(
+        x=x,
+        y_scale=y_scale,
+        y_zero_point=y_zero_point,
+    )
+    output_vars = (
+        _QuantizeLinear(
+            _QuantizeLinear.Attributes(
+                axis=AttrInt64(axis, name="axis"),
+                saturate=AttrInt64(saturate, name="saturate"),
+            ),
+            _QuantizeLinear.Inputs(
+                x=unwrap_vars(x),
+                y_scale=unwrap_vars(y_scale),
+                y_zero_point=unwrap_vars(y_zero_point),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .y
+    )
+    return output_vars  # type: ignore
 
 
 def reshape(
@@ -2011,15 +2122,24 @@ def reshape(
     Type constraints:
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
-    return _Reshape(
-        _Reshape.Attributes(
-            allowzero=AttrInt64(allowzero, name="allowzero"),
-        ),
-        _Reshape.Inputs(
-            data=data,
-            shape=shape,
-        ),
-    ).outputs.reshaped
+    input_prop_values = create_prop_dict(
+        data=data,
+        shape=shape,
+    )
+    output_vars = (
+        _Reshape(
+            _Reshape.Attributes(
+                allowzero=AttrInt64(allowzero, name="allowzero"),
+            ),
+            _Reshape.Inputs(
+                data=unwrap_vars(data),
+                shape=unwrap_vars(shape),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .reshaped
+    )
+    return output_vars  # type: ignore
 
 
 def resize(
@@ -2230,31 +2350,43 @@ def resize(
      - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _Resize(
-        _Resize.Attributes(
-            antialias=AttrInt64(antialias, name="antialias"),
-            axes=AttrInt64s.maybe(axes, name="axes"),
-            coordinate_transformation_mode=AttrString(
-                coordinate_transformation_mode, name="coordinate_transformation_mode"
+    input_prop_values = create_prop_dict(
+        X=X,
+        roi=roi,
+        scales=scales,
+        sizes=sizes,
+    )
+    output_vars = (
+        _Resize(
+            _Resize.Attributes(
+                antialias=AttrInt64(antialias, name="antialias"),
+                axes=AttrInt64s.maybe(axes, name="axes"),
+                coordinate_transformation_mode=AttrString(
+                    coordinate_transformation_mode,
+                    name="coordinate_transformation_mode",
+                ),
+                cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
+                exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
+                extrapolation_value=AttrFloat32(
+                    extrapolation_value, name="extrapolation_value"
+                ),
+                keep_aspect_ratio_policy=AttrString(
+                    keep_aspect_ratio_policy, name="keep_aspect_ratio_policy"
+                ),
+                mode=AttrString(mode, name="mode"),
+                nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
             ),
-            cubic_coeff_a=AttrFloat32(cubic_coeff_a, name="cubic_coeff_a"),
-            exclude_outside=AttrInt64(exclude_outside, name="exclude_outside"),
-            extrapolation_value=AttrFloat32(
-                extrapolation_value, name="extrapolation_value"
+            _Resize.Inputs(
+                X=unwrap_vars(X),
+                roi=unwrap_vars(roi),
+                scales=unwrap_vars(scales),
+                sizes=unwrap_vars(sizes),
             ),
-            keep_aspect_ratio_policy=AttrString(
-                keep_aspect_ratio_policy, name="keep_aspect_ratio_policy"
-            ),
-            mode=AttrString(mode, name="mode"),
-            nearest_mode=AttrString(nearest_mode, name="nearest_mode"),
-        ),
-        _Resize.Inputs(
-            X=X,
-            roi=roi,
-            scales=scales,
-            sizes=sizes,
-        ),
-    ).outputs.Y
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def scan(
@@ -2478,26 +2610,38 @@ def scan(
         ],
         body,
     )
-    return _Scan(
-        _Scan.Attributes(
-            body=AttrGraph(_body_subgraph, name="body"),
-            num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
-            scan_input_axes=AttrInt64s.maybe(scan_input_axes, name="scan_input_axes"),
-            scan_input_directions=AttrInt64s.maybe(
-                scan_input_directions, name="scan_input_directions"
+    input_prop_values = create_prop_dict(
+        initial_state_and_scan_inputs=initial_state_and_scan_inputs,
+    )
+    output_vars = (
+        _Scan(
+            _Scan.Attributes(
+                body=AttrGraph(_body_subgraph, name="body"),
+                num_scan_inputs=AttrInt64(num_scan_inputs, name="num_scan_inputs"),
+                scan_input_axes=AttrInt64s.maybe(
+                    scan_input_axes, name="scan_input_axes"
+                ),
+                scan_input_directions=AttrInt64s.maybe(
+                    scan_input_directions, name="scan_input_directions"
+                ),
+                scan_output_axes=AttrInt64s.maybe(
+                    scan_output_axes, name="scan_output_axes"
+                ),
+                scan_output_directions=AttrInt64s.maybe(
+                    scan_output_directions, name="scan_output_directions"
+                ),
             ),
-            scan_output_axes=AttrInt64s.maybe(
-                scan_output_axes, name="scan_output_axes"
+            _Scan.Inputs(
+                initial_state_and_scan_inputs=unwrap_vars(
+                    initial_state_and_scan_inputs
+                ),
             ),
-            scan_output_directions=AttrInt64s.maybe(
-                scan_output_directions, name="scan_output_directions"
-            ),
-        ),
-        _Scan.Inputs(
-            initial_state_and_scan_inputs=initial_state_and_scan_inputs,
-        ),
-        out_variadic=len(_body_subgraph.requested_results),
-    ).outputs.final_state_and_scan_outputs
+            out_variadic=len(_body_subgraph.requested_results),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .final_state_and_scan_outputs
+    )
+    return output_vars  # type: ignore
 
 
 def shape(
@@ -2576,15 +2720,23 @@ def shape(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
-    return _Shape(
-        _Shape.Attributes(
-            end=AttrInt64.maybe(end, name="end"),
-            start=AttrInt64(start, name="start"),
-        ),
-        _Shape.Inputs(
-            data=data,
-        ),
-    ).outputs.shape
+    input_prop_values = create_prop_dict(
+        data=data,
+    )
+    output_vars = (
+        _Shape(
+            _Shape.Attributes(
+                end=AttrInt64.maybe(end, name="end"),
+                start=AttrInt64(start, name="start"),
+            ),
+            _Shape.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .shape
+    )
+    return output_vars  # type: ignore
 
 
 def size(
@@ -2614,12 +2766,20 @@ def size(
      - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
-    return _Size(
-        _Size.Attributes(),
-        _Size.Inputs(
-            data=data,
-        ),
-    ).outputs.size
+    input_prop_values = create_prop_dict(
+        data=data,
+    )
+    output_vars = (
+        _Size(
+            _Size.Attributes(),
+            _Size.Inputs(
+                data=unwrap_vars(data),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .size
+    )
+    return output_vars  # type: ignore
 
 
 def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:

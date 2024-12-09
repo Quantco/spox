@@ -23,7 +23,8 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import InferenceError, StandardNode
 from spox._type_system import Tensor, Type
-from spox._var import Var
+from spox._value_prop import PropDict
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 
 
 class _ArrayFeatureExtractor(StandardNode):
@@ -33,14 +34,14 @@ class _ArrayFeatureExtractor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
-        Y: Var
+        X: _VarInfo
+        Y: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: Var
+        Z: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         xt, yt = self.inputs.X.unwrap_tensor(), self.inputs.Y.unwrap_tensor()
@@ -69,13 +70,13 @@ class _Binarizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
 
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
@@ -94,11 +95,11 @@ class _CastMap(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("CastMap", "ai.onnx.ml", 1)
 
@@ -117,13 +118,13 @@ class _CategoryMapper(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
@@ -150,11 +151,11 @@ class _DictVectorizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("DictVectorizer", "ai.onnx.ml", 1)
 
@@ -170,11 +171,11 @@ class _FeatureVectorizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Sequence[Var]
+        X: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("FeatureVectorizer", "ai.onnx.ml", 1)
 
@@ -193,13 +194,13 @@ class _Imputer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         t = self.inputs.X.unwrap_tensor()
@@ -256,11 +257,11 @@ class _LabelEncoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("LabelEncoder", "ai.onnx.ml", 2)
 
@@ -281,12 +282,12 @@ class _LinearClassifier(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        Z: Var
+        Y: _VarInfo
+        Z: _VarInfo
 
     op_type = OpType("LinearClassifier", "ai.onnx.ml", 1)
 
@@ -305,13 +306,13 @@ class _LinearRegressor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         sim = self.inputs.X.unwrap_tensor().shape
@@ -339,13 +340,13 @@ class _Normalizer(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.attrs.norm.value not in ("MAX", "L1", "L2"):
             raise InferenceError(
                 f"Unknown normalisation method `{self.attrs.norm.value}`"
@@ -368,13 +369,13 @@ class _OneHotEncoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if not self.inputs.fully_typed:
             return {}
         if self.attrs.cats_int64s:
@@ -412,12 +413,12 @@ class _SVMClassifier(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        Z: Var
+        Y: _VarInfo
+        Z: _VarInfo
 
     op_type = OpType("SVMClassifier", "ai.onnx.ml", 1)
 
@@ -440,11 +441,11 @@ class _SVMRegressor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("SVMRegressor", "ai.onnx.ml", 1)
 
@@ -461,13 +462,13 @@ class _Scaler(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.inputs.X.type is None:
             return {}
         sc, off = self.attrs.scale, self.attrs.offset
@@ -520,14 +521,14 @@ class _TreeEnsembleClassifier(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
-        Z: Var
+        Y: _VarInfo
+        Z: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         e = (
             len(self.attrs.class_ids.value)
             if self.attrs.class_ids is not None
@@ -585,13 +586,13 @@ class _TreeEnsembleRegressor(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         if self.inputs.fully_typed:
             shape = self.inputs.X.unwrap_tensor().shape
             assert shape is not None  # already checked with fully_typed
@@ -619,11 +620,11 @@ class _ZipMap(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Z: Var
+        Z: _VarInfo
 
     op_type = OpType("ZipMap", "ai.onnx.ml", 1)
 
@@ -662,13 +663,22 @@ def array_feature_extractor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    return _ArrayFeatureExtractor(
-        _ArrayFeatureExtractor.Attributes(),
-        _ArrayFeatureExtractor.Inputs(
-            X=X,
-            Y=Y,
-        ),
-    ).outputs.Z
+    input_prop_values = create_prop_dict(
+        X=X,
+        Y=Y,
+    )
+    output_vars = (
+        _ArrayFeatureExtractor(
+            _ArrayFeatureExtractor.Attributes(),
+            _ArrayFeatureExtractor.Inputs(
+                X=unwrap_vars(X),
+                Y=unwrap_vars(Y),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Z
+    )
+    return output_vars  # type: ignore
 
 
 def binarizer(
@@ -702,14 +712,22 @@ def binarizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _Binarizer(
-        _Binarizer.Attributes(
-            threshold=AttrFloat32(threshold, name="threshold"),
-        ),
-        _Binarizer.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _Binarizer(
+            _Binarizer.Attributes(
+                threshold=AttrFloat32(threshold, name="threshold"),
+            ),
+            _Binarizer.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def cast_map(
@@ -759,16 +777,24 @@ def cast_map(
      - T1: `map(int64,tensor(float))`, `map(int64,tensor(string))`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    return _CastMap(
-        _CastMap.Attributes(
-            cast_to=AttrString(cast_to, name="cast_to"),
-            map_form=AttrString(map_form, name="map_form"),
-            max_map=AttrInt64(max_map, name="max_map"),
-        ),
-        _CastMap.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _CastMap(
+            _CastMap.Attributes(
+                cast_to=AttrString(cast_to, name="cast_to"),
+                map_form=AttrString(map_form, name="map_form"),
+                max_map=AttrInt64(max_map, name="max_map"),
+            ),
+            _CastMap.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def category_mapper(
@@ -826,17 +852,25 @@ def category_mapper(
      - T1: `tensor(int64)`, `tensor(string)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    return _CategoryMapper(
-        _CategoryMapper.Attributes(
-            cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
-            cats_strings=AttrStrings.maybe(cats_strings, name="cats_strings"),
-            default_int64=AttrInt64(default_int64, name="default_int64"),
-            default_string=AttrString(default_string, name="default_string"),
-        ),
-        _CategoryMapper.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _CategoryMapper(
+            _CategoryMapper.Attributes(
+                cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
+                cats_strings=AttrStrings.maybe(cats_strings, name="cats_strings"),
+                default_int64=AttrInt64(default_int64, name="default_int64"),
+                default_string=AttrString(default_string, name="default_string"),
+            ),
+            _CategoryMapper.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def dict_vectorizer(
@@ -889,19 +923,27 @@ def dict_vectorizer(
      - T1: `map(int64,tensor(double))`, `map(int64,tensor(float))`, `map(int64,tensor(string))`, `map(string,tensor(double))`, `map(string,tensor(float))`, `map(string,tensor(int64))`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    return _DictVectorizer(
-        _DictVectorizer.Attributes(
-            int64_vocabulary=AttrInt64s.maybe(
-                int64_vocabulary, name="int64_vocabulary"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _DictVectorizer(
+            _DictVectorizer.Attributes(
+                int64_vocabulary=AttrInt64s.maybe(
+                    int64_vocabulary, name="int64_vocabulary"
+                ),
+                string_vocabulary=AttrStrings.maybe(
+                    string_vocabulary, name="string_vocabulary"
+                ),
             ),
-            string_vocabulary=AttrStrings.maybe(
-                string_vocabulary, name="string_vocabulary"
+            _DictVectorizer.Inputs(
+                X=unwrap_vars(X),
             ),
-        ),
-        _DictVectorizer.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def feature_vectorizer(
@@ -938,14 +980,24 @@ def feature_vectorizer(
     Type constraints:
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _FeatureVectorizer(
-        _FeatureVectorizer.Attributes(
-            inputdimensions=AttrInt64s.maybe(inputdimensions, name="inputdimensions"),
-        ),
-        _FeatureVectorizer.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _FeatureVectorizer(
+            _FeatureVectorizer.Attributes(
+                inputdimensions=AttrInt64s.maybe(
+                    inputdimensions, name="inputdimensions"
+                ),
+            ),
+            _FeatureVectorizer.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def imputer(
@@ -1003,25 +1055,33 @@ def imputer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _Imputer(
-        _Imputer.Attributes(
-            imputed_value_floats=AttrFloat32s.maybe(
-                imputed_value_floats, name="imputed_value_floats"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _Imputer(
+            _Imputer.Attributes(
+                imputed_value_floats=AttrFloat32s.maybe(
+                    imputed_value_floats, name="imputed_value_floats"
+                ),
+                imputed_value_int64s=AttrInt64s.maybe(
+                    imputed_value_int64s, name="imputed_value_int64s"
+                ),
+                replaced_value_float=AttrFloat32(
+                    replaced_value_float, name="replaced_value_float"
+                ),
+                replaced_value_int64=AttrInt64(
+                    replaced_value_int64, name="replaced_value_int64"
+                ),
             ),
-            imputed_value_int64s=AttrInt64s.maybe(
-                imputed_value_int64s, name="imputed_value_int64s"
+            _Imputer.Inputs(
+                X=unwrap_vars(X),
             ),
-            replaced_value_float=AttrFloat32(
-                replaced_value_float, name="replaced_value_float"
-            ),
-            replaced_value_int64=AttrInt64(
-                replaced_value_int64, name="replaced_value_int64"
-            ),
-        ),
-        _Imputer.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def label_encoder(
@@ -1104,22 +1164,30 @@ def label_encoder(
      - T1: `tensor(float)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
-    return _LabelEncoder(
-        _LabelEncoder.Attributes(
-            default_float=AttrFloat32(default_float, name="default_float"),
-            default_int64=AttrInt64(default_int64, name="default_int64"),
-            default_string=AttrString(default_string, name="default_string"),
-            keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
-            keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
-            keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),
-            values_floats=AttrFloat32s.maybe(values_floats, name="values_floats"),
-            values_int64s=AttrInt64s.maybe(values_int64s, name="values_int64s"),
-            values_strings=AttrStrings.maybe(values_strings, name="values_strings"),
-        ),
-        _LabelEncoder.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _LabelEncoder(
+            _LabelEncoder.Attributes(
+                default_float=AttrFloat32(default_float, name="default_float"),
+                default_int64=AttrInt64(default_int64, name="default_int64"),
+                default_string=AttrString(default_string, name="default_string"),
+                keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
+                keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
+                keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),
+                values_floats=AttrFloat32s.maybe(values_floats, name="values_floats"),
+                values_int64s=AttrInt64s.maybe(values_int64s, name="values_int64s"),
+                values_strings=AttrStrings.maybe(values_strings, name="values_strings"),
+            ),
+            _LabelEncoder.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def linear_classifier(
@@ -1179,23 +1247,31 @@ def linear_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    return _LinearClassifier(
-        _LinearClassifier.Attributes(
-            classlabels_ints=AttrInt64s.maybe(
-                classlabels_ints, name="classlabels_ints"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _LinearClassifier(
+            _LinearClassifier.Attributes(
+                classlabels_ints=AttrInt64s.maybe(
+                    classlabels_ints, name="classlabels_ints"
+                ),
+                classlabels_strings=AttrStrings.maybe(
+                    classlabels_strings, name="classlabels_strings"
+                ),
+                coefficients=AttrFloat32s(coefficients, name="coefficients"),
+                intercepts=AttrFloat32s.maybe(intercepts, name="intercepts"),
+                multi_class=AttrInt64(multi_class, name="multi_class"),
+                post_transform=AttrString(post_transform, name="post_transform"),
             ),
-            classlabels_strings=AttrStrings.maybe(
-                classlabels_strings, name="classlabels_strings"
+            _LinearClassifier.Inputs(
+                X=unwrap_vars(X),
             ),
-            coefficients=AttrFloat32s(coefficients, name="coefficients"),
-            intercepts=AttrFloat32s.maybe(intercepts, name="intercepts"),
-            multi_class=AttrInt64(multi_class, name="multi_class"),
-            post_transform=AttrString(post_transform, name="post_transform"),
-        ),
-        _LinearClassifier.Inputs(
-            X=X,
-        ),
-    ).outputs._unpack_to_any()
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        ._unpack_to_any()
+    )
+    return output_vars  # type: ignore
 
 
 def linear_regressor(
@@ -1247,17 +1323,25 @@ def linear_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _LinearRegressor(
-        _LinearRegressor.Attributes(
-            coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
-            intercepts=AttrFloat32s.maybe(intercepts, name="intercepts"),
-            post_transform=AttrString(post_transform, name="post_transform"),
-            targets=AttrInt64(targets, name="targets"),
-        ),
-        _LinearRegressor.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _LinearRegressor(
+            _LinearRegressor.Attributes(
+                coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
+                intercepts=AttrFloat32s.maybe(intercepts, name="intercepts"),
+                post_transform=AttrString(post_transform, name="post_transform"),
+                targets=AttrInt64(targets, name="targets"),
+            ),
+            _LinearRegressor.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def normalizer(
@@ -1296,14 +1380,22 @@ def normalizer(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _Normalizer(
-        _Normalizer.Attributes(
-            norm=AttrString(norm, name="norm"),
-        ),
-        _Normalizer.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _Normalizer(
+            _Normalizer.Attributes(
+                norm=AttrString(norm, name="norm"),
+            ),
+            _Normalizer.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def one_hot_encoder(
@@ -1355,16 +1447,24 @@ def one_hot_encoder(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    return _OneHotEncoder(
-        _OneHotEncoder.Attributes(
-            cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
-            cats_strings=AttrStrings.maybe(cats_strings, name="cats_strings"),
-            zeros=AttrInt64(zeros, name="zeros"),
-        ),
-        _OneHotEncoder.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _OneHotEncoder(
+            _OneHotEncoder.Attributes(
+                cats_int64s=AttrInt64s.maybe(cats_int64s, name="cats_int64s"),
+                cats_strings=AttrStrings.maybe(cats_strings, name="cats_strings"),
+                zeros=AttrInt64(zeros, name="zeros"),
+            ),
+            _OneHotEncoder.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def svmclassifier(
@@ -1449,30 +1549,40 @@ def svmclassifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    return _SVMClassifier(
-        _SVMClassifier.Attributes(
-            classlabels_ints=AttrInt64s.maybe(
-                classlabels_ints, name="classlabels_ints"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _SVMClassifier(
+            _SVMClassifier.Attributes(
+                classlabels_ints=AttrInt64s.maybe(
+                    classlabels_ints, name="classlabels_ints"
+                ),
+                classlabels_strings=AttrStrings.maybe(
+                    classlabels_strings, name="classlabels_strings"
+                ),
+                coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
+                kernel_params=AttrFloat32s.maybe(kernel_params, name="kernel_params"),
+                kernel_type=AttrString(kernel_type, name="kernel_type"),
+                post_transform=AttrString(post_transform, name="post_transform"),
+                prob_a=AttrFloat32s.maybe(prob_a, name="prob_a"),
+                prob_b=AttrFloat32s.maybe(prob_b, name="prob_b"),
+                rho=AttrFloat32s.maybe(rho, name="rho"),
+                support_vectors=AttrFloat32s.maybe(
+                    support_vectors, name="support_vectors"
+                ),
+                vectors_per_class=AttrInt64s.maybe(
+                    vectors_per_class, name="vectors_per_class"
+                ),
             ),
-            classlabels_strings=AttrStrings.maybe(
-                classlabels_strings, name="classlabels_strings"
+            _SVMClassifier.Inputs(
+                X=unwrap_vars(X),
             ),
-            coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
-            kernel_params=AttrFloat32s.maybe(kernel_params, name="kernel_params"),
-            kernel_type=AttrString(kernel_type, name="kernel_type"),
-            post_transform=AttrString(post_transform, name="post_transform"),
-            prob_a=AttrFloat32s.maybe(prob_a, name="prob_a"),
-            prob_b=AttrFloat32s.maybe(prob_b, name="prob_b"),
-            rho=AttrFloat32s.maybe(rho, name="rho"),
-            support_vectors=AttrFloat32s.maybe(support_vectors, name="support_vectors"),
-            vectors_per_class=AttrInt64s.maybe(
-                vectors_per_class, name="vectors_per_class"
-            ),
-        ),
-        _SVMClassifier.Inputs(
-            X=X,
-        ),
-    ).outputs._unpack_to_any()
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        ._unpack_to_any()
+    )
+    return output_vars  # type: ignore
 
 
 def svmregressor(
@@ -1536,21 +1646,31 @@ def svmregressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _SVMRegressor(
-        _SVMRegressor.Attributes(
-            coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
-            kernel_params=AttrFloat32s.maybe(kernel_params, name="kernel_params"),
-            kernel_type=AttrString(kernel_type, name="kernel_type"),
-            n_supports=AttrInt64(n_supports, name="n_supports"),
-            one_class=AttrInt64(one_class, name="one_class"),
-            post_transform=AttrString(post_transform, name="post_transform"),
-            rho=AttrFloat32s.maybe(rho, name="rho"),
-            support_vectors=AttrFloat32s.maybe(support_vectors, name="support_vectors"),
-        ),
-        _SVMRegressor.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _SVMRegressor(
+            _SVMRegressor.Attributes(
+                coefficients=AttrFloat32s.maybe(coefficients, name="coefficients"),
+                kernel_params=AttrFloat32s.maybe(kernel_params, name="kernel_params"),
+                kernel_type=AttrString(kernel_type, name="kernel_type"),
+                n_supports=AttrInt64(n_supports, name="n_supports"),
+                one_class=AttrInt64(one_class, name="one_class"),
+                post_transform=AttrString(post_transform, name="post_transform"),
+                rho=AttrFloat32s.maybe(rho, name="rho"),
+                support_vectors=AttrFloat32s.maybe(
+                    support_vectors, name="support_vectors"
+                ),
+            ),
+            _SVMRegressor.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def scaler(
@@ -1592,15 +1712,23 @@ def scaler(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _Scaler(
-        _Scaler.Attributes(
-            offset=AttrFloat32s.maybe(offset, name="offset"),
-            scale=AttrFloat32s.maybe(scale, name="scale"),
-        ),
-        _Scaler.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _Scaler(
+            _Scaler.Attributes(
+                offset=AttrFloat32s.maybe(offset, name="offset"),
+                scale=AttrFloat32s.maybe(scale, name="scale"),
+            ),
+            _Scaler.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def tree_ensemble_classifier(
@@ -1737,54 +1865,65 @@ def tree_ensemble_classifier(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
      - T2: `tensor(int64)`, `tensor(string)`
     """
-    return _TreeEnsembleClassifier(
-        _TreeEnsembleClassifier.Attributes(
-            base_values=AttrFloat32s.maybe(base_values, name="base_values"),
-            base_values_as_tensor=AttrTensor.maybe(
-                base_values_as_tensor, name="base_values_as_tensor"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _TreeEnsembleClassifier(
+            _TreeEnsembleClassifier.Attributes(
+                base_values=AttrFloat32s.maybe(base_values, name="base_values"),
+                base_values_as_tensor=AttrTensor.maybe(
+                    base_values_as_tensor, name="base_values_as_tensor"
+                ),
+                class_ids=AttrInt64s.maybe(class_ids, name="class_ids"),
+                class_nodeids=AttrInt64s.maybe(class_nodeids, name="class_nodeids"),
+                class_treeids=AttrInt64s.maybe(class_treeids, name="class_treeids"),
+                class_weights=AttrFloat32s.maybe(class_weights, name="class_weights"),
+                class_weights_as_tensor=AttrTensor.maybe(
+                    class_weights_as_tensor, name="class_weights_as_tensor"
+                ),
+                classlabels_int64s=AttrInt64s.maybe(
+                    classlabels_int64s, name="classlabels_int64s"
+                ),
+                classlabels_strings=AttrStrings.maybe(
+                    classlabels_strings, name="classlabels_strings"
+                ),
+                nodes_falsenodeids=AttrInt64s.maybe(
+                    nodes_falsenodeids, name="nodes_falsenodeids"
+                ),
+                nodes_featureids=AttrInt64s.maybe(
+                    nodes_featureids, name="nodes_featureids"
+                ),
+                nodes_hitrates=AttrFloat32s.maybe(
+                    nodes_hitrates, name="nodes_hitrates"
+                ),
+                nodes_hitrates_as_tensor=AttrTensor.maybe(
+                    nodes_hitrates_as_tensor, name="nodes_hitrates_as_tensor"
+                ),
+                nodes_missing_value_tracks_true=AttrInt64s.maybe(
+                    nodes_missing_value_tracks_true,
+                    name="nodes_missing_value_tracks_true",
+                ),
+                nodes_modes=AttrStrings.maybe(nodes_modes, name="nodes_modes"),
+                nodes_nodeids=AttrInt64s.maybe(nodes_nodeids, name="nodes_nodeids"),
+                nodes_treeids=AttrInt64s.maybe(nodes_treeids, name="nodes_treeids"),
+                nodes_truenodeids=AttrInt64s.maybe(
+                    nodes_truenodeids, name="nodes_truenodeids"
+                ),
+                nodes_values=AttrFloat32s.maybe(nodes_values, name="nodes_values"),
+                nodes_values_as_tensor=AttrTensor.maybe(
+                    nodes_values_as_tensor, name="nodes_values_as_tensor"
+                ),
+                post_transform=AttrString(post_transform, name="post_transform"),
             ),
-            class_ids=AttrInt64s.maybe(class_ids, name="class_ids"),
-            class_nodeids=AttrInt64s.maybe(class_nodeids, name="class_nodeids"),
-            class_treeids=AttrInt64s.maybe(class_treeids, name="class_treeids"),
-            class_weights=AttrFloat32s.maybe(class_weights, name="class_weights"),
-            class_weights_as_tensor=AttrTensor.maybe(
-                class_weights_as_tensor, name="class_weights_as_tensor"
+            _TreeEnsembleClassifier.Inputs(
+                X=unwrap_vars(X),
             ),
-            classlabels_int64s=AttrInt64s.maybe(
-                classlabels_int64s, name="classlabels_int64s"
-            ),
-            classlabels_strings=AttrStrings.maybe(
-                classlabels_strings, name="classlabels_strings"
-            ),
-            nodes_falsenodeids=AttrInt64s.maybe(
-                nodes_falsenodeids, name="nodes_falsenodeids"
-            ),
-            nodes_featureids=AttrInt64s.maybe(
-                nodes_featureids, name="nodes_featureids"
-            ),
-            nodes_hitrates=AttrFloat32s.maybe(nodes_hitrates, name="nodes_hitrates"),
-            nodes_hitrates_as_tensor=AttrTensor.maybe(
-                nodes_hitrates_as_tensor, name="nodes_hitrates_as_tensor"
-            ),
-            nodes_missing_value_tracks_true=AttrInt64s.maybe(
-                nodes_missing_value_tracks_true, name="nodes_missing_value_tracks_true"
-            ),
-            nodes_modes=AttrStrings.maybe(nodes_modes, name="nodes_modes"),
-            nodes_nodeids=AttrInt64s.maybe(nodes_nodeids, name="nodes_nodeids"),
-            nodes_treeids=AttrInt64s.maybe(nodes_treeids, name="nodes_treeids"),
-            nodes_truenodeids=AttrInt64s.maybe(
-                nodes_truenodeids, name="nodes_truenodeids"
-            ),
-            nodes_values=AttrFloat32s.maybe(nodes_values, name="nodes_values"),
-            nodes_values_as_tensor=AttrTensor.maybe(
-                nodes_values_as_tensor, name="nodes_values_as_tensor"
-            ),
-            post_transform=AttrString(post_transform, name="post_transform"),
-        ),
-        _TreeEnsembleClassifier.Inputs(
-            X=X,
-        ),
-    ).outputs._unpack_to_any()
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        ._unpack_to_any()
+    )
+    return output_vars  # type: ignore
 
 
 def tree_ensemble_regressor(
@@ -1919,52 +2058,65 @@ def tree_ensemble_regressor(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(int32)`, `tensor(int64)`
     """
-    return _TreeEnsembleRegressor(
-        _TreeEnsembleRegressor.Attributes(
-            aggregate_function=AttrString(
-                aggregate_function, name="aggregate_function"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _TreeEnsembleRegressor(
+            _TreeEnsembleRegressor.Attributes(
+                aggregate_function=AttrString(
+                    aggregate_function, name="aggregate_function"
+                ),
+                base_values=AttrFloat32s.maybe(base_values, name="base_values"),
+                base_values_as_tensor=AttrTensor.maybe(
+                    base_values_as_tensor, name="base_values_as_tensor"
+                ),
+                n_targets=AttrInt64.maybe(n_targets, name="n_targets"),
+                nodes_falsenodeids=AttrInt64s.maybe(
+                    nodes_falsenodeids, name="nodes_falsenodeids"
+                ),
+                nodes_featureids=AttrInt64s.maybe(
+                    nodes_featureids, name="nodes_featureids"
+                ),
+                nodes_hitrates=AttrFloat32s.maybe(
+                    nodes_hitrates, name="nodes_hitrates"
+                ),
+                nodes_hitrates_as_tensor=AttrTensor.maybe(
+                    nodes_hitrates_as_tensor, name="nodes_hitrates_as_tensor"
+                ),
+                nodes_missing_value_tracks_true=AttrInt64s.maybe(
+                    nodes_missing_value_tracks_true,
+                    name="nodes_missing_value_tracks_true",
+                ),
+                nodes_modes=AttrStrings.maybe(nodes_modes, name="nodes_modes"),
+                nodes_nodeids=AttrInt64s.maybe(nodes_nodeids, name="nodes_nodeids"),
+                nodes_treeids=AttrInt64s.maybe(nodes_treeids, name="nodes_treeids"),
+                nodes_truenodeids=AttrInt64s.maybe(
+                    nodes_truenodeids, name="nodes_truenodeids"
+                ),
+                nodes_values=AttrFloat32s.maybe(nodes_values, name="nodes_values"),
+                nodes_values_as_tensor=AttrTensor.maybe(
+                    nodes_values_as_tensor, name="nodes_values_as_tensor"
+                ),
+                post_transform=AttrString(post_transform, name="post_transform"),
+                target_ids=AttrInt64s.maybe(target_ids, name="target_ids"),
+                target_nodeids=AttrInt64s.maybe(target_nodeids, name="target_nodeids"),
+                target_treeids=AttrInt64s.maybe(target_treeids, name="target_treeids"),
+                target_weights=AttrFloat32s.maybe(
+                    target_weights, name="target_weights"
+                ),
+                target_weights_as_tensor=AttrTensor.maybe(
+                    target_weights_as_tensor, name="target_weights_as_tensor"
+                ),
             ),
-            base_values=AttrFloat32s.maybe(base_values, name="base_values"),
-            base_values_as_tensor=AttrTensor.maybe(
-                base_values_as_tensor, name="base_values_as_tensor"
+            _TreeEnsembleRegressor.Inputs(
+                X=unwrap_vars(X),
             ),
-            n_targets=AttrInt64.maybe(n_targets, name="n_targets"),
-            nodes_falsenodeids=AttrInt64s.maybe(
-                nodes_falsenodeids, name="nodes_falsenodeids"
-            ),
-            nodes_featureids=AttrInt64s.maybe(
-                nodes_featureids, name="nodes_featureids"
-            ),
-            nodes_hitrates=AttrFloat32s.maybe(nodes_hitrates, name="nodes_hitrates"),
-            nodes_hitrates_as_tensor=AttrTensor.maybe(
-                nodes_hitrates_as_tensor, name="nodes_hitrates_as_tensor"
-            ),
-            nodes_missing_value_tracks_true=AttrInt64s.maybe(
-                nodes_missing_value_tracks_true, name="nodes_missing_value_tracks_true"
-            ),
-            nodes_modes=AttrStrings.maybe(nodes_modes, name="nodes_modes"),
-            nodes_nodeids=AttrInt64s.maybe(nodes_nodeids, name="nodes_nodeids"),
-            nodes_treeids=AttrInt64s.maybe(nodes_treeids, name="nodes_treeids"),
-            nodes_truenodeids=AttrInt64s.maybe(
-                nodes_truenodeids, name="nodes_truenodeids"
-            ),
-            nodes_values=AttrFloat32s.maybe(nodes_values, name="nodes_values"),
-            nodes_values_as_tensor=AttrTensor.maybe(
-                nodes_values_as_tensor, name="nodes_values_as_tensor"
-            ),
-            post_transform=AttrString(post_transform, name="post_transform"),
-            target_ids=AttrInt64s.maybe(target_ids, name="target_ids"),
-            target_nodeids=AttrInt64s.maybe(target_nodeids, name="target_nodeids"),
-            target_treeids=AttrInt64s.maybe(target_treeids, name="target_treeids"),
-            target_weights=AttrFloat32s.maybe(target_weights, name="target_weights"),
-            target_weights_as_tensor=AttrTensor.maybe(
-                target_weights_as_tensor, name="target_weights_as_tensor"
-            ),
-        ),
-        _TreeEnsembleRegressor.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 def zip_map(
@@ -2007,19 +2159,27 @@ def zip_map(
     Type constraints:
      - T: `seq(map(int64,tensor(float)))`, `seq(map(string,tensor(float)))`
     """
-    return _ZipMap(
-        _ZipMap.Attributes(
-            classlabels_int64s=AttrInt64s.maybe(
-                classlabels_int64s, name="classlabels_int64s"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _ZipMap(
+            _ZipMap.Attributes(
+                classlabels_int64s=AttrInt64s.maybe(
+                    classlabels_int64s, name="classlabels_int64s"
+                ),
+                classlabels_strings=AttrStrings.maybe(
+                    classlabels_strings, name="classlabels_strings"
+                ),
             ),
-            classlabels_strings=AttrStrings.maybe(
-                classlabels_strings, name="classlabels_strings"
+            _ZipMap.Inputs(
+                X=unwrap_vars(X),
             ),
-        ),
-        _ZipMap.Inputs(
-            X=X,
-        ),
-    ).outputs.Z
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Z
+    )
+    return output_vars  # type: ignore
 
 
 _OPERATORS = {

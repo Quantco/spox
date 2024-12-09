@@ -22,7 +22,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._var import Var
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 from spox.opset.ai.onnx.ml.v3 import (
     _ArrayFeatureExtractor,
     _Binarizer,
@@ -79,11 +79,11 @@ class _LabelEncoder(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("LabelEncoder", "ai.onnx.ml", 4)
 
@@ -191,25 +191,33 @@ def label_encoder(
      - T1: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(string)`
     """
-    return _LabelEncoder(
-        _LabelEncoder.Attributes(
-            default_float=AttrFloat32(default_float, name="default_float"),
-            default_int64=AttrInt64(default_int64, name="default_int64"),
-            default_string=AttrString(default_string, name="default_string"),
-            default_tensor=AttrTensor.maybe(default_tensor, name="default_tensor"),
-            keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
-            keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
-            keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),
-            keys_tensor=AttrTensor.maybe(keys_tensor, name="keys_tensor"),
-            values_floats=AttrFloat32s.maybe(values_floats, name="values_floats"),
-            values_int64s=AttrInt64s.maybe(values_int64s, name="values_int64s"),
-            values_strings=AttrStrings.maybe(values_strings, name="values_strings"),
-            values_tensor=AttrTensor.maybe(values_tensor, name="values_tensor"),
-        ),
-        _LabelEncoder.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _LabelEncoder(
+            _LabelEncoder.Attributes(
+                default_float=AttrFloat32(default_float, name="default_float"),
+                default_int64=AttrInt64(default_int64, name="default_int64"),
+                default_string=AttrString(default_string, name="default_string"),
+                default_tensor=AttrTensor.maybe(default_tensor, name="default_tensor"),
+                keys_floats=AttrFloat32s.maybe(keys_floats, name="keys_floats"),
+                keys_int64s=AttrInt64s.maybe(keys_int64s, name="keys_int64s"),
+                keys_strings=AttrStrings.maybe(keys_strings, name="keys_strings"),
+                keys_tensor=AttrTensor.maybe(keys_tensor, name="keys_tensor"),
+                values_floats=AttrFloat32s.maybe(values_floats, name="values_floats"),
+                values_int64s=AttrInt64s.maybe(values_int64s, name="values_int64s"),
+                values_strings=AttrStrings.maybe(values_strings, name="values_strings"),
+                values_tensor=AttrTensor.maybe(values_tensor, name="values_tensor"),
+            ),
+            _LabelEncoder.Inputs(
+                X=unwrap_vars(X),
+            ),
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 _OPERATORS = {

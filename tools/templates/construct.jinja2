@@ -14,7 +14,12 @@ _{{ attr.name }}_subgraph: Graph = subgraph(
 )
     {% endif %}
 {% endfor %}
-return _{{ schema.name }}(
+input_prop_values = create_prop_dict(
+{% for param in schema.inputs
+        %}{{param.name}}={{param.name}}, {%
+endfor %}
+    )
+output_vars = _{{ schema.name }}(
     _{{ schema.name }}.Attributes(
 {% for attr in attributes %}
     {% if attr.constructor_type_hint.startswith("Optional[") and attr.constructor_type_hint.endswith("]") %}
@@ -31,13 +36,16 @@ return _{{ schema.name }}(
 {% endfor %}
     ), _{{ schema.name }}.Inputs(
 {% for param in schema.inputs
-        %}{{param.name}}={{param.name}}, {%
+        %}{{param.name}}=unwrap_vars({{param.name}}), {%
 endfor %}
     ), {%
 if schema.outputs and is_variadic(schema.outputs[-1])
     %}out_variadic={{ out_variadic_solution if out_variadic_solution else "{}_count".format(schema.outputs[-1].name) }}, {%
-endif %}).outputs{%
+endif %}
+    ).get_output_vars(input_prop_values=input_prop_values){%
 if schema.outputs | length <= 1
     %}.{{ schema.outputs[0].name }}{%
 else %}._unpack_to_any(){%
 endif %}
+
+return output_vars # type: ignore

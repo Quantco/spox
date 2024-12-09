@@ -13,6 +13,7 @@ from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
 from spox._value_prop import ORTValue, PropValue
+from spox._var import _VarInfo
 
 
 @pytest.fixture(
@@ -27,7 +28,7 @@ def value_prop_backend(request):
 
 def dummy_var(typ=None, value=None):
     """Function for creating a ``var`` without an operator but with a type and value."""
-    return Var(None, typ, value)  # type: ignore
+    return Var(_VarInfo(None, typ), value)  # type: ignore
 
 
 def assert_equal_value(var: Var, expected: ORTValue):
@@ -121,6 +122,15 @@ def test_empty_optional_has_no_element():
     )
 
 
+@pytest.mark.parametrize("min", [None, 2])
+def test_optional_clip(min):
+    min_var = None if min is None else op.const(min)
+    assert_equal_value(
+        op.clip(op.const([1, 2, 3]), min=min_var, max=op.const(3)),
+        np.clip([1, 2, 3], a_min=min, a_max=3),
+    )
+
+
 def test_sequence_empty():
     assert_equal_value(op.sequence_empty(dtype=np.float32), [])
 
@@ -130,6 +140,13 @@ def test_sequence_append():
     assert_equal_value(
         op.sequence_insert(op.sequence_insert(emp, op.const(2)), op.const(1)), [2, 1]
     )
+
+
+def test_variadict_max():
+    a = op.const([2, 1, 4])
+    b = op.const(3)
+    c = op.const([0])
+    assert_equal_value(op.max([a, b, c]), [3, 3, 4])
 
 
 def test_with_reconstruct():

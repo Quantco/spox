@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING, Callable
 
 import numpy as np
@@ -21,11 +22,11 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
-from ._value_prop import PropValueType
-from ._var import Var
+from ._value_prop import PropDict, PropValue, PropValueType
 
 if TYPE_CHECKING:
     from ._graph import Graph
+    from ._var import _VarInfo
 
 
 class StandardNode(Node):
@@ -53,7 +54,11 @@ class StandardNode(Node):
         return self.schema.min_output
 
     def to_singleton_onnx_model(
-        self, *, dummy_outputs: bool = True, with_dummy_subgraphs: bool = True
+        self,
+        *,
+        dummy_outputs: bool = True,
+        with_dummy_subgraphs: bool = True,
+        input_prop_values: PropDict,
     ) -> tuple[onnx.ModelProto, Scope]:
         """
         Build a singleton model consisting of just this StandardNode. Used for type inference.
@@ -63,10 +68,10 @@ class StandardNode(Node):
         # Prepare names for the values in scope of the node
         scope = Scope()
         scope.node[self] = "_this_"
-        for key, var in self.inputs.get_vars().items():
+        for key, var in self.inputs.get_var_infos().items():
             if var not in scope.var:
                 scope.var[var] = key
-        for key, var in self.outputs.get_vars().items():
+        for key, var in self.outputs.get_var_infos().items():
             if var not in scope.var:
                 scope.var[var] = key
         # We inject the evaluated attribute values here and then substitute back
@@ -88,25 +93,48 @@ class StandardNode(Node):
         # Input types
         input_info = [
             var.unwrap_type()._to_onnx_value_info(key)
-            for key, var in self.inputs.get_vars().items()
+            for key, var in self.inputs.get_var_infos().items()
         ]
 
         # Output types with placeholder empty TypeProto (or actual type if not using dummies)
-        def out_value_info(curr_key: str, curr_var: Var) -> onnx.ValueInfoProto:
-            if dummy_outputs or curr_var.type is None or not curr_var.type._is_concrete:
+        def out_value_info(
+            curr_key: str, curr_var_info: _VarInfo
+        ) -> onnx.ValueInfoProto:
+            if (
+                dummy_outputs
+                or curr_var_info.type is None
+                or not curr_var_info.type._is_concrete
+            ):
                 return onnx.helper.make_value_info(curr_key, onnx.TypeProto())
-            return curr_var.unwrap_type()._to_onnx_value_info(curr_key)
+            return curr_var_info.unwrap_type()._to_onnx_value_info(curr_key)
 
         output_info = [
-            out_value_info(key, var) for key, var in self.outputs.get_vars().items()
+            out_value_info(key, var)
+            for key, var in self.outputs.get_var_infos().items()
         ]
         # Initializers, passed in to allow partial data propagation
         #  - used so that operators like Reshape are aware of constant shapes
-        initializers = [
-            from_array(var._value.value, key)
-            for key, var in self.inputs.get_vars().items()
-            if var._value and isinstance(var._value.value, np.ndarray)
-        ]
+
+        initializers = []
+
+        for name, prop in input_prop_values.items():
+            if prop is None:
+                continue
+            elif not isinstance(prop, PropValue) or prop.value is None:
+                continue
+            elif isinstance(prop.type, Sequence):
+                assert isinstance(prop.value, Iterable)
+                initializers.extend(
+                    [
+                        from_array(elem.value, f"{name}_{i}")
+                        for i, elem in enumerate(prop.value)
+                        if elem is not None
+                    ]
+                )
+            else:
+                assert isinstance(prop.value, np.ndarray)
+                initializers.append(from_array(prop.value, name))
+
         #  Graph and model
         graph = onnx.helper.make_graph(
             [node_proto],
@@ -126,13 +154,13 @@ class StandardNode(Node):
         )
         return model, scope
 
-    def infer_output_types_onnx(self) -> dict[str, Type]:
+    def infer_output_types_onnx(self, input_prop_values: PropDict) -> dict[str, Type]:
         """Execute type & shape inference with ``onnx.shape_inference.infer_node_outputs``."""
         # Check that all (specified) inputs have known types, as otherwise we fail
-        if any(var.type is None for var in self.inputs.get_vars().values()):
+        if any(var.type is None for var in self.inputs.get_var_infos().values()):
             return {}
 
-        model, _ = self.to_singleton_onnx_model()
+        model, _ = self.to_singleton_onnx_model(input_prop_values=input_prop_values)
 
         # Attempt to do shape inference - if an error is caught, we extend the traceback a bit
         try:
@@ -156,26 +184,30 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
-    def propagate_values_onnx(self) -> dict[str, PropValueType]:
+    def propagate_values_onnx(
+        self, input_prop_values: PropDict
+    ) -> dict[str, PropValueType]:
         """Perform value propagation by evaluating singleton model.
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
         """
         # Cannot do propagation when some inputs were not propagated/inferred
         if any(
-            var.type is None or var._value is None
-            for var in self.inputs.get_vars().values()
+            var_info.type is None or input_prop_values.get(name, None) is None
+            for name, var_info in self.inputs.get_var_infos().items()
         ):
             return {}
         if next(iter(self.subgraphs), None) is not None:
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
-        model, scope = self.to_singleton_onnx_model(with_dummy_subgraphs=False)
+        model, scope = self.to_singleton_onnx_model(
+            with_dummy_subgraphs=False, input_prop_values=input_prop_values
+        )
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
-            scope.var[var]: wrap_feed(var._value)
-            for var in self.inputs.get_vars().values()
-            if var._value
+            scope.var[var_info]: wrap_feed(input_prop_values[name])
+            for name, var_info in self.inputs.get_var_infos().items()
+            if input_prop_values[name]
         }
 
         output_feed = run(model, input_feed)
@@ -188,12 +220,12 @@ class StandardNode(Node):
         }
         return {k: v for k, v in results.items() if k is not None}
 
-    def infer_output_types(self) -> dict[str, Type]:
-        return self.infer_output_types_onnx()
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
+        return self.infer_output_types_onnx(input_prop_values)
 
-    def propagate_values(self) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
         if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
-            return self.propagate_values_onnx()
+            return self.propagate_values_onnx(input_prop_values)
         return {}
 
 
