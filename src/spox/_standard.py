@@ -5,8 +5,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING, Callable
 
+import numpy as np
 import onnx
 import onnx.reference
 import onnx.shape_inference
@@ -121,16 +123,17 @@ class StandardNode(Node):
             elif not isinstance(prop, PropValue) or prop.value is None:
                 continue
             elif isinstance(prop.type, Sequence):
+                assert isinstance(prop.value, Iterable)
                 initializers.extend(
                     [
                         from_array(elem.value, f"{name}_{i}")
-                        for i, elem in enumerate(prop.value)  # type: ignore
+                        for i, elem in enumerate(prop.value)
                         if elem is not None
                     ]
                 )
             else:
-                initializers.append(from_array(prop.value, name))  # type: ignore
-                continue
+                assert isinstance(prop.value, np.ndarray)
+                initializers.append(from_array(prop.value, name))
 
         #  Graph and model
         graph = onnx.helper.make_graph(

@@ -218,9 +218,9 @@ def to_function(
         def alt_fun(*args: Var) -> Iterable[Union[Var, Optional[Var], Sequence[Var]]]:
             cls = init(*args)
             return [
-                Var(var_info)  # type: ignore
+                Var(var_info)
                 for var_info in cls(cls.Attributes(), cls.Inputs(*unwrap_vars(args)))
-                .outputs.get_fields()
+                .outputs.get_var_infos()
                 .values()
             ]
 
