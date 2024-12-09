@@ -28,6 +28,9 @@ from ._var import Var, _VarInfo, unwrap_vars
 if TYPE_CHECKING:
     from ._function import Function
 
+if TYPE_CHECKING:
+    from ._function import Function
+
 # This is a default used for internal operators that
 # require the default domain. The most common of these
 # is Introduce, which is effectively used in every graph.
