@@ -155,10 +155,7 @@ class BaseVarInfos(BaseFields):
 
 @dataclass
 class BaseInputs(BaseVarInfos):
-    def vars(self, prop_values: Optional[PropDict] = None) -> BaseVars:
-        if prop_values is None:
-            prop_values = {}
-
+    def vars(self, prop_values: PropDict) -> BaseVars:
         vars_dict: dict[str, Union[Var, Optional[Var], Sequence[Var]]] = {}
 
         for field in dataclasses.fields(self):
@@ -169,10 +166,7 @@ class BaseInputs(BaseVarInfos):
                 prop_value = cast(PropValue, prop_values.get(field.name, None))
                 vars_dict[field.name] = Var(field_value, prop_value)
 
-            elif (
-                field_type == VarFieldKind.OPTIONAL
-                and prop_values.get(field.name, None) is not None
-            ):
+            elif field_type == VarFieldKind.OPTIONAL:
                 prop_value = cast(PropValue, prop_values.get(field.name, None))
                 vars_dict[field.name] = Var(field_value, prop_value)
 

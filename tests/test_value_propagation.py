@@ -122,6 +122,15 @@ def test_empty_optional_has_no_element():
     )
 
 
+@pytest.mark.parametrize("min", [None, 2])
+def test_optional_clip(min):
+    min_var = min if min is None else op.const(min)
+    assert_equal_value(
+        op.clip(op.const([1, 2, 3]), min=min_var, max=op.const(3)),
+        np.clip([1, 2, 3], a_min=min, a_max=3),
+    )
+
+
 def test_sequence_empty():
     assert_equal_value(op.sequence_empty(dtype=np.float32), [])
 
