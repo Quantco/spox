@@ -12,7 +12,7 @@ Change log
 
 **Other changes**
 
-- Split `Var`-s internally to help the garbage collector in collecting propagated values.
+- Propagated values may now be garbage collected if their associated `Var` object goes out of scope. 
 
 0.13.0 (2024-12-06)
 -------------------
