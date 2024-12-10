@@ -25,6 +25,7 @@ The internal representation for runtime values.
 - None -> Optional, Nothing (no value)
 """
 PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
+PropDict = dict[str, PropValueType]
 ORTValue = Union[np.ndarray, list, None]
 RefValue = Union[np.ndarray, list, float, None]
 
@@ -42,7 +43,7 @@ _VALUE_PROP_BACKEND: ValuePropBackend = ValuePropBackend.REFERENCE
 
 @dataclass(frozen=True)
 class PropValue:
-    """Propagated value given to a Var, which has a run-time value known at compile-time.
+    """Propagated value given to a VarInfo, which has a run-time value known at compile-time.
 
     Wrapper for a few Python types which are used to represent values of ONNX types.
 

@@ -14,7 +14,7 @@ from spox._internal_op import INTERNAL_MIN_OPSET, _InternalNode
 from spox._node import OpType
 from spox._scope import Scope
 from spox._type_system import Type
-from spox._var import Var
+from spox._var import _VarInfo
 
 from . import _value_prop
 
@@ -86,11 +86,11 @@ class _Inline(_InternalNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        inputs: Sequence[Var]
+        inputs: Sequence[_VarInfo]
 
     @dataclass
     class Outputs(BaseOutputs):
-        outputs: Sequence[Var]
+        outputs: Sequence[_VarInfo]
 
     op_type = OpType("Inline", "spox.internal", 0)
 
@@ -111,7 +111,9 @@ class _Inline(_InternalNode):
             ("", INTERNAL_MIN_OPSET)
         }
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(
+        self, input_prop_values: _value_prop.PropDict
+    ) -> dict[str, Type]:
         # First, type check that we match the ModelProto type requirements
         for i, var in zip(self.graph.input, self.inputs.inputs):
             if var.type is not None and not (
@@ -127,16 +129,18 @@ class _Inline(_InternalNode):
             for k, o in enumerate(self.graph.output)
         }
 
-    def propagate_values(self) -> dict[str, _value_prop.PropValueType]:
+    def propagate_values(
+        self, input_prop_values: _value_prop.PropDict
+    ) -> dict[str, _value_prop.PropValueType]:
         if any(
-            var.type is None or var._value is None
-            for var in self.inputs.get_vars().values()
+            var_info.type is None or input_prop_values.get(var_info.name) is None
+            for var_info in self.model.graph.input
         ):
             return {}
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
-            i.name: wrap_feed(var._value)
-            for i, var in zip(self.model.graph.input, self.inputs.inputs)
+            i.name: wrap_feed(input_prop_values.get(i.name))
+            for i in self.model.graph.input
         }
         output_feed = run(self.model, input_feed)
         return {

@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
 
-from spox._var import Var
+from spox._var import _VarInfo
 
 # If `STORE_TRACEBACK` is `True` any node created will store a traceback for its point of creation.
 STORE_TRACEBACK = False
@@ -40,7 +40,7 @@ def show_construction_tracebacks(
         if -1 in found:
             del found[-1]
         for name, obj in reversed(found.values()):
-            if isinstance(obj, Var):
+            if isinstance(obj, _VarInfo):
                 if not obj:
                     continue
                 node = obj._op

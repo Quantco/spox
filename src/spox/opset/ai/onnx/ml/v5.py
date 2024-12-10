@@ -18,7 +18,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._var import Var
+from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
 from spox.opset.ai.onnx.ml.v4 import (
     _ArrayFeatureExtractor,
     _Binarizer,
@@ -77,11 +77,11 @@ class _TreeEnsemble(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        X: Var
+        X: _VarInfo
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Var
+        Y: _VarInfo
 
     op_type = OpType("TreeEnsemble", "ai.onnx.ml", 5)
 
@@ -224,35 +224,48 @@ def tree_ensemble(
     Type constraints:
      - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
-    return _TreeEnsemble(
-        _TreeEnsemble.Attributes(
-            aggregate_function=AttrInt64(aggregate_function, name="aggregate_function"),
-            leaf_targetids=AttrInt64s(leaf_targetids, name="leaf_targetids"),
-            leaf_weights=AttrTensor(leaf_weights, name="leaf_weights"),
-            membership_values=AttrTensor.maybe(
-                membership_values, name="membership_values"
+    input_prop_values = create_prop_dict(
+        X=X,
+    )
+    output_vars = (
+        _TreeEnsemble(
+            _TreeEnsemble.Attributes(
+                aggregate_function=AttrInt64(
+                    aggregate_function, name="aggregate_function"
+                ),
+                leaf_targetids=AttrInt64s(leaf_targetids, name="leaf_targetids"),
+                leaf_weights=AttrTensor(leaf_weights, name="leaf_weights"),
+                membership_values=AttrTensor.maybe(
+                    membership_values, name="membership_values"
+                ),
+                n_targets=AttrInt64.maybe(n_targets, name="n_targets"),
+                nodes_falseleafs=AttrInt64s(nodes_falseleafs, name="nodes_falseleafs"),
+                nodes_falsenodeids=AttrInt64s(
+                    nodes_falsenodeids, name="nodes_falsenodeids"
+                ),
+                nodes_featureids=AttrInt64s(nodes_featureids, name="nodes_featureids"),
+                nodes_hitrates=AttrTensor.maybe(nodes_hitrates, name="nodes_hitrates"),
+                nodes_missing_value_tracks_true=AttrInt64s.maybe(
+                    nodes_missing_value_tracks_true,
+                    name="nodes_missing_value_tracks_true",
+                ),
+                nodes_modes=AttrTensor(nodes_modes, name="nodes_modes"),
+                nodes_splits=AttrTensor(nodes_splits, name="nodes_splits"),
+                nodes_trueleafs=AttrInt64s(nodes_trueleafs, name="nodes_trueleafs"),
+                nodes_truenodeids=AttrInt64s(
+                    nodes_truenodeids, name="nodes_truenodeids"
+                ),
+                post_transform=AttrInt64(post_transform, name="post_transform"),
+                tree_roots=AttrInt64s(tree_roots, name="tree_roots"),
             ),
-            n_targets=AttrInt64.maybe(n_targets, name="n_targets"),
-            nodes_falseleafs=AttrInt64s(nodes_falseleafs, name="nodes_falseleafs"),
-            nodes_falsenodeids=AttrInt64s(
-                nodes_falsenodeids, name="nodes_falsenodeids"
+            _TreeEnsemble.Inputs(
+                X=unwrap_vars(X),
             ),
-            nodes_featureids=AttrInt64s(nodes_featureids, name="nodes_featureids"),
-            nodes_hitrates=AttrTensor.maybe(nodes_hitrates, name="nodes_hitrates"),
-            nodes_missing_value_tracks_true=AttrInt64s.maybe(
-                nodes_missing_value_tracks_true, name="nodes_missing_value_tracks_true"
-            ),
-            nodes_modes=AttrTensor(nodes_modes, name="nodes_modes"),
-            nodes_splits=AttrTensor(nodes_splits, name="nodes_splits"),
-            nodes_trueleafs=AttrInt64s(nodes_trueleafs, name="nodes_trueleafs"),
-            nodes_truenodeids=AttrInt64s(nodes_truenodeids, name="nodes_truenodeids"),
-            post_transform=AttrInt64(post_transform, name="post_transform"),
-            tree_roots=AttrInt64s(tree_roots, name="tree_roots"),
-        ),
-        _TreeEnsemble.Inputs(
-            X=X,
-        ),
-    ).outputs.Y
+        )
+        .get_output_vars(input_prop_values=input_prop_values)
+        .Y
+    )
+    return output_vars  # type: ignore
 
 
 _OPERATORS = {

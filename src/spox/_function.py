@@ -13,18 +13,19 @@ import numpy as np
 import onnx
 
 from . import _attributes
-from ._fields import BaseAttributes, BaseInputs, BaseOutputs
+from ._fields import BaseAttributes, BaseInputs, BaseOutputs, BaseVars
 from ._internal_op import _InternalNode
 from ._node import Node, OpType
 from ._type_system import Type
-from ._var import Var
+from ._var import Var, _VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
     from . import _graph
+    from ._value_prop import PropDict
 
 DEFAULT_FUNCTION_DOMAIN = "spox.default"
 
-ConstructorT = TypeVar("ConstructorT", bound=Callable[..., Iterable[Var]])
+ConstructorT = TypeVar("ConstructorT", bound=Callable[..., Iterable[_VarInfo]])
 
 
 class Function(_InternalNode):
@@ -45,14 +46,14 @@ class Function(_InternalNode):
     via the ``to_onnx_function`` method.
     """
 
-    func_args: dict[str, Var]
+    func_args: dict[str, _VarInfo]
     func_attrs: dict[str, _attributes.Attr]
     func_inputs: BaseInputs
     func_outputs: BaseOutputs
     func_graph: _graph.Graph
 
     def constructor(
-        self, attrs: dict[str, _attributes.Attr], inputs: BaseInputs
+        self, attrs: dict[str, _attributes.Attr], inputs: BaseVars
     ) -> BaseOutputs:
         """
         Abstract method for functions.
@@ -66,12 +67,14 @@ class Function(_InternalNode):
             f"Function {type(self).__name__} does not implement a constructor."
         )
 
-    def infer_output_types(self) -> dict[str, Type]:
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         from . import _graph
 
-        self.func_args = _graph.arguments_dict(
-            **{name: var.type for name, var in self.inputs.get_vars().items()}
+        func_args_var = _graph.arguments_dict(
+            **{name: var.type for name, var in self.inputs.get_var_infos().items()}
         )
+
+        self.func_args = unwrap_vars(func_args_var)
 
         self.func_attrs = {}
         for name, attr in self.attrs.get_fields().items():
@@ -82,14 +85,16 @@ class Function(_InternalNode):
             self.func_attrs[name] = attr
 
         self.func_inputs = self.Inputs(**self.func_args)
-        self.func_outputs = self.constructor(self.func_attrs, self.func_inputs)
-        self.func_graph = _graph.results(**self.func_outputs.get_vars()).with_arguments(
-            *self.func_args.values()
+        self.func_outputs = self.constructor(
+            self.func_attrs, self.func_inputs.into_vars(input_prop_values)
         )
+        self.func_graph = _graph.results(
+            **self.func_outputs.into_vars(input_prop_values).flatten_vars()
+        ).with_arguments(*func_args_var.values())
 
         return {
             name: var.type
-            for name, var in self.func_outputs.get_vars().items()
+            for name, var in self.func_outputs.get_var_infos().items()
             if var.type
         }
 
@@ -101,7 +106,7 @@ class Function(_InternalNode):
     def update_metadata(
         self,
         opset_req: set[tuple[str, int]],
-        initializers: dict[Var, np.ndarray],
+        initializers: dict[_VarInfo, np.ndarray],
         functions: list[Function],
     ) -> None:
         super().update_metadata(opset_req, initializers, functions)
@@ -142,12 +147,14 @@ def _make_function_cls(
     name: str,
 ) -> type[Function]:
     _FuncInputs = make_dataclass(
-        "_FuncInputs", ((f"in{i}", Var) for i in range(num_inputs)), bases=(BaseInputs,)
+        "_FuncInputs",
+        ((f"in{i}", _VarInfo) for i in range(num_inputs)),
+        bases=(BaseInputs,),
     )
 
     _FuncOutputs = make_dataclass(
         "_FuncOutputs",
-        ((f"out{i}", Var) for i in range(num_outputs)),
+        ((f"out{i}", _VarInfo) for i in range(num_outputs)),
         bases=(BaseOutputs,),
     )
 
@@ -160,8 +167,10 @@ def _make_function_cls(
         Outputs = _FuncOutputs
         op_type = OpType(name, domain, version)
 
-        def constructor(self, attrs: dict[str, _attributes.Attr], inputs: Any) -> Any:
-            return self.Outputs(*fun(*inputs.get_fields().values()))
+        def constructor(
+            self, attrs: dict[str, _attributes.Attr], inputs: BaseVars
+        ) -> BaseOutputs:
+            return self.Outputs(*unwrap_vars(fun(*inputs.flatten_vars().values())))
 
     return _Func
 
@@ -208,9 +217,12 @@ def to_function(
 
         def alt_fun(*args: Var) -> Iterable[Union[Var, Optional[Var], Sequence[Var]]]:
             cls = init(*args)
-            return list(
-                cls(cls.Attributes(), cls.Inputs(*args)).outputs.get_fields().values()
-            )
+            return [
+                Var(var_info)
+                for var_info in cls(cls.Attributes(), cls.Inputs(*unwrap_vars(args)))
+                .outputs.get_var_infos()
+                .values()
+            ]
 
         return alt_fun  # type: ignore
 

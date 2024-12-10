@@ -7,6 +7,13 @@
 Change log
 ==========
 
+0.14.0 (unreleased)
+-------------------
+
+**Other changes**
+
+- Propagated values may now be garbage collected if their associated `Var` object goes out of scope. 
+
 0.13.0 (2024-12-06)
 -------------------
 

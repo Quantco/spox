@@ -24,7 +24,7 @@ from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
 from ._utils import from_array
-from ._var import Var
+from ._var import Var, _VarInfo
 
 
 def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var]:
@@ -45,27 +45,35 @@ def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var
     for name, info in kwargs.items():
         attr_name = AttrString(value=name, name="dummy")
         if isinstance(info, Type):
-            result[name] = Argument(
-                Argument.Attributes(
-                    name=attr_name,
-                    type=AttrType(value=info, name="dummy"),
-                    default=None,
-                ),
-                BaseInputs(),
-            ).outputs.arg
+            result[name] = (
+                Argument(
+                    Argument.Attributes(
+                        name=attr_name,
+                        type=AttrType(value=info, name="dummy"),
+                        default=None,
+                    ),
+                    BaseInputs(),
+                )
+                .get_output_vars()
+                .arg
+            )
         elif isinstance(info, np.ndarray):
             ty = Tensor(info.dtype, info.shape)
-            result[name] = Argument(
-                Argument.Attributes(
-                    name=attr_name,
-                    type=AttrType(value=ty, name="dummy"),
-                    default=AttrTensor(value=info, name="dummy"),
-                ),
-                BaseInputs(),
-            ).outputs.arg
+            result[name] = (
+                Argument(
+                    Argument.Attributes(
+                        name=attr_name,
+                        type=AttrType(value=ty, name="dummy"),
+                        default=AttrTensor(value=info, name="dummy"),
+                    ),
+                    BaseInputs(),
+                )
+                .get_output_vars()
+                .arg
+            )
         else:
             raise TypeError(f"Cannot construct argument from {type(info)}.")
-    return result
+    return result  # type: ignore
 
 
 def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> tuple[Var, ...]:
@@ -112,10 +120,14 @@ def initializer(arr: np.ndarray) -> Var:
     -------
         Var which is always equal to the respective value provided by `arr`.
     """
-    return _Initializer(
-        _Initializer.Attributes(value=AttrTensor(value=arr, name="dummy")),
-        BaseInputs(),
-    ).outputs.arg
+    return (
+        _Initializer(
+            _Initializer.Attributes(value=AttrTensor(value=arr, name="dummy")),
+            BaseInputs(),
+        )
+        .get_output_vars()
+        .arg  # type: ignore
+    )
 
 
 @dataclass(frozen=True, eq=False)
@@ -224,7 +236,7 @@ class Graph:
         """Results (named) requested by this Graph (for building)."""
         return self._results
 
-    def get_arguments(self) -> dict[str, Var]:
+    def get_arguments(self) -> dict[str, _VarInfo]:
         """
         Get the effective named arguments (after build) of this Graph.
 
@@ -235,7 +247,7 @@ class Graph:
             for var in self._get_build_result().arguments
         }
 
-    def get_results(self) -> dict[str, Var]:
+    def get_results(self) -> dict[str, _VarInfo]:
         """
         Get the effective named results (after build) of this Graph.
 
@@ -498,4 +510,5 @@ def subgraph(types: Iterable[Type], fun: Callable[..., Iterable[Var]]) -> Graph:
     outs = fun(*ins)
     if not (isinstance(outs, Iterable) and all(isinstance(out, Var) for out in outs)):
         raise TypeError("Subgraph result must be an Iterable of Var.")
+
     return enum_results(*outs).with_arguments(*ins)._with_constructor(fun)

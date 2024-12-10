@@ -13,7 +13,7 @@ from ._internal_op import _InternalNode
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
-from ._var import Var
+from ._var import _VarInfo
 
 
 def adapt_node(
@@ -21,7 +21,7 @@ def adapt_node(
     proto: onnx.NodeProto,
     source_version: int,
     target_version: int,
-    var_names: dict[Var, str],
+    var_names: dict[_VarInfo, str],
 ) -> Optional[list[onnx.NodeProto]]:
     if source_version == target_version:
         return None
@@ -30,16 +30,16 @@ def adapt_node(
         # By using a dictionary we ensure that we only have a single
         # ValueInfo per (possibly repeated) input name.
         input_info = {
-            var_names[var]: var.unwrap_type()._to_onnx_value_info(
-                var_names[var], _traceback_name=f"adapt-input {key}"
+            var_names[var_info]: var_info.unwrap_type()._to_onnx_value_info(
+                var_names[var_info], _traceback_name=f"adapt-input {key}"
             )
-            for key, var in node.inputs.get_vars().items()
+            for key, var_info in node.inputs.get_var_infos().items()
         }
         output_info = [
-            var.unwrap_type()._to_onnx_value_info(
-                var_names[var], _traceback_name=f"adapt-output {key}"
+            var_info.unwrap_type()._to_onnx_value_info(
+                var_names[var_info], _traceback_name=f"adapt-output {key}"
             )
-            for key, var in node.outputs.get_vars().items()
+            for key, var_info in node.outputs.get_var_infos().items()
         ]
     except ValueError:
         return None
@@ -63,7 +63,7 @@ def adapt_inline(
     node: _Inline,
     protos: list[onnx.NodeProto],
     target_opsets: dict[str, int],
-    var_names: dict[Var, str],
+    var_names: dict[_VarInfo, str],
     node_name: str,
 ) -> list[onnx.NodeProto]:
     source_version = max({v for d, v in node.opset_req if d in ("", "ai.onnx")})
@@ -91,7 +91,7 @@ def adapt_best_effort(
     node: Node,
     protos: list[onnx.NodeProto],
     opsets: dict[str, int],
-    var_names: dict[Var, str],
+    var_names: dict[_VarInfo, str],
     node_names: dict[Node, str],
 ) -> Optional[list[onnx.NodeProto]]:
     if isinstance(node, _Inline):

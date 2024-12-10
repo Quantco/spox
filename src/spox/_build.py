@@ -23,7 +23,7 @@ from ._internal_op import Argument, intros
 from ._node import Node
 from ._scope import Scope
 from ._traverse import iterative_dfs
-from ._var import Var
+from ._var import Var, _VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -60,11 +60,11 @@ class BuildResult:
 
     scope: Scope
     nodes: dict[Node, tuple[onnx.NodeProto, ...]]
-    arguments: tuple[Var, ...]
-    results: tuple[Var, ...]
+    arguments: tuple[_VarInfo, ...]
+    results: tuple[_VarInfo, ...]
     opset_req: set[tuple[str, int]]
     functions: tuple[_function.Function, ...]
-    initializers: dict[Var, np.ndarray]
+    initializers: dict[_VarInfo, np.ndarray]
 
 
 class Builder:
@@ -95,7 +95,7 @@ class Builder:
         """
         Structure representing the tree of scopes, which are identified with the respective graphs.
 
-        This structure is the base of the least-enclosing-scope algorithm. Every value (Var), and hence
+        This structure is the base of the least-enclosing-scope algorithm. Every value (VarInfo), and hence
         the responsible Node - up to its (Python object) identity may appear in multiple scopes, but it should
         best-cased be computed only once in the ONNX graph, same as in the Python source code.
 
@@ -166,12 +166,12 @@ class Builder:
     graphs: set[Graph]
     graph_topo: list[Graph]
     # Arguments, results
-    arguments_of: dict[Graph, list[Var]]
-    results_of: dict[Graph, list[Var]]
+    arguments_of: dict[Graph, list[_VarInfo]]
+    results_of: dict[Graph, list[_VarInfo]]
     source_of: dict[Graph, Node]
     # Arguments found by traversal
-    all_arguments_in: dict[Graph, set[Var]]
-    claimed_arguments_in: dict[Graph, set[Var]]
+    all_arguments_in: dict[Graph, set[_VarInfo]]
+    claimed_arguments_in: dict[Graph, set[_VarInfo]]
     # Scopes
     scope_tree: ScopeTree
     scope_own: dict[Graph, list[Node]]
@@ -220,7 +220,7 @@ class Builder:
                 var._rename(key)
         return vars
 
-    def discover(self, graph: Graph) -> tuple[set[Var], set[Var]]:
+    def discover(self, graph: Graph) -> tuple[set[_VarInfo], set[_VarInfo]]:
         """
         Run the discovery step of the build process. Resolves arguments and results for the involved graphs.
         Finds the topological ordering between (sub)graphs and sets their owners (nodes of which they are attributes).
@@ -246,8 +246,8 @@ class Builder:
         # Create and set the source & results of this graph
         if not graph.requested_results:
             raise BuildError(f"Graph {graph} has no results.")
-        self.results_of[graph] = self.get_intro_results(
-            graph.requested_results, graph is self.main
+        self.results_of[graph] = unwrap_vars(
+            self.get_intro_results(graph.requested_results, graph is self.main)
         )
         self.source_of[graph] = self.results_of[graph][0]._op
 
@@ -291,8 +291,8 @@ class Builder:
             self.arguments_of[graph] = list(all_arguments - claimed_arguments)
         else:
             # If there is a request, we may not have found it by traversal if an argument was unused.
-            all_arguments |= set(graph.requested_arguments)
-            self.arguments_of[graph] = list(graph.requested_arguments)
+            all_arguments |= set(unwrap_vars(graph.requested_arguments))
+            self.arguments_of[graph] = unwrap_vars(graph.requested_arguments)
 
         if set(self.arguments_of[graph]) & claimed_arguments:
             raise BuildError(
@@ -434,7 +434,7 @@ class Builder:
         # A bunch of model metadata we're collecting
         opset_req: set[tuple[str, int]] = set()
         functions: list[_function.Function] = []
-        initializers: dict[Var, np.ndarray] = {}
+        initializers: dict[_VarInfo, np.ndarray] = {}
 
         # Add arguments to our scope
         for arg in self.arguments_of[graph]:

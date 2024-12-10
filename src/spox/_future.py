@@ -116,7 +116,9 @@ class _NumpyLikeOperatorDispatcher:
                     )
             # TODO: Handle more constant-target inconsistencies here?
 
-        def _promote_target(obj: Union[Var, np.generic, int, float]) -> Optional[Var]:
+        def _promote_target(
+            obj: Union[Var, np.generic, int, float],
+        ) -> Optional[Var]:
             if self.constant_promotion and isinstance(obj, (np.generic, int, float)):
                 return self.op.const(np.array(obj, dtype=target_type))
             elif isinstance(obj, Var):
