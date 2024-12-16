@@ -52,9 +52,6 @@ namespaces = false
 [tool.ruff.lint]
 # Enable the isort rules.
 extend-select = ["I", "UP"]
-ignore = [
-    "UP007", # https://docs.astral.sh/ruff/rules/non-pep604-annotation/
-]
 
 [tool.ruff.lint.isort]
 known-first-party = ["spox"]

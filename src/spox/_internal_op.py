@@ -11,7 +11,7 @@ from __future__ import annotations
 from abc import ABC
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
 import onnx
@@ -78,8 +78,8 @@ class Argument(_InternalNode):
     @dataclass
     class Attributes(BaseAttributes):
         type: AttrType
-        name: Optional[AttrString] = None
-        default: Optional[AttrTensor] = None
+        name: AttrString | None = None
+        default: AttrTensor | None = None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -115,8 +115,8 @@ class Argument(_InternalNode):
     def to_onnx(
         self,
         scope: Scope,
-        doc_string: Optional[str] = None,
-        build_subgraph: Optional[Callable] = None,
+        doc_string: str | None = None,
+        build_subgraph: Callable | None = None,
     ) -> list[onnx.NodeProto]:
         return []
 
@@ -158,8 +158,8 @@ class _Initializer(_InternalNode):
     def to_onnx(
         self,
         scope: Scope,
-        doc_string: Optional[str] = None,
-        build_subgraph: Optional[Callable] = None,
+        doc_string: str | None = None,
+        build_subgraph: Callable | None = None,
     ) -> list[onnx.NodeProto]:
         # Initializers are added via update_metadata and don't affect the nodes proto list
         return []
@@ -200,8 +200,8 @@ class _Introduce(_InternalNode):
     def to_onnx(
         self,
         scope: Scope,
-        doc_string: Optional[str] = None,
-        build_subgraph: Optional[Callable] = None,
+        doc_string: str | None = None,
+        build_subgraph: Callable | None = None,
     ) -> list[onnx.NodeProto]:
         assert len(self.inputs.inputs) == len(self.outputs.outputs)
         # Just create a renaming identity from what we forwarded into our actual output

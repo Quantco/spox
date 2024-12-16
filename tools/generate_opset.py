@@ -1,13 +1,14 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import re
 import subprocess
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Optional, Union
 
 import jinja2
 import onnx
@@ -118,13 +119,13 @@ class Attribute:
     # The name of the attribute used as argument and member name
     name: str
     # Default value used in the constructor function
-    constructor_default: Optional[str]
+    constructor_default: str | None
     # Type hint used in the constructor function.  May be wrapped in `Optional`.
     constructor_type_hint: str
     # Member type without a potential ``Optional`` wrapper
     _member_type: str
     # Python expression for generating the argument types for this subgraph
-    subgraph_solution: Optional[str] = None
+    subgraph_solution: str | None = None
     # Mark whether generating extra constructor arguments caused by this should raise
     allow_extra: bool = False
 
@@ -193,7 +194,7 @@ def get_attributes(
 
 def _get_default_value(
     attr: onnx.defs.OpSchema.Attribute, attr_type_overrides: dict[str, tuple[str, str]]
-) -> Optional[str]:
+) -> str | None:
     """Get default value if any as a string ready to be used in a template.
 
     This function has a special handling with respect to ``attr_type_overrides``.
@@ -294,7 +295,7 @@ def _pandoc_gfm_to_rst(*args: str) -> tuple[str, ...]:
         if not (arg in _PANDOC_GFM_TO_RST_CACHE or not arg)
     ]
     results = _pandoc_gfm_to_rst_run(*[args[i] for i in valid])
-    sub: list[Optional[str]] = [None] * len(args)
+    sub: list[str | None] = [None] * len(args)
     for i, result in zip(valid, results):
         sub[i] = result
     for i, arg in enumerate(args):
@@ -312,7 +313,7 @@ def pandoc_gfm_to_rst(doc: str) -> str:
     return result
 
 
-def format_github_markdown(doc: str, *, to_batch: Optional[list[str]] = None) -> str:
+def format_github_markdown(doc: str, *, to_batch: list[str] | None = None) -> str:
     """Jinja filter. Makes some attempt at fixing "Markdown" into RST."""
     # Sometimes Tensor<T> is used in the docs (~17 instances at 1.13)
     # and is treated as invalid HTML tags by pandoc.
@@ -367,7 +368,7 @@ def write_schemas_code(
     value_propagation: dict[str, str],
     out_variadic_solutions: dict[str, str],
     subgraphs_solutions: dict[str, dict[str, str]],
-    attr_type_overrides: list[tuple[Optional[str], str, tuple[str, str]]],
+    attr_type_overrides: list[tuple[str | None, str, tuple[str, str]]],
     allow_extra_constructor_arguments: set[str],
     inherited_schemas: dict[onnx.defs.OpSchema, str],
     extras: Sequence[str],
@@ -514,7 +515,7 @@ def write_schemas_code(
 
 
 def run_pre_commit_hooks(
-    filenames: Union[str, Iterable[str]],
+    filenames: str | Iterable[str],
 ) -> subprocess.CompletedProcess:
     """
     Calls repo pre-commit hooks for the given ``filenames``.
@@ -532,16 +533,14 @@ def run_pre_commit_hooks(
 
 def main(
     domain: str,
-    version: Optional[int] = None,
-    type_inference: Optional[dict[str, str]] = None,
-    value_propagation: Optional[dict[str, str]] = None,
-    out_variadic_solutions: Optional[dict[str, str]] = None,
-    subgraphs_solutions: Optional[dict[str, dict[str, str]]] = None,
-    attr_type_overrides: Optional[
-        list[tuple[Optional[str], str, tuple[str, str]]]
-    ] = None,
+    version: int | None = None,
+    type_inference: dict[str, str] | None = None,
+    value_propagation: dict[str, str] | None = None,
+    out_variadic_solutions: dict[str, str] | None = None,
+    subgraphs_solutions: dict[str, dict[str, str]] | None = None,
+    attr_type_overrides: list[tuple[str | None, str, tuple[str, str]]] | None = None,
     allow_extra_constructor_arguments: Iterable[str] = (),
-    inherited_schemas: Optional[dict[onnx.defs.OpSchema, str]] = None,
+    inherited_schemas: dict[onnx.defs.OpSchema, str] | None = None,
     extras: Sequence[str] = (),
     target: str = "src/spox/opset/",
     pre_commit_hooks: bool = True,

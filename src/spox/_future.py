@@ -3,11 +3,13 @@
 
 """Module containing experimental Spox features that may be standard in the future."""
 
+from __future__ import annotations
+
 import warnings
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from types import ModuleType
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -83,13 +85,13 @@ class _NumpyLikeOperatorDispatcher:
         self.constant_promotion = constant_promotion
 
     def _promote(
-        self, *args: Union[Var, np.generic, int, float], to_floating: bool = False
-    ) -> Iterable[Optional[Var]]:
+        self, *args: Var | np.generic | int | float, to_floating: bool = False
+    ) -> Iterable[Var | None]:
         """
         Apply constant promotion and type promotion to given parameters,
         creating constants and/or casting.
         """
-        targets: list[Union[np.dtype, np.generic, int, float]] = [
+        targets: list[np.dtype | np.generic | int | float] = [
             x.type.dtype if isinstance(x, Var) and isinstance(x.type, Tensor) else x  # type: ignore
             for x in args
         ]
@@ -117,8 +119,8 @@ class _NumpyLikeOperatorDispatcher:
             # TODO: Handle more constant-target inconsistencies here?
 
         def _promote_target(
-            obj: Union[Var, np.generic, int, float],
-        ) -> Optional[Var]:
+            obj: Var | np.generic | int | float,
+        ) -> Var | None:
             if self.constant_promotion and isinstance(obj, (np.generic, int, float)):
                 return self.op.const(np.array(obj, dtype=target_type))
             elif isinstance(obj, Var):

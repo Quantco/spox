@@ -3,9 +3,11 @@
 
 """Exposes information related to reference ONNX operator schemas, used by StandardOpNode."""
 
+from __future__ import annotations
+
 import itertools
 from collections.abc import Iterable
-from typing import Any, Callable, Optional, Protocol, TypeVar
+from typing import Any, Callable, Protocol, TypeVar
 
 from onnx.defs import OpSchema, get_all_schemas_with_history
 
@@ -30,8 +32,8 @@ def _key_groups(
 
 
 def _current_schema(
-    schemas: Iterable[OpSchema], version: Optional[int] = None
-) -> Optional[OpSchema]:
+    schemas: Iterable[OpSchema], version: int | None = None
+) -> OpSchema | None:
     """
     Find the schema for the current ``version`` from the list (the latest existing version).
     If ``version`` is None (or left to default), the newest of the schemas is returned.

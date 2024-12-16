@@ -1,7 +1,7 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Optional
+from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
@@ -42,7 +42,7 @@ def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
         raise TypeError(err_msg)
 
 
-def from_array(arr: np.ndarray, name: Optional[str] = None) -> TensorProto:
+def from_array(arr: np.ndarray, name: str | None = None) -> TensorProto:
     """Convert the given ``numpy.array`` into an ``onnx.TensorProto``.
 
     As it may be useful to name the TensorProto (e.g. in

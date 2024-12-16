@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from collections.abc import Hashable
-from typing import Generic, Optional, TypeVar, Union, overload
+from typing import Generic, TypeVar, overload
 
 from ._node import Node
 from ._var import _VarInfo
@@ -30,14 +30,14 @@ class ScopeSpace(Generic[H]):
     of_name: dict[str, H]
     reserved: set[str]
     base_name_counters: dict[str, int]
-    parent: Optional[ScopeSpace[H]]
+    parent: ScopeSpace[H] | None
 
     def __init__(
         self,
-        name_of: Optional[dict[H, str]] = None,
-        of_name: Optional[dict[str, H]] = None,
-        reserved: Optional[set[str]] = None,
-        parent: Optional[ScopeSpace[H]] = None,
+        name_of: dict[H, str] | None = None,
+        of_name: dict[str, H] | None = None,
+        reserved: set[str] | None = None,
+        parent: ScopeSpace[H] | None = None,
     ):
         """
         Parameters
@@ -63,7 +63,7 @@ class ScopeSpace(Generic[H]):
             parent.base_name_counters if parent is not None else dict()
         )
 
-    def __contains__(self, item: Union[str, H]) -> bool:
+    def __contains__(self, item: str | H) -> bool:
         """Checks if a given name or object is declared in this (or outer) namespace."""
         return (
             (self.parent is not None and item in self.parent)
@@ -78,7 +78,7 @@ class ScopeSpace(Generic[H]):
     @overload
     def __getitem__(self, item: str) -> H: ...
 
-    def __getitem__(self, item: Union[str, H]) -> Union[str, H]:
+    def __getitem__(self, item: str | H) -> str | H:
         """Access the name of an object or an object with a given name in this (or outer) namespace."""
         if self.parent is not None and item in self.parent:
             return self.parent[item]
@@ -93,7 +93,7 @@ class ScopeSpace(Generic[H]):
     @overload
     def __setitem__(self, key: H, value: str) -> None: ...
 
-    def __setitem__(self, _key: Union[str, H], _value: Union[H, str]) -> None:
+    def __setitem__(self, _key: str | H, _value: H | str) -> None:
         """Set the name of an object in exactly this namespace. Both ``[name] = obj`` and ``[obj] = name`` work."""
         if isinstance(_value, str):
             _key, _value = _value, _key
@@ -115,7 +115,7 @@ class ScopeSpace(Generic[H]):
         self.of_name[key] = value
         self.name_of[value] = key
 
-    def __delitem__(self, item: Union[str, H]) -> None:
+    def __delitem__(self, item: str | H) -> None:
         """Delete a both the name and object from exactly this namespace."""
         if isinstance(item, str):
             key, value = item, self.of_name[item]
@@ -162,9 +162,9 @@ class Scope:
 
     def __init__(
         self,
-        sub_var: Optional[ScopeSpace[_VarInfo]] = None,
-        sub_node: Optional[ScopeSpace[Node]] = None,
-        parent: Optional[Scope] = None,
+        sub_var: ScopeSpace[_VarInfo] | None = None,
+        sub_node: ScopeSpace[Node] | None = None,
+        parent: Scope | None = None,
     ):
         self.var = sub_var if sub_var is not None else ScopeSpace()
         self.node = sub_node if sub_node is not None else ScopeSpace()
@@ -177,9 +177,7 @@ class Scope:
     @classmethod
     def of(
         cls,
-        *what: Union[
-            tuple[str, Union[_VarInfo, Node]], tuple[Union[_VarInfo, Node], str]
-        ],
+        *what: tuple[str, _VarInfo | Node] | tuple[_VarInfo | Node, str],
     ) -> Scope:
         """Convenience constructor for filling a Scope with known names."""
         scope = cls()

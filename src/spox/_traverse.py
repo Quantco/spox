@@ -1,8 +1,10 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Iterator
-from typing import Callable, Optional, TypeVar
+from typing import Callable, TypeVar
 
 V = TypeVar("V")
 
@@ -10,7 +12,7 @@ V = TypeVar("V")
 def iterative_dfs(
     sources: Iterable[V],
     adj: Callable[[V], Iterable[V]],
-    post_callback: Optional[Callable[[V], None]] = None,
+    post_callback: Callable[[V], None] | None = None,
     raise_on_cycle: bool = True,
 ) -> list[V]:
     """

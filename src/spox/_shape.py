@@ -96,7 +96,7 @@ class Unknown(Natural):
 
     label: str = ""
 
-    def to_simple(self) -> Union[str, None]:
+    def to_simple(self) -> str | None:
         return None if not self.label else self.label
 
     def __le__(self, other: Natural) -> bool:
@@ -127,7 +127,7 @@ ShapeT = TypeVar("ShapeT", bound="Shape")
 class Shape:
     """Type representing a static Tensor shape."""
 
-    dims: Optional[tuple[Natural, ...]]
+    dims: tuple[Natural, ...] | None
 
     def __bool__(self) -> bool:
         return self.dims is not None
@@ -140,7 +140,7 @@ class Shape:
         )
 
     @classmethod
-    def from_onnx(cls: type[ShapeT], proto: Optional[onnx.TensorShapeProto]) -> ShapeT:
+    def from_onnx(cls: type[ShapeT], proto: onnx.TensorShapeProto | None) -> ShapeT:
         """Translate into a Shape from ONNX shape."""
         return (
             cls(tuple(Natural.from_onnx(dim) for dim in proto.dim))
@@ -154,7 +154,7 @@ class Shape:
             tuple(v.to_simple() for v in self.dims) if self.dims is not None else None
         )
 
-    def to_onnx(self) -> Optional[onnx.TensorShapeProto]:
+    def to_onnx(self) -> onnx.TensorShapeProto | None:
         """Translate into the ONNX representation."""
         if self.dims is None:
             return None
@@ -165,7 +165,7 @@ class Shape:
         return proto
 
     @property
-    def maybe_rank(self) -> Optional[int]:
+    def maybe_rank(self) -> int | None:
         """Get the rank of this Shape, or None if it is unknown."""
         return len(self.dims) if self.dims is not None else None
 
@@ -176,7 +176,7 @@ class Shape:
             raise ShapeError(f"Rank of {self} is unknown.")
         return r
 
-    def __getitem__(self, item: Union[slice, int]) -> Union[Shape, Natural]:
+    def __getitem__(self, item: slice | int) -> Shape | Natural:
         """Indexing the dimensions, also provides iteration."""
         if self.dims is None:
             raise ShapeError(f"Cannot index unknown {self}.")
@@ -193,7 +193,7 @@ class Shape:
         else:
             return True
 
-    def broadcast(self, other: Union[Shape, SimpleShape]) -> Shape:
+    def broadcast(self, other: Shape | SimpleShape) -> Shape:
         """Return the result of shape broadcasting on ``self`` and ``other``."""
         if not isinstance(other, Shape):
             other = Shape.from_simple(other)

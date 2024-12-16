@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import typing
 from collections.abc import Iterable, Sequence
-from typing import Any, Callable, ClassVar, Optional, TypeVar, Union, overload
+from typing import Any, Callable, ClassVar, TypeVar, overload
 
 import numpy as np
 
@@ -32,14 +32,14 @@ class _VarInfo:
     If a ``VarInfo`` or any of its fields are modified, the behaviour is undefined and the produced graph may be invalid.
     """
 
-    type: Optional[_type_system.Type]
+    type: _type_system.Type | None
     _op: Node
-    _name: Optional[str]
+    _name: str | None
 
     def __init__(
         self,
         op: Node,
-        type_: Optional[_type_system.Type],
+        type_: _type_system.Type | None,
     ):
         """The initializer of ``VarInfo`` is protected. Use operator constructors to construct them instead."""
         if type_ is not None and not isinstance(type_, _type_system.Type):
@@ -49,12 +49,12 @@ class _VarInfo:
         self._op = op
         self._name = None
 
-    def _rename(self, name: Optional[str]) -> None:
+    def _rename(self, name: str | None) -> None:
         """Mutates the internal state of the VarInfo, overriding its name as given."""
         self._name = name
 
     @property
-    def _which_output(self) -> Optional[str]:
+    def _which_output(self) -> str | None:
         """Return the name of the output field that this var is stored in under ``self._op``."""
         if self._op is None:
             return None
@@ -140,14 +140,14 @@ class Var:
     """
 
     _var_info: _VarInfo
-    _value: Optional[_value_prop.PropValue]
+    _value: _value_prop.PropValue | None
 
     _operator_dispatcher: ClassVar[Any] = NotImplementedOperatorDispatcher()
 
     def __init__(
         self,
         var_info: _VarInfo,
-        value: Optional[_value_prop.PropValue] = None,
+        value: _value_prop.PropValue | None = None,
     ):
         """The initializer of ``Var`` is protected. Use operator constructors to construct them instead."""
         if value is not None and not isinstance(value, _value_prop.PropValue):
@@ -212,18 +212,18 @@ class Var:
         return self._var_info._op
 
     @property
-    def _name(self) -> Optional[str]:
+    def _name(self) -> str | None:
         return self._var_info._name
 
-    def _rename(self, name: Optional[str]) -> None:
+    def _rename(self, name: str | None) -> None:
         self._var_info._rename(name)
 
     @property
-    def _which_output(self) -> Optional[str]:
+    def _which_output(self) -> str | None:
         return self._var_info._which_output
 
     @property
-    def type(self) -> Optional[_type_system.Type]:
+    def type(self) -> _type_system.Type | None:
         return self._var_info.type
 
     def __copy__(self) -> Var:
@@ -298,7 +298,7 @@ def wrap_vars(var_info: _VarInfo) -> Var: ...
 
 
 @overload
-def wrap_vars(var_info: Optional[_VarInfo]) -> Optional[Var]: ...
+def wrap_vars(var_info: _VarInfo | None) -> Var | None: ...
 
 
 @overload
@@ -327,7 +327,7 @@ def unwrap_vars(var: Var) -> _VarInfo: ...
 
 
 @overload
-def unwrap_vars(var: Optional[Var]) -> Optional[_VarInfo]: ...
+def unwrap_vars(var: Var | None) -> _VarInfo | None: ...
 
 
 @overload
@@ -352,7 +352,7 @@ def unwrap_vars(var):  # type: ignore
 
 
 def result_type(
-    *types: Union[_VarInfo, np.generic, int, float],
+    *types: _VarInfo | np.generic | int | float,
 ) -> type[np.generic]:
     """Promote type for all given element types/values using ``np.result_type``."""
     return np.dtype(
@@ -368,7 +368,7 @@ def result_type(
 
 
 def create_prop_dict(
-    **kwargs: Union[Var, Sequence[Var], Optional[Var]],
+    **kwargs: Var | Sequence[Var] | Var | None,
 ) -> _value_prop.PropDict:
     from ._fields import BaseVars
 

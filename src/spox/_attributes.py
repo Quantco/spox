@@ -1,10 +1,12 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import abc
 from abc import ABC
 from collections.abc import Iterable
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 import numpy as np
 import numpy.typing as npt
@@ -28,25 +30,25 @@ AttrIterableT = TypeVar("AttrIterableT", bound="_AttrIterable")
 
 
 class Attr(ABC, Generic[T]):
-    _value: Union[T, "_Ref[T]"]
+    _value: T | _Ref[T]
     _name: str
-    _cached_onnx: Optional[AttributeProto]
+    _cached_onnx: AttributeProto | None
 
-    def __init__(self, value: Union[T, "_Ref[T]"], name: str):
+    def __init__(self, value: T | _Ref[T], name: str):
         self._value = value
         self._name = name
         self._cached_onnx = None
 
         self._validate()
 
-    def deref(self) -> "Attr":
+    def deref(self) -> Attr:
         if isinstance(self._value, _Ref):
             return type(self)(self.value, self._name)
         else:
             return self
 
     @classmethod
-    def maybe(cls: type[AttrT], value: Optional[T], name: str) -> Optional[AttrT]:
+    def maybe(cls: type[AttrT], value: T | None, name: str) -> AttrT | None:
         return cls(value, name) if value is not None else None
 
     @property
@@ -110,7 +112,7 @@ class _Ref(Generic[T]):
         self._outer_name = outer_name
         self._name = name
 
-    def copy(self) -> "_Ref[T]":
+    def copy(self) -> _Ref[T]:
         return self
 
     def _to_onnx(self) -> AttributeProto:
@@ -146,7 +148,7 @@ class AttrString(Attr[str]):
 class AttrTensor(Attr[np.ndarray]):
     _attribute_proto_type = AttributeProto.TENSOR
 
-    def __init__(self, value: Union[np.ndarray, _Ref[np.ndarray]], name: str):
+    def __init__(self, value: np.ndarray | _Ref[np.ndarray], name: str):
         super().__init__(value.copy(), name)
 
     def _to_onnx_deref(self) -> AttributeProto:
@@ -202,7 +204,7 @@ class AttrGraph(Attr[Any]):
 
 
 class _AttrIterable(Attr[tuple[S, ...]], ABC):
-    def __init__(self, value: Union[Iterable[S], _Ref[tuple[S, ...]]], name: str):
+    def __init__(self, value: Iterable[S] | _Ref[tuple[S, ...]], name: str):
         super().__init__(
             value=value if isinstance(value, _Ref) else tuple(value), name=name
         )
@@ -210,9 +212,9 @@ class _AttrIterable(Attr[tuple[S, ...]], ABC):
     @classmethod
     def maybe(
         cls: type[AttrIterableT],
-        value: Optional[Iterable[S]],
+        value: Iterable[S] | None,
         name: str,
-    ) -> Optional[AttrIterableT]:
+    ) -> AttrIterableT | None:
         return cls(tuple(value), name) if value is not None else None
 
     def _to_onnx_deref(self) -> AttributeProto:

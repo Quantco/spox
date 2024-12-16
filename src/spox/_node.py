@@ -12,7 +12,7 @@ import warnings
 from abc import ABC
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar
 
 import numpy as np
 import onnx
@@ -94,17 +94,17 @@ class Node(ABC):
     inputs: BaseInputs
     outputs: BaseOutputs
 
-    out_variadic: Optional[int]
-    _traceback: Union[list[str], None]
+    out_variadic: int | None
+    _traceback: list[str] | None
     _validate: bool
 
     def __init__(
         self,
-        attrs: Optional[BaseAttributes] = None,
-        inputs: Optional[BaseInputs] = None,
-        outputs: Optional[BaseOutputs] = None,
+        attrs: BaseAttributes | None = None,
+        inputs: BaseInputs | None = None,
+        outputs: BaseOutputs | None = None,
         *,
-        out_variadic: Optional[int] = None,
+        out_variadic: int | None = None,
         infer_types: bool = True,
         validate: bool = True,
         **kwargs: Any,
@@ -234,7 +234,7 @@ class Node(ABC):
         return {}
 
     def inference(
-        self, input_prop_values: Optional[PropDict] = None, infer_types: bool = True
+        self, input_prop_values: PropDict | None = None, infer_types: bool = True
     ) -> None:
         if input_prop_values is None:
             input_prop_values = {}
@@ -254,7 +254,7 @@ class Node(ABC):
                 var.type = out_types.get(key)
 
     def get_output_vars(
-        self, input_prop_values: Optional[PropDict] = None, infer_types: bool = True
+        self, input_prop_values: PropDict | None = None, infer_types: bool = True
     ) -> BaseVars:
         if input_prop_values is None:
             input_prop_values = {}
@@ -298,7 +298,7 @@ class Node(ABC):
                     stacklevel=4,
                 )
 
-    def _check_concrete_type(self, value_type: Optional[Type]) -> Optional[str]:
+    def _check_concrete_type(self, value_type: Type | None) -> str | None:
         if value_type is None:
             return "type is None"
         try:
@@ -307,7 +307,7 @@ class Node(ABC):
             return f"{type(e).__name__}: {str(e)}"
         return None
 
-    def _list_types(self, source: BaseVarInfos) -> Iterator[tuple[str, Optional[Type]]]:
+    def _list_types(self, source: BaseVarInfos) -> Iterator[tuple[str, Type | None]]:
         return ((key, var.type) for key, var in source.get_var_infos().items())
 
     def _init_output_vars(self) -> BaseOutputs:
@@ -325,7 +325,7 @@ class Node(ABC):
             (variadic,) = variadics
         else:
             variadic = None
-        outputs: dict[str, Union[_VarInfo, Sequence[_VarInfo]]] = {
+        outputs: dict[str, _VarInfo | Sequence[_VarInfo]] = {
             field.name: _VarInfo(self, None)
             for field in dataclasses.fields(self.Outputs)
             if field.name != variadic
@@ -367,10 +367,9 @@ class Node(ABC):
     def to_onnx(
         self,
         scope: Scope,
-        doc_string: Optional[str] = None,
-        build_subgraph: Optional[
-            typing.Callable[[Node, str, Graph], onnx.GraphProto]
-        ] = None,
+        doc_string: str | None = None,
+        build_subgraph: typing.Callable[[Node, str, Graph], onnx.GraphProto]
+        | None = None,
     ) -> list[onnx.NodeProto]:
         """Translates self into an ONNX NodeProto."""
         assert self.op_type.identifier
