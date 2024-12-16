@@ -10,7 +10,6 @@ from typing import (
     Any,
     Callable,
     Generic,
-    Optional,
     TypeVar,
 )
 
@@ -34,9 +33,9 @@ T = TypeVar("T")
 class Cached(Generic[T]):
     """A generic cached-value type, for which the ``.value`` property raises if it was not previously set."""
 
-    _value: Optional[T]
+    _value: T | None
 
-    def __init__(self, value: Optional[T] = None):
+    def __init__(self, value: T | None = None):
         self._value = value
 
     @property

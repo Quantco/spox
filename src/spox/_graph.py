@@ -9,7 +9,7 @@ import dataclasses
 import itertools
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
-from typing import Callable, Literal, Optional, Union
+from typing import Callable, Literal
 
 import numpy as np
 import onnx
@@ -27,7 +27,7 @@ from ._utils import from_array
 from ._var import Var, _VarInfo
 
 
-def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var]:
+def arguments_dict(**kwargs: Type | np.ndarray | None) -> dict[str, Var]:
     """
     Parameters
     ----------
@@ -76,14 +76,12 @@ def arguments_dict(**kwargs: Optional[Union[Type, np.ndarray]]) -> dict[str, Var
     return result  # type: ignore
 
 
-def arguments(**kwargs: Optional[Union[Type, np.ndarray]]) -> tuple[Var, ...]:
+def arguments(**kwargs: Type | np.ndarray | None) -> tuple[Var, ...]:
     """This function is a shorthand for a respective call to ``arguments_dict``, unpacking the Vars from the dict."""
     return tuple(arguments_dict(**kwargs).values())
 
 
-def enum_arguments(
-    *infos: Union[Type, np.ndarray], prefix: str = "in"
-) -> tuple[Var, ...]:
+def enum_arguments(*infos: Type | np.ndarray, prefix: str = "in") -> tuple[Var, ...]:
     """
     Convenience function for creating an enumeration of arguments, prefixed with ``prefix``.
     Calls ``arguments`` internally.
@@ -148,11 +146,11 @@ class Graph:
     """
 
     _results: dict[str, Var]
-    _name: Optional[str] = None
-    _doc_string: Optional[str] = None
-    _arguments: Optional[tuple[Var, ...]] = None
-    _extra_opset_req: Optional[set[tuple[str, int]]] = None
-    _constructor: Optional[Callable[..., Iterable[Var]]] = None
+    _name: str | None = None
+    _doc_string: str | None = None
+    _arguments: tuple[Var, ...] | None = None
+    _extra_opset_req: set[tuple[str, int]] | None = None
+    _constructor: Callable[..., Iterable[Var]] | None = None
     _build_result: _build.Cached[_build.BuildResult] = dataclasses.field(
         default_factory=_build.Cached
     )
@@ -227,7 +225,7 @@ class Graph:
         return replace(self, _build_result=_build.Cached(what))
 
     @property
-    def requested_arguments(self) -> Optional[Iterable[Var]]:
+    def requested_arguments(self) -> Iterable[Var] | None:
         """Arguments requested by this Graph (for building) - ``None`` if unspecified."""
         return self._arguments
 
@@ -375,7 +373,7 @@ class Graph:
         producer_name: str = "spox",
         model_doc_string: str = "",
         infer_shapes: bool = False,
-        check_model: Union[Literal[0], Literal[1], Literal[2]] = 1,
+        check_model: Literal[0] | Literal[1] | Literal[2] = 1,
         ir_version: int = 8,
         concrete: bool = True,
     ) -> onnx.ModelProto:

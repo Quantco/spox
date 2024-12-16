@@ -3,7 +3,6 @@
 
 import functools
 from dataclasses import dataclass
-from typing import Union
 
 import numpy as np
 import onnx
@@ -59,9 +58,7 @@ def linear():
             x = inputs.X
             return self.Outputs(op.add(op.mul(a, x), b)._var_info)
 
-    def linear_inner(
-        x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
-    ) -> Var:
+    def linear_inner(x: Var, a: float | _Ref[float], b: float | _Ref[float]) -> Var:
         return (
             LinearFunction(
                 LinearFunction.Attributes(
@@ -108,9 +105,7 @@ def linear2(linear):
                 )._var_info
             )
 
-    def linear_inner(
-        x: Var, a: Union[float, _Ref[float]], b: Union[float, _Ref[float]]
-    ) -> Var:
+    def linear_inner(x: Var, a: float | _Ref[float], b: float | _Ref[float]) -> Var:
         return (
             LinearFunction2(
                 LinearFunction2.Attributes(

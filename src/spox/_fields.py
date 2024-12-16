@@ -8,7 +8,7 @@ import enum
 import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import Field, dataclass
-from typing import Optional, Union, get_type_hints
+from typing import Optional, get_type_hints
 
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
@@ -24,7 +24,7 @@ class BaseFields:
 
 @dataclass
 class BaseAttributes(BaseFields):
-    def get_fields(self) -> dict[str, Union[None, Attr]]:
+    def get_fields(self) -> dict[str, None | Attr]:
         """Return a mapping of all fields stored in this object by name."""
         return self.__dict__.copy()
 
@@ -40,16 +40,16 @@ class VarFieldKind(enum.Enum):
 class BaseVars:
     """A collection of `Var`-s used to carry around inputs/outputs of nodes"""
 
-    vars: dict[str, Union[Var, Optional[Var], Sequence[Var]]]
+    vars: dict[str, Var | None | Sequence[Var]]
 
-    def __init__(self, vars: dict[str, Union[Var, Optional[Var], Sequence[Var]]]):
+    def __init__(self, vars: dict[str, Var | None | Sequence[Var]]):
         self.vars = vars
 
-    def _unpack_to_any(self) -> tuple[Union[Var, Optional[Var], Sequence[Var]], ...]:
+    def _unpack_to_any(self) -> tuple[Var | None | Sequence[Var], ...]:
         """Unpack the stored fields into a tuple of appropriate length, typed as Any."""
         return tuple(self.vars.values())
 
-    def _flatten(self) -> Iterator[tuple[str, Optional[Var]]]:
+    def _flatten(self) -> Iterator[tuple[str, Var | None]]:
         """Iterate over the pairs of names and values of fields in this object."""
         for key, value in self.vars.items():
             if value is None or isinstance(value, Var):
@@ -61,7 +61,7 @@ class BaseVars:
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
-    def __getattr__(self, attr: str) -> Union[Var, Optional[Var], Sequence[Var]]:
+    def __getattr__(self, attr: str) -> Var | None | Sequence[Var]:
         """Retrieves the attribute if present in the stored variables."""
         try:
             return self.vars[attr]
@@ -70,9 +70,7 @@ class BaseVars:
                 f"{self.__class__.__name__!r} object has no attribute {attr!r}"
             )
 
-    def __setattr__(
-        self, attr: str, value: Union[Var, Optional[Var], Sequence[Var]]
-    ) -> None:
+    def __setattr__(self, attr: str, value: Var | None | Sequence[Var]) -> None:
         """Sets the attribute to a value if the attribute is present in the stored variables."""
         if attr == "vars":
             super().__setattr__(attr, value)
@@ -121,7 +119,7 @@ class BaseVarInfos(BaseFields):
             return VarFieldKind.VARIADIC
         raise ValueError(f"Bad field type: '{field.type}'.")
 
-    def _flatten(self) -> Iterable[tuple[str, Optional[_VarInfo]]]:
+    def _flatten(self) -> Iterable[tuple[str, _VarInfo | None]]:
         """Iterate over the pairs of names and values of fields in this object."""
         for key, value in self.__dict__.items():
             if value is None or isinstance(value, _VarInfo):
@@ -129,7 +127,7 @@ class BaseVarInfos(BaseFields):
             else:
                 yield from ((f"{key}_{i}", v) for i, v in enumerate(value))
 
-    def __iter__(self) -> Iterator[Optional[_VarInfo]]:
+    def __iter__(self) -> Iterator[_VarInfo | None]:
         """Iterate over the values of fields in this object."""
         yield from (v for _, v in self._flatten())
 
@@ -141,7 +139,7 @@ class BaseVarInfos(BaseFields):
         """Return a flat mapping by name of all the VarInfos in this object."""
         return {key: var for key, var in self._flatten() if var is not None}
 
-    def get_fields(self) -> dict[str, Union[None, _VarInfo, Sequence[_VarInfo]]]:
+    def get_fields(self) -> dict[str, None | _VarInfo | Sequence[_VarInfo]]:
         """Return a mapping of all fields stored in this object by name."""
         return self.__dict__.copy()
 
@@ -178,7 +176,7 @@ class BaseVarInfos(BaseFields):
 
             return ret
 
-        ret_dict: dict[str, Union[Var, Optional[Var], Sequence[Var]]] = {}
+        ret_dict: dict[str, Var | None | Sequence[Var]] = {}
 
         for key, var_info in self.__dict__.items():
             if isinstance(var_info, _VarInfo):

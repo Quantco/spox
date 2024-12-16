@@ -1,5 +1,5 @@
 def promote(
-    *types: Union[Var, np.generic, int, float, None]
+    *types: Var | np.generic | int | float | None
 ) -> tuple[Optional[Var], ...]:
     """
     Apply constant promotion and type promotion to given parameters, creating constants and/or casting.
@@ -14,7 +14,7 @@ def promote(
 
     target_type = result_type(*promotable)
 
-    def _promote_target(obj: Union[Var, np.generic, int, float, None]) -> Optional[Var]:
+    def _promote_target(obj: Var | np.generic | int | float | None) -> Optional[Var]:
         if isinstance(obj, (np.generic, int, float)):
             return const(np.array(obj, dtype=target_type))
         elif isinstance(obj, Var):
