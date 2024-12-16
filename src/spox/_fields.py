@@ -10,9 +10,9 @@ from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import Field, dataclass
 from typing import Optional, get_type_hints
 
+from . import _type_system
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
-from ._type_system import Optional as tOptional
 from ._value_prop import PropDict, PropValue
 from ._var import Var, _VarInfo
 
@@ -160,7 +160,10 @@ class BaseVarInfos(BaseFields):
             if var_info.type is None or key not in prop_values:
                 return ret
 
-            if not isinstance(var_info.type, tOptional) and prop_values[key] is None:
+            if (
+                not isinstance(var_info.type, _type_system.Optional)
+                and prop_values[key] is None
+            ):
                 return ret
 
             prop = PropValue(var_info.type, prop_values[key])

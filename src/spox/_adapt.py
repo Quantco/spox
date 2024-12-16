@@ -1,8 +1,9 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import warnings
-from typing import Optional
 
 import onnx
 import onnx.version_converter
@@ -22,7 +23,7 @@ def adapt_node(
     source_version: int,
     target_version: int,
     var_names: dict[_VarInfo, str],
-) -> Optional[list[onnx.NodeProto]]:
+) -> list[onnx.NodeProto] | None:
     if source_version == target_version:
         return None
 
@@ -93,7 +94,7 @@ def adapt_best_effort(
     opsets: dict[str, int],
     var_names: dict[_VarInfo, str],
     node_names: dict[Node, str],
-) -> Optional[list[onnx.NodeProto]]:
+) -> list[onnx.NodeProto] | None:
     if isinstance(node, _Inline):
         return adapt_inline(
             node,

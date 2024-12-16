@@ -3,10 +3,12 @@
 
 """Module implementing the main public interface functions in Spox."""
 
+from __future__ import annotations
+
 import contextlib
 import itertools
 from collections.abc import Iterator
-from typing import Optional, Protocol
+from typing import Protocol
 
 import numpy as np
 import onnx
@@ -51,8 +53,8 @@ def _temporary_renames(**kwargs: Var) -> Iterator[None]:
     # The build code can't really special-case variable names that are
     # not just ``Var._name``.  So we set names here and reset them
     # afterwards.
-    name: Optional[str]
-    pre: dict[Var, Optional[str]] = {}
+    name: str | None
+    pre: dict[Var, str | None] = {}
     try:
         for name, arg in kwargs.items():
             pre[arg] = arg._var_info._name
