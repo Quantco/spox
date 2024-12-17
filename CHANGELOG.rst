@@ -24,6 +24,7 @@ Change log
 **Bug fix**
 
 - Value propagation of string tensors no longer raises an erroneous ``ValueError`` in some instances.
+- Apply custom shape inference logic in :func:`spox.opsets.ai.onnx.v19.loop` and :func:`spox.opsets.ai.onnx.v21.loop`.
 
 **Deprecation**
 
