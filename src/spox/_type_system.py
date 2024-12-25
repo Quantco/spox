@@ -147,6 +147,12 @@ class Type:
             return NotImplemented
         return other == Type() or self == other
 
+    def _unite(self, other: Type) -> Type:
+        """
+        Get minimal common supertype.
+        """
+        return NotImplemented
+
 
 @dataclass(frozen=True)
 class Tensor(Type):
@@ -257,6 +263,25 @@ class Tensor(Type):
             issubclass(self._elem_type, other._elem_type)
             and self._shape <= other._shape
         )
+
+    def _unite(self, other: Type) -> Type:
+        """
+        Get minimal common supertype.
+        """
+        if not isinstance(other, Tensor):
+            return NotImplemented
+        if self.dtype != other.dtype:
+            return NotImplemented
+        ret_shape = None
+        if (
+            self.shape is not None
+            and other.shape is not None
+            and len(self.shape) == len(other.shape)
+        ):
+            ret_shape = tuple(
+                x if x == y else None for x, y in zip(self.shape, other.shape)
+            )
+        return Tensor(self.dtype, ret_shape)
 
 
 @dataclass(frozen=True)

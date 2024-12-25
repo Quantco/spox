@@ -1780,16 +1780,16 @@ class _Loop(StandardNode):
         v_final_and_scan_outputs: Sequence[_VarInfo]
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        output_types = super().infer_output_types({})
+        output_types = super().infer_output_types(input_prop_values)
 
         body = self.attrs.body.value
-        n = len(body.requested_arguments) - 2
 
-        carried_names = list(self.outputs.get_var_infos())[:n]
-        carried_types = [v.type for v in list(body.requested_results.values())[1:][:n]]
+        carried_names = list(self.outputs.get_var_infos())
+        initial_types = [v.type for v in list(body.requested_arguments)[2:]]
+        carried_types = [v.type for v in list(body.requested_results.values())[1:]]
 
-        for name, typ in zip(carried_names, carried_types):
-            output_types[name] = typ
+        for name, i_typ, c_typ in zip(carried_names, initial_types, carried_types):
+            output_types[name] = i_typ._unite(c_typ)
 
         return output_types
 
