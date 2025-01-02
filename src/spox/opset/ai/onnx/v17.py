@@ -28,7 +28,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import Graph, subgraph
 from spox._node import OpType
-from spox._standard import InferenceError, StandardNode
+from spox._standard import StandardNode
 from spox._type_system import Sequence as SpoxSequence
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict, PropValueType
@@ -498,32 +498,6 @@ class _Compress(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         output: _VarInfo
-
-    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        self.infer_output_types_onnx(input_prop_values)
-        inp, cond = (
-            self.inputs.input.unwrap_tensor(),
-            self.inputs.condition.unwrap_tensor(),
-        )
-        if not inp.shape:
-            return {"output": Tensor(inp.dtype, None)}
-        if cond.dtype != np.dtype(bool):
-            raise InferenceError("Compress input 'condition' must be a boolean dtype.")
-        if cond.shape and len(cond.shape) != 1:
-            raise InferenceError(
-                "Compress input 'condition' must be a vector (of rank 1)."
-            )
-        if self.attrs.axis is not None:
-            shape = list(inp.shape)
-            axis = self.attrs.axis.value
-            if not (-len(shape) <= axis < len(shape)):
-                raise InferenceError(
-                    f"Compress attribute 'axis' must in range [-rank, rank-1] (rank={len(shape)})."
-                )
-            shape[axis] = None
-        else:
-            shape = [None]
-        return {"output": Tensor(inp.dtype, tuple(shape))}
 
     op_type = OpType("Compress", "", 11)
 
