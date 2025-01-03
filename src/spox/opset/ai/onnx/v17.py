@@ -29,6 +29,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import Graph, subgraph
 from spox._node import OpType
 from spox._standard import InferenceError, StandardNode
+from spox._type_inference_utils import loop_erase_shape_info
 from spox._type_system import Sequence as SpoxSequence
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict, PropValueType
@@ -1780,16 +1781,26 @@ class _Loop(StandardNode):
         v_final_and_scan_outputs: Sequence[_VarInfo]
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        output_types = super().infer_output_types({})
+        output_types = super().infer_output_types(input_prop_values)
+        output_names = list(self.outputs.get_var_infos())
 
         body = self.attrs.body.value
-        n = len(body.requested_arguments) - 2
 
-        carried_names = list(self.outputs.get_var_infos())[:n]
-        carried_types = [v.type for v in list(body.requested_results.values())[1:][:n]]
+        # We skip the iteration_num and condition as they are correctly inferred
+        initial_types = [v.type for v in list(body.requested_arguments)[2:]]
+        # We skip the returned condition as it is correctly inferred
+        carried_types = [v.type for v in list(body.requested_results.values())[1:]]
 
-        for name, typ in zip(carried_names, carried_types):
-            output_types[name] = typ
+        shape_unchanged_between_iterations = all(
+            i_typ == c_typ for i_typ, c_typ in zip(initial_types, carried_types)
+        )
+
+        for name, _, c_typ in zip(output_names, initial_types, carried_types):
+            output_types[name] = (
+                c_typ
+                if shape_unchanged_between_iterations
+                else loop_erase_shape_info(c_typ)
+            )
 
         return output_types
 
