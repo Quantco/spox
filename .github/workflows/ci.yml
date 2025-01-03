@@ -1,5 +1,15 @@
 name: CI
-on: push
+on:
+  # We would like to trigger for CI for any pull request action -
+  # both from QuantCo's branches as well as forks.
+  pull_request:
+  # In addition to pull requests, we want to run CI for pushes
+  # to the main branch and tags.
+  push:
+    branches:
+      - "main"
+    tags:
+      - "*"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,7 +50,6 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
           fetch-depth: 0
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
@@ -59,8 +68,6 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
         with:
