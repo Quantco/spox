@@ -10,9 +10,15 @@ Change log
 0.14.0 (unreleased)
 -------------------
 
+**Bug fix**
+
+- Adds missing shape inference logic for :func:`spox.opsets.ai.v19.loop` and :func:`spox.opsets.ai.v21.loop`.
+
 **Other changes**
 
 - Propagated values may now be garbage collected if their associated `Var` object goes out of scope. 
+- :func:`spox.opsets.ai.v17.loop`, :func:`spox.opsets.ai.v19.loop` and :func:`spox.opsets.ai.v21.loop` will only infer shapes for loop carried dependencies if their shapes are unchanged across iterations.
+
 
 0.13.0 (2024-12-06)
 -------------------

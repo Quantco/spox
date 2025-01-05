@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -692,7 +692,7 @@ if __name__ == "__main__":
         "ai.onnx",
         19,
         extras=["const"],
-        type_inference={},
+        type_inference={"Loop": "loop16-fix"},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
@@ -715,6 +715,7 @@ if __name__ == "__main__":
         "ai.onnx",
         21,
         extras=["const"],
+        type_inference={"Loop": "loop16-fix"},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,

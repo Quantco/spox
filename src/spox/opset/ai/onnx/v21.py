@@ -28,6 +28,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import Graph, subgraph
 from spox._node import OpType
 from spox._standard import StandardNode
+from spox._type_inference_utils import loop_erase_shape_info
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict, PropValueType
 from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
@@ -611,6 +612,30 @@ class _Loop(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         v_final_and_scan_outputs: Sequence[_VarInfo]
+
+    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
+        output_types = super().infer_output_types(input_prop_values)
+        output_names = list(self.outputs.get_var_infos())
+
+        body = self.attrs.body.value
+
+        # We skip the iteration_num and condition as they are correctly inferred
+        initial_types = [v.type for v in list(body.requested_arguments)[2:]]
+        # We skip the returned condition as it is correctly inferred
+        carried_types = [v.type for v in list(body.requested_results.values())[1:]]
+
+        shape_unchanged_between_iterations = all(
+            i_typ == c_typ for i_typ, c_typ in zip(initial_types, carried_types)
+        )
+
+        for name, _, c_typ in zip(output_names, initial_types, carried_types):
+            output_types[name] = (
+                c_typ
+                if shape_unchanged_between_iterations
+                else loop_erase_shape_info(c_typ)
+            )
+
+        return output_types
 
     op_type = OpType("Loop", "", 21)
 
