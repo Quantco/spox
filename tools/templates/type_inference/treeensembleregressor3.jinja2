@@ -1,0 +1,11 @@
+if self.inputs.fully_typed:
+    shape = self.inputs.X.unwrap_tensor().shape
+    assert shape is not None  # already checked with fully_typed
+    if len(shape) != 2:
+        raise InferenceError("Expected input to be a matrix.")
+    assert shape is not None
+    n = shape[0]
+else:
+    n = None
+e = self.attrs.n_targets.value if self.attrs.n_targets is not None else None
+return {"Y": Tensor(np.float32, (n, e))}

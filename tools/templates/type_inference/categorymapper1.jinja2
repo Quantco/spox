@@ -1,0 +1,10 @@
+if not self.inputs.fully_typed:
+    return {}
+cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
+if cats1 is None or cats2 is None:
+    raise InferenceError("Missing required attributes.")
+if len(cats1.value) != len(cats2.value):
+    raise InferenceError("Categories lists have mismatched lengths.")
+t = self.inputs.X.unwrap_tensor()
+(elem_type,) = {np.int64, np.str_} - {t.dtype.type}
+return {"Y": Tensor(elem_type, t.shape)}
