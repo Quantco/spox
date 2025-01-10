@@ -14,6 +14,7 @@ from spox._internal_op import INTERNAL_MIN_OPSET, _InternalNode
 from spox._node import OpType
 from spox._scope import Scope
 from spox._type_system import Type
+from spox._value_prop_backend import get_value_prop_backend
 from spox._var import _VarInfo
 
 from . import _value_prop
@@ -132,19 +133,24 @@ class _Inline(_InternalNode):
     def propagate_values(
         self, input_prop_values: _value_prop.PropDict
     ) -> dict[str, _value_prop.PropValueType]:
+        value_prop_backend = get_value_prop_backend()
+        if value_prop_backend is None:
+            return {}
         if any(
             var_info.type is None or input_prop_values.get(var_info.name) is None
             for var_info in self.model.graph.input
         ):
             return {}
-        wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
-            i.name: wrap_feed(input_prop_values.get(i.name))
+            i.name: value_prop_backend.wrap_feed(input_prop_values.get(i.name))  # type: ignore
             for i in self.model.graph.input
+            if i.name in input_prop_values
         }
-        output_feed = run(self.model, input_feed)
+        output_feed = value_prop_backend.run(self.model, input_feed)
         return {
-            f"outputs_{k}": unwrap_feed(var.unwrap_type(), output_feed[o.name]).value
+            f"outputs_{k}": value_prop_backend.unwrap_feed(
+                var.unwrap_type(), output_feed[o.name]
+            ).value
             for k, (o, var) in enumerate(zip(self.graph.output, self.outputs.outputs))
             if o.name in output_feed
         }

@@ -39,11 +39,19 @@ ValuePropBackend = spox._value_prop.ValuePropBackend
 
 
 def set_value_prop_backend(backend: ValuePropBackend) -> None:
+    warnings.warn(
+        "using '_future.operator_overloading' is deprecated, consider using the stable value propagation instead",
+        DeprecationWarning,
+    )
     spox._value_prop._VALUE_PROP_BACKEND = backend
 
 
 @contextmanager
 def value_prop_backend(backend: ValuePropBackend) -> Iterator[None]:
+    warnings.warn(
+        "using '_future.value_prop_backend' is deprecated, consider using the stable value propagation instead",
+        DeprecationWarning,
+    )
     prev_backend = spox._value_prop._VALUE_PROP_BACKEND
     set_value_prop_backend(backend)
     yield

@@ -2,15 +2,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import enum
-import logging
 import warnings
 from dataclasses import dataclass
-from typing import Callable, Union
+from typing import Union
 
 import numpy as np
-import numpy.typing as npt
-import onnx
-import onnx.reference
 
 from ._exceptions import InferenceWarning
 from ._shape import Shape
@@ -25,7 +21,7 @@ The internal representation for runtime values.
 - None -> Optional, Nothing (no value)
 """
 PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
-PropDict = dict[str, PropValueType]
+PropDict = dict[str, "PropValue"]
 ORTValue = Union[np.ndarray, list, None]
 RefValue = Union[np.ndarray, list, float, None]
 
@@ -157,65 +153,3 @@ class PropValue:
             return [elem.to_ref_value() for elem in self.value]
         else:  # Tensor
             return self.value
-
-
-def _run_reference_implementation(
-    model: onnx.ModelProto, input_feed: dict[str, RefValue]
-) -> dict[str, RefValue]:
-    try:
-        session = onnx.reference.ReferenceEvaluator(model)
-        output_feed = dict(zip(session.output_names, session.run(None, input_feed)))
-    except Exception as e:
-        # Give up on value propagation if an implementation is missing.
-        logging.debug(
-            f"Value propagation in {model} on the ONNX reference implementation failed with - "
-            f"{type(e).__name__}: {e}"
-        )
-        return {}
-    return output_feed
-
-
-def _run_onnxruntime(
-    model: onnx.ModelProto, input_feed: dict[str, ORTValue]
-) -> dict[str, ORTValue]:
-    import onnxruntime
-
-    # Silence possible warnings during execution (especially constant folding)
-    options = onnxruntime.SessionOptions()
-    options.log_severity_level = 3
-    try:
-        session = onnxruntime.InferenceSession(model.SerializeToString(), options)
-        output_names = [output.name for output in session.get_outputs()]
-        output_feed = dict(zip(output_names, session.run(None, input_feed)))
-    except Exception as e:
-        logging.debug(
-            f"Value propagation in {model} on the onnxruntime failed with - "
-            f"{type(e).__name__}: {e}"
-        )
-        return {}
-    return output_feed
-
-
-def get_backend_calls() -> (
-    tuple[
-        Callable[..., RefValue],
-        Callable[..., dict[str, npt.ArrayLike]],
-        Callable[..., PropValue],
-    ]
-):
-    wrap_feed: Callable[..., RefValue]
-    run: Callable[..., dict[str, npt.ArrayLike]]
-    unwrap_feed: Callable[..., PropValue]
-    if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
-        wrap_feed = PropValue.to_ref_value
-        run = _run_reference_implementation
-        unwrap_feed = PropValue.from_ref_value
-    elif _VALUE_PROP_BACKEND == ValuePropBackend.ONNXRUNTIME:
-        wrap_feed = PropValue.to_ort_value
-        run = _run_onnxruntime
-        unwrap_feed = PropValue.from_ort_value
-    else:
-        raise RuntimeError(
-            f"Not a valid value propagation backend: {_VALUE_PROP_BACKEND}."
-        )
-    return wrap_feed, run, unwrap_feed

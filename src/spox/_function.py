@@ -86,10 +86,12 @@ class Function(_InternalNode):
 
         self.func_inputs = self.Inputs(**self.func_args)
         self.func_outputs = self.constructor(
-            self.func_attrs, self.func_inputs.into_vars(input_prop_values)
+            self.func_attrs,
+            self.func_inputs.into_vars(input_prop_values),  # type: ignore
         )
+        # TODO: Implement function propagation
         self.func_graph = _graph.results(
-            **self.func_outputs.into_vars(input_prop_values).flatten_vars()
+            **self.func_outputs.into_vars({}).flatten_vars()
         ).with_arguments(*func_args_var.values())
 
         return {

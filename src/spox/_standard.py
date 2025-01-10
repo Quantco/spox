@@ -14,7 +14,6 @@ import onnx.reference
 import onnx.shape_inference
 from onnx.defs import OpSchema
 
-from . import _value_prop
 from ._exceptions import InferenceError
 from ._node import Node
 from ._schemas import SCHEMAS
@@ -23,6 +22,7 @@ from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import from_array
 from ._value_prop import PropDict, PropValue, PropValueType
+from ._value_prop_backend import get_value_prop_backend
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -191,6 +191,9 @@ class StandardNode(Node):
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
         """
+        value_prop_backend = get_value_prop_backend()
+        if value_prop_backend is None:
+            return {}
         # Cannot do propagation when some inputs were not propagated/inferred
         if any(
             var_info.type is None or input_prop_values.get(name, None) is None
@@ -203,17 +206,16 @@ class StandardNode(Node):
         model, scope = self.to_singleton_onnx_model(
             with_dummy_subgraphs=False, input_prop_values=input_prop_values
         )
-        wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
-            scope.var[var_info]: wrap_feed(input_prop_values[name])
+            scope.var[var_info]: value_prop_backend.wrap_feed(input_prop_values[name])
             for name, var_info in self.inputs.get_var_infos().items()
             if input_prop_values[name]
         }
 
-        output_feed = run(model, input_feed)
+        output_feed = value_prop_backend.run(model, input_feed)
 
         results = {
-            scope.var[str(name)]._which_output: unwrap_feed(
+            scope.var[str(name)]._which_output: value_prop_backend.unwrap_feed(
                 scope.var[str(name)].unwrap_type(), result
             ).value
             for name, result in output_feed.items()
@@ -224,9 +226,7 @@ class StandardNode(Node):
         return self.infer_output_types_onnx(input_prop_values)
 
     def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
-        if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
-            return self.propagate_values_onnx(input_prop_values)
-        return {}
+        return self.propagate_values_onnx(input_prop_values)
 
 
 def _strip_dim_symbol_shape(
