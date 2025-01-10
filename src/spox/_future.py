@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Module containing experimental Spox features that may be standard in the future."""
@@ -44,6 +44,8 @@ def set_value_prop_backend(backend: ValuePropBackend) -> None:
         DeprecationWarning,
     )
     spox._value_prop._VALUE_PROP_BACKEND = backend
+    # For compatibility with the new way of setting a value propagation backend
+    spox._value_prop_backend._VALUE_PROP_BACKEND = None
 
 
 @contextmanager
