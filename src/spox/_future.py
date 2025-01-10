@@ -40,24 +40,32 @@ ValuePropBackend = spox._value_prop.ValuePropBackend
 
 def set_value_prop_backend(backend: ValuePropBackend) -> None:
     warnings.warn(
-        "using '_future.operator_overloading' is deprecated, consider using the stable value propagation instead",
+        "using '_future.set_value_prop_backend' with a '_future.ValuePropBackend' is deprecated and will be removed in the future",
         DeprecationWarning,
     )
-    spox._value_prop._VALUE_PROP_BACKEND = backend
-    # For compatibility with the new way of setting a value propagation backend
-    spox._value_prop_backend._VALUE_PROP_BACKEND = None
+    new_backend: spox._value_prop_backend.BaseValuePropBackend | None = None
+
+    if backend == spox._value_prop.ValuePropBackend.REFERENCE:
+        new_backend = spox._value_prop_backend.ReferenceValuePropBackend()
+    elif backend == spox._value_prop.ValuePropBackend.ONNXRUNTIME:
+        new_backend = spox._value_prop_backend.OnnxruntimeValuePropBackend()
+
+    spox._value_prop_backend.set_value_prop_backend(new_backend)
 
 
 @contextmanager
 def value_prop_backend(backend: ValuePropBackend) -> Iterator[None]:
     warnings.warn(
-        "using '_future.value_prop_backend' is deprecated, consider using the stable value propagation instead",
+        "using '_future.value_prop_backend' with a 'spox._future.ValuePropBackend' is deprecated and will be removed in the future",
         DeprecationWarning,
     )
-    prev_backend = spox._value_prop._VALUE_PROP_BACKEND
-    set_value_prop_backend(backend)
-    yield
-    set_value_prop_backend(prev_backend)
+    new_backend: spox._value_prop_backend.BaseValuePropBackend | None = None
+    if backend == spox._value_prop.ValuePropBackend.REFERENCE:
+        new_backend = spox._value_prop_backend.ReferenceValuePropBackend()
+    elif backend == spox._value_prop.ValuePropBackend.ONNXRUNTIME:
+        new_backend = spox._value_prop_backend.OnnxruntimeValuePropBackend()
+    with spox._value_prop_backend.value_prop_backend(new_backend):
+        yield
 
 
 def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
