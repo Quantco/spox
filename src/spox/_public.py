@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Module implementing the main public interface functions in Spox."""
@@ -312,7 +312,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
         )
 
         prop_values: PropDict = {
-            name: kwargs[name]._value
+            name: kwargs[name]._value  # type: ignore
             for name in in_names
             if kwargs[name]._value is not None
         }

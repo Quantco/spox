@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -374,4 +374,8 @@ def create_prop_dict(
 
     flattened_vars = BaseVars(kwargs).flatten_vars()
 
-    return {key: var._value for key, var in flattened_vars.items() if var is not None}
+    return {
+        key: var._value
+        for key, var in flattened_vars.items()
+        if var is not None and var._value is not None
+    }

@@ -1,6 +1,7 @@
 # Copyright (c) QuantCo 2023-2024
 # SPDX-License-Identifier: BSD-3-Clause
 
+
 import numpy as np
 import onnx
 import pytest
@@ -9,7 +10,7 @@ import spox
 import spox._future
 import spox.opset.ai.onnx.ml.v3 as ml
 import spox.opset.ai.onnx.v20 as op
-from spox import Var, _type_system
+from spox import Type, Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
 from spox._value_prop import ORTValue, PropValue
@@ -233,3 +234,47 @@ def test_strings(value_prop_backend):
 
     x, y = op.const(["foo"]), op.const(["bar"])
     np.testing.assert_equal(op.string_concat(x, y)._value.value, np.array(["foobar"]))  # type: ignore
+
+
+def test_value_prop_backend_class():
+    class CustomValuePropBackend(spox._future.BaseValuePropBackend[ORTValue]):
+        def __init__(self) -> None:
+            import onnxruntime
+
+            self.session_options = onnxruntime.SessionOptions()
+            self.session_options.log_severity_level = 3
+            self.session_counter = 0
+
+        def wrap_feed(self, value: PropValue) -> ORTValue:
+            return value.to_ort_value()
+
+        def run(
+            self, model: onnx.ModelProto, input_feed: dict[str, ORTValue]
+        ) -> dict[str, ORTValue]:
+            import onnxruntime
+
+            self.session_counter += 1
+            session = onnxruntime.InferenceSession(
+                model.SerializeToString(), self.session_options
+            )
+            output_names = [output.name for output in session.get_outputs()]
+            output_feed = dict(zip(output_names, session.run(None, input_feed)))
+            return output_feed
+
+        def unwrap_feed(self, typ: Type, value: ORTValue) -> PropValue:
+            return PropValue.from_ref_value(typ, value)
+
+    custom_backend = CustomValuePropBackend()
+    spox._future.set_value_prop_backend(custom_backend)
+
+    MAX_ITER = 10
+    for iter in range(1, MAX_ITER + 1):
+        x = op.add(op.const(1), op.const(1))
+        assert x._value.value == 2  # type: ignore
+        assert custom_backend.session_counter == iter
+
+    other_custom_backend = CustomValuePropBackend()
+    with spox._future.value_prop_backend(other_custom_backend):
+        x = op.add(op.const(1), op.const(1))
+        assert x._value.value == 2  # type: ignore
+        assert other_custom_backend.session_counter == 1
