@@ -14,6 +14,10 @@ Change log
 
 - Adds missing shape inference logic for :func:`spox.opsets.ai.v19.loop` and :func:`spox.opsets.ai.v21.loop`.
 
+**Deprecation**
+
+- Using :func:`spox._future.set_value_prop_backend`` now triggers a ``DeprecationWarning``. The function will be removed in a future release.
+
 **Other changes**
 
 - Propagated values may now be garbage collected if their associated `Var` object goes out of scope. 

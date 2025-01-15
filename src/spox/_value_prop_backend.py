@@ -111,6 +111,7 @@ def get_value_prop_backend() -> BaseValuePropBackend | None:
 
 
 def set_value_prop_backend(backend: BaseValuePropBackend | None) -> None:
+    global _VALUE_PROP_BACKEND
     _VALUE_PROP_BACKEND = backend
 
 
