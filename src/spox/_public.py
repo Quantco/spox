@@ -312,7 +312,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
         )
 
         prop_values: PropDict = {
-            name: kwargs[name]._value  # type: ignore
+            name: kwargs[name]._value
             for name in in_names
             if kwargs[name]._value is not None
         }

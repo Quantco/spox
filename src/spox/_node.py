@@ -29,7 +29,7 @@ from ._fields import (
     VarFieldKind,
 )
 from ._type_system import Type
-from ._value_prop import PropDict, PropValueType
+from ._value_prop import PropDict
 from ._var import _VarInfo
 
 if typing.TYPE_CHECKING:
@@ -217,7 +217,7 @@ class Node(ABC):
     def post_init(self, **kwargs: Any) -> None:
         """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
-    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> PropDict:
         """
         Propagate values from inputs, and, if possible, compute values for outputs as well.
         This method is used to implement ONNX partial data propagation - for example so that

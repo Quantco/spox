@@ -21,7 +21,7 @@ The internal representation for runtime values.
 - None -> Optional, Nothing (no value)
 """
 PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
-PropDict = dict[str, "PropValue"]
+PropDict = dict[str, "PropValueType"]
 ORTValue = Union[np.ndarray, list, None]
 RefValue = Union[np.ndarray, list, float, None]
 

@@ -13,7 +13,7 @@ from typing import Optional, get_type_hints
 from . import _type_system
 from ._attributes import Attr
 from ._exceptions import InferenceWarning
-from ._value_prop import PropValue, PropValueType
+from ._value_prop import PropDict, PropValue
 from ._var import Var, _VarInfo
 
 
@@ -151,7 +151,7 @@ class BaseVarInfos(BaseFields):
             for var in self.get_var_infos().values()
         )
 
-    def into_vars(self, prop_values: dict[str, PropValueType]) -> BaseVars:
+    def into_vars(self, prop_values: PropDict) -> BaseVars:
         """Populate a `BaseVars` object with the propagated values and this object's var_infos"""
 
         def _create_var(key: str, var_info: _VarInfo) -> Var:

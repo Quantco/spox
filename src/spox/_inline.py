@@ -142,7 +142,7 @@ class _Inline(_InternalNode):
         ):
             return {}
         input_feed = {
-            i.name: value_prop_backend.wrap_feed(input_prop_values[i.name])
+            i.name: value_prop_backend.wrap_feed(input_prop_values[i.name])  # type: ignore
             for i in self.model.graph.input
             if i.name in input_prop_values
         }

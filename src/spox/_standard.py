@@ -207,7 +207,7 @@ class StandardNode(Node):
             with_dummy_subgraphs=False, input_prop_values=input_prop_values
         )
         input_feed = {
-            scope.var[var_info]: value_prop_backend.wrap_feed(input_prop_values[name])
+            scope.var[var_info]: value_prop_backend.wrap_feed(input_prop_values[name])  # type: ignore
             for name, var_info in self.inputs.get_var_infos().items()
             if input_prop_values[name]
         }

@@ -6,16 +6,13 @@ import logging
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 import onnx
 
 from . import _value_prop
 from ._type_system import Type
 from ._value_prop import ORTValue, PropValue, RefValue
-
-if TYPE_CHECKING:
-    pass
 
 TValue = TypeVar("TValue")
 
@@ -60,17 +57,6 @@ class ReferenceValuePropBackend(BaseValuePropBackend[RefValue]):
 
 
 class OnnxruntimeValuePropBackend(BaseValuePropBackend[ORTValue]):
-    def __init__(self, session_options: dict[str, Any] | None = None) -> None:
-        import onnxruntime
-
-        self.session_options = onnxruntime.SessionOptions()
-
-        if session_options is None:
-            session_options = {"log_severity_level": 3}
-
-        for opt, val in session_options.items():
-            setattr(self.session_options, opt, val)
-
     def wrap_feed(self, value: PropValue) -> ORTValue:
         return value.to_ort_value()
 
@@ -80,8 +66,10 @@ class OnnxruntimeValuePropBackend(BaseValuePropBackend[ORTValue]):
         import onnxruntime
 
         try:
+            session_options = onnxruntime.SessionOptions()
+            session_options.log_severity_level = 3
             session = onnxruntime.InferenceSession(
-                model.SerializeToString(), self.session_options
+                model.SerializeToString(), session_options
             )
             output_names = [output.name for output in session.get_outputs()]
             output_feed = dict(zip(output_names, session.run(None, input_feed)))
