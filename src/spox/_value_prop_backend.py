@@ -10,7 +10,6 @@ from typing import Generic, TypeVar
 
 import onnx
 
-from . import _value_prop
 from ._type_system import Type
 from ._value_prop import ORTValue, PropValue, RefValue
 
@@ -89,13 +88,7 @@ _VALUE_PROP_BACKEND: BaseValuePropBackend | None = ReferenceValuePropBackend()
 
 
 def get_value_prop_backend() -> BaseValuePropBackend | None:
-    if _VALUE_PROP_BACKEND is not None:
-        return _VALUE_PROP_BACKEND
-    elif _value_prop._VALUE_PROP_BACKEND == _value_prop._VALUE_PROP_BACKEND.REFERENCE:
-        return ReferenceValuePropBackend()
-    elif _value_prop._VALUE_PROP_BACKEND == _value_prop._VALUE_PROP_BACKEND.ONNXRUNTIME:
-        return OnnxruntimeValuePropBackend()
-    return None
+    return _VALUE_PROP_BACKEND
 
 
 def set_value_prop_backend(backend: BaseValuePropBackend | None) -> None:
