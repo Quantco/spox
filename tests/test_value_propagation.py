@@ -21,8 +21,8 @@ from spox._var import _VarInfo
     params=[
         spox._future.ValuePropBackend.ONNXRUNTIME,
         spox._future.ValuePropBackend.REFERENCE,
-        spox._future.ReferenceValuePropBackend,
-        spox._future.OnnxruntimeValuePropBackend,
+        spox._future.ReferenceValuePropBackend(),
+        spox._future.OnnxruntimeValuePropBackend(),
     ]
 )
 def value_prop_backend(request):
@@ -231,11 +231,14 @@ def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
 
 
 def test_strings(value_prop_backend):
-    x, y = op.const("foo"), op.const("bar")
-    assert op.string_concat(x, y)._value.value == "foobar"  # type: ignore
+    with spox._future.value_prop_backend(value_prop_backend):
+        x, y = op.const("foo"), op.const("bar")
+        assert op.string_concat(x, y)._value.value == "foobar"  # type: ignore
 
-    x, y = op.const(["foo"]), op.const(["bar"])
-    np.testing.assert_equal(op.string_concat(x, y)._value.value, np.array(["foobar"]))  # type: ignore
+        x, y = op.const(["foo"]), op.const(["bar"])
+        np.testing.assert_equal(
+            op.string_concat(x, y)._value.value, np.array(["foobar"])
+        )  # type: ignore
 
 
 def test_value_prop_backend_class():
