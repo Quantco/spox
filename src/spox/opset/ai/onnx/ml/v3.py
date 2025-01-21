@@ -76,9 +76,6 @@ class _Binarizer(StandardNode):
     class Outputs(BaseOutputs):
         Y: _VarInfo
 
-    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        return {"Y": self.inputs.X.type} if self.inputs.X.type is not None else {}
-
     op_type = OpType("Binarizer", "ai.onnx.ml", 1)
 
     attrs: Attributes
@@ -374,20 +371,6 @@ class _OneHotEncoder(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         Y: _VarInfo
-
-    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        if not self.inputs.fully_typed:
-            return {}
-        if self.attrs.cats_int64s:
-            n_encodings = len(self.attrs.cats_int64s.value)
-        elif self.attrs.cats_strings:
-            n_encodings = len(self.attrs.cats_strings.value)
-        else:
-            raise InferenceError(
-                "Either `cats_int64s` or `cats_strings` attributes must be set."
-            )
-        shape = (*self.inputs.X.unwrap_tensor().shape, n_encodings)  # type: ignore
-        return {"Y": Tensor(dtype=np.float32, shape=shape)}
 
     op_type = OpType("OneHotEncoder", "ai.onnx.ml", 1)
 

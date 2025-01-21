@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -668,7 +668,7 @@ if __name__ == "__main__":
         "ai.onnx",
         17,
         extras=["const"],
-        type_inference={"Compress": "compress11", "Loop": "loop16-fix"},
+        type_inference={"Loop": "loop16-fix"},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V16_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
@@ -680,7 +680,7 @@ if __name__ == "__main__":
         "ai.onnx",
         18,
         extras=["const"],
-        type_inference={"Compress": "compress11"},
+        type_inference={},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
@@ -692,7 +692,7 @@ if __name__ == "__main__":
         "ai.onnx",
         19,
         extras=["const"],
-        type_inference={"Compress": "compress11", "Loop": "loop16-fix"},
+        type_inference={"Loop": "loop16-fix"},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
@@ -715,7 +715,7 @@ if __name__ == "__main__":
         "ai.onnx",
         21,
         extras=["const"],
-        type_inference={"Compress": "compress11", "Loop": "loop16-fix"},
+        type_inference={"Loop": "loop16-fix"},
         value_propagation={"Constant": "constant13"},
         out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
         subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
@@ -729,12 +729,10 @@ if __name__ == "__main__":
         attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
         type_inference={
             "ArrayFeatureExtractor": "arrayfeatureextractor1",
-            "Binarizer": "binarizer1",
             "CategoryMapper": "categorymapper1",
             "Imputer": "imputer1",
             "LinearRegressor": "linearregressor1",
             "Normalizer": "normalizer1",
-            "OneHotEncoder": "onehotencoder1",
             "Scaler": "scaler1",
             "TreeEnsembleClassifier": "treeensembleclassifier3",
             "TreeEnsembleRegressor": "treeensembleregressor3",
@@ -746,7 +744,6 @@ if __name__ == "__main__":
         4,
         attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
         type_inference={
-            "Binarizer": "binarizer1",
             "Imputer": "imputer1",
             "LinearRegressor": "linearregressor1",
             "Normalizer": "normalizer1",
@@ -760,7 +757,6 @@ if __name__ == "__main__":
         5,
         attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
         type_inference={
-            "Binarizer": "binarizer1",
             "Imputer": "imputer1",
             "LinearRegressor": "linearregressor1",
             "Normalizer": "normalizer1",
