@@ -374,8 +374,4 @@ def create_prop_dict(
 
     flattened_vars = BaseVars(kwargs).flatten_vars()
 
-    return {
-        key: var._value
-        for key, var in flattened_vars.items()
-        if var is not None and var._value is not None
-    }
+    return {key: var._value for key, var in flattened_vars.items() if var is not None}
