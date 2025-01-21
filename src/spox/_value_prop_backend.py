@@ -40,7 +40,7 @@ class ReferenceValuePropBackend(BaseValuePropBackend[RefValue]):
         self, model: onnx.ModelProto, input_feed: dict[str, RefValue]
     ) -> dict[str, RefValue]:
         try:
-            session = onnx.reference.ReferenceEvaluator(model)
+            session = onnx.reference.ReferenceEvaluator(model)  # type: ignore
             output_feed = dict(zip(session.output_names, session.run(None, input_feed)))
         except Exception as e:
             # Give up on value propagation if an implementation is missing.
