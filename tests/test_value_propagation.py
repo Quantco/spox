@@ -21,6 +21,8 @@ from spox._var import _VarInfo
     params=[
         spox._future.ValuePropBackend.ONNXRUNTIME,
         spox._future.ValuePropBackend.REFERENCE,
+        spox._future.ReferenceValuePropBackend,
+        spox._future.OnnxruntimeValuePropBackend,
     ]
 )
 def value_prop_backend(request):

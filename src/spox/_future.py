@@ -19,7 +19,11 @@ import spox._value_prop
 from spox._graph import initializer as _initializer
 from spox._type_system import Tensor
 from spox._value_prop import ValuePropBackend
-from spox._value_prop_backend import BaseValuePropBackend
+from spox._value_prop_backend import (
+    BaseValuePropBackend,
+    OnnxruntimeValuePropBackend,
+    ReferenceValuePropBackend,
+)
 from spox._var import Var
 
 TypeWarningLevel = spox._node.TypeWarningLevel
@@ -267,6 +271,8 @@ __all__ = [
     # Value propagation backend
     "ValuePropBackend",
     "BaseValuePropBackend",
+    "OnnxruntimeValuePropBackend",
+    "ReferenceValuePropBackend",
     "set_value_prop_backend",
     "value_prop_backend",
 ]
