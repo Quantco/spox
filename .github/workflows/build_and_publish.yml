@@ -16,7 +16,7 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@ba3bb36eb2066252b2363392b7739741bb777659
+        uses: prefix-dev/setup-pixi@0f64e482e3d251f735019b1bc7fb0413ead75b2c
         with:
           environments: build
       - name: Build project
