@@ -14,10 +14,15 @@ Change log
 
 - Adds missing shape inference logic for :func:`spox.opsets.ai.v19.loop` and :func:`spox.opsets.ai.v21.loop`.
 
+**Deprecation**
+
+- Using :func:`spox._future.set_value_prop_backend`` with a `spox._future.ValuePropBackend`` now triggers a ``DeprecationWarning``. 
+
 **Other changes**
 
 - Propagated values may now be garbage collected if their associated `Var` object goes out of scope. 
 - :func:`spox.opsets.ai.v17.loop`, :func:`spox.opsets.ai.v19.loop` and :func:`spox.opsets.ai.v21.loop` will only infer shapes for loop carried dependencies if their shapes are unchanged across iterations.
+- Introduced an API to support custom backends for value propagation by extending `spox._future.BaseValuePropBackend``. 
 
 
 0.13.0 (2024-12-06)

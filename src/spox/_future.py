@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Module containing experimental Spox features that may be standard in the future."""
@@ -18,6 +18,12 @@ import spox._node
 import spox._value_prop
 from spox._graph import initializer as _initializer
 from spox._type_system import Tensor
+from spox._value_prop import ValuePropBackend
+from spox._value_prop_backend import (
+    BaseValuePropBackend,
+    OnnxruntimeValuePropBackend,
+    ReferenceValuePropBackend,
+)
 from spox._var import Var
 
 TypeWarningLevel = spox._node.TypeWarningLevel
@@ -35,19 +41,46 @@ def type_warning_level(level: TypeWarningLevel) -> Iterator[None]:
     set_type_warning_level(prev_level)
 
 
-ValuePropBackend = spox._value_prop.ValuePropBackend
+def set_value_prop_backend(
+    backend: ValuePropBackend | BaseValuePropBackend | None,
+) -> None:
+    if not isinstance(backend, BaseValuePropBackend):
+        warnings.warn(
+            "using '_future.set_value_prop_backend' with a '_future.ValuePropBackend' is deprecated and will be removed in the future",
+            DeprecationWarning,
+        )
 
+    new_backend: BaseValuePropBackend | None = None
+    if backend == spox._value_prop.ValuePropBackend.REFERENCE:
+        new_backend = spox._value_prop_backend.ReferenceValuePropBackend()
+    elif backend == spox._value_prop.ValuePropBackend.ONNXRUNTIME:
+        new_backend = spox._value_prop_backend.OnnxruntimeValuePropBackend()
+    elif isinstance(backend, BaseValuePropBackend):
+        new_backend = backend
 
-def set_value_prop_backend(backend: ValuePropBackend) -> None:
-    spox._value_prop._VALUE_PROP_BACKEND = backend
+    spox._value_prop_backend.set_value_prop_backend(new_backend)
 
 
 @contextmanager
-def value_prop_backend(backend: ValuePropBackend) -> Iterator[None]:
-    prev_backend = spox._value_prop._VALUE_PROP_BACKEND
-    set_value_prop_backend(backend)
-    yield
-    set_value_prop_backend(prev_backend)
+def value_prop_backend(
+    backend: ValuePropBackend | BaseValuePropBackend | None,
+) -> Iterator[None]:
+    if not isinstance(backend, BaseValuePropBackend):
+        warnings.warn(
+            "using '_future.value_prop_backend' with a 'spox._future.ValuePropBackend' is deprecated and will be removed in the future",
+            DeprecationWarning,
+        )
+
+    new_backend: spox._value_prop_backend.BaseValuePropBackend | None = None
+    if backend == spox._value_prop.ValuePropBackend.REFERENCE:
+        new_backend = spox._value_prop_backend.ReferenceValuePropBackend()
+    elif backend == spox._value_prop.ValuePropBackend.ONNXRUNTIME:
+        new_backend = spox._value_prop_backend.OnnxruntimeValuePropBackend()
+    elif isinstance(backend, BaseValuePropBackend):
+        new_backend = backend
+
+    with spox._value_prop_backend.value_prop_backend(new_backend):
+        yield
 
 
 def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
@@ -237,6 +270,9 @@ __all__ = [
     "initializer",
     # Value propagation backend
     "ValuePropBackend",
+    "BaseValuePropBackend",
+    "OnnxruntimeValuePropBackend",
+    "ReferenceValuePropBackend",
     "set_value_prop_backend",
     "value_prop_backend",
 ]
