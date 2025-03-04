@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -108,8 +108,7 @@ class ScopeSpace(Generic[H]):
         if value in self:
             if key != self[value]:
                 raise ScopeError(
-                    f"Attempt to implicitly rename {value} to {key} "
-                    f"from {self[value]}."
+                    f"Attempt to implicitly rename {value} to {key} from {self[value]}."
                 )
             return
         self.of_name[key] = value

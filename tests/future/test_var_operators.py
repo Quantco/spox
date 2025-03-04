@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 import operator
@@ -124,7 +124,7 @@ def test_var_operator_promotion_like_numpy(bin_op, lhs, rhs):
     with operator_overloading(op, type_promotion=True):
         spox_value = bin_op(op.const(np.array([lhs])), rhs)._get_value()
         numpy_value = bin_op(np.array([lhs]), rhs)
-        assert (
-            spox_value.dtype == numpy_value.dtype
-        ), f"{lhs!r}: {type(lhs)} | {rhs!r}: {type(rhs)}"
+        assert spox_value.dtype == numpy_value.dtype, (
+            f"{lhs!r}: {type(lhs)} | {rhs!r}: {type(rhs)}"
+        )
         assert np.isclose(spox_value, numpy_value).all()

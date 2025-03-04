@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -56,9 +56,9 @@ def assert_equal_value(var: Var, expected: ORTValue):
             )
     elif isinstance(var.type, _type_system.Sequence):
         assert isinstance(value, list), "value must be list when it is a Sequence"
-        assert isinstance(
-            expected, list
-        ), "expected value must be list when tested type is a Sequence"
+        assert isinstance(expected, list), (
+            "expected value must be list when tested type is a Sequence"
+        )
         assert len(value) == len(expected), "sequence length must match"
         for a, b in zip(value, expected):
             assert_equal_value(
