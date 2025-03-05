@@ -654,9 +654,12 @@ def main(
         if run_pre_commit_hooks(str(path)).returncode:
             print("Running second pass of pre-commit hooks...")
             if run_pre_commit_hooks(str(path)).returncode:
-                raise RuntimeError(
-                    "Pre-commit hooks failed twice. Is the generated code malformed?"
-                )
+                # Third pass may be necessary for license headers
+                print("Running third pass of pre-commit hooks...")
+                if run_pre_commit_hooks(str(path)).returncode:
+                    raise RuntimeError(
+                        "Pre-commit hooks failed twice. Is the generated code malformed?"
+                    )
         print("Done!")
 
     return schemas, f"spox.opset.{domain}.v{version}"

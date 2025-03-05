@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 import enum
@@ -196,13 +196,11 @@ def _run_onnxruntime(
     return output_feed
 
 
-def get_backend_calls() -> (
-    tuple[
-        Callable[..., RefValue],
-        Callable[..., dict[str, npt.ArrayLike]],
-        Callable[..., PropValue],
-    ]
-):
+def get_backend_calls() -> tuple[
+    Callable[..., RefValue],
+    Callable[..., dict[str, npt.ArrayLike]],
+    Callable[..., PropValue],
+]:
     wrap_feed: Callable[..., RefValue]
     run: Callable[..., dict[str, npt.ArrayLike]]
     unwrap_feed: Callable[..., PropValue]
