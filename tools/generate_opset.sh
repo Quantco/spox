@@ -2,7 +2,7 @@
 
 set -eux
 
-pip install .
-pre-commit install
-python tools/generate_opset.py
-git diff --exit-code
+pixi run postinstall
+pixi run pre-commit-install
+pixi run generate-opset
+pixi run pre-commit-run
