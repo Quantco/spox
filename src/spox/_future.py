@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Module containing experimental Spox features that may be standard in the future."""
@@ -98,7 +98,7 @@ class _NumpyLikeOperatorDispatcher:
         if self.type_promotion:
             target_type = np.dtype(np.result_type(*targets))
             if to_floating and not issubclass(target_type.type, np.floating):
-                target_type = np.float64
+                target_type = np.dtype("float64")
         else:
             dtypes = {dtype for dtype in targets if isinstance(dtype, np.dtype)}
             if len(dtypes) > 1:
