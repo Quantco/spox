@@ -71,9 +71,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@8eaba7c61d661f73d558b0b477156b7b62667fa4
         with:
-          environments:
-            - opset-generation
-            - default
+          environments: default opset-generation
       - name: Run code generation
         run: |
           pixi run -e ${{ matrix.environment }} python tools/generate_opset.py
