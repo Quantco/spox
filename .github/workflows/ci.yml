@@ -24,7 +24,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@92815284c57faa15cd896c4d5cfb2d59f32dc43d
+        uses: prefix-dev/setup-pixi@8eaba7c61d661f73d558b0b477156b7b62667fa4
         with:
           environments: default lint
       - name: pre-commit
@@ -52,7 +52,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@92815284c57faa15cd896c4d5cfb2d59f32dc43d
+        uses: prefix-dev/setup-pixi@8eaba7c61d661f73d558b0b477156b7b62667fa4
         with:
           environments: ${{ matrix.environment }}
       - name: Install repository
@@ -69,7 +69,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@92815284c57faa15cd896c4d5cfb2d59f32dc43d
+        uses: prefix-dev/setup-pixi@8eaba7c61d661f73d558b0b477156b7b62667fa4
         with:
           environments:
             - opset-generation
