@@ -74,5 +74,5 @@ jobs:
           environments: opset-generation default
       - name: Run code generation
         run: |
-          pixi run -e ${{ matrix.environment }} python tools/generate_opset.py
+          pixi run -e opset-generation python tools/generate_opset.py
           pixi run -e default pre-commit-run
