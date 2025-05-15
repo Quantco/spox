@@ -1153,7 +1153,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/rfc3339-validator-0.1.4-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rfc3986-validator-0.1.1-pyh9f0ad1d_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/roman-numerals-py-3.1.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rpds-py-0.24.0-py313h6023dc2_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rpds-py-0.25.0-py313h446dd6e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/send2trash-1.8.3-pyh0d859eb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/setuptools-80.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/setuptools-scm-8.3.1-pyhd8ed1ab_0.conda
@@ -14421,9 +14421,9 @@ packages:
   license: MIT
   size: 392219
   timestamp: 1747323051754
-- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rpds-py-0.24.0-py313h6023dc2_0.conda
-  sha256: a97403a8f9f4c9edac5352f8d77dd7a57bb3b55008326ee5148269ffc617fbbd
-  md5: 522d02185f4bf01d43c5721f11affee2
+- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rpds-py-0.25.0-py313h446dd6e_0.conda
+  sha256: cff30e39401f8db2d2b27f3cb7e2cecb8244deacf0ef2834611528fabd1092fe
+  md5: bc8d586d0373c1c7c6cc1ca7d1bd333a
   depends:
   - python
   - libgcc >=13
@@ -14431,9 +14431,8 @@ packages:
   constrains:
   - __glibc >=2.17
   license: MIT
-  license_family: MIT
-  size: 393888
-  timestamp: 1743037992491
+  size: 397215
+  timestamp: 1747323380197
 - conda: https://conda.anaconda.org/conda-forge/osx-64/rpds-py-0.25.0-py313h72dc32c_0.conda
   sha256: dc6a8d945ca53e39176f603e9d285aac1d22b49d04a8a4a1e9d7a1ac9b5b7274
   md5: 020c1798e4290155e9ab406b71ec45de
