@@ -5,12 +5,13 @@ platforms = ["osx-arm64", "osx-64", "linux-64", "linux-aarch64", "win-64"]
 
 [tasks]
 postinstall = "pip install --no-build-isolation --no-deps --disable-pip-version-check -e ."
+postinstall-onnx-rc = "pip install -i https://test.pypi.org/simple/ --pre onnx"
 
 [dependencies]
-python = ">=3.9"
+# we don't specify onnx here since we want to create test environments where we install it from pypi
 numpy = "*"
-onnx = "*"
 packaging = "*"
+python = ">=3.9"
 
 [host-dependencies]
 pip = "*"
@@ -43,11 +44,13 @@ numpydoc = "*"
 [feature.docs.tasks]
 build-docs = "cd docs && make html"
 
+[feature.onnx-conda.dependencies]
+onnx = "*"
+
 [feature.opset-generation.dependencies]
 pandoc = "*"
 jinja2 = "*"
 python = "3.9.*"
-onnx = "*"
 
 [feature.opset-generation.tasks]
 generate-opset = "./tools/generate_opset.sh"
@@ -75,17 +78,17 @@ python = "3.10.*"
 python = "3.11.*"
 [feature.py312.dependencies]
 python = "3.12.*"
-[feature.weekly.pypi-dependencies]
+[feature.onnx-weekly.pypi-dependencies]
 onnx-weekly = "*"
 
 [environments]
-default = ["test", "lint"]
-py39 = ["py39", "test"]
-py310 = ["py310", "test"]
-py311 = ["py311", "test"]
-py312 = ["py312", "test"]
-weekly = ["weekly", "py312", "test"]
-docs = ["docs"]
-build = ["build"]
-lint = ["lint", "py310"]
-opset-generation = ["opset-generation", "lint"]
+default = ["test", "lint", "onnx-conda"]
+py39 = ["py39", "test", "onnx-conda"]
+py310 = ["py310", "test", "onnx-conda"]
+py311 = ["py311", "test", "onnx-conda"]
+py312 = ["py312", "test", "onnx-conda"]
+onnx-weekly = ["py312", "test", "onnx-weekly"]
+docs = ["docs", "onnx-conda"]
+build = ["build", "onnx-conda"]
+lint = ["lint", "py310", "onnx-conda"]
+opset-generation = ["opset-generation", "lint", "onnx-conda"]
