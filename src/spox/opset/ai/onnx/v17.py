@@ -5213,7 +5213,10 @@ def clip(
     r"""
     Clip operator limits the given input within an interval. The interval is
     specified by the inputs 'min' and 'max'. They default to
-    numeric_limits::lowest() and numeric_limits::max(), respectively.
+    numeric_limits::lowest() and numeric_limits::max(), respectively. When
+    'min' is greater than 'max', the clip operator sets all the 'input'
+    values to the value of 'max'. Thus, this is equivalent to 'Min(max,
+    Max(input, min))'.
 
     Parameters
     ==========
@@ -5456,9 +5459,6 @@ def constant(
 
     Parameters
     ==========
-    sparse_value
-        Attribute.
-        The value for the elements of the output tensor in sparse format.
     value
         Attribute.
         The value for the elements of the output tensor.
@@ -7403,7 +7403,26 @@ def gather(
     one as axis=0) indexed by ``indices``, and concatenates them in an
     output tensor of rank q + (r - 1).
 
-    If ``axis = 0``, let ``k = indices[i_{0}, ..., i_{q-1}]`` then
+    It is an indexing operation that indexes into the input ``data`` along a
+    single (specified) axis. Each entry in ``indices`` produces a ``r-1``
+    dimensional slice of the input tensor. The entire operation produces,
+    conceptually, a ``q``-dimensional tensor of ``r-1`` dimensional slices,
+    which is arranged into a ``q + (r-1)``-dimensional tensor, with the
+    ``q`` dimensions taking the place of the original ``axis`` that is being
+    indexed into.
+
+    The following few examples illustrate how ``Gather`` works for specific
+    shapes of ``data``, ``indices``, and given value of ``axis``: \| data
+    shape \| indices shape \| axis \| output shape \| output equation \| \|
+    --- \| --- \| --- \| --- \| --- \| \| (P, Q) \| ( ) (a scalar) \| 0 \|
+    (Q) \| output[q] = data[indices, q] \| \| (P, Q, R) \| ( ) (a scalar) \|
+    1 \| (P, R) \| output[p, r] = data[p, indices, r] \| \| (P, Q) \| (R, S)
+    \| 0 \| (R, S, Q) \| output[r, s, q] = data[ [indices[r, s], q] \| \|
+    (P, Q) \| (R, S) \| 1 \| (P, R, S) \| output[p, r, s] = data[ p,
+    indices[r, s]] \|
+
+    More generally, if ``axis = 0``, let
+    ``k = indices[i_{0}, ..., i_{q-1}]`` then
     ``output[i_{0}, ..., i_{q-1}, j_{0}, ..., j_{r-2}] = input[k , j_{0}, ..., j_{r-2}]``:
 
     ::
@@ -7955,7 +7974,7 @@ def global_lp_pool(
     Signature: ``ai.onnx@2::GlobalLpPool``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
+     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
     input_prop_values = create_prop_dict(
         X=X,

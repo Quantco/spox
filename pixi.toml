@@ -53,7 +53,7 @@ jinja2 = "*"
 python = "3.9.*"
 
 [feature.opset-generation.tasks]
-generate-opset = "./tools/generate_opset.sh"
+generate-opset = "python ./tools/generate_opset.py"
 
 [feature.test.dependencies]
 pytest = "*"
