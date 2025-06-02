@@ -7,16 +7,20 @@
 Change log
 ==========
 
-0.14.0 (unreleased)
+0.14.0 (2025-06-03)
 -------------------
 
 **Bug fix**
 
 - Adds missing shape inference logic for :func:`spox.opsets.ai.v19.loop` and :func:`spox.opsets.ai.v21.loop`.
 
+**New feature**
+
+- The ``ai.onnx`` opset version 22 (released with ONNX 1.18) has been added to Spox.
+- Propagated values may now be garbage collected if their associated `Var` object goes out of scope.
+
 **Other changes**
 
-- Propagated values may now be garbage collected if their associated `Var` object goes out of scope. 
 - :func:`spox.opsets.ai.v17.loop`, :func:`spox.opsets.ai.v19.loop` and :func:`spox.opsets.ai.v21.loop` will only infer shapes for loop carried dependencies if their shapes are unchanged across iterations.
 
 
