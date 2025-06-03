@@ -27,7 +27,9 @@ jobs:
           name: artifact
           path: dist/*
 
-  publish:
+  # Calling the publish-action twice in the same job is not supported:
+  # https://github.com/pypa/gh-action-pypi-publish/issues/352
+  release-TestPyPi:
     name: Publish package
     if: startsWith(github.ref, 'refs/tags/')
     needs: [build]
@@ -44,5 +46,18 @@ jobs:
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
         with:
           repository-url: https://test.pypi.org/legacy/
+  release-PyPi:
+    name: Publish package
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment: pypi
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: artifact
+          path: dist
       - name: Publish package on PyPi
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
