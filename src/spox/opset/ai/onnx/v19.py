@@ -96,7 +96,6 @@ from spox.opset.ai.onnx.v18 import (
     _Greater,
     _GreaterOrEqual,
     _GridSample,
-    _GroupNormalization,
     _HammingWindow,
     _HannWindow,
     _Hardmax,
@@ -259,7 +258,6 @@ from spox.opset.ai.onnx.v18 import (
     greater,
     greater_or_equal,
     grid_sample,
-    group_normalization,
     gru,
     hamming_window,
     hann_window,
@@ -1185,9 +1183,6 @@ def constant(
 
     Parameters
     ==========
-    sparse_value
-        Attribute.
-        The value for the elements of the output tensor in sparse format.
     value
         Attribute.
         The value for the elements of the output tensor.
@@ -2885,7 +2880,6 @@ _OPERATORS = {
     "Greater": _Greater,
     "GreaterOrEqual": _GreaterOrEqual,
     "GridSample": _GridSample,
-    "GroupNormalization": _GroupNormalization,
     "HammingWindow": _HammingWindow,
     "HannWindow": _HannWindow,
     "HardSigmoid": _HardSigmoid,
@@ -3073,7 +3067,6 @@ _CONSTRUCTORS = {
     "Greater": greater,
     "GreaterOrEqual": greater_or_equal,
     "GridSample": grid_sample,
-    "GroupNormalization": group_normalization,
     "HammingWindow": hamming_window,
     "HannWindow": hann_window,
     "HardSigmoid": hard_sigmoid,

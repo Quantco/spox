@@ -1087,9 +1087,6 @@ def constant(
 
     Parameters
     ==========
-    sparse_value
-        Attribute.
-        The value for the elements of the output tensor in sparse format.
     value
         Attribute.
         The value for the elements of the output tensor.
@@ -1217,14 +1214,12 @@ def dequantize_linear(
     the quantization's granularity: a scalar for per-tensor/per-layer
     quantization, a 1-D tensor for per-axis quantization, or have a rank
     identical to the input for blocked quantization. See QuantizeLinear for
-    details on quantization granularity.
-
-    ``x_zero_point`` and ``x`` must have the same type. ``x`` and ``y`` must
-    have the same shape. In the case of dequantizing ``int32``, there's no
-    zero point (zero point is supposed to be 0). ``zero-point`` is usually
-    not used in the case of float8 types quantization, but the
-    dequantization formula remains the same for consistency, and ``x_scale``
-    still determines the output type.
+    details on quantization granularity. ``x_zero_point`` and ``x`` must
+    have the same type. ``x`` and ``y`` must have the same shape. In the
+    case of dequantizing ``int32``, there's no zero point (zero point is
+    supposed to be 0). ``zero-point`` is usually not used in the case of
+    float8 types quantization, but the dequantization formula remains the
+    same for consistency, and ``x_scale`` still determines the output type.
 
     Parameters
     ==========
@@ -1369,9 +1364,9 @@ def group_normalization(
        y = scale * (x - mean) / sqrt(variance + epsilon) + bias,
 
     where the mean and variance are computed per instance per group of
-    channels, and ``scale`` and ``bias`` should be specified for each group
-    of channels. The number of groups ``num_groups`` should be divisible by
-    the number of channels so that there are an equal number of channels per
+    channels, and ``scale`` and ``bias`` should be specified for each
+    channel. The number of groups ``num_groups`` should be divisible by the
+    number of channels so that there are an equal number of channels per
     group.
 
     The overall computation has two stages: the first stage normalizes the
@@ -2073,29 +2068,23 @@ def quantize_linear(
     scale, and a zero point to compute the low-precision/quantized tensor.
     The scale factor and zero point must have the same shape, determining
     the quantization granularity. The quantization formula is
-    ``y = saturate((x / y_scale) + y_zero_point)``.
-
-    Saturation is done according to:
+    ``y = saturate((x / y_scale) + y_zero_point)``. Saturation is done
+    according to:
 
     - uint16: [0, 65535]
     - int16: [-32768, 32767]
     - uint8: [0, 255]
     - int8: [-128, 127]
     - uint4: [0, 15]
-    - int4: [-8, 7]
-
-    For ``(x / y_scale)``, it rounds to the nearest even. Refer to
-    https://en.wikipedia.org/wiki/Rounding for details.
-
-    ``y_zero_point`` and ``y`` must have the same type. ``y_zero_point`` is
-    usually not used for quantization to float8 types, but the quantization
-    formula remains the same for consistency, and the type of the attribute
-    ``y_zero_point`` still determines the quantization type.
-
-    There are three supported quantization granularities, determined by the
-    shape of ``y_scale``. In all cases, ``y_zero_point`` must have the same
-    shape as ``y_scale``.
-
+    - int4: [-8, 7] For ``(x / y_scale)``, it rounds to the nearest even.
+      Refer to https://en.wikipedia.org/wiki/Rounding for details.
+      ``y_zero_point`` and ``y`` must have the same type. ``y_zero_point``
+      is usually not used for quantization to float8 types, but the
+      quantization formula remains the same for consistency, and the type of
+      the attribute ``y_zero_point`` still determines the quantization type.
+      There are three supported quantization granularities, determined by
+      the shape of ``y_scale``. In all cases, ``y_zero_point`` must have the
+      same shape as ``y_scale``.
     - Per-tensor (per-layer) quantization: ``y_scale`` is a scalar.
     - Per-axis quantization: The scale must be a 1-D tensor, with the length
       of the quantization axis. For an input shape

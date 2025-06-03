@@ -118,6 +118,8 @@ _TEMPLATE_DIR = Path(__file__).parent / "templates/"
 class Attribute:
     # The name of the attribute used as argument and member name
     name: str
+    # Unformatted docstring
+    description: str
     # Default value used in the constructor function
     constructor_default: str | None
     # Type hint used in the constructor function.  May be wrapped in `Optional`.
@@ -187,9 +189,10 @@ def get_attributes(
                 constructor_default=default,
                 subgraph_solution=subgraph_solutions.get(name),
                 allow_extra=allow_extra,
+                description=attr.description,
             )
         )
-    return out
+    return sorted(out, key=lambda el: el.name)
 
 
 def _get_default_value(
@@ -725,6 +728,18 @@ if __name__ == "__main__":
         attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
         gen_docstrings=gen_all_docstrings,
         inherited_schemas={s: ai_onnx_v20_module for s in ai_onnx_v20_schemas},
+    )
+    ai_onnx_v22_schemas, ai_onnx_v22_module = main(
+        "ai.onnx",
+        22,
+        extras=["const"],
+        type_inference={"Loop": "loop16-fix"},
+        value_propagation={"Constant": "constant13"},
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v21_module for s in ai_onnx_v21_schemas},
     )
     ai_onnx_ml_v3_schemas, ai_onnx_ml_v3_module = main(
         "ai.onnx.ml",

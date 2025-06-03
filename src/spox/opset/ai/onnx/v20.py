@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
@@ -87,7 +87,6 @@ from spox.opset.ai.onnx.v19 import (
     _GlobalMaxPool,
     _Greater,
     _GreaterOrEqual,
-    _GroupNormalization,
     _HammingWindow,
     _HannWindow,
     _Hardmax,
@@ -260,7 +259,6 @@ from spox.opset.ai.onnx.v19 import (
     global_max_pool,
     greater,
     greater_or_equal,
-    group_normalization,
     gru,
     hamming_window,
     hann_window,
@@ -1708,7 +1706,6 @@ _OPERATORS = {
     "Greater": _Greater,
     "GreaterOrEqual": _GreaterOrEqual,
     "GridSample": _GridSample,
-    "GroupNormalization": _GroupNormalization,
     "HammingWindow": _HammingWindow,
     "HannWindow": _HannWindow,
     "HardSigmoid": _HardSigmoid,
@@ -1902,7 +1899,6 @@ _CONSTRUCTORS = {
     "Greater": greater,
     "GreaterOrEqual": greater_or_equal,
     "GridSample": grid_sample,
-    "GroupNormalization": group_normalization,
     "HammingWindow": hamming_window,
     "HannWindow": hann_window,
     "HardSigmoid": hard_sigmoid,

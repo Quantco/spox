@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
@@ -465,29 +465,6 @@ class _Col2Im(StandardNode):
         output: _VarInfo
 
     op_type = OpType("Col2Im", "", 18)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-
-class _GroupNormalization(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        epsilon: AttrFloat32
-        num_groups: AttrInt64
-
-    @dataclass
-    class Inputs(BaseInputs):
-        X: _VarInfo
-        scale: _VarInfo
-        bias: _VarInfo
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        Y: _VarInfo
-
-    op_type = OpType("GroupNormalization", "", 18)
 
     attrs: Attributes
     inputs: Inputs
@@ -1108,13 +1085,22 @@ def center_crop_pad(
     r"""
     Center crop or pad an input to given dimensions.
 
-    The crop/pad dimensions can be specified for a subset of the ``axes``.
-    Non-specified dimensions will not be cropped or padded.
+    The crop/pad dimensions can be specified for a subset of the ``axes``;
+    unspecified dimensions will remain unchanged.
 
-    If the input dimensions are bigger than the crop shape, a centered
-    cropping window is extracted from the input. If the input dimensions are
-    smaller than the crop shape, the input is padded on each side equally,
-    so that the input is centered in the output.
+    If the input dimensions are larger than the target crop dimensions, a
+    centered cropping window will be extracted from the input. The starting
+    value for the cropping window is rounded down, which means that if the
+    difference between the input shape and the crop shape is odd, the
+    cropping window will be shifted half a pixel to the left of the input
+    center.
+
+    If the input dimensions are smaller than the target crop dimensions, the
+    input will be padded equally on both sides to center it in the output.
+    In cases where the total number of padding pixels is odd, an additional
+    pixel will be added to the right side.
+
+    The padding value used is zero.
 
     Parameters
     ==========
@@ -1266,94 +1252,6 @@ def col2_im(
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .output
-    )
-    return output_vars  # type: ignore
-
-
-def group_normalization(
-    X: Var,
-    scale: Var,
-    bias: Var,
-    *,
-    epsilon: float = 9.999999747378752e-06,
-    num_groups: int,
-) -> Var:
-    r"""
-    A GroupNormalization function. Carries out group normalization as
-    described in the paper https://arxiv.org/abs/1803.08494
-
-    This operator transforms input according to
-
-    ::
-
-       y = scale * (x - mean) / sqrt(variance + epsilon) + bias,
-
-    where the mean and variance are computed per instance per group of
-    channels, and ``scale`` and ``bias`` should be specified for each group
-    of channels. The number of groups ``num_groups`` should be divisible by
-    the number of channels so that there are an equal number of channels per
-    group.
-
-    When the number of groups is the same as the number of channels, this
-    operator is equivalent to InstanceNormalization. When there is only one
-    group, this operator is equivalent to LayerNormalization.
-
-    Parameters
-    ==========
-    X
-        Type T.
-        Input data tensor. Dimensions for image cases are ``(N x C x H x W)``,
-        where ``N`` is the batch size, ``C`` is the number of channels, and
-        ``H`` and ``W`` are the height and width of the data. Statistics are
-        computed for every group of channels over ``C``, ``H``, and ``W``. For
-        non-image cases, the dimensions are in the form of
-        ``(N x C x D1 x D2 ... Dn)``.
-    scale
-        Type T.
-        Scale tensor of shape ``(num_groups)``.
-    bias
-        Type T.
-        Bias tensor of shape ``(num_groups)``.
-    epsilon
-        Attribute.
-        The epsilon value to use to avoid division by zero.
-    num_groups
-        Attribute.
-        The number of groups of channels. It should be a divisor of the number
-        of channels ``C``.
-
-    Returns
-    =======
-    Y : Var
-        Type T.
-        The output tensor of the same shape as ``X``.
-
-    Notes
-    =====
-    Signature: ``ai.onnx@18::GroupNormalization``.
-
-    Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
-    """
-    input_prop_values = create_prop_dict(
-        X=X,
-        scale=scale,
-        bias=bias,
-    )
-    output_vars = (
-        _GroupNormalization(
-            _GroupNormalization.Attributes(
-                epsilon=AttrFloat32(epsilon, name="epsilon"),
-                num_groups=AttrInt64(num_groups, name="num_groups"),
-            ),
-            _GroupNormalization.Inputs(
-                X=unwrap_vars(X),
-                scale=unwrap_vars(scale),
-                bias=unwrap_vars(bias),
-            ),
-        )
-        .get_output_vars(input_prop_values=input_prop_values)
-        .Y
     )
     return output_vars  # type: ignore
 
@@ -3123,7 +3021,6 @@ _OPERATORS = {
     "Greater": _Greater,
     "GreaterOrEqual": _GreaterOrEqual,
     "GridSample": _GridSample,
-    "GroupNormalization": _GroupNormalization,
     "HammingWindow": _HammingWindow,
     "HannWindow": _HannWindow,
     "HardSigmoid": _HardSigmoid,
@@ -3310,7 +3207,6 @@ _CONSTRUCTORS = {
     "Greater": greater,
     "GreaterOrEqual": greater_or_equal,
     "GridSample": grid_sample,
-    "GroupNormalization": group_normalization,
     "HammingWindow": hamming_window,
     "HannWindow": hann_window,
     "HardSigmoid": hard_sigmoid,

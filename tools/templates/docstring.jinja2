@@ -14,7 +14,7 @@ Parameters
 {{ param.description | format_github_markdown }}
 {% endfilter %}
 {% endfor %}
-{% for attr in schema.attributes.values() %}
+{% for attr in attributes %}
 {{ attr.name }}
 {% filter indent(width=4) %}
     Attribute.
@@ -30,7 +30,7 @@ Parameters
     {% if (attr.attr_constructor == 'AttrGraph') and (attr.subgraph_solution is none) %}
 {{ attr.name }}_input_types: Iterable[Type]
     Specifies the input types for the subgraph ``{{ attr.name }}``.
-    Non-standard parameter created by the opset generator, as inference (a solution) it was not implemented or is impossible.
+    Non-standard parameter created by the opset generator, as constructing a graph without this information is not implemented or impossible.
     {% endif %}
 {% endfor %}
 {% endif %}
