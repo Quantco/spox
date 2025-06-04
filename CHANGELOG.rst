@@ -7,6 +7,13 @@
 Change log
 ==========
 
+
+0.14.1 (2025-06-04)
+-------------------
+
+Technical release to address a PyPI publishing issue.
+
+
 0.14.0 (2025-06-03)
 -------------------
 
