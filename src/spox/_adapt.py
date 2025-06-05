@@ -14,6 +14,7 @@ from ._internal_op import _InternalNode
 from ._node import Node
 from ._schemas import SCHEMAS
 from ._scope import Scope
+from ._utils import make_model
 from ._var import _VarInfo
 
 
@@ -45,7 +46,7 @@ def adapt_node(
     except ValueError:
         return None
 
-    source_model = onnx.helper.make_model(
+    source_model = make_model(
         onnx.helper.make_graph(
             [proto],
             "spox__singleton_adapter_graph",

@@ -3,10 +3,11 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import numpy.typing as npt
 import onnx
-from onnx import TensorProto
 
 
 def tensor_type_to_dtype(ttype: int) -> np.dtype:
@@ -42,7 +43,7 @@ def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
         raise TypeError(err_msg)
 
 
-def from_array(arr: np.ndarray, name: str | None = None) -> TensorProto:
+def from_array(arr: np.ndarray, name: str | None = None) -> onnx.TensorProto:
     """Convert the given ``numpy.array`` into an ``onnx.TensorProto``.
 
     As it may be useful to name the TensorProto (e.g. in
@@ -64,3 +65,27 @@ def from_array(arr: np.ndarray, name: str | None = None) -> TensorProto:
         ).flatten(),
         raw=False,
     )
+
+
+def make_model(
+    graph: onnx.GraphProto,
+    *,
+    opset_imports: list[onnx.OperatorSetIdProto] | None = None,
+    producer_name: str | None = None,
+    doc_string: str | None = None,
+    functions: list[onnx.FunctionProto] | None = None,
+) -> onnx.ModelProto:
+    """Like ``onnx.helper.make_model`` but with a consistent and reasonable default IR version."""
+    ir_version = 10
+
+    kwargs: dict[str, Any] = {}
+    if opset_imports is not None:
+        kwargs["opset_imports"] = opset_imports
+    if producer_name is not None:
+        kwargs["producer_name"] = producer_name
+    if doc_string is not None:
+        kwargs["doc_string"] = doc_string
+    if functions is not None:
+        kwargs["functions"] = functions
+
+    return onnx.helper.make_model(graph, ir_version=ir_version, **kwargs)

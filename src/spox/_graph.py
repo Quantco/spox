@@ -23,7 +23,7 @@ from ._internal_op import Argument, _Initializer
 from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
-from ._utils import from_array
+from ._utils import from_array, make_model
 from ._var import Var, _VarInfo
 
 
@@ -374,7 +374,6 @@ class Graph:
         model_doc_string: str = "",
         infer_shapes: bool = False,
         check_model: Literal[0] | Literal[1] | Literal[2] = 1,
-        ir_version: int = 8,
         concrete: bool = True,
     ) -> onnx.ModelProto:
         """
@@ -425,7 +424,7 @@ class Graph:
                 )
             function_protos[key] = proto
 
-        model = onnx.helper.make_model(
+        model = make_model(
             self.to_onnx(concrete=concrete),
             producer_name=producer_name,
             doc_string=model_doc_string,
@@ -434,7 +433,6 @@ class Graph:
                 onnx.helper.make_operatorsetid(domain, version)
                 for domain, version in opsets.items()
             ],
-            ir_version=ir_version,
         )
 
         if infer_shapes:

@@ -19,6 +19,7 @@ from spox._future import initializer
 from spox._graph import arguments, results
 from spox._node import OpType
 from spox._standard import StandardNode
+from spox._utils import make_model
 from spox._var import _VarInfo
 
 
@@ -194,7 +195,7 @@ def test_inline_model_custom_node_only():
         )
     ]
 
-    model = onnx.helper.make_model(
+    model = make_model(
         onnx.helper.make_graph(
             [node],
             "graph",
@@ -236,7 +237,7 @@ def test_inline_model_custom_node_nested(old_squeeze: onnx.ModelProto):
         )
     ]
 
-    model = onnx.helper.make_model(
+    model = make_model(
         onnx.helper.make_graph(
             [node],
             "graph",

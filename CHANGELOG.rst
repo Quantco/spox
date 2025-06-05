@@ -7,6 +7,13 @@
 Change log
 ==========
 
+0.15.0 (2025-06-05)
+-------------------
+
+**Bug fix**
+
+- All models (including those used for value propagation operations) are now consistently built using IR version 10 introduced in ONNX 1.16.0. Previously, models built using :func:`spox.build` used IR version 8.
+
 
 0.14.1 (2025-06-04)
 -------------------
