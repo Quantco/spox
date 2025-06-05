@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -75,8 +75,8 @@ def make_model(
     doc_string: str | None = None,
     functions: list[onnx.FunctionProto] | None = None,
 ) -> onnx.ModelProto:
-    """Like ``onnx.helper.make_model`` but with a consistent and reasonable default IR version."""
-    ir_version = 10
+    """Like ``onnx.helper.make_model`` but with a consistent and conservative IR version that works on older runtimes."""
+    ir_version = 8
 
     kwargs: dict[str, Any] = {}
     if opset_imports is not None:
