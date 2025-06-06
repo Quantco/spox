@@ -41,7 +41,7 @@ jobs:
           - py310
           - py311
           - py312
-          - min-onnxrunntime
+          - min-onnxruntime
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
