@@ -12,6 +12,7 @@ import spox.opset.ai.onnx.v20 as op
 from spox import Var, _type_system
 from spox._graph import arguments, results
 from spox._shape import Shape
+from spox._utils import make_model
 from spox._value_prop import ORTValue, PropValue
 from spox._var import _VarInfo
 
@@ -216,7 +217,7 @@ def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
         model_output,
     )
 
-    model = onnx.helper.make_model(
+    model = make_model(
         graph,
         opset_imports=[
             onnx.helper.make_opsetid("", 18),
