@@ -21,7 +21,7 @@ from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
-from ._utils import from_array
+from ._utils import from_array, make_model
 from ._value_prop import PropDict, PropValue, PropValueType
 
 if TYPE_CHECKING:
@@ -144,7 +144,7 @@ class StandardNode(Node):
             initializers,
         )
         # Subgraph internals are hidden by make_dummy_subgraph - so we don't care about subgraphs' opset requirements
-        model = onnx.helper.make_model(
+        model = make_model(
             graph,
             opset_imports=[
                 onnx.helper.make_operatorsetid(

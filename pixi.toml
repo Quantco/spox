@@ -62,7 +62,7 @@ pytest-json-report = "*"
 onnxruntime = "*"
 
 [feature.test.tasks]
-test = "pytest -nauto"
+test = "pytest"
 
 [feature.build.dependencies]
 python-build = "*"
