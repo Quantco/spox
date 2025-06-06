@@ -9,7 +9,7 @@ import spox
 import spox._future
 import spox.opset.ai.onnx.ml.v3 as ml
 import spox.opset.ai.onnx.v20 as op
-from spox import Var, _type_system
+from spox import Optional, Sequence, Tensor, Var, argument
 from spox._graph import arguments, results
 from spox._shape import Shape
 from spox._utils import make_model
@@ -21,10 +21,12 @@ from spox._var import _VarInfo
     params=[
         spox._future.ValuePropBackend.ONNXRUNTIME,
         spox._future.ValuePropBackend.REFERENCE,
-    ]
+    ],
+    autouse=True,
 )
-def value_prop_backend(request):
-    return request.param
+def backend(request):
+    with spox._future.value_prop_backend(request.param):
+        yield
 
 
 def dummy_var(typ=None, value=None):
@@ -43,19 +45,19 @@ def assert_equal_value(var: Var, expected: ORTValue):
     """
     assert var._value is not None, "var.value expected to be known"
     value = var._value.to_ort_value()
-    if isinstance(var.type, _type_system.Tensor):
+    if isinstance(var.type, Tensor):
         expected = np.array(expected)
         assert var.type.dtype.type == expected.dtype.type, "element type must match"
         assert Shape.from_simple(expected.shape) <= var.type._shape, "shape must match"
         np.testing.assert_allclose(value, expected)
-    elif isinstance(var.type, _type_system.Optional):
+    elif isinstance(var.type, Optional):
         if expected is None:
             assert value is None, "value must be Nothing when optional is empty"
         else:
             assert_equal_value(
                 dummy_var(var.type.elem_type, var._value.value), expected
             )
-    elif isinstance(var.type, _type_system.Sequence):
+    elif isinstance(var.type, Sequence):
         assert isinstance(value, list), "value must be list when it is a Sequence"
         assert isinstance(expected, list), (
             "expected value must be list when tested type is a Sequence"
@@ -73,7 +75,7 @@ def assert_equal_value(var: Var, expected: ORTValue):
 
 
 def test_sanity_no_prop():
-    (x,) = arguments(x=_type_system.Tensor(np.int64, ()))
+    (x,) = arguments(x=Tensor(np.int64, ()))
     op.add(x, x)
 
 
@@ -113,12 +115,12 @@ def test_optional():
 
 
 def test_empty_optional():
-    assert_equal_value(op.optional(type=_type_system.Tensor(np.float32, ())), None)
+    assert_equal_value(op.optional(type=Tensor(np.float32, ())), None)
 
 
 def test_empty_optional_has_no_element():
     assert_equal_value(
-        op.optional_has_element(op.optional(type=_type_system.Tensor(np.float32, ()))),
+        op.optional_has_element(op.optional(type=Tensor(np.float32, ()))),
         False,
     )
 
@@ -152,8 +154,8 @@ def test_variadict_max():
 
 def test_with_reconstruct():
     a, b = arguments(
-        a=_type_system.Tensor(np.int64, ()),
-        b=_type_system.Tensor(np.int64, ()),
+        a=Tensor(np.int64, ()),
+        b=Tensor(np.int64, ()),
     )
     c = op.add(a, b)
     graph = (
@@ -193,9 +195,7 @@ def test_propagated_value_does_not_alias_dtype():
     assert_equal_value(op.const(x), np.array(x).astype(np.uint64))
 
 
-def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
-    spox._future.set_value_prop_backend(value_prop_backend)
-
+def test_value_propagation_does_not_fail_on_unseen_opsets():
     model_input = [onnx.helper.make_tensor_value_info("X", elem_type=8, shape=("X",))]
     model_output = [
         onnx.helper.make_tensor_value_info("y", elem_type=8, shape=("y", "max_words"))
@@ -228,7 +228,18 @@ def test_value_propagation_does_not_fail_on_unseen_opsets(value_prop_backend):
     spox.inline(model)(X=op.const(["Test Test"], dtype=np.str_))
 
 
-def test_strings(value_prop_backend):
+def test_value_propagation_across_inline():
+    def make_model() -> onnx.ModelProto:
+        a = argument(Tensor(np.float64, ("N",)))
+        return spox.build({"a": a}, {"b": op.add(a, a)})
+
+    a = op.const([1.0], np.float64)
+    (c,) = spox.inline(make_model())(a=a).values()
+
+    assert_equal_value(c, np.asarray([2.0]))
+
+
+def test_strings():
     x, y = op.const("foo"), op.const("bar")
     assert op.string_concat(x, y)._value.value == "foobar"  # type: ignore
 
