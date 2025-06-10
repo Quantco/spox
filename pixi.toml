@@ -80,6 +80,8 @@ python = "3.11.*"
 python = "3.12.*"
 [feature.onnx-weekly.pypi-dependencies]
 onnx-weekly = "*"
+[feature.min-onnxruntime.dependencies]
+onnxruntime = "==1.20.1"
 
 [environments]
 default = ["test", "lint", "onnx-conda"]
@@ -88,6 +90,7 @@ py310 = ["py310", "test", "onnx-conda"]
 py311 = ["py311", "test", "onnx-conda"]
 py312 = ["py312", "test", "onnx-conda"]
 onnx-weekly = ["py312", "test", "onnx-weekly"]
+min-onnxruntime = ["min-onnxruntime", "test", "onnx-conda"]
 docs = ["docs", "onnx-conda"]
 build = ["build", "onnx-conda"]
 lint = ["lint", "py310", "onnx-conda"]
