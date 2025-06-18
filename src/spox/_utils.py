@@ -50,8 +50,20 @@ def from_array(arr: np.ndarray, name: str | None = None) -> onnx.TensorProto:
     initializers), there is a ``name`` parameter.
 
     This function differs from ``onnx.numpy_helper.from_array`` by not
-    using the ``raw_data`` field.
+    using the ``raw_data`` field for small arrays with less then 100
+    elements.
     """
+    # Using raw=True does not allow for meaningful inspection of the
+    # values in netron and elsewhere. However, creating large protobuf
+    # tensors with `raw=False` is an order of magnitude slower for
+    # large tensors. The following makes the compromise that large
+    # numerical arrays can be encoded in the raw format since they
+    # defy manual inspection anyhow. Creating the tensor is still
+    # rather involved and also requires handling of endianess. We thus
+    # still fall back to using `onnx.numpy_helper.from_array`, which
+    # uses raw=True under the hood.
+    if arr.size > 100 and arr.dtype not in [np.str_, np.object_]:
+        return onnx.numpy_helper.from_array(arr, name=name)
     cast_to_bytes = False
     if arr.dtype.type in [np.str_, np.object_]:
         cast_to_bytes = True

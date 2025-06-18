@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.16.0 (2025-06-19)
+-------------------
+
+**New feature**
+
+- The instantiation time of constant numerical tensors with more than 100 elements has been significantly reduced by encoding their payload as raw bytes.
+
+
 0.15.0 (2025-06-06)
 -------------------
 

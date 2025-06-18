@@ -245,3 +245,16 @@ def test_strings():
 
     x, y = op.const(["foo"]), op.const(["bar"])
     np.testing.assert_equal(op.string_concat(x, y)._value.value, np.array(["foobar"]))  # type: ignore
+
+
+@pytest.mark.parametrize("dtype", [np.int32, np.float32])
+def test_tensor_raw_bytes(dtype):
+    # - Test on integers and floats to check for possible issues with
+    # endianess.
+    # - The size has to be large enough to trigger the raw=True fallback
+    # in `spox._utils.from_array`.
+    x = np.ones((10_000,), dtype=dtype)
+    var = op.const(x)
+
+    candidate = op.add(var, var)._value.value  # type: ignore
+    np.testing.assert_equal(candidate, x + x)
