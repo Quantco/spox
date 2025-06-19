@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Module implementing a base for standard ONNX operators, which use the functionality of ONNX node-level inference."""
@@ -13,6 +13,7 @@ import onnx
 import onnx.reference
 import onnx.shape_inference
 from onnx.defs import OpSchema
+from onnx.numpy_helper import from_array
 
 from . import _value_prop
 from ._exceptions import InferenceError
@@ -21,7 +22,7 @@ from ._schemas import SCHEMAS
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
-from ._utils import from_array, make_model
+from ._utils import make_model
 from ._value_prop import PropDict, PropValue, PropValueType
 
 if TYPE_CHECKING:
