@@ -18,10 +18,11 @@ from onnx.helper import (
     make_sequence_type_proto,
     make_tensor_type_proto,
 )
+from onnx.numpy_helper import from_array
 from packaging import version
 
 from spox import _type_system
-from spox._utils import dtype_to_tensor_type, from_array
+from spox._utils import dtype_to_tensor_type
 
 S = TypeVar("S")
 T = TypeVar("T")

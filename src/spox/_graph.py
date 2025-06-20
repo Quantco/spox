@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Internal module implementing the low-level Graph object and functions for creating arguments and Graphs."""
@@ -14,6 +14,7 @@ from typing import Callable, Literal
 import numpy as np
 import onnx
 import onnx.shape_inference
+from onnx.numpy_helper import from_array
 
 from . import _build
 from ._adapt import adapt_best_effort
@@ -23,7 +24,7 @@ from ._internal_op import Argument, _Initializer
 from ._node import Node
 from ._schemas import max_opset_policy
 from ._type_system import Tensor, Type
-from ._utils import from_array, make_model
+from ._utils import make_model
 from ._var import Var, _VarInfo
 
 

@@ -5,12 +5,12 @@ import numpy as np
 import onnx
 import onnx.parser
 import pytest
+from onnx.numpy_helper import from_array
 
 import spox.opset.ai.onnx.v17 as op
 from spox import Tensor, Var, argument, build, inline
 from spox._graph import arguments, results
 from spox._inline import rename_in_graph
-from spox._utils import from_array
 
 
 @pytest.fixture

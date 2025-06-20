@@ -43,30 +43,6 @@ def dtype_to_tensor_type(dtype_like: npt.DTypeLike) -> int:
         raise TypeError(err_msg)
 
 
-def from_array(arr: np.ndarray, name: str | None = None) -> onnx.TensorProto:
-    """Convert the given ``numpy.array`` into an ``onnx.TensorProto``.
-
-    As it may be useful to name the TensorProto (e.g. in
-    initializers), there is a ``name`` parameter.
-
-    This function differs from ``onnx.numpy_helper.from_array`` by not
-    using the ``raw_data`` field.
-    """
-    cast_to_bytes = False
-    if arr.dtype.type in [np.str_, np.object_]:
-        cast_to_bytes = True
-    return onnx.helper.make_tensor(
-        name=name or "",
-        data_type=dtype_to_tensor_type(arr.dtype),
-        dims=arr.shape,
-        # make_tensor fails on scalars. We fix it by calling flatten
-        vals=(
-            np.char.encode(arr, encoding="utf-8") if cast_to_bytes else arr
-        ).flatten(),
-        raw=False,
-    )
-
-
 def make_model(
     graph: onnx.GraphProto,
     *,

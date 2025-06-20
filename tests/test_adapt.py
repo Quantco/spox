@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from collections.abc import Iterable
@@ -9,6 +9,7 @@ import onnx
 import onnx.parser
 import onnxruntime as ort
 import pytest
+from onnx.numpy_helper import to_array
 
 import spox.opset.ai.onnx.v18 as op18
 import spox.opset.ai.onnx.v19 as op19
@@ -174,7 +175,7 @@ def test_adapt_node_initializer():
     d = op19.identity(a)
 
     model = build({"a": a}, {"b": b, "c": c, "d": d})
-    np.testing.assert_allclose(model.graph.initializer[0].float_data, init_data)
+    np.testing.assert_allclose(to_array(model.graph.initializer[0]), init_data)
 
 
 def test_inline_model_custom_node_only():
