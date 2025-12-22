@@ -17067,7 +17067,7 @@ def xor(
     return output_vars  # type: ignore
 
 
-def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+def const(value: npt.ArrayLike, dtype: npt.DTypeLike | None = None) -> Var:
     """
     Convenience function for creating constants.
 
