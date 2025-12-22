@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
@@ -3346,7 +3346,7 @@ def unsqueeze(
     return output_vars  # type: ignore
 
 
-def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+def const(value: npt.ArrayLike, dtype: npt.DTypeLike | None = None) -> Var:
     """
     Convenience function for creating constants.
 
