@@ -37,10 +37,8 @@ jobs:
           - macos-latest
           - windows-latest
         environment:
-          - py39
           - py310
-          - py311
-          - py312
+          - default
           - min-onnxruntime
     steps:
       - name: Checkout branch

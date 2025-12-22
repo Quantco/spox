@@ -50,7 +50,7 @@ def value_prop_backend(backend: ValuePropBackend) -> Iterator[None]:
     set_value_prop_backend(prev_backend)
 
 
-def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+def initializer(value: npt.ArrayLike, dtype: npt.DTypeLike | None = None) -> Var:
     """
     Create a Var with a constant value.
 
