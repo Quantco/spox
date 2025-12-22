@@ -11,7 +11,7 @@ postinstall-onnx-rc = "pip install -i https://test.pypi.org/simple/ --pre onnx"
 # we don't specify onnx here since we want to create test environments where we install it from pypi
 numpy = "*"
 packaging = "*"
-python = ">=3.9"
+python = ">=3.10"
 
 [host-dependencies]
 pip = "*"
