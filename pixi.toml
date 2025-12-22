@@ -12,6 +12,7 @@ postinstall-onnx-rc = "pip install -i https://test.pypi.org/simple/ --pre onnx"
 numpy = "*"
 packaging = "*"
 python = ">=3.10"
+ml_dtypes = ">=0.5.1"
 
 [host-dependencies]
 pip = "*"
