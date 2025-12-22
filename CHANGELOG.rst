@@ -10,9 +10,17 @@ Change log
 0.17.0 (unreleased)
 -------------------
 
-**New feature**
+**New features**
 
 - Added support for version 23 and 24 of opset ``ai.onnx``.
+- Added support for the following data types via the ``ml_dtypes`` package:
+  - ``bfloat16``
+  - ``float8_e4m3fn``
+  - ``float8_e4m3fnuz``
+  - ``float8_e5m2``
+  - ``float8_e5m2fnuz``
+  - ``uint4``
+  - ``int4``
 
 **Other change**
 

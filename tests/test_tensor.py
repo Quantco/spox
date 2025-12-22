@@ -1,6 +1,7 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+import ml_dtypes
 import numpy as np
 import pytest
 
@@ -73,3 +74,35 @@ def test_bad_tensor_type():
     for typ in (np.object_, object, None):
         with pytest.raises(TypeError):
             Tensor(typ)
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        np.int8,
+        np.int16,
+        np.int32,
+        np.int64,
+        np.uint8,
+        np.uint16,
+        np.uint32,
+        np.uint64,
+        np.float16,
+        np.float32,
+        np.float64,
+        bool,
+        np.str_,
+        ml_dtypes.bfloat16,
+        ml_dtypes.float8_e4m3fn,
+        ml_dtypes.float8_e4m3fnuz,
+        ml_dtypes.float8_e5m2,
+        ml_dtypes.float8_e5m2fnuz,
+        ml_dtypes.uint4,
+        ml_dtypes.int4,
+        ml_dtypes.float4_e2m1fn,
+        ml_dtypes.float8_e8m0fnu,
+    ],
+)
+def test_supported_dtypes(dtype):
+    # Check that the construction works as expected
+    assert Tensor(dtype).dtype == dtype

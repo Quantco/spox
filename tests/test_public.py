@@ -1,15 +1,16 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from copy import copy, deepcopy
 
+import ml_dtypes
 import numpy as np
 import onnx
 import onnxruntime
 import pytest
 
 from spox import Tensor, argument, build, inline
-from spox.opset.ai.onnx import v17 as op
+from spox.opset.ai.onnx import v22 as op
 
 
 @pytest.fixture
@@ -122,3 +123,38 @@ def test_raise_missing_input(drop_unused):
 
     with pytest.raises(KeyError):
         build({"a": a}, {"c": op.add(a, b)}, drop_unused_inputs=drop_unused)
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        np.int8,
+        np.int16,
+        np.int32,
+        np.int64,
+        np.uint8,
+        np.uint16,
+        np.uint32,
+        np.uint64,
+        np.float16,
+        np.float32,
+        np.float64,
+        np.bool_,
+        np.str_,
+        ml_dtypes.bfloat16,
+        ml_dtypes.float8_e4m3fn,
+        ml_dtypes.float8_e4m3fnuz,
+        ml_dtypes.float8_e5m2,
+        ml_dtypes.float8_e5m2fnuz,
+        ml_dtypes.uint4,
+        ml_dtypes.int4,
+        # TODO: Add after the opset 23 is supported by the conda-forge onnxruntime release
+        # ml_dtypes.float4_e2m1fn,
+        # ml_dtypes.float8_e8m0fnu
+    ],
+)
+def test_build_mldtypes(dtype):
+    a = argument(Tensor(dtype, ()))
+    mp = build({"a": a}, {"c": op.cast(a, to=np.float64)})
+
+    onnx.checker.check_model(mp, full_check=True)
