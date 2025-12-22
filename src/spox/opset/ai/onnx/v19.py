@@ -1026,32 +1026,35 @@ def cast(
     default the conversion of a float *x* obeys to the following rules.
     ``[x]`` means the value rounded to the target mantissa width.
 
-    ============== =========== ======== ======== ========
-    x              E4M3FN      E4M3FNUZ E5M2     E5M2FNUZ
-    ============== =========== ======== ======== ========
-    0              0           0        0        0
-    -0             -0          0        -0       0
-    NaN            NaN         NaN      NaN      NaN
-    +/- Inf        +/- FLT_MAX NaN      FLT_MAX  NaN
-    [x] > FLT_MAX  FLT_MAX     FLT_MAX  FLT_MAX  FLT_MAX
-    [x] < -FLT_MAX -FLT_MAX    -FLT_MAX -FLT_MAX -FLT_MAX
-    else           RNE         RNE      RNE      RNE
-    ============== =========== ======== ======== ========
+    ============== ======== ======== ======== ========
+    x              E4M3FN   E4M3FNUZ E5M2     E5M2FNUZ
+    ============== ======== ======== ======== ========
+    0              0        0        0        0
+    -0             -0       0        -0       0
+    NaN            NaN      NaN      NaN      NaN
+    Inf            FLT_MAX  NaN      FLT_MAX  NaN
+    -Inf           -FLT_MAX NaN      -FLT_MAX NaN
+    [x] > FLT_MAX  FLT_MAX  FLT_MAX  FLT_MAX  FLT_MAX
+    [x] < -FLT_MAX -FLT_MAX -FLT_MAX -FLT_MAX -FLT_MAX
+    else           RNE      RNE      RNE      RNE
+    ============== ======== ======== ======== ========
 
     The behavior changes if the parameter 'saturate' is set to False. The
     rules then become:
 
-    ============== ====== ======== ======= ========
-    x              E4M3FN E4M3FNUZ E5M2    E5M2FNUZ
-    ============== ====== ======== ======= ========
-    0              0      0        0       0
-    -0             -0     0        -0      0
-    NaN            NaN    NaN      NaN     NaN
-    +/- Inf        NaN    NaN      +/- Inf NaN
-    [x] > FLT_MAX  NaN    NaN      Inf     NaN
-    [x] < -FLT_MAX NaN    NaN      -Inf    NaN
-    else           RNE    RNE      RNE     RNE
-    ============== ====== ======== ======= ========
+    ============== ====== ======== ==== ========
+    x              E4M3FN E4M3FNUZ E5M2 E5M2FNUZ
+    ============== ====== ======== ==== ========
+    0              0      0        0    0
+    -0             -0     0        -0   0
+    NaN            NaN    NaN      NaN  NaN
+    -NaN           -NaN   NaN      -NaN NaN
+    Inf            NaN    NaN      Inf  NaN
+    -Inf           -NaN   NaN      -Inf NaN
+    [x] > FLT_MAX  NaN    NaN      Inf  NaN
+    [x] < -FLT_MAX NaN    NaN      -Inf NaN
+    else           RNE    RNE      RNE  RNE
+    ============== ====== ======== ==== ========
 
     Parameters
     ==========
@@ -2324,7 +2327,7 @@ def resize(
         ::
 
            scale = Min(sizes[i] / in_size[d])
-           out_size[d] = round_int(scale * in_size[i])
+           out_size[d] = round_int(scale * in_size[d])
 
         If ``keep_aspect_ratio_policy`` is ``"not_smaller"``, the sizes are
         adjusted so that no extent of the output is smaller than the specified
@@ -2333,7 +2336,7 @@ def resize(
         ::
 
            scale = Max(sizes[i] / in_size[d])
-           out_size[d] = round_int(scale * in_size[i])
+           out_size[d] = round_int(scale * in_size[d])
 
         For non-resizable axes (those not specified in ``axes``), the output
         size will be equal to the input size.
@@ -2678,11 +2681,12 @@ def shape(
     exclusive (and the returned value will not include the size of that
     axis). If the end axis is omitted, the axes upto the last one will be
     included. Negative axes indicate counting back from the last axis. Note
-    that axes will be clamped to the range [0, r-1], where r is the rank of
+    that axes will be clamped to the range [0, r], where r is the rank of
     the input tensor if they are out-of-range (after adding r in the case of
     negative axis). Thus, specifying any end value > r is equivalent to
     specifying an end value of r, and specifying any start value < -r is
-    equivalent to specifying a start value of 0.
+    equivalent to specifying a start value of 0. If start > end, the result
+    will be an empty shape.
 
     Examples:
 

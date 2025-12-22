@@ -6781,7 +6781,7 @@ def elu(
     ==========
     X
         Type T.
-        1D input tensor
+        Input tensor
     alpha
         Attribute.
         Coefficient of ELU.
@@ -6790,7 +6790,7 @@ def elu(
     =======
     Y : Var
         Type T.
-        1D output tensor
+        Output tensor
 
     Notes
     =====
@@ -10608,22 +10608,33 @@ def mod(
     fmod: int = 0,
 ) -> Var:
     r"""
-    Performs element-wise binary modulus (with Numpy-style broadcasting
-    support). The sign of the remainder is the same as that of the Divisor.
+    Performs an element-wise binary modulo operation. The semantics and
+    supported data types depend on the value of the ``fmod`` attribute which
+    must be ``0`` (default), or ``1``.
 
-    Mod operator can also behave like C fmod() or numpy.fmod. In this case,
-    the sign of the remainder however, will be the same as the Dividend (in
-    contrast to integer mod). To force a behavior like numpy.fmod() an
-    'fmod' Attribute is provided. This attribute is set to 0 by default
-    causing the behavior to be like integer mod. Setting this attribute to 1
-    causes the remainder to be calculated similar to that of numpy.fmod().
+    If the ``fmod`` attribute is set to ``0``, ``T`` is constrained to
+    integer data types and the semantics follow that of the Python
+    ``%``-operator. The sign of the result is that of the divisor.
 
-    If the input type is floating point, then ``fmod`` attribute must be set
-    to 1.
+    If ``fmod`` is set to ``1``, the behavior of this operator follows that
+    of the ``fmod`` function in C and ``T`` is constrained to floating point
+    data types. The result of this operator is the remainder of the division
+    operation ``x / y`` where ``x`` and ``y`` are respective elements of
+    ``A`` and ``B``. The result is exactly the value ``x - n * y``, where
+    ``n`` is ``x / y`` with its fractional part truncated. The returned
+    value has the same sign as ``x`` (except if ``x`` is ``-0``) and is less
+    or equal to ``|y|`` in magnitude. The following special cases apply when
+    ``fmod`` is set to ``1``:
 
-    In case of dividend being zero, the results will be platform dependent.
+    - If ``x`` is ``-0`` and ``y`` is greater than zero, either ``+0`` or
+      ``-0`` may be returned.
+    - If ``x`` is ``±∞`` and ``y`` is not ``NaN``, ``NaN`` is returned.
+    - If ``y`` is ``±0`` and ``x`` is not ``NaN``, ``NaN`` should be
+      returned.
+    - If ``y`` is ``±∞`` and ``x`` is finite, ``x`` is returned.
+    - If either argument is ``NaN``, ``NaN`` is returned.
 
-    This operator supports **multidirectional (i.e., Numpy-style)
+    This operator supports **multidirectional (i.e., NumPy-style)
     broadcasting**; for more details please check `the
     doc <https://github.com/onnx/onnx/blob/main/docs/Broadcasting.md>`__.
 
@@ -13208,20 +13219,21 @@ def reduce_sum(
     axes
         Type tensor(int64).
         Optional input list of integers, along which to reduce. The default is
-        to reduce over all the dimensions of the input tensor if
-        'noop_with_empty_axes' is false, else act as an Identity op when
-        'noop_with_empty_axes' is true. Accepted range is [-r, r-1] where r =
-        rank(data).
+        to reduce over empty axes. When axes is empty (either not provided or
+        explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
+        over all axes if 'noop_with_empty_axes' is false, or no reduction is
+        applied if 'noop_with_empty_axes' is true (but other operations will be
+        performed). Accepted range is [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
         dimension.
     noop_with_empty_axes
         Attribute.
-        Defines behavior if 'axes' is empty. Default behavior with 'false' is to
-        reduce all axes. When axes is empty and this attribute is set to true,
-        input tensor will not be reduced,and the output tensor would be
-        equivalent to input tensor.
+        Defines behavior when axes is not provided or is empty. If false
+        (default), reduction happens over all axes. If true, no reduction is
+        applied, but other operations will be performed. For example,
+        ReduceSumSquare acts as a vanilla Square.
 
     Returns
     =======
@@ -14915,11 +14927,12 @@ def shape(
     exclusive (and the returned value will not include the size of that
     axis). If the end axis is omitted, the axes upto the last one will be
     included. Negative axes indicate counting back from the last axis. Note
-    that axes will be clamped to the range [0, r-1], where r is the rank of
+    that axes will be clamped to the range [0, r], where r is the rank of
     the input tensor if they are out-of-range (after adding r in the case of
     negative axis). Thus, specifying any end value > r is equivalent to
     specifying an end value of r, and specifying any start value < -r is
-    equivalent to specifying a start value of 0.
+    equivalent to specifying a start value of 0. If start > end, the result
+    will be an empty shape.
 
     Examples:
 
@@ -15602,13 +15615,13 @@ def softplus(
     ==========
     X
         Type T.
-        1D input tensor
+        Input tensor
 
     Returns
     =======
     Y : Var
         Type T.
-        1D input tensor
+        Output tensor
 
     Notes
     =====
