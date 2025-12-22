@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.17.0 (unreleased)
+-------------------
+
+**Other change**
+
+- Spox now requires at Python >=3.10.
+
+
 0.16.0 (2025-06-20)
 -------------------
 
