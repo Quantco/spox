@@ -16,7 +16,7 @@ Change log
 
 **Other change**
 
-- Spox now requires at Python >=3.10.
+- Spox now requires at least Python 3.10.
 
 
 0.16.0 (2025-06-20)
