@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 import itertools
@@ -135,13 +135,13 @@ class _Inline(_InternalNode):
         if _value_prop._VALUE_PROP_BACKEND == _value_prop.ValuePropBackend.NONE:
             # Don't attempt value propagation if we don't have a backend
             return {}
-        
+
         if any(
             var_info.type is None or input_prop_values.get(var_info.name) is None
             for var_info in self.model.graph.input
         ):
             return {}
-        
+
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
             i.name: wrap_feed(input_prop_values.get(i.name))
