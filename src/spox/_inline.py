@@ -132,11 +132,16 @@ class _Inline(_InternalNode):
     def propagate_values(
         self, input_prop_values: _value_prop.PropDict
     ) -> dict[str, _value_prop.PropValueType]:
+        if _value_prop._VALUE_PROP_BACKEND == _value_prop.ValuePropBackend.NONE:
+            # Don't attempt value propagation if we don't have a backend
+            return {}
+        
         if any(
             var_info.type is None or input_prop_values.get(var_info.name) is None
             for var_info in self.model.graph.input
         ):
             return {}
+        
         wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
         input_feed = {
             i.name: wrap_feed(input_prop_values.get(i.name))
