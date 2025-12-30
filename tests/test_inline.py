@@ -1,7 +1,6 @@
 # Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-import ml_dtypes
 import numpy as np
 import onnx
 import onnx.parser
@@ -362,23 +361,9 @@ def test_subgraph_with_nodes_with_optional_inputs():
     assert clip_node.input[2] != ""
 
 
-@pytest.mark.parametrize(
-    "dtype",
-    [
-        ml_dtypes.bfloat16,
-        ml_dtypes.float8_e4m3fn,
-        ml_dtypes.float8_e4m3fnuz,
-        ml_dtypes.float8_e5m2,
-        ml_dtypes.float8_e5m2fnuz,
-        ml_dtypes.uint4,
-        ml_dtypes.int4,
-        # TODO: Add after the opset 23 is supported by the conda-forge onnxruntime release
-        # ml_dtypes.float4_e2m1fn,
-        # ml_dtypes.float8_e8m0fnu,
-    ],
-)
-def test_ml_dtypes(dtype):
-    # Test that inline works as expected with non-numpy data types
+def test_dtypes_in_signature(dtype):
+    # Test that inline works with all supported data types in the
+    # inlined model's signature.
     a = argument(Tensor(dtype, ("N",)))
     b = op.identity(a)
 

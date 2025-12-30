@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from spox._shape import Constant, Natural, Shape, ShapeError, Unknown
-from spox._type_system import Tensor
+from spox._type_system import Tensor, Type
 
 
 @pytest.fixture(params=[np.float64, np.int32, np.bool_])
@@ -104,5 +104,7 @@ def test_bad_tensor_type():
     ],
 )
 def test_supported_dtypes(dtype):
-    # Check that the construction works as expected
-    assert Tensor(dtype).dtype == dtype
+    # Check construction, serializing and deserializing of all supported data types
+    tensor = Tensor(dtype)
+    assert tensor.dtype == dtype
+    assert Type._from_onnx(tensor._to_onnx()) == tensor
