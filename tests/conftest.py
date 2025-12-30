@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 import sys
@@ -110,4 +110,4 @@ def onnx_helper():
 )
 def dtype(request: pytest.FixtureRequest) -> np.dtype:
     """Fixture of all supported data types."""
-    return request.param
+    return np.dtype(request.param)
