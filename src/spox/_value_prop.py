@@ -5,7 +5,7 @@ import enum
 import logging
 import warnings
 from dataclasses import dataclass
-from typing import Callable, Union
+from typing import Any, Callable, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -201,8 +201,10 @@ def get_backend_calls() -> tuple[
     Callable[..., dict[str, npt.ArrayLike]],
     Callable[..., PropValue],
 ]:
+    # TODO: The typing around and in this function is not entirely
+    # sound!
     wrap_feed: Callable[..., RefValue]
-    run: Callable[..., dict[str, npt.ArrayLike]]
+    run: Callable[..., dict[str, Any]]
     unwrap_feed: Callable[..., PropValue]
     if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
         wrap_feed = PropValue.to_ref_value
@@ -216,4 +218,4 @@ def get_backend_calls() -> tuple[
         raise RuntimeError(
             f"Not a valid value propagation backend: {_VALUE_PROP_BACKEND}."
         )
-    return wrap_feed, run, unwrap_feed
+    return wrap_feed, run, unwrap_feed  # type: ignore

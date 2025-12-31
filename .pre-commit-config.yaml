@@ -6,7 +6,7 @@ repos:
       # workaround for https://github.com/prefix-dev/pixi/issues/1482
       - id: pixi-install
         name: pixi-install
-        entry: pixi install -e py39 -e lint
+        entry: pixi install -e py310 -e lint
         language: system
         always_run: true
         require_serial: true

@@ -2454,11 +2454,11 @@ def dropout(
         The input data as Tensor.
     ratio
         Type T1.
-        The ratio of random dropout, with value in [0, 1). If this input was not
-        set, or if it was set to 0, the output would be a simple copy of the
-        input. If it's non-zero, output will be a random dropout of the scaled
-        input, which is typically the case during training. It is an optional
-        value, if not specified it will default to 0.5.
+        The ratio of random dropout, with value in [0, 1). If set to 0, the
+        output would be a simple copy of the input. If it's non-zero, output
+        will be a random dropout of the scaled input, which is typically the
+        case during training. It is an optional value, if not specified it will
+        default to 0.5.
     training_mode
         Type T2.
         If set to true then it indicates dropout is being used for training. It
@@ -2526,7 +2526,7 @@ def elu(
     ==========
     X
         Type T.
-        1D input tensor
+        Input tensor
     alpha
         Attribute.
         Coefficient of ELU.
@@ -2535,7 +2535,7 @@ def elu(
     =======
     Y : Var
         Type T.
-        1D output tensor
+        Output tensor
 
     Notes
     =====
@@ -2587,8 +2587,7 @@ def eye_like(
     dtype
         Attribute.
         (Optional) The data type for the elements of the output tensor. If not
-        specified,the data type of the input tensor T1 is used. If input tensor
-        T1 is also notspecified, then type defaults to 'float'.
+        specified, the data type of the input tensor T1 is used.
     k
         Attribute.
         (Optional) Index of the diagonal to be populated with ones. Default is
@@ -5153,13 +5152,13 @@ def softplus(
     ==========
     X
         Type T.
-        1D input tensor
+        Input tensor
 
     Returns
     =======
     Y : Var
         Type T.
-        1D input tensor
+        Output tensor
 
     Notes
     =====
@@ -5318,7 +5317,7 @@ def thresholded_relu(
     return output_vars  # type: ignore
 
 
-def const(value: npt.ArrayLike, dtype: npt.DTypeLike = None) -> Var:
+def const(value: npt.ArrayLike, dtype: npt.DTypeLike | None = None) -> Var:
     """
     Convenience function for creating constants.
 
