@@ -7,9 +7,12 @@
 Change log
 ==========
 
-
 0.17.0 (unreleased)
 -------------------
+
+**New feature**
+
+- Added support for version 23 and 24 of opset ``ai.onnx``.
 
 **Other change**
 
