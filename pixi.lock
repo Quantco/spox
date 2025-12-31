@@ -2864,7 +2864,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/nodejs-22.21.1-h4a9c4b4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/numpy-2.2.6-py310hefbff90_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/onnx-1.19.1-np2py310h28035a0_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/onnx-1.20.0-py310hb63e82d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.6.0-h26f9b46_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pandoc-3.8.3-ha770c72_0.conda
@@ -2940,7 +2940,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/nodejs-22.21.1-h43d1aef_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/numpy-2.2.6-py310h6e5608f_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/onnx-1.19.1-np2py310hc224dc5_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/onnx-1.20.0-py310ha995ca4_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/openssl-3.6.0-h8e36d6e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pandoc-3.8.3-h8af1aa0_0.conda
@@ -3010,7 +3010,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/nodejs-22.21.1-he996136_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/numpy-2.2.6-py310h07c5b4d_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/onnx-1.19.1-np2py310hea75163_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/onnx-1.20.0-py310hdfb86c2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/openssl-3.6.0-h230baf5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/pandoc-3.8.3-h694c41f_0.conda
@@ -3079,7 +3079,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/nodejs-22.21.1-hf2fe37f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.2.6-py310h4d83441_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/onnx-1.19.1-np2py310h3d68370_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/onnx-1.20.0-py310h5ef3a02_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openssl-3.6.0-h5503f6c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pandoc-3.8.3-hce30654_0.conda
@@ -3146,7 +3146,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/nodeenv-1.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/nodejs-22.21.1-he453025_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/numpy-2.2.6-py310h4987827_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/win-64/onnx-1.19.1-np2py310haab65fe_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/onnx-1.20.0-py310hb14096e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/openssl-3.6.0-h725018a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-25.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/pandoc-3.8.3-h57928b3_0.conda
@@ -9216,24 +9216,6 @@ packages:
   license_family: BSD
   size: 65801
   timestamp: 1764715638266
-- conda: https://conda.anaconda.org/conda-forge/linux-64/onnx-1.19.1-np2py310h28035a0_0.conda
-  sha256: a4d3022348e35d6afa0a49701cf488dc6e443d3431a849dcfed3fb77cd6c1fe2
-  md5: dac6fbbbb93ac21aaf043d2a5189b48d
-  depends:
-  - python
-  - ml_dtypes
-  - protobuf
-  - typing_extensions
-  - __glibc >=2.17,<3.0.a0
-  - libstdcxx >=14
-  - libgcc >=14
-  - python_abi 3.10.* *_cp310
-  - libprotobuf >=6.31.1,<6.31.2.0a0
-  - numpy >=1.21,<3
-  license: Apache-2.0
-  license_family: APACHE
-  size: 10791840
-  timestamp: 1760165500433
 - conda: https://conda.anaconda.org/conda-forge/linux-64/onnx-1.20.0-py310hb63e82d_1.conda
   sha256: 42a8d9fbebf4b5f1ab406e197be12eb36561548791c5a7194350a72c205ec2c6
   md5: cb7ce6d651877f39aa5cacea6251da36
@@ -9285,25 +9267,6 @@ packages:
   license_family: APACHE
   size: 11085077
   timestamp: 1766944763413
-- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/onnx-1.19.1-np2py310hc224dc5_0.conda
-  sha256: c8de2916660318b414bd7d859c1bb02e26366a1ee0f4ffbc935628667cf0be80
-  md5: f3ec418d0343b436258c23c4a4a99eac
-  depends:
-  - python
-  - ml_dtypes
-  - protobuf
-  - typing_extensions
-  - libstdcxx >=14
-  - libgcc >=14
-  - python 3.10.* *_cpython
-  - libgcc >=14
-  - python_abi 3.10.* *_cp310
-  - numpy >=1.21,<3
-  - libprotobuf >=6.31.1,<6.31.2.0a0
-  license: Apache-2.0
-  license_family: APACHE
-  size: 10645342
-  timestamp: 1760165530710
 - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/onnx-1.20.0-py310ha995ca4_1.conda
   sha256: 4b52f997b9f946e055793e3b3819c8c0be1a644750d4e631465d060b8774ecde
   md5: 115064cddba19289e834c9c41e4bf89b
@@ -9355,23 +9318,6 @@ packages:
   license_family: APACHE
   size: 10956707
   timestamp: 1766944792712
-- conda: https://conda.anaconda.org/conda-forge/osx-64/onnx-1.19.1-np2py310hea75163_0.conda
-  sha256: 0c9908aad3184b7fee155dfe64eb7dad3ffbe6b81c37b1f9b6f75834c100523c
-  md5: 7bdc4dc25e62f7cdc37235d2578f2468
-  depends:
-  - python
-  - ml_dtypes
-  - protobuf
-  - typing_extensions
-  - __osx >=11.0
-  - libcxx >=19
-  - python_abi 3.10.* *_cp310
-  - libprotobuf >=6.31.1,<6.31.2.0a0
-  - numpy >=1.21,<3
-  license: Apache-2.0
-  license_family: APACHE
-  size: 10523578
-  timestamp: 1760165526162
 - conda: https://conda.anaconda.org/conda-forge/osx-64/onnx-1.20.0-py310hdfb86c2_1.conda
   sha256: 68eba7be6c74f9be50c588e5b0c2cbdb33724eb725d336dc748aada645636d4d
   md5: 5b715061300a5076a67a11a293677335
@@ -9420,24 +9366,6 @@ packages:
   license_family: APACHE
   size: 10826921
   timestamp: 1766944799819
-- conda: https://conda.anaconda.org/conda-forge/osx-arm64/onnx-1.19.1-np2py310h3d68370_0.conda
-  sha256: 6a6531469f45cf37e0b9bc0ee09fbb16d30a53b91efd585645e8353daab1d15f
-  md5: 27b7043a2f6bfcf3a1032b5dcd860862
-  depends:
-  - python
-  - ml_dtypes
-  - protobuf
-  - typing_extensions
-  - libcxx >=19
-  - python 3.10.* *_cpython
-  - __osx >=11.0
-  - libprotobuf >=6.31.1,<6.31.2.0a0
-  - python_abi 3.10.* *_cp310
-  - numpy >=1.21,<3
-  license: Apache-2.0
-  license_family: APACHE
-  size: 10471552
-  timestamp: 1760165552995
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/onnx-1.20.0-py310h5ef3a02_1.conda
   sha256: c66a3761f5343f49ffd74b9ee02b98efe103a05d8d079fbee3d4937343c8c62d
   md5: e4bcbe2acb07c048b3dcbaad9311935b
@@ -9489,27 +9417,6 @@ packages:
   license_family: APACHE
   size: 10777142
   timestamp: 1766944780790
-- conda: https://conda.anaconda.org/conda-forge/win-64/onnx-1.19.1-np2py310haab65fe_0.conda
-  sha256: 2a20393233648e00d9ffb2c1b6c3761012858e7fab3e617c3be69828b4fc27d1
-  md5: 20bbe14b027ed684c0a7a73e17046e63
-  depends:
-  - python
-  - ml_dtypes
-  - protobuf
-  - typing_extensions
-  - vc >=14.3,<15
-  - vc14_runtime >=14.44.35208
-  - ucrt >=10.0.20348.0
-  - vc >=14.3,<15
-  - vc14_runtime >=14.44.35208
-  - ucrt >=10.0.20348.0
-  - libprotobuf >=6.31.1,<6.31.2.0a0
-  - numpy >=1.21,<3
-  - python_abi 3.10.* *_cp310
-  license: Apache-2.0
-  license_family: APACHE
-  size: 10024595
-  timestamp: 1760165562446
 - conda: https://conda.anaconda.org/conda-forge/win-64/onnx-1.20.0-py310hb14096e_1.conda
   sha256: 95a88cfffe1ee652ee6a4f53899bfedc250d1aef6b4a650176c5c41497017137
   md5: 29d26498900f92dd1198db5079381990
