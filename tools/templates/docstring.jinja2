@@ -1,13 +1,9 @@
 {{ schema.doc.strip() | format_github_markdown }}
-{% set type_vars = {} %}
 {% if schema.inputs or schema.attributes %}
 
 Parameters
 ==========
 {% for param in schema.inputs %}
-    {% if param.type_str[0] is upper %}
-        {% do type_vars.update({param.type_str: param.types}) %}
-    {% endif %}
 {{ param.name }}
 {% filter indent(width=4) %}
     Type {{ param.type_str }}.
@@ -39,9 +35,6 @@ Parameters
 Returns
 =======
 {% for param in schema.outputs %}
-    {% if param.type_str[0] is upper %}
-        {% do type_vars.update({param.type_str: param.types}) %}
-    {% endif %}
 {{ param.name }} : {%
        if is_variadic(param) %}
 Sequence[Var]
@@ -61,8 +54,8 @@ Signature: ``{{ schema.domain or 'ai.onnx' }}@{{ schema.since_version }}::{{ sch
 
 {% if type_vars %}
 Type constraints:
-{% for var, members in type_vars.items() %}
- - {{ var }}: {% for type in members|sort %}`{{ type }}`{% if not loop.last %}, {% endif %}{% endfor %}
+{% for name, types in type_vars %}
+ - {{ name }}: {% for type in types %}`{{ type }}`{% if not loop.last %}, {% endif %}{% endfor %}
 
 {% endfor %}
 {% endif %}

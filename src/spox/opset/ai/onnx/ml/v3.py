@@ -757,7 +757,7 @@ def cast_map(
     Signature: ``ai.onnx.ml@1::CastMap``.
 
     Type constraints:
-     - T1: `map(int64,tensor(float))`, `map(int64,tensor(string))`
+     - T1: `map(int64, float)`, `map(int64, string)`
      - T2: `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
     input_prop_values = create_prop_dict(
@@ -903,7 +903,7 @@ def dict_vectorizer(
     Signature: ``ai.onnx.ml@1::DictVectorizer``.
 
     Type constraints:
-     - T1: `map(int64,tensor(double))`, `map(int64,tensor(float))`, `map(int64,tensor(string))`, `map(string,tensor(double))`, `map(string,tensor(float))`, `map(string,tensor(int64))`
+     - T1: `map(int64, double)`, `map(int64, float)`, `map(int64, string)`, `map(string, double)`, `map(string, float)`, `map(string, int64)`
      - T2: `tensor(double)`, `tensor(float)`, `tensor(int64)`, `tensor(string)`
     """
     input_prop_values = create_prop_dict(
@@ -2140,7 +2140,7 @@ def zip_map(
     Signature: ``ai.onnx.ml@1::ZipMap``.
 
     Type constraints:
-     - T: `seq(map(int64,tensor(float)))`, `seq(map(string,tensor(float)))`
+     - T: `seq(map(int64, float))`, `seq(map(string, float))`
     """
     input_prop_values = create_prop_dict(
         X=X,
