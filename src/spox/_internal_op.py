@@ -11,7 +11,7 @@ from __future__ import annotations
 from abc import ABC
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 import onnx
@@ -93,7 +93,24 @@ class Argument(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def post_init(self, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        attrs: BaseAttributes | None = None,
+        inputs: BaseInputs | None = None,
+        outputs: BaseOutputs | None = None,
+        *,
+        out_variadic: int | None = None,
+        infer_types: bool = True,
+        validate: bool = True,
+    ) -> None:
+        super().__init__(
+            attrs,
+            inputs,
+            outputs,
+            out_variadic=out_variadic,
+            infer_types=infer_types,
+            validate=validate,
+        )
         if self.attrs.name is not None:
             self.outputs.arg._rename(self.attrs.name.value)
 

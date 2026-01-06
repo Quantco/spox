@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ import warnings
 from abc import ABC
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import ClassVar
 
 import numpy as np
 import onnx
@@ -107,7 +107,6 @@ class Node(ABC):
         out_variadic: int | None = None,
         infer_types: bool = True,
         validate: bool = True,
-        **kwargs: Any,
     ):
         """
         Parameters
@@ -126,10 +125,7 @@ class Node(ABC):
             if possible, possibly raising type errors if inputs/attributes are not correctly typed.
         validate
             Whether to run some extra validation. The default validation only warns against unknown types.
-        kwargs
-            Extra arguments to pass into ``pre_init`` and ``post_init`` hooks, which may be overriden by child classes.
         """
-        self.pre_init(**kwargs)
         self.attrs = attrs if attrs is not None else self.Attributes()
         self.inputs = inputs if inputs is not None else self.Inputs()
         self.out_variadic = out_variadic
@@ -147,8 +143,6 @@ class Node(ABC):
 
         # Optionally store debug information about where this node was created
         self._traceback = traceback.format_stack() if STORE_TRACEBACK else None
-
-        self.post_init(**kwargs)
 
     @property
     def opset_req(self) -> set[tuple[str, int]]:
@@ -210,12 +204,6 @@ class Node(ABC):
         """Get a short representation of the ``op_type`` of this Node."""
         domain = cls.op_type.domain if cls.op_type.domain != "" else "ai.onnx"
         return f"{domain}@{cls.op_type.version}::{cls.op_type.identifier}"
-
-    def pre_init(self, **kwargs: Any) -> None:
-        """Pre-initialization hook. Called during ``__init__`` before any field on the object is set."""
-
-    def post_init(self, **kwargs: Any) -> None:
-        """Post-initialization hook. Called at the end of ``__init__`` after other default fields are set."""
 
     def propagate_values(self, input_prop_values: PropDict) -> PropDict:
         """
