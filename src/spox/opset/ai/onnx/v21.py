@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import cast as typing_cast
@@ -27,7 +29,12 @@ from spox._standard import StandardNode
 from spox._type_inference_utils import loop_erase_shape_info
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict, PropValueType
-from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
+from spox._var import (
+    Var,
+    _VarInfo,
+    create_prop_dict,
+    unwrap_vars,
+)
 from spox.opset.ai.onnx.v20 import (
     _DFT,
     _GRU,
