@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
@@ -120,18 +120,6 @@ class _CategoryMapper(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         Y: _VarInfo
-
-    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        if not self.inputs.fully_typed:
-            return {}
-        cats1, cats2 = self.attrs.cats_int64s, self.attrs.cats_strings
-        if cats1 is None or cats2 is None:
-            raise InferenceError("Missing required attributes.")
-        if len(cats1.value) != len(cats2.value):
-            raise InferenceError("Categories lists have mismatched lengths.")
-        t = self.inputs.X.unwrap_tensor()
-        (elem_type,) = {np.int64, np.str_} - {t.dtype.type}
-        return {"Y": Tensor(elem_type, t.shape)}
 
     op_type = OpType("CategoryMapper", "ai.onnx.ml", 1)
 
@@ -511,30 +499,6 @@ class _TreeEnsembleClassifier(StandardNode):
         Y: _VarInfo
         Z: _VarInfo
 
-    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        e = (
-            len(self.attrs.class_ids.value)
-            if self.attrs.class_ids is not None
-            else None
-        )
-        if self.attrs.classlabels_strings is not None:
-            y_type = np.str_
-        elif self.attrs.classlabels_int64s is not None:
-            y_type = np.int64  # type: ignore
-        else:
-            raise InferenceError(
-                "Either string or int64 class labels should be defined"
-            )
-        if self.inputs.fully_typed:
-            shape = self.inputs.X.unwrap_tensor().shape
-            assert shape is not None  # already checked with fully_typed
-            if len(shape) != 2:
-                raise InferenceError("Expected input to be a matrix.")
-            n = shape[0]
-        else:
-            n = None
-        return {"Y": Tensor(y_type, (n,)), "Z": Tensor(np.float32, (n, e))}
-
     op_type = OpType("TreeEnsembleClassifier", "ai.onnx.ml", 3)
 
     attrs: Attributes
@@ -574,19 +538,6 @@ class _TreeEnsembleRegressor(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         Y: _VarInfo
-
-    def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
-        if self.inputs.fully_typed:
-            shape = self.inputs.X.unwrap_tensor().shape
-            assert shape is not None  # already checked with fully_typed
-            if len(shape) != 2:
-                raise InferenceError("Expected input to be a matrix.")
-            assert shape is not None
-            n = shape[0]
-        else:
-            n = None
-        e = self.attrs.n_targets.value if self.attrs.n_targets is not None else None
-        return {"Y": Tensor(np.float32, (n, e))}
 
     op_type = OpType("TreeEnsembleRegressor", "ai.onnx.ml", 3)
 

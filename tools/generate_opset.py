@@ -771,13 +771,10 @@ if __name__ == "__main__":
         attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
         type_inference={
             "ArrayFeatureExtractor": "arrayfeatureextractor1",
-            "CategoryMapper": "categorymapper1",
             "Imputer": "imputer1",
             "LinearRegressor": "linearregressor1",
             "Normalizer": "normalizer1",
             "Scaler": "scaler1",
-            "TreeEnsembleClassifier": "treeensembleclassifier3",
-            "TreeEnsembleRegressor": "treeensembleregressor3",
         },
         gen_docstrings=gen_all_docstrings,
     )
@@ -786,6 +783,7 @@ if __name__ == "__main__":
         4,
         attr_type_overrides=[(None, "dtype", ("npt.DTypeLike", "AttrDtype"))],
         type_inference={
+            "ArrayFeatureExtractor": "arrayfeatureextractor1",
             "Imputer": "imputer1",
             "LinearRegressor": "linearregressor1",
             "Normalizer": "normalizer1",
