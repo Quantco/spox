@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Exposes information related to reference ONNX operator schemas, used by StandardOpNode."""
@@ -6,8 +6,8 @@
 from __future__ import annotations
 
 import itertools
-from collections.abc import Iterable
-from typing import Any, Callable, Protocol, TypeVar
+from collections.abc import Callable, Iterable
+from typing import Any, Protocol, TypeVar
 
 from onnx.defs import OpSchema, get_all_schemas_with_history
 

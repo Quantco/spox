@@ -1,11 +1,11 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
 
 import typing
-from collections.abc import Iterable, Sequence
-from typing import Any, Callable, ClassVar, TypeVar, overload
+from collections.abc import Callable, Iterable, Sequence
+from typing import Any, ClassVar, TypeVar, overload
 
 import numpy as np
 

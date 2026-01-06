@@ -1,8 +1,8 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
+from __future__ import annotations
 
 import sys
-from typing import Optional
 
 import numpy as np
 import onnxruntime
@@ -20,15 +20,15 @@ _debug.STORE_TRACEBACK = True
 
 class ONNXRuntimeHelper:
     _build_cache: dict[Graph, bytes]
-    _last_graph: Optional[Graph]
-    _last_session: Optional[onnxruntime.InferenceSession]
+    _last_graph: Graph | None
+    _last_session: onnxruntime.InferenceSession | None
 
     def __init__(self):
         self._build_cache = {}
         self._last_graph = None
         self._last_session = None
 
-    def run(self, graph: Graph, unwrap: Optional[str] = None, **kwargs):
+    def run(self, graph: Graph, unwrap: str | None = None, **kwargs):
         debug_index = {
             **graph._get_build_result().scope.var.of_name,
             **graph._get_build_result().scope.node.of_name,

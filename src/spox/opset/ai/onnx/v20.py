@@ -1,11 +1,8 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
 
 import numpy as np
 import numpy.typing as npt
@@ -401,7 +398,7 @@ class _AffineGrid(StandardNode):
 class _ConstantOfShape(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        value: Optional[AttrTensor]
+        value: AttrTensor | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -427,8 +424,8 @@ class _DFT(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
-        dft_length: Optional[_VarInfo]
-        axis: Optional[_VarInfo]
+        dft_length: _VarInfo | None
+        axis: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -554,7 +551,7 @@ class _ReduceMax(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -576,7 +573,7 @@ class _ReduceMin(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -592,7 +589,7 @@ class _ReduceMin(StandardNode):
 class _RegexFullMatch(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        pattern: Optional[AttrString]
+        pattern: AttrString | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -633,8 +630,8 @@ class _StringConcat(StandardNode):
 class _StringSplit(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        delimiter: Optional[AttrString]
-        maxsplit: Optional[AttrInt64]
+        delimiter: AttrString | None
+        maxsplit: AttrInt64 | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -754,7 +751,7 @@ def affine_grid(
 def constant_of_shape(
     input: Var,
     *,
-    value: Optional[np.ndarray] = None,
+    value: np.ndarray | None = None,
 ) -> Var:
     r"""
     Generate a tensor with given value and shape.
@@ -808,8 +805,8 @@ def constant_of_shape(
 
 def dft(
     input: Var,
-    dft_length: Optional[Var] = None,
-    axis: Optional[Var] = None,
+    dft_length: Var | None = None,
+    axis: Var | None = None,
     *,
     inverse: int = 0,
     onesided: int = 0,
@@ -1277,7 +1274,7 @@ def isnan(
 
 def reduce_max(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -1359,7 +1356,7 @@ def reduce_max(
 
 def reduce_min(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -1441,7 +1438,7 @@ def reduce_min(
 def regex_full_match(
     X: Var,
     *,
-    pattern: Optional[str] = None,
+    pattern: str | None = None,
 ) -> Var:
     r"""
     RegexFullMatch performs a full regex match on each element of the input
@@ -1543,8 +1540,8 @@ def string_concat(
 def string_split(
     X: Var,
     *,
-    delimiter: Optional[str] = None,
-    maxsplit: Optional[int] = None,
+    delimiter: str | None = None,
+    maxsplit: int | None = None,
 ) -> tuple[Var, Var]:
     r"""
     StringSplit splits a string tensor's elements into substrings based on a

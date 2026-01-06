@@ -1,10 +1,11 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
+from __future__ import annotations
 
 import itertools
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
+from typing import Any
 
 import onnx
 
@@ -23,8 +24,8 @@ def rename_in_graph(
     graph_: onnx.GraphProto,
     rename: Callable[[str], str],
     *,
-    rename_node: Optional[Callable[[str], str]] = None,
-    rename_op: Optional[Callable[[str, str], tuple[str, str]]] = None,
+    rename_node: Callable[[str], str] | None = None,
+    rename_op: Callable[[str, str], tuple[str, str]] | None = None,
 ) -> onnx.GraphProto:
     def rename_in_subgraph(subgraph: onnx.GraphProto) -> onnx.GraphProto:
         return rename_in_graph(
@@ -152,8 +153,8 @@ class _Inline(_InternalNode):
     def to_onnx(
         self,
         scope: Scope,
-        doc_string: Optional[str] = None,
-        build_subgraph: Optional[Callable] = None,
+        doc_string: str | None = None,
+        build_subgraph: Callable | None = None,
     ) -> list[onnx.NodeProto]:
         input_names: dict[str, int] = {
             p.name: i for i, p in enumerate(self.graph.input)

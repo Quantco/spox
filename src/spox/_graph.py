@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Internal module implementing the low-level Graph object and functions for creating arguments and Graphs."""
@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import dataclasses
 import itertools
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, replace
-from typing import Callable, Literal
+from typing import Literal
 
 import numpy as np
 import onnx
