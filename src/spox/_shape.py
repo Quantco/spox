@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 """
@@ -18,12 +18,12 @@ from __future__ import annotations
 
 import abc
 from dataclasses import dataclass
-from typing import Optional, TypeVar, Union
+from typing import TypeVar
 
 import onnx
 
-SimpleShapeElem = Union[str, int, None]
-SimpleShape = Optional[tuple[SimpleShapeElem, ...]]
+SimpleShapeElem = str | int | None
+SimpleShape = tuple[SimpleShapeElem, ...] | None
 
 
 class ShapeError(TypeError):

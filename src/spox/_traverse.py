@@ -1,10 +1,10 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator
-from typing import Callable, TypeVar
+from collections.abc import Callable, Iterable, Iterator
+from typing import TypeVar
 
 V = TypeVar("V")
 

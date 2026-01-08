@@ -1,7 +1,7 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Callable
+from collections.abc import Callable
 
 import numpy as np
 import pytest
