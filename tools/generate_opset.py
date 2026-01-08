@@ -480,6 +480,13 @@ def write_schemas_code(
             for key, name, target in attr_type_overrides
             if key is None or key == schema.name
         }
+        # Pre-process type-var information
+        type_vars = sorted(
+            [
+                (el.type_param_str, tuple(sorted(set(el.allowed_type_strs))))
+                for el in schema.type_constraints
+            ]
+        )
         print(
             constructor.render(
                 schema=schema,
@@ -494,6 +501,7 @@ def write_schemas_code(
                 subgraph_solutions=subgraphs_solutions.get(schema.name, {}),
                 attr_type_overrides=attr_over,
                 allow_extra=allow_extra,
+                type_vars=type_vars,
             ),
             file=file,
             end="\n\n\n",

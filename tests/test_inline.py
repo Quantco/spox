@@ -7,7 +7,7 @@ import onnx.parser
 import pytest
 from onnx.numpy_helper import from_array
 
-import spox.opset.ai.onnx.v17 as op
+import spox.opset.ai.onnx.v22 as op
 from spox import Tensor, Var, argument, build, inline
 from spox._graph import arguments, results
 from spox._inline import rename_in_graph
@@ -359,3 +359,16 @@ def test_subgraph_with_nodes_with_optional_inputs():
     assert len(clip_node.input) == 3
     assert clip_node.input[1] == ""
     assert clip_node.input[2] != ""
+
+
+def test_dtypes_in_signature(dtype):
+    # Test that inline works with all supported data types in the
+    # inlined model's signature.
+    a = argument(Tensor(dtype, ("N",)))
+    b = op.identity(a)
+
+    mp = build({"a": a}, {"b": b})
+
+    inlined = inline(mp)(a=a)["b"]
+
+    assert inlined.unwrap_tensor().dtype == dtype

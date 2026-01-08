@@ -6622,7 +6622,7 @@ def dynamic_quantize_linear(
     ::
 
        intermediate_zero_point = qmin - min(x)/y_scale
-       y_zero_point = cast(round(saturate(itermediate_zero_point)))
+       y_zero_point = cast(round(saturate(intermediate_zero_point)))
 
     - where qmax and qmin are max and min values for quantization range .i.e
       [0, 255] in case of uint8
@@ -6893,7 +6893,7 @@ def erf(
     Signature: ``ai.onnx@13::Erf``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -9665,8 +9665,8 @@ def loop(
     Signature: ``ai.onnx@16::Loop``.
 
     Type constraints:
-     - I: `tensor(int64)`
      - B: `tensor(bool)`
+     - I: `tensor(int64)`
      - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _body_subgraph: Graph = subgraph(
@@ -10143,8 +10143,8 @@ def max_pool(
     Signature: ``ai.onnx@12::MaxPool``.
 
     Type constraints:
-     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int8)`, `tensor(uint8)`
      - I: `tensor(int64)`
+     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int8)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         X=X,
@@ -11338,8 +11338,8 @@ def optional(
     Signature: ``ai.onnx@15::Optional``.
 
     Type constraints:
-     - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`
+     - V: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -11428,8 +11428,8 @@ def optional_has_element(
     Signature: ``ai.onnx@15::OptionalHasElement``.
 
     Type constraints:
-     - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`
      - B: `tensor(bool)`
+     - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -13219,9 +13219,9 @@ def reduce_sum(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -13229,9 +13229,14 @@ def reduce_sum(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -14373,11 +14378,11 @@ def scatter_nd(
 
     The ``output`` is calculated via the following equation: output =
     np.copy(data) update_indices = indices.shape[:-1] for idx in
-    np.ndindex(update_indices): output[indices[idx]] = updates[idx] The
-    order of iteration in the above loop is not specified. In particular,
-    indices should not have duplicate entries: that is, if idx1 != idx2,
-    then indices[idx1] != indices[idx2]. This ensures that the output value
-    does not depend on the iteration order.
+    np.ndindex(update_indices): output[tuple(indices[idx])] = updates[idx]
+    The order of iteration in the above loop is not specified. In
+    particular, indices should not have duplicate entries: that is, if idx1
+    != idx2, then indices[idx1] != indices[idx2]. This ensures that the
+    output value does not depend on the iteration order.
 
     ``reduction`` allows specification of an optional reduction operation,
     which is applied to all values in ``updates`` tensor into ``output`` at
@@ -14387,11 +14392,11 @@ def scatter_nd(
     value does not depend on the iteration order. When ``reduction`` is set
     to "add", ``output`` is calculated as follows: output = np.copy(data)
     update_indices = indices.shape[:-1] for idx in
-    np.ndindex(update_indices): output[indices[idx]] += updates[idx] When
-    ``reduction`` is set to "mul", ``output`` is calculated as follows:
+    np.ndindex(update_indices): output[tuple(indices[idx])] += updates[idx]
+    When ``reduction`` is set to "mul", ``output`` is calculated as follows:
     output = np.copy(data) update_indices = indices.shape[:-1] for idx in
-    np.ndindex(update_indices): output[indices[idx]] \*= updates[idx] This
-    operator is the inverse of GatherND. Example 1:
+    np.ndindex(update_indices): output[tuple(indices[idx])] \*= updates[idx]
+    This operator is the inverse of GatherND. Example 1:
 
     ::
 
@@ -14560,8 +14565,8 @@ def sequence_at(
     Signature: ``ai.onnx@11::SequenceAt``.
 
     Type constraints:
-     - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - I: `tensor(int32)`, `tensor(int64)`
+     - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
@@ -14606,8 +14611,8 @@ def sequence_construct(
     Signature: ``ai.onnx@11::SequenceConstruct``.
 
     Type constraints:
-     - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
+     - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         inputs=inputs,
@@ -14701,8 +14706,8 @@ def sequence_erase(
     Signature: ``ai.onnx@11::SequenceErase``.
 
     Type constraints:
-     - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - I: `tensor(int32)`, `tensor(int64)`
+     - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
     """
     input_prop_values = create_prop_dict(
         input_sequence=input_sequence,
@@ -14763,9 +14768,9 @@ def sequence_insert(
     Signature: ``ai.onnx@11::SequenceInsert``.
 
     Type constraints:
+     - I: `tensor(int32)`, `tensor(int64)`
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
-     - I: `tensor(int32)`, `tensor(int64)`
     """
     input_prop_values = create_prop_dict(
         input_sequence=input_sequence,
@@ -14811,8 +14816,8 @@ def sequence_length(
     Signature: ``ai.onnx@11::SequenceLength``.
 
     Type constraints:
-     - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
      - I: `tensor(int64)`
+     - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
     """
     input_prop_values = create_prop_dict(
         input_sequence=input_sequence,
@@ -15853,9 +15858,9 @@ def split_to_sequence(
     Signature: ``ai.onnx@11::SplitToSequence``.
 
     Type constraints:
-     - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - I: `tensor(int32)`, `tensor(int64)`
      - S: `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
+     - T: `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -16563,8 +16568,8 @@ def top_k(
     Signature: ``ai.onnx@11::TopK``.
 
     Type constraints:
-     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - I: `tensor(int64)`
+     - T: `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         X=X,
@@ -16594,9 +16599,15 @@ def transpose(
     perm: Iterable[int] | None = None,
 ) -> Var:
     r"""
-    Transpose the input tensor similar to numpy.transpose. For example, when
-    perm=(1, 0, 2), given an input tensor of shape (1, 2, 3), the output
-    shape will be (2, 1, 3).
+    Returns a transpose of the input tensor. (Similar to
+    ``numpy.transpose``). The optional attribute ``perm`` must be a
+    permutation of the dimensions of the input tensor. Axis ``i`` of the
+    output tensor corresponds to the axis ``perm[i]`` of the input tensor.
+    For example, when perm=(1, 0, 2), given an input tensor of shape (1, 2,
+    3), the output shape will be (2, 1, 3). When perm=(1, 2, 0), given an
+    input tensor of shape (1, 2, 3), the output shape will be (2, 3, 1). If
+    the attribute ``perm`` is omitted, its default value is
+    ``(n-1, ..., 0)``, where ``n`` is the rank of the input tensor.
 
     Parameters
     ==========

@@ -1,6 +1,7 @@
 # Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+import ml_dtypes
 import numpy as np
 import onnx
 import pytest
@@ -8,7 +9,7 @@ import pytest
 import spox
 import spox._future
 import spox.opset.ai.onnx.ml.v3 as ml
-import spox.opset.ai.onnx.v20 as op
+import spox.opset.ai.onnx.v22 as op
 from spox import Optional, Sequence, Tensor, Var, argument
 from spox._graph import arguments, results
 from spox._shape import Shape
@@ -26,7 +27,7 @@ from spox._var import _VarInfo
 )
 def backend(request):
     with spox._future.value_prop_backend(request.param):
-        yield
+        yield request.param
 
 
 def dummy_var(typ=None, value=None):
@@ -49,7 +50,10 @@ def assert_equal_value(var: Var, expected: ORTValue):
         expected = np.array(expected)
         assert var.type.dtype.type == expected.dtype.type, "element type must match"
         assert Shape.from_simple(expected.shape) <= var.type._shape, "shape must match"
-        np.testing.assert_allclose(value, expected)
+        if value.dtype.kind in "Uiub":
+            np.testing.assert_array_equal(value, expected)
+        else:
+            np.testing.assert_allclose(value, expected)
     elif isinstance(var.type, Optional):
         if expected is None:
             assert value is None, "value must be Nothing when optional is empty"
@@ -94,14 +98,21 @@ def test_div():
     )
 
 
-def test_identity():
-    for x in [
-        5,
-        [1, 2, 3],
-        np.array([[1, 2], [3, 4], [5, 6]]),
-        np.array(0.5, dtype=np.float32),
-    ]:
-        assert_equal_value(op.const(x), x)
+def test_dtypes(dtype, backend):
+    # Test value propagation on all supported data types across
+    # non-trivial operations.
+    # There is an upstream issue for the odd-looking special casing
+    # for float8_e5m2: https://github.com/jax-ml/ml_dtypes/issues/216
+    if backend == spox._future.ValuePropBackend.ONNXRUNTIME and (
+        dtype.kind == "V" or dtype == ml_dtypes.float8_e5m2
+    ):
+        # onnxruntime does not properly support ml_dtypes in the models' signature
+        pytest.xfail(reason="onnxruntime does not support ml_dtypes in model signature")
+
+    arr = np.asarray([1], dtype=dtype)
+    # Reshape is defined for all data types
+    var = op.reshape(op.const(arr), op.const(np.asarray([1, 1], np.int64)))
+    assert_equal_value(var, arr.reshape((1, 1)))
 
 
 def test_reshape():

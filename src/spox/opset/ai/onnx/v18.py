@@ -1511,8 +1511,8 @@ def optional_has_element(
     Signature: ``ai.onnx@18::OptionalHasElement``.
 
     Type constraints:
-     - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
      - B: `tensor(bool)`
+     - O: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -1715,9 +1715,9 @@ def reduce_l1(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -1725,9 +1725,14 @@ def reduce_l1(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -1792,9 +1797,9 @@ def reduce_l2(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -1802,9 +1807,14 @@ def reduce_l2(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -1870,9 +1880,9 @@ def reduce_log_sum(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -1880,9 +1890,14 @@ def reduce_log_sum(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -1948,9 +1963,9 @@ def reduce_log_sum_exp(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -1958,9 +1973,14 @@ def reduce_log_sum_exp(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -2027,9 +2047,9 @@ def reduce_max(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -2037,9 +2057,14 @@ def reduce_max(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -2104,9 +2129,9 @@ def reduce_mean(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -2114,9 +2139,14 @@ def reduce_mean(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -2182,9 +2212,9 @@ def reduce_min(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -2192,9 +2222,14 @@ def reduce_min(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -2259,9 +2294,9 @@ def reduce_prod(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -2269,9 +2304,14 @@ def reduce_prod(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -2336,9 +2376,9 @@ def reduce_sum_square(
         Optional input list of integers, along which to reduce. The default is
         to reduce over empty axes. When axes is empty (either not provided or
         explicitly empty), behavior depends on 'noop_with_empty_axes': reduction
-        over all axes if 'noop_with_empty_axes' is false, or no reduction is
-        applied if 'noop_with_empty_axes' is true (but other operations will be
-        performed). Accepted range is [-r, r-1] where r = rank(data).
+        over all axes if 'noop_with_empty_axes' is false, and reduction over the
+        empty set of axes when 'noop_with_empty_axes' is true. Accepted range is
+        [-r, r-1] where r = rank(data).
     keepdims
         Attribute.
         Keep the reduced dimension or not, default 1 means keep reduced
@@ -2346,9 +2386,14 @@ def reduce_sum_square(
     noop_with_empty_axes
         Attribute.
         Defines behavior when axes is not provided or is empty. If false
-        (default), reduction happens over all axes. If true, no reduction is
-        applied, but other operations will be performed. For example,
-        ReduceSumSquare acts as a vanilla Square.
+        (default), reduction happens over all axes (similar to the case when
+        ``axis=None`` in numpy). If true, reduction happens over an empty set of
+        axes (similar to the case when ``axis=()`` in numpy). Note that
+        reduction over an empty set of axes means that the reduction step
+        behaves like a no-op (identity function), but composite-reduction
+        operators will still perform the non-reduction steps as needed. Thus,
+        ReduceLogSum returns the Log of input tensor, and ReduceSumSquare
+        returns the Square of the input tensor, in this case.
 
     Returns
     =======
@@ -2782,7 +2827,7 @@ def scatter_nd(
        output = np.copy(data)
        update_indices = indices.shape[:-1]
        for idx in np.ndindex(update_indices):
-           output[indices[idx]] = updates[idx]
+           output[tuple(indices[idx])] = updates[idx]
 
     The order of iteration in the above loop is not specified. In
     particular, indices should not have duplicate entries: that is, if idx1
@@ -2802,7 +2847,7 @@ def scatter_nd(
        output = np.copy(data)
        update_indices = indices.shape[:-1]
        for idx in np.ndindex(update_indices):
-           output[indices[idx]] = f(output[indices[idx]], updates[idx])
+           output[tuple(indices[idx])] = f(output[tuple(indices[idx])], updates[idx])
 
     where the ``f`` is ``+``, ``*``, ``max`` or ``min`` as specified.
 
