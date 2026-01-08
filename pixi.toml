@@ -50,7 +50,6 @@ onnx = "*"
 pandoc = "*"
 jinja2 = "*"
 python = "3.10.*"
-onnx = "<1.20"  # breaking change in schema definitions
 
 [feature.opset-generation.tasks]
 generate-opset = "python ./tools/generate_opset.py"
