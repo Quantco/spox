@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 from copy import copy, deepcopy
@@ -9,7 +9,7 @@ import onnxruntime
 import pytest
 
 from spox import Tensor, argument, build, inline
-from spox.opset.ai.onnx import v17 as op
+from spox.opset.ai.onnx import v22 as op
 
 
 @pytest.fixture
@@ -122,3 +122,10 @@ def test_raise_missing_input(drop_unused):
 
     with pytest.raises(KeyError):
         build({"a": a}, {"c": op.add(a, b)}, drop_unused_inputs=drop_unused)
+
+
+def test_dtypes(dtype):
+    a = argument(Tensor(dtype, ()))
+    mp = build({"a": a}, {"c": op.cast(a, to=np.float64)})
+
+    onnx.checker.check_model(mp, full_check=True)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 
+import ml_dtypes
 import numpy as np
 import onnxruntime
 import pytest
@@ -78,3 +79,35 @@ class ONNXRuntimeHelper:
 @pytest.fixture(scope="session")
 def onnx_helper():
     return ONNXRuntimeHelper()
+
+
+@pytest.fixture(
+    params=[
+        np.int8,
+        np.int16,
+        np.int32,
+        np.int64,
+        np.uint8,
+        np.uint16,
+        np.uint32,
+        np.uint64,
+        np.float16,
+        np.float32,
+        np.float64,
+        np.bool_,
+        np.str_,
+        ml_dtypes.bfloat16,
+        ml_dtypes.float8_e4m3fn,
+        ml_dtypes.float8_e4m3fnuz,
+        ml_dtypes.float8_e5m2,
+        ml_dtypes.float8_e5m2fnuz,
+        ml_dtypes.uint4,
+        ml_dtypes.int4,
+        # TODO: Add after the opset 23 is supported by the conda-forge onnxruntime release
+        # ml_dtypes.float4_e2m1fn,
+        # ml_dtypes.float8_e8m0fnu
+    ],
+)
+def dtype(request: pytest.FixtureRequest) -> np.dtype:
+    """Fixture of all supported data types."""
+    return np.dtype(request.param)
