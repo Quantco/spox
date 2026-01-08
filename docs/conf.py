@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # Configuration file for the Sphinx documentation builder.
@@ -19,6 +19,7 @@
 
 
 # -- Project information -----------------------------------------------------
+from __future__ import annotations
 
 import datetime
 import importlib
@@ -27,7 +28,7 @@ import os
 import subprocess
 import sys
 from subprocess import CalledProcessError
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 _mod = importlib.import_module("spox")
 
@@ -60,7 +61,7 @@ html_static_path = ["_static"]
 # Copied and adapted from
 # https://github.com/pandas-dev/pandas/blob/4a14d064187367cacab3ff4652a12a0e45d0711b/doc/source/conf.py#L613-L659
 # Required configuration function to use sphinx.ext.linkcode
-def linkcode_resolve(domain: str, info: dict[str, Any]) -> Optional[str]:
+def linkcode_resolve(domain: str, info: dict[str, Any]) -> str | None:
     """Determine the URL corresponding to a given Python object."""
     if domain != "py":
         return None

@@ -1,12 +1,11 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
 
 import numpy as np
 import numpy.typing as npt
@@ -20,7 +19,12 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
+from spox._var import (
+    Var,
+    _VarInfo,
+    create_prop_dict,
+    unwrap_vars,
+)
 from spox.opset.ai.onnx.v17 import (
     _DFT,
     _GRU,
@@ -429,7 +433,7 @@ class _BitwiseXor(StandardNode):
 class _CenterCropPad(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -450,9 +454,9 @@ class _CenterCropPad(StandardNode):
 class _Col2Im(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        dilations: Optional[AttrInt64s]
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        dilations: AttrInt64s | None
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -476,11 +480,11 @@ class _LpPool(StandardNode):
     class Attributes(BaseAttributes):
         auto_pad: AttrString
         ceil_mode: AttrInt64
-        dilations: Optional[AttrInt64s]
+        dilations: AttrInt64s | None
         kernel_shape: AttrInt64s
         p: AttrInt64
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -544,7 +548,7 @@ class _OptionalHasElement(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Optional[_VarInfo]
+        input: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -566,8 +570,8 @@ class _Pad(StandardNode):
     class Inputs(BaseInputs):
         data: _VarInfo
         pads: _VarInfo
-        constant_value: Optional[_VarInfo]
-        axes: Optional[_VarInfo]
+        constant_value: _VarInfo | None
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -589,7 +593,7 @@ class _ReduceL1(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -611,7 +615,7 @@ class _ReduceL2(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -633,7 +637,7 @@ class _ReduceLogSum(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -655,7 +659,7 @@ class _ReduceLogSumExp(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -677,7 +681,7 @@ class _ReduceMax(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -699,7 +703,7 @@ class _ReduceMean(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -721,7 +725,7 @@ class _ReduceMin(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -743,7 +747,7 @@ class _ReduceProd(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -765,7 +769,7 @@ class _ReduceSumSquare(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -782,7 +786,7 @@ class _Resize(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         antialias: AttrInt64
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         coordinate_transformation_mode: AttrString
         cubic_coeff_a: AttrFloat32
         exclude_outside: AttrInt64
@@ -794,9 +798,9 @@ class _Resize(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         X: _VarInfo
-        roi: Optional[_VarInfo]
-        scales: Optional[_VarInfo]
-        sizes: Optional[_VarInfo]
+        roi: _VarInfo | None
+        scales: _VarInfo | None
+        sizes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -858,12 +862,12 @@ class _Split(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         axis: AttrInt64
-        num_outputs: Optional[AttrInt64]
+        num_outputs: AttrInt64 | None
 
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
-        split: Optional[_VarInfo]
+        split: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -1080,7 +1084,7 @@ def center_crop_pad(
     input_data: Var,
     shape: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
 ) -> Var:
     r"""
     Center crop or pad an input to given dimensions.
@@ -1157,9 +1161,9 @@ def col2_im(
     image_shape: Var,
     block_shape: Var,
     *,
-    dilations: Optional[Iterable[int]] = None,
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    dilations: Iterable[int] | None = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     The operator rearranges column blocks back into a multidimensional image
@@ -1261,11 +1265,11 @@ def lp_pool(
     *,
     auto_pad: str = "NOTSET",
     ceil_mode: int = 0,
-    dilations: Optional[Iterable[int]] = None,
+    dilations: Iterable[int] | None = None,
     kernel_shape: Iterable[int],
     p: int = 2,
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     LpPool consumes an input tensor X and applies Lp pooling across the
@@ -1482,7 +1486,7 @@ def optional_get_element(
 
 
 def optional_has_element(
-    input: Optional[Var] = None,
+    input: Var | None = None,
 ) -> Var:
     r"""
     Returns true if (1) the input is an optional-type and contains an
@@ -1529,8 +1533,8 @@ def optional_has_element(
 def pad(
     data: Var,
     pads: Var,
-    constant_value: Optional[Var] = None,
-    axes: Optional[Var] = None,
+    constant_value: Var | None = None,
+    axes: Var | None = None,
     *,
     mode: str = "constant",
 ) -> Var:
@@ -1686,7 +1690,7 @@ def pad(
 
 def reduce_l1(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -1763,7 +1767,7 @@ def reduce_l1(
 
 def reduce_l2(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -1840,7 +1844,7 @@ def reduce_l2(
 
 def reduce_log_sum(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -1918,7 +1922,7 @@ def reduce_log_sum(
 
 def reduce_log_sum_exp(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -1996,7 +2000,7 @@ def reduce_log_sum_exp(
 
 def reduce_max(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -2075,7 +2079,7 @@ def reduce_max(
 
 def reduce_mean(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -2152,7 +2156,7 @@ def reduce_mean(
 
 def reduce_min(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -2230,7 +2234,7 @@ def reduce_min(
 
 def reduce_prod(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -2307,7 +2311,7 @@ def reduce_prod(
 
 def reduce_sum_square(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -2384,12 +2388,12 @@ def reduce_sum_square(
 
 def resize(
     X: Var,
-    roi: Optional[Var] = None,
-    scales: Optional[Var] = None,
-    sizes: Optional[Var] = None,
+    roi: Var | None = None,
+    scales: Var | None = None,
+    sizes: Var | None = None,
     *,
     antialias: int = 0,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     coordinate_transformation_mode: str = "half_pixel",
     cubic_coeff_a: float = -0.75,
     exclude_outside: int = 0,
@@ -2886,10 +2890,10 @@ def scatter_nd(
 
 def split(
     input: Var,
-    split: Optional[Var] = None,
+    split: Var | None = None,
     *,
     axis: int = 0,
-    num_outputs: Optional[int] = None,
+    num_outputs: int | None = None,
 ) -> Sequence[Var]:
     r"""
     Split a tensor into a list of tensors, along the specified 'axis'.

@@ -1,12 +1,11 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
 
 import numpy as np
 
@@ -24,7 +23,12 @@ from spox._node import OpType
 from spox._standard import InferenceError, StandardNode
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict
-from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
+from spox._var import (
+    Var,
+    _VarInfo,
+    create_prop_dict,
+    unwrap_vars,
+)
 
 
 class _ArrayFeatureExtractor(StandardNode):
@@ -108,8 +112,8 @@ class _CastMap(StandardNode):
 class _CategoryMapper(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        cats_int64s: Optional[AttrInt64s]
-        cats_strings: Optional[AttrStrings]
+        cats_int64s: AttrInt64s | None
+        cats_strings: AttrStrings | None
         default_int64: AttrInt64
         default_string: AttrString
 
@@ -143,8 +147,8 @@ class _CategoryMapper(StandardNode):
 class _DictVectorizer(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        int64_vocabulary: Optional[AttrInt64s]
-        string_vocabulary: Optional[AttrStrings]
+        int64_vocabulary: AttrInt64s | None
+        string_vocabulary: AttrStrings | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -164,7 +168,7 @@ class _DictVectorizer(StandardNode):
 class _FeatureVectorizer(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        inputdimensions: Optional[AttrInt64s]
+        inputdimensions: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -184,8 +188,8 @@ class _FeatureVectorizer(StandardNode):
 class _Imputer(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        imputed_value_floats: Optional[AttrFloat32s]
-        imputed_value_int64s: Optional[AttrInt64s]
+        imputed_value_floats: AttrFloat32s | None
+        imputed_value_int64s: AttrInt64s | None
         replaced_value_float: AttrFloat32
         replaced_value_int64: AttrInt64
 
@@ -245,12 +249,12 @@ class _LabelEncoder(StandardNode):
         default_float: AttrFloat32
         default_int64: AttrInt64
         default_string: AttrString
-        keys_floats: Optional[AttrFloat32s]
-        keys_int64s: Optional[AttrInt64s]
-        keys_strings: Optional[AttrStrings]
-        values_floats: Optional[AttrFloat32s]
-        values_int64s: Optional[AttrInt64s]
-        values_strings: Optional[AttrStrings]
+        keys_floats: AttrFloat32s | None
+        keys_int64s: AttrInt64s | None
+        keys_strings: AttrStrings | None
+        values_floats: AttrFloat32s | None
+        values_int64s: AttrInt64s | None
+        values_strings: AttrStrings | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -270,10 +274,10 @@ class _LabelEncoder(StandardNode):
 class _LinearClassifier(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        classlabels_ints: Optional[AttrInt64s]
-        classlabels_strings: Optional[AttrStrings]
+        classlabels_ints: AttrInt64s | None
+        classlabels_strings: AttrStrings | None
         coefficients: AttrFloat32s
-        intercepts: Optional[AttrFloat32s]
+        intercepts: AttrFloat32s | None
         multi_class: AttrInt64
         post_transform: AttrString
 
@@ -296,8 +300,8 @@ class _LinearClassifier(StandardNode):
 class _LinearRegressor(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        coefficients: Optional[AttrFloat32s]
-        intercepts: Optional[AttrFloat32s]
+        coefficients: AttrFloat32s | None
+        intercepts: AttrFloat32s | None
         post_transform: AttrString
         targets: AttrInt64
 
@@ -360,8 +364,8 @@ class _Normalizer(StandardNode):
 class _OneHotEncoder(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        cats_int64s: Optional[AttrInt64s]
-        cats_strings: Optional[AttrStrings]
+        cats_int64s: AttrInt64s | None
+        cats_strings: AttrStrings | None
         zeros: AttrInt64
 
     @dataclass
@@ -382,17 +386,17 @@ class _OneHotEncoder(StandardNode):
 class _SVMClassifier(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        classlabels_ints: Optional[AttrInt64s]
-        classlabels_strings: Optional[AttrStrings]
-        coefficients: Optional[AttrFloat32s]
-        kernel_params: Optional[AttrFloat32s]
+        classlabels_ints: AttrInt64s | None
+        classlabels_strings: AttrStrings | None
+        coefficients: AttrFloat32s | None
+        kernel_params: AttrFloat32s | None
         kernel_type: AttrString
         post_transform: AttrString
-        prob_a: Optional[AttrFloat32s]
-        prob_b: Optional[AttrFloat32s]
-        rho: Optional[AttrFloat32s]
-        support_vectors: Optional[AttrFloat32s]
-        vectors_per_class: Optional[AttrInt64s]
+        prob_a: AttrFloat32s | None
+        prob_b: AttrFloat32s | None
+        rho: AttrFloat32s | None
+        support_vectors: AttrFloat32s | None
+        vectors_per_class: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -413,14 +417,14 @@ class _SVMClassifier(StandardNode):
 class _SVMRegressor(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        coefficients: Optional[AttrFloat32s]
-        kernel_params: Optional[AttrFloat32s]
+        coefficients: AttrFloat32s | None
+        kernel_params: AttrFloat32s | None
         kernel_type: AttrString
         n_supports: AttrInt64
         one_class: AttrInt64
         post_transform: AttrString
-        rho: Optional[AttrFloat32s]
-        support_vectors: Optional[AttrFloat32s]
+        rho: AttrFloat32s | None
+        support_vectors: AttrFloat32s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -440,8 +444,8 @@ class _SVMRegressor(StandardNode):
 class _Scaler(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        offset: Optional[AttrFloat32s]
-        scale: Optional[AttrFloat32s]
+        offset: AttrFloat32s | None
+        scale: AttrFloat32s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -480,26 +484,26 @@ class _Scaler(StandardNode):
 class _TreeEnsembleClassifier(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        base_values: Optional[AttrFloat32s]
-        base_values_as_tensor: Optional[AttrTensor]
-        class_ids: Optional[AttrInt64s]
-        class_nodeids: Optional[AttrInt64s]
-        class_treeids: Optional[AttrInt64s]
-        class_weights: Optional[AttrFloat32s]
-        class_weights_as_tensor: Optional[AttrTensor]
-        classlabels_int64s: Optional[AttrInt64s]
-        classlabels_strings: Optional[AttrStrings]
-        nodes_falsenodeids: Optional[AttrInt64s]
-        nodes_featureids: Optional[AttrInt64s]
-        nodes_hitrates: Optional[AttrFloat32s]
-        nodes_hitrates_as_tensor: Optional[AttrTensor]
-        nodes_missing_value_tracks_true: Optional[AttrInt64s]
-        nodes_modes: Optional[AttrStrings]
-        nodes_nodeids: Optional[AttrInt64s]
-        nodes_treeids: Optional[AttrInt64s]
-        nodes_truenodeids: Optional[AttrInt64s]
-        nodes_values: Optional[AttrFloat32s]
-        nodes_values_as_tensor: Optional[AttrTensor]
+        base_values: AttrFloat32s | None
+        base_values_as_tensor: AttrTensor | None
+        class_ids: AttrInt64s | None
+        class_nodeids: AttrInt64s | None
+        class_treeids: AttrInt64s | None
+        class_weights: AttrFloat32s | None
+        class_weights_as_tensor: AttrTensor | None
+        classlabels_int64s: AttrInt64s | None
+        classlabels_strings: AttrStrings | None
+        nodes_falsenodeids: AttrInt64s | None
+        nodes_featureids: AttrInt64s | None
+        nodes_hitrates: AttrFloat32s | None
+        nodes_hitrates_as_tensor: AttrTensor | None
+        nodes_missing_value_tracks_true: AttrInt64s | None
+        nodes_modes: AttrStrings | None
+        nodes_nodeids: AttrInt64s | None
+        nodes_treeids: AttrInt64s | None
+        nodes_truenodeids: AttrInt64s | None
+        nodes_values: AttrFloat32s | None
+        nodes_values_as_tensor: AttrTensor | None
         post_transform: AttrString
 
     @dataclass
@@ -546,26 +550,26 @@ class _TreeEnsembleRegressor(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         aggregate_function: AttrString
-        base_values: Optional[AttrFloat32s]
-        base_values_as_tensor: Optional[AttrTensor]
-        n_targets: Optional[AttrInt64]
-        nodes_falsenodeids: Optional[AttrInt64s]
-        nodes_featureids: Optional[AttrInt64s]
-        nodes_hitrates: Optional[AttrFloat32s]
-        nodes_hitrates_as_tensor: Optional[AttrTensor]
-        nodes_missing_value_tracks_true: Optional[AttrInt64s]
-        nodes_modes: Optional[AttrStrings]
-        nodes_nodeids: Optional[AttrInt64s]
-        nodes_treeids: Optional[AttrInt64s]
-        nodes_truenodeids: Optional[AttrInt64s]
-        nodes_values: Optional[AttrFloat32s]
-        nodes_values_as_tensor: Optional[AttrTensor]
+        base_values: AttrFloat32s | None
+        base_values_as_tensor: AttrTensor | None
+        n_targets: AttrInt64 | None
+        nodes_falsenodeids: AttrInt64s | None
+        nodes_featureids: AttrInt64s | None
+        nodes_hitrates: AttrFloat32s | None
+        nodes_hitrates_as_tensor: AttrTensor | None
+        nodes_missing_value_tracks_true: AttrInt64s | None
+        nodes_modes: AttrStrings | None
+        nodes_nodeids: AttrInt64s | None
+        nodes_treeids: AttrInt64s | None
+        nodes_truenodeids: AttrInt64s | None
+        nodes_values: AttrFloat32s | None
+        nodes_values_as_tensor: AttrTensor | None
         post_transform: AttrString
-        target_ids: Optional[AttrInt64s]
-        target_nodeids: Optional[AttrInt64s]
-        target_treeids: Optional[AttrInt64s]
-        target_weights: Optional[AttrFloat32s]
-        target_weights_as_tensor: Optional[AttrTensor]
+        target_ids: AttrInt64s | None
+        target_nodeids: AttrInt64s | None
+        target_treeids: AttrInt64s | None
+        target_weights: AttrFloat32s | None
+        target_weights_as_tensor: AttrTensor | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -598,8 +602,8 @@ class _TreeEnsembleRegressor(StandardNode):
 class _ZipMap(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        classlabels_int64s: Optional[AttrInt64s]
-        classlabels_strings: Optional[AttrStrings]
+        classlabels_int64s: AttrInt64s | None
+        classlabels_strings: AttrStrings | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -783,8 +787,8 @@ def cast_map(
 def category_mapper(
     X: Var,
     *,
-    cats_int64s: Optional[Iterable[int]] = None,
-    cats_strings: Optional[Iterable[str]] = None,
+    cats_int64s: Iterable[int] | None = None,
+    cats_strings: Iterable[str] | None = None,
     default_int64: int = -1,
     default_string: str = "_Unused",
 ) -> Var:
@@ -859,8 +863,8 @@ def category_mapper(
 def dict_vectorizer(
     X: Var,
     *,
-    int64_vocabulary: Optional[Iterable[int]] = None,
-    string_vocabulary: Optional[Iterable[str]] = None,
+    int64_vocabulary: Iterable[int] | None = None,
+    string_vocabulary: Iterable[str] | None = None,
 ) -> Var:
     r"""
     Uses an index mapping to convert a dictionary to an array. Given a
@@ -932,7 +936,7 @@ def dict_vectorizer(
 def feature_vectorizer(
     X: Sequence[Var],
     *,
-    inputdimensions: Optional[Iterable[int]] = None,
+    inputdimensions: Iterable[int] | None = None,
 ) -> Var:
     r"""
     Concatenates input tensors into one continuous output. All input shapes
@@ -986,8 +990,8 @@ def feature_vectorizer(
 def imputer(
     X: Var,
     *,
-    imputed_value_floats: Optional[Iterable[float]] = None,
-    imputed_value_int64s: Optional[Iterable[int]] = None,
+    imputed_value_floats: Iterable[float] | None = None,
+    imputed_value_int64s: Iterable[int] | None = None,
     replaced_value_float: float = 0.0,
     replaced_value_int64: int = 0,
 ) -> Var:
@@ -1073,12 +1077,12 @@ def label_encoder(
     default_float: float = -0.0,
     default_int64: int = -1,
     default_string: str = "_Unused",
-    keys_floats: Optional[Iterable[float]] = None,
-    keys_int64s: Optional[Iterable[int]] = None,
-    keys_strings: Optional[Iterable[str]] = None,
-    values_floats: Optional[Iterable[float]] = None,
-    values_int64s: Optional[Iterable[int]] = None,
-    values_strings: Optional[Iterable[str]] = None,
+    keys_floats: Iterable[float] | None = None,
+    keys_int64s: Iterable[int] | None = None,
+    keys_strings: Iterable[str] | None = None,
+    values_floats: Iterable[float] | None = None,
+    values_int64s: Iterable[int] | None = None,
+    values_strings: Iterable[str] | None = None,
 ) -> Var:
     r"""
     Maps each element in the input tensor to another value. The mapping is
@@ -1176,10 +1180,10 @@ def label_encoder(
 def linear_classifier(
     X: Var,
     *,
-    classlabels_ints: Optional[Iterable[int]] = None,
-    classlabels_strings: Optional[Iterable[str]] = None,
+    classlabels_ints: Iterable[int] | None = None,
+    classlabels_strings: Iterable[str] | None = None,
     coefficients: Iterable[float],
-    intercepts: Optional[Iterable[float]] = None,
+    intercepts: Iterable[float] | None = None,
     multi_class: int = 0,
     post_transform: str = "NONE",
 ) -> tuple[Var, Var]:
@@ -1260,8 +1264,8 @@ def linear_classifier(
 def linear_regressor(
     X: Var,
     *,
-    coefficients: Optional[Iterable[float]] = None,
-    intercepts: Optional[Iterable[float]] = None,
+    coefficients: Iterable[float] | None = None,
+    intercepts: Iterable[float] | None = None,
     post_transform: str = "NONE",
     targets: int = 1,
 ) -> Var:
@@ -1384,8 +1388,8 @@ def normalizer(
 def one_hot_encoder(
     X: Var,
     *,
-    cats_int64s: Optional[Iterable[int]] = None,
-    cats_strings: Optional[Iterable[str]] = None,
+    cats_int64s: Iterable[int] | None = None,
+    cats_strings: Iterable[str] | None = None,
     zeros: int = 1,
 ) -> Var:
     r"""
@@ -1453,17 +1457,17 @@ def one_hot_encoder(
 def svmclassifier(
     X: Var,
     *,
-    classlabels_ints: Optional[Iterable[int]] = None,
-    classlabels_strings: Optional[Iterable[str]] = None,
-    coefficients: Optional[Iterable[float]] = None,
-    kernel_params: Optional[Iterable[float]] = None,
+    classlabels_ints: Iterable[int] | None = None,
+    classlabels_strings: Iterable[str] | None = None,
+    coefficients: Iterable[float] | None = None,
+    kernel_params: Iterable[float] | None = None,
     kernel_type: str = "LINEAR",
     post_transform: str = "NONE",
-    prob_a: Optional[Iterable[float]] = None,
-    prob_b: Optional[Iterable[float]] = None,
-    rho: Optional[Iterable[float]] = None,
-    support_vectors: Optional[Iterable[float]] = None,
-    vectors_per_class: Optional[Iterable[int]] = None,
+    prob_a: Iterable[float] | None = None,
+    prob_b: Iterable[float] | None = None,
+    rho: Iterable[float] | None = None,
+    support_vectors: Iterable[float] | None = None,
+    vectors_per_class: Iterable[int] | None = None,
 ) -> tuple[Var, Var]:
     r"""
     Support Vector Machine classifier
@@ -1571,14 +1575,14 @@ def svmclassifier(
 def svmregressor(
     X: Var,
     *,
-    coefficients: Optional[Iterable[float]] = None,
-    kernel_params: Optional[Iterable[float]] = None,
+    coefficients: Iterable[float] | None = None,
+    kernel_params: Iterable[float] | None = None,
     kernel_type: str = "LINEAR",
     n_supports: int = 0,
     one_class: int = 0,
     post_transform: str = "NONE",
-    rho: Optional[Iterable[float]] = None,
-    support_vectors: Optional[Iterable[float]] = None,
+    rho: Iterable[float] | None = None,
+    support_vectors: Iterable[float] | None = None,
 ) -> Var:
     r"""
     Support Vector Machine regression prediction and one-class SVM anomaly
@@ -1659,8 +1663,8 @@ def svmregressor(
 def scaler(
     X: Var,
     *,
-    offset: Optional[Iterable[float]] = None,
-    scale: Optional[Iterable[float]] = None,
+    offset: Iterable[float] | None = None,
+    scale: Iterable[float] | None = None,
 ) -> Var:
     r"""
     Rescale input data, for example to standardize features by removing the
@@ -1717,26 +1721,26 @@ def scaler(
 def tree_ensemble_classifier(
     X: Var,
     *,
-    base_values: Optional[Iterable[float]] = None,
-    base_values_as_tensor: Optional[np.ndarray] = None,
-    class_ids: Optional[Iterable[int]] = None,
-    class_nodeids: Optional[Iterable[int]] = None,
-    class_treeids: Optional[Iterable[int]] = None,
-    class_weights: Optional[Iterable[float]] = None,
-    class_weights_as_tensor: Optional[np.ndarray] = None,
-    classlabels_int64s: Optional[Iterable[int]] = None,
-    classlabels_strings: Optional[Iterable[str]] = None,
-    nodes_falsenodeids: Optional[Iterable[int]] = None,
-    nodes_featureids: Optional[Iterable[int]] = None,
-    nodes_hitrates: Optional[Iterable[float]] = None,
-    nodes_hitrates_as_tensor: Optional[np.ndarray] = None,
-    nodes_missing_value_tracks_true: Optional[Iterable[int]] = None,
-    nodes_modes: Optional[Iterable[str]] = None,
-    nodes_nodeids: Optional[Iterable[int]] = None,
-    nodes_treeids: Optional[Iterable[int]] = None,
-    nodes_truenodeids: Optional[Iterable[int]] = None,
-    nodes_values: Optional[Iterable[float]] = None,
-    nodes_values_as_tensor: Optional[np.ndarray] = None,
+    base_values: Iterable[float] | None = None,
+    base_values_as_tensor: np.ndarray | None = None,
+    class_ids: Iterable[int] | None = None,
+    class_nodeids: Iterable[int] | None = None,
+    class_treeids: Iterable[int] | None = None,
+    class_weights: Iterable[float] | None = None,
+    class_weights_as_tensor: np.ndarray | None = None,
+    classlabels_int64s: Iterable[int] | None = None,
+    classlabels_strings: Iterable[str] | None = None,
+    nodes_falsenodeids: Iterable[int] | None = None,
+    nodes_featureids: Iterable[int] | None = None,
+    nodes_hitrates: Iterable[float] | None = None,
+    nodes_hitrates_as_tensor: np.ndarray | None = None,
+    nodes_missing_value_tracks_true: Iterable[int] | None = None,
+    nodes_modes: Iterable[str] | None = None,
+    nodes_nodeids: Iterable[int] | None = None,
+    nodes_treeids: Iterable[int] | None = None,
+    nodes_truenodeids: Iterable[int] | None = None,
+    nodes_values: Iterable[float] | None = None,
+    nodes_values_as_tensor: np.ndarray | None = None,
     post_transform: str = "NONE",
 ) -> tuple[Var, Var]:
     r"""
@@ -1913,26 +1917,26 @@ def tree_ensemble_regressor(
     X: Var,
     *,
     aggregate_function: str = "SUM",
-    base_values: Optional[Iterable[float]] = None,
-    base_values_as_tensor: Optional[np.ndarray] = None,
-    n_targets: Optional[int] = None,
-    nodes_falsenodeids: Optional[Iterable[int]] = None,
-    nodes_featureids: Optional[Iterable[int]] = None,
-    nodes_hitrates: Optional[Iterable[float]] = None,
-    nodes_hitrates_as_tensor: Optional[np.ndarray] = None,
-    nodes_missing_value_tracks_true: Optional[Iterable[int]] = None,
-    nodes_modes: Optional[Iterable[str]] = None,
-    nodes_nodeids: Optional[Iterable[int]] = None,
-    nodes_treeids: Optional[Iterable[int]] = None,
-    nodes_truenodeids: Optional[Iterable[int]] = None,
-    nodes_values: Optional[Iterable[float]] = None,
-    nodes_values_as_tensor: Optional[np.ndarray] = None,
+    base_values: Iterable[float] | None = None,
+    base_values_as_tensor: np.ndarray | None = None,
+    n_targets: int | None = None,
+    nodes_falsenodeids: Iterable[int] | None = None,
+    nodes_featureids: Iterable[int] | None = None,
+    nodes_hitrates: Iterable[float] | None = None,
+    nodes_hitrates_as_tensor: np.ndarray | None = None,
+    nodes_missing_value_tracks_true: Iterable[int] | None = None,
+    nodes_modes: Iterable[str] | None = None,
+    nodes_nodeids: Iterable[int] | None = None,
+    nodes_treeids: Iterable[int] | None = None,
+    nodes_truenodeids: Iterable[int] | None = None,
+    nodes_values: Iterable[float] | None = None,
+    nodes_values_as_tensor: np.ndarray | None = None,
     post_transform: str = "NONE",
-    target_ids: Optional[Iterable[int]] = None,
-    target_nodeids: Optional[Iterable[int]] = None,
-    target_treeids: Optional[Iterable[int]] = None,
-    target_weights: Optional[Iterable[float]] = None,
-    target_weights_as_tensor: Optional[np.ndarray] = None,
+    target_ids: Iterable[int] | None = None,
+    target_nodeids: Iterable[int] | None = None,
+    target_treeids: Iterable[int] | None = None,
+    target_weights: Iterable[float] | None = None,
+    target_weights_as_tensor: np.ndarray | None = None,
 ) -> Var:
     r"""
     Tree Ensemble regressor. Returns the regressed values for each input in
@@ -2105,8 +2109,8 @@ def tree_ensemble_regressor(
 def zip_map(
     X: Var,
     *,
-    classlabels_int64s: Optional[Iterable[int]] = None,
-    classlabels_strings: Optional[Iterable[str]] = None,
+    classlabels_int64s: Iterable[int] | None = None,
+    classlabels_strings: Iterable[str] | None = None,
 ) -> Var:
     r"""
     Creates a map from the input and the attributes. The values are provided

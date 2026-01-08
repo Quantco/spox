@@ -1,12 +1,11 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from __future__ import annotations
+
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
 
 import numpy as np
 
@@ -22,7 +21,12 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
+from spox._var import (
+    Var,
+    _VarInfo,
+    create_prop_dict,
+    unwrap_vars,
+)
 from spox.opset.ai.onnx.ml.v3 import (
     _ArrayFeatureExtractor,
     _Binarizer,
@@ -67,15 +71,15 @@ class _LabelEncoder(StandardNode):
         default_float: AttrFloat32
         default_int64: AttrInt64
         default_string: AttrString
-        default_tensor: Optional[AttrTensor]
-        keys_floats: Optional[AttrFloat32s]
-        keys_int64s: Optional[AttrInt64s]
-        keys_strings: Optional[AttrStrings]
-        keys_tensor: Optional[AttrTensor]
-        values_floats: Optional[AttrFloat32s]
-        values_int64s: Optional[AttrInt64s]
-        values_strings: Optional[AttrStrings]
-        values_tensor: Optional[AttrTensor]
+        default_tensor: AttrTensor | None
+        keys_floats: AttrFloat32s | None
+        keys_int64s: AttrInt64s | None
+        keys_strings: AttrStrings | None
+        keys_tensor: AttrTensor | None
+        values_floats: AttrFloat32s | None
+        values_int64s: AttrInt64s | None
+        values_strings: AttrStrings | None
+        values_tensor: AttrTensor | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -98,15 +102,15 @@ def label_encoder(
     default_float: float = -0.0,
     default_int64: int = -1,
     default_string: str = "_Unused",
-    default_tensor: Optional[np.ndarray] = None,
-    keys_floats: Optional[Iterable[float]] = None,
-    keys_int64s: Optional[Iterable[int]] = None,
-    keys_strings: Optional[Iterable[str]] = None,
-    keys_tensor: Optional[np.ndarray] = None,
-    values_floats: Optional[Iterable[float]] = None,
-    values_int64s: Optional[Iterable[int]] = None,
-    values_strings: Optional[Iterable[str]] = None,
-    values_tensor: Optional[np.ndarray] = None,
+    default_tensor: np.ndarray | None = None,
+    keys_floats: Iterable[float] | None = None,
+    keys_int64s: Iterable[int] | None = None,
+    keys_strings: Iterable[str] | None = None,
+    keys_tensor: np.ndarray | None = None,
+    values_floats: Iterable[float] | None = None,
+    values_int64s: Iterable[int] | None = None,
+    values_strings: Iterable[str] | None = None,
+    values_tensor: np.ndarray | None = None,
 ) -> Var:
     r"""
     Maps each element in the input tensor to another value. The mapping is

@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ import enum
 import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import Field, dataclass
-from typing import Optional, get_type_hints
+from typing import get_type_hints
 
 from . import _type_system
 from ._attributes import Attr
@@ -113,7 +113,7 @@ class BaseVarInfos(BaseFields):
         field_type = get_type_hints(cls)[field.name]
         if field_type == _VarInfo:
             return VarFieldKind.SINGLE
-        elif field_type == Optional[_VarInfo]:
+        elif field_type == _VarInfo | None:
             return VarFieldKind.OPTIONAL
         elif field_type == Sequence[_VarInfo]:
             return VarFieldKind.VARIADIC

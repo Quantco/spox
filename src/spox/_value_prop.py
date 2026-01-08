@@ -1,11 +1,13 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
+from __future__ import annotations
 
 import enum
 import logging
 import warnings
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Union
+from typing import Any, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -26,8 +28,8 @@ The internal representation for runtime values.
 """
 PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
 PropDict = dict[str, PropValueType]
-ORTValue = Union[np.ndarray, list, None]
-RefValue = Union[np.ndarray, list, float, None]
+ORTValue = np.ndarray | list | None
+RefValue = np.ndarray | list | float | None
 
 VALUE_PROP_STRICT_CHECK: bool = False
 
@@ -103,7 +105,7 @@ class PropValue:
         return True
 
     @classmethod
-    def from_ref_value(cls, typ: Type, value: RefValue) -> "PropValue":
+    def from_ref_value(cls, typ: Type, value: RefValue) -> PropValue:
         # Sometimes non-Sequence values are wrapped in a list.
         if (
             not isinstance(typ, Sequence)
@@ -123,7 +125,7 @@ class PropValue:
         # No fail branch because representations of Tensor are inconsistent
 
     @classmethod
-    def from_ort_value(cls, typ: Type, value: ORTValue) -> "PropValue":
+    def from_ort_value(cls, typ: Type, value: ORTValue) -> PropValue:
         if value is None:  # Optional, Nothing
             return cls(typ, None)
         elif isinstance(typ, Optional):  # Optional, Some

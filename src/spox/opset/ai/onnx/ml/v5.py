@@ -1,12 +1,11 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
+from __future__ import annotations
+
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import (
-    Optional,
-)
 
 import numpy as np
 
@@ -18,7 +17,12 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
-from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
+from spox._var import (
+    Var,
+    _VarInfo,
+    create_prop_dict,
+    unwrap_vars,
+)
 from spox.opset.ai.onnx.ml.v4 import (
     _ArrayFeatureExtractor,
     _Binarizer,
@@ -61,13 +65,13 @@ class _TreeEnsemble(StandardNode):
         aggregate_function: AttrInt64
         leaf_targetids: AttrInt64s
         leaf_weights: AttrTensor
-        membership_values: Optional[AttrTensor]
-        n_targets: Optional[AttrInt64]
+        membership_values: AttrTensor | None
+        n_targets: AttrInt64 | None
         nodes_falseleafs: AttrInt64s
         nodes_falsenodeids: AttrInt64s
         nodes_featureids: AttrInt64s
-        nodes_hitrates: Optional[AttrTensor]
-        nodes_missing_value_tracks_true: Optional[AttrInt64s]
+        nodes_hitrates: AttrTensor | None
+        nodes_missing_value_tracks_true: AttrInt64s | None
         nodes_modes: AttrTensor
         nodes_splits: AttrTensor
         nodes_trueleafs: AttrInt64s
@@ -96,13 +100,13 @@ def tree_ensemble(
     aggregate_function: int = 1,
     leaf_targetids: Iterable[int],
     leaf_weights: np.ndarray,
-    membership_values: Optional[np.ndarray] = None,
-    n_targets: Optional[int] = None,
+    membership_values: np.ndarray | None = None,
+    n_targets: int | None = None,
     nodes_falseleafs: Iterable[int],
     nodes_falsenodeids: Iterable[int],
     nodes_featureids: Iterable[int],
-    nodes_hitrates: Optional[np.ndarray] = None,
-    nodes_missing_value_tracks_true: Optional[Iterable[int]] = None,
+    nodes_hitrates: np.ndarray | None = None,
+    nodes_missing_value_tracks_true: Iterable[int] | None = None,
     nodes_modes: np.ndarray,
     nodes_splits: np.ndarray,
     nodes_trueleafs: Iterable[int],
