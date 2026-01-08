@@ -1,13 +1,11 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
-from collections.abc import Iterable, Sequence
+from __future__ import annotations
+
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
-from typing import (
-    Callable,
-    Optional,
-)
 from typing import cast as typing_cast
 
 import numpy as np
@@ -274,8 +272,8 @@ class _AveragePool(StandardNode):
         ceil_mode: AttrInt64
         count_include_pad: AttrInt64
         kernel_shape: AttrInt64s
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -310,8 +308,8 @@ class _BatchNormalization(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         Y: _VarInfo
-        running_mean: Optional[_VarInfo]
-        running_var: Optional[_VarInfo]
+        running_mean: _VarInfo | None
+        running_var: _VarInfo | None
 
     op_type = OpType("BatchNormalization", "", 15)
 
@@ -323,8 +321,8 @@ class _BatchNormalization(StandardNode):
 class _Bernoulli(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        dtype: Optional[AttrDtype]
-        seed: Optional[AttrFloat32]
+        dtype: AttrDtype | None
+        seed: AttrFloat32 | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -472,8 +470,8 @@ class _Clip(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
-        min: Optional[_VarInfo]
-        max: Optional[_VarInfo]
+        min: _VarInfo | None
+        max: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -489,7 +487,7 @@ class _Clip(StandardNode):
 class _Compress(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axis: Optional[AttrInt64]
+        axis: AttrInt64 | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -551,13 +549,13 @@ class _ConcatFromSequence(StandardNode):
 class _Constant(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        value: Optional[AttrTensor]
-        value_float: Optional[AttrFloat32]
-        value_floats: Optional[AttrFloat32s]
-        value_int: Optional[AttrInt64]
-        value_ints: Optional[AttrInt64s]
-        value_string: Optional[AttrString]
-        value_strings: Optional[AttrStrings]
+        value: AttrTensor | None
+        value_float: AttrFloat32 | None
+        value_floats: AttrFloat32s | None
+        value_int: AttrInt64 | None
+        value_ints: AttrInt64s | None
+        value_string: AttrString | None
+        value_strings: AttrStrings | None
 
     Inputs = BaseInputs
 
@@ -601,7 +599,7 @@ class _Constant(StandardNode):
 class _ConstantOfShape(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        value: Optional[AttrTensor]
+        value: AttrTensor | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -622,17 +620,17 @@ class _Conv(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         auto_pad: AttrString
-        dilations: Optional[AttrInt64s]
+        dilations: AttrInt64s | None
         group: AttrInt64
-        kernel_shape: Optional[AttrInt64s]
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        kernel_shape: AttrInt64s | None
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
         X: _VarInfo
         W: _VarInfo
-        B: Optional[_VarInfo]
+        B: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -649,18 +647,18 @@ class _ConvInteger(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         auto_pad: AttrString
-        dilations: Optional[AttrInt64s]
+        dilations: AttrInt64s | None
         group: AttrInt64
-        kernel_shape: Optional[AttrInt64s]
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        kernel_shape: AttrInt64s | None
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
         x: _VarInfo
         w: _VarInfo
-        x_zero_point: Optional[_VarInfo]
-        w_zero_point: Optional[_VarInfo]
+        x_zero_point: _VarInfo | None
+        w_zero_point: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -677,19 +675,19 @@ class _ConvTranspose(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         auto_pad: AttrString
-        dilations: Optional[AttrInt64s]
+        dilations: AttrInt64s | None
         group: AttrInt64
-        kernel_shape: Optional[AttrInt64s]
-        output_padding: Optional[AttrInt64s]
-        output_shape: Optional[AttrInt64s]
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        kernel_shape: AttrInt64s | None
+        output_padding: AttrInt64s | None
+        output_shape: AttrInt64s | None
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
         X: _VarInfo
         W: _VarInfo
-        B: Optional[_VarInfo]
+        B: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -774,7 +772,7 @@ class _DFT(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
-        dft_length: Optional[_VarInfo]
+        dft_length: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -817,7 +815,7 @@ class _DequantizeLinear(StandardNode):
     class Inputs(BaseInputs):
         x: _VarInfo
         x_scale: _VarInfo
-        x_zero_point: Optional[_VarInfo]
+        x_zero_point: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -874,18 +872,18 @@ class _Div(StandardNode):
 class _Dropout(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        seed: Optional[AttrInt64]
+        seed: AttrInt64 | None
 
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        ratio: Optional[_VarInfo]
-        training_mode: Optional[_VarInfo]
+        ratio: _VarInfo | None
+        training_mode: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
         output: _VarInfo
-        mask: Optional[_VarInfo]
+        mask: _VarInfo | None
 
     op_type = OpType("Dropout", "", 13)
 
@@ -1041,7 +1039,7 @@ class _Expand(StandardNode):
 class _EyeLike(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        dtype: Optional[AttrDtype]
+        dtype: AttrDtype | None
         k: AttrInt64
 
     @dataclass
@@ -1102,12 +1100,12 @@ class _Floor(StandardNode):
 class _GRU(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        activation_alpha: Optional[AttrFloat32s]
-        activation_beta: Optional[AttrFloat32s]
-        activations: Optional[AttrStrings]
-        clip: Optional[AttrFloat32]
+        activation_alpha: AttrFloat32s | None
+        activation_beta: AttrFloat32s | None
+        activations: AttrStrings | None
+        clip: AttrFloat32 | None
         direction: AttrString
-        hidden_size: Optional[AttrInt64]
+        hidden_size: AttrInt64 | None
         layout: AttrInt64
         linear_before_reset: AttrInt64
 
@@ -1116,14 +1114,14 @@ class _GRU(StandardNode):
         X: _VarInfo
         W: _VarInfo
         R: _VarInfo
-        B: Optional[_VarInfo]
-        sequence_lens: Optional[_VarInfo]
-        initial_h: Optional[_VarInfo]
+        B: _VarInfo | None
+        sequence_lens: _VarInfo | None
+        initial_h: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Optional[_VarInfo]
-        Y_h: Optional[_VarInfo]
+        Y: _VarInfo | None
+        Y_h: _VarInfo | None
 
     op_type = OpType("GRU", "", 14)
 
@@ -1207,7 +1205,7 @@ class _Gemm(StandardNode):
     class Inputs(BaseInputs):
         A: _VarInfo
         B: _VarInfo
-        C: Optional[_VarInfo]
+        C: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -1578,12 +1576,12 @@ class _LRN(StandardNode):
 class _LSTM(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        activation_alpha: Optional[AttrFloat32s]
-        activation_beta: Optional[AttrFloat32s]
-        activations: Optional[AttrStrings]
-        clip: Optional[AttrFloat32]
+        activation_alpha: AttrFloat32s | None
+        activation_beta: AttrFloat32s | None
+        activations: AttrStrings | None
+        clip: AttrFloat32 | None
         direction: AttrString
-        hidden_size: Optional[AttrInt64]
+        hidden_size: AttrInt64 | None
         input_forget: AttrInt64
         layout: AttrInt64
 
@@ -1592,17 +1590,17 @@ class _LSTM(StandardNode):
         X: _VarInfo
         W: _VarInfo
         R: _VarInfo
-        B: Optional[_VarInfo]
-        sequence_lens: Optional[_VarInfo]
-        initial_h: Optional[_VarInfo]
-        initial_c: Optional[_VarInfo]
-        P: Optional[_VarInfo]
+        B: _VarInfo | None
+        sequence_lens: _VarInfo | None
+        initial_h: _VarInfo | None
+        initial_c: _VarInfo | None
+        P: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Optional[_VarInfo]
-        Y_h: Optional[_VarInfo]
-        Y_c: Optional[_VarInfo]
+        Y: _VarInfo | None
+        Y_h: _VarInfo | None
+        Y_c: _VarInfo | None
 
     op_type = OpType("LSTM", "", 14)
 
@@ -1622,13 +1620,13 @@ class _LayerNormalization(StandardNode):
     class Inputs(BaseInputs):
         X: _VarInfo
         Scale: _VarInfo
-        B: Optional[_VarInfo]
+        B: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
         Y: _VarInfo
-        Mean: Optional[_VarInfo]
-        InvStdDev: Optional[_VarInfo]
+        Mean: _VarInfo | None
+        InvStdDev: _VarInfo | None
 
     op_type = OpType("LayerNormalization", "", 17)
 
@@ -1746,8 +1744,8 @@ class _Loop(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        M: Optional[_VarInfo]
-        cond: Optional[_VarInfo]
+        M: _VarInfo | None
+        cond: _VarInfo | None
         v_initial: Sequence[_VarInfo]
 
     @dataclass
@@ -1812,8 +1810,8 @@ class _LpPool(StandardNode):
         auto_pad: AttrString
         kernel_shape: AttrInt64s
         p: AttrInt64
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -1860,8 +1858,8 @@ class _MatMulInteger(StandardNode):
     class Inputs(BaseInputs):
         A: _VarInfo
         B: _VarInfo
-        a_zero_point: Optional[_VarInfo]
-        b_zero_point: Optional[_VarInfo]
+        a_zero_point: _VarInfo | None
+        b_zero_point: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -1899,11 +1897,11 @@ class _MaxPool(StandardNode):
     class Attributes(BaseAttributes):
         auto_pad: AttrString
         ceil_mode: AttrInt64
-        dilations: Optional[AttrInt64s]
+        dilations: AttrInt64s | None
         kernel_shape: AttrInt64s
-        pads: Optional[AttrInt64s]
+        pads: AttrInt64s | None
         storage_order: AttrInt64
-        strides: Optional[AttrInt64s]
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -1912,7 +1910,7 @@ class _MaxPool(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         Y: _VarInfo
-        Indices: Optional[_VarInfo]
+        Indices: _VarInfo | None
 
     op_type = OpType("MaxPool", "", 12)
 
@@ -1947,14 +1945,14 @@ class _MaxUnpool(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         kernel_shape: AttrInt64s
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
         X: _VarInfo
         I: _VarInfo
-        output_shape: Optional[_VarInfo]
+        output_shape: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2098,7 +2096,7 @@ class _Multinomial(StandardNode):
     class Attributes(BaseAttributes):
         dtype: AttrDtype
         sample_size: AttrInt64
-        seed: Optional[AttrFloat32]
+        seed: AttrFloat32 | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -2138,14 +2136,14 @@ class _Neg(StandardNode):
 class _NegativeLogLikelihoodLoss(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        ignore_index: Optional[AttrInt64]
+        ignore_index: AttrInt64 | None
         reduction: AttrString
 
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
         target: _VarInfo
-        weight: Optional[_VarInfo]
+        weight: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2167,9 +2165,9 @@ class _NonMaxSuppression(StandardNode):
     class Inputs(BaseInputs):
         boxes: _VarInfo
         scores: _VarInfo
-        max_output_boxes_per_class: Optional[_VarInfo]
-        iou_threshold: Optional[_VarInfo]
-        score_threshold: Optional[_VarInfo]
+        max_output_boxes_per_class: _VarInfo | None
+        iou_threshold: _VarInfo | None
+        score_threshold: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2247,11 +2245,11 @@ class _OneHot(StandardNode):
 class _Optional(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        type: Optional[AttrType]
+        type: AttrType | None
 
     @dataclass
     class Inputs(BaseInputs):
-        input: Optional[_VarInfo]
+        input: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2355,7 +2353,7 @@ class _Pad(StandardNode):
     class Inputs(BaseInputs):
         data: _VarInfo
         pads: _VarInfo
-        constant_value: Optional[_VarInfo]
+        constant_value: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2393,11 +2391,11 @@ class _QLinearConv(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
         auto_pad: AttrString
-        dilations: Optional[AttrInt64s]
+        dilations: AttrInt64s | None
         group: AttrInt64
-        kernel_shape: Optional[AttrInt64s]
-        pads: Optional[AttrInt64s]
-        strides: Optional[AttrInt64s]
+        kernel_shape: AttrInt64s | None
+        pads: AttrInt64s | None
+        strides: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -2409,7 +2407,7 @@ class _QLinearConv(StandardNode):
         w_zero_point: _VarInfo
         y_scale: _VarInfo
         y_zero_point: _VarInfo
-        B: Optional[_VarInfo]
+        B: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2458,7 +2456,7 @@ class _QuantizeLinear(StandardNode):
     class Inputs(BaseInputs):
         x: _VarInfo
         y_scale: _VarInfo
-        y_zero_point: Optional[_VarInfo]
+        y_zero_point: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2474,12 +2472,12 @@ class _QuantizeLinear(StandardNode):
 class _RNN(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        activation_alpha: Optional[AttrFloat32s]
-        activation_beta: Optional[AttrFloat32s]
+        activation_alpha: AttrFloat32s | None
+        activation_beta: AttrFloat32s | None
         activations: AttrStrings
-        clip: Optional[AttrFloat32]
+        clip: AttrFloat32 | None
         direction: AttrString
-        hidden_size: Optional[AttrInt64]
+        hidden_size: AttrInt64 | None
         layout: AttrInt64
 
     @dataclass
@@ -2487,14 +2485,14 @@ class _RNN(StandardNode):
         X: _VarInfo
         W: _VarInfo
         R: _VarInfo
-        B: Optional[_VarInfo]
-        sequence_lens: Optional[_VarInfo]
-        initial_h: Optional[_VarInfo]
+        B: _VarInfo | None
+        sequence_lens: _VarInfo | None
+        initial_h: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
-        Y: Optional[_VarInfo]
-        Y_h: Optional[_VarInfo]
+        Y: _VarInfo | None
+        Y_h: _VarInfo | None
 
     op_type = OpType("RNN", "", 14)
 
@@ -2509,7 +2507,7 @@ class _RandomNormal(StandardNode):
         dtype: AttrDtype
         mean: AttrFloat32
         scale: AttrFloat32
-        seed: Optional[AttrFloat32]
+        seed: AttrFloat32 | None
         shape: AttrInt64s
 
     Inputs = BaseInputs
@@ -2528,10 +2526,10 @@ class _RandomNormal(StandardNode):
 class _RandomNormalLike(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        dtype: Optional[AttrDtype]
+        dtype: AttrDtype | None
         mean: AttrFloat32
         scale: AttrFloat32
-        seed: Optional[AttrFloat32]
+        seed: AttrFloat32 | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -2554,7 +2552,7 @@ class _RandomUniform(StandardNode):
         dtype: AttrDtype
         high: AttrFloat32
         low: AttrFloat32
-        seed: Optional[AttrFloat32]
+        seed: AttrFloat32 | None
         shape: AttrInt64s
 
     Inputs = BaseInputs
@@ -2573,10 +2571,10 @@ class _RandomUniform(StandardNode):
 class _RandomUniformLike(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        dtype: Optional[AttrDtype]
+        dtype: AttrDtype | None
         high: AttrFloat32
         low: AttrFloat32
-        seed: Optional[AttrFloat32]
+        seed: AttrFloat32 | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -2638,7 +2636,7 @@ class _Reciprocal(StandardNode):
 class _ReduceL1(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2659,7 +2657,7 @@ class _ReduceL1(StandardNode):
 class _ReduceL2(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2680,7 +2678,7 @@ class _ReduceL2(StandardNode):
 class _ReduceLogSum(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2701,7 +2699,7 @@ class _ReduceLogSum(StandardNode):
 class _ReduceLogSumExp(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2722,7 +2720,7 @@ class _ReduceLogSumExp(StandardNode):
 class _ReduceMax(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2743,7 +2741,7 @@ class _ReduceMax(StandardNode):
 class _ReduceMean(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2764,7 +2762,7 @@ class _ReduceMean(StandardNode):
 class _ReduceMin(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2785,7 +2783,7 @@ class _ReduceMin(StandardNode):
 class _ReduceProd(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2812,7 +2810,7 @@ class _ReduceSum(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2828,7 +2826,7 @@ class _ReduceSum(StandardNode):
 class _ReduceSumSquare(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axes: Optional[AttrInt64s]
+        axes: AttrInt64s | None
         keepdims: AttrInt64
 
     @dataclass
@@ -2900,9 +2898,9 @@ class _Resize(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         X: _VarInfo
-        roi: Optional[_VarInfo]
-        scales: Optional[_VarInfo]
-        sizes: Optional[_VarInfo]
+        roi: _VarInfo | None
+        scales: _VarInfo | None
+        sizes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -2993,8 +2991,8 @@ class _STFT(StandardNode):
     class Inputs(BaseInputs):
         signal: _VarInfo
         frame_step: _VarInfo
-        window: Optional[_VarInfo]
-        frame_length: Optional[_VarInfo]
+        window: _VarInfo | None
+        frame_length: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3012,10 +3010,10 @@ class _Scan(StandardNode):
     class Attributes(BaseAttributes):
         body: AttrGraph
         num_scan_inputs: AttrInt64
-        scan_input_axes: Optional[AttrInt64s]
-        scan_input_directions: Optional[AttrInt64s]
-        scan_output_axes: Optional[AttrInt64s]
-        scan_output_directions: Optional[AttrInt64s]
+        scan_input_axes: AttrInt64s | None
+        scan_input_directions: AttrInt64s | None
+        scan_output_axes: AttrInt64s | None
+        scan_output_directions: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -3142,7 +3140,7 @@ class _SequenceConstruct(StandardNode):
 class _SequenceEmpty(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        dtype: Optional[AttrDtype]
+        dtype: AttrDtype | None
 
     Inputs = BaseInputs
 
@@ -3165,7 +3163,7 @@ class _SequenceErase(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         input_sequence: _VarInfo
-        position: Optional[_VarInfo]
+        position: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3187,7 +3185,7 @@ class _SequenceInsert(StandardNode):
     class Inputs(BaseInputs):
         input_sequence: _VarInfo
         tensor: _VarInfo
-        position: Optional[_VarInfo]
+        position: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3244,7 +3242,7 @@ class _SequenceMap(StandardNode):
 class _Shape(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        end: Optional[AttrInt64]
+        end: AttrInt64 | None
         start: AttrInt64
 
     @dataclass
@@ -3393,8 +3391,8 @@ class _Slice(StandardNode):
         data: _VarInfo
         starts: _VarInfo
         ends: _VarInfo
-        axes: Optional[_VarInfo]
-        steps: Optional[_VarInfo]
+        axes: _VarInfo | None
+        steps: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3430,19 +3428,19 @@ class _Softmax(StandardNode):
 class _SoftmaxCrossEntropyLoss(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        ignore_index: Optional[AttrInt64]
+        ignore_index: AttrInt64 | None
         reduction: AttrString
 
     @dataclass
     class Inputs(BaseInputs):
         scores: _VarInfo
         labels: _VarInfo
-        weights: Optional[_VarInfo]
+        weights: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
         output: _VarInfo
-        log_prob: Optional[_VarInfo]
+        log_prob: _VarInfo | None
 
     op_type = OpType("SoftmaxCrossEntropyLoss", "", 13)
 
@@ -3519,7 +3517,7 @@ class _Split(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
-        split: Optional[_VarInfo]
+        split: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3541,7 +3539,7 @@ class _SplitToSequence(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
-        split: Optional[_VarInfo]
+        split: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3582,7 +3580,7 @@ class _Squeeze(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3600,8 +3598,8 @@ class _StringNormalizer(StandardNode):
     class Attributes(BaseAttributes):
         case_change_action: AttrString
         is_case_sensitive: AttrInt64
-        locale: Optional[AttrString]
-        stopwords: Optional[AttrStrings]
+        locale: AttrString | None
+        stopwords: AttrStrings | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -3708,9 +3706,9 @@ class _TfIdfVectorizer(StandardNode):
         mode: AttrString
         ngram_counts: AttrInt64s
         ngram_indexes: AttrInt64s
-        pool_int64s: Optional[AttrInt64s]
-        pool_strings: Optional[AttrStrings]
-        weights: Optional[AttrFloat32s]
+        pool_int64s: AttrInt64s | None
+        pool_strings: AttrStrings | None
+        weights: AttrFloat32s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -3795,7 +3793,7 @@ class _TopK(StandardNode):
 class _Transpose(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        perm: Optional[AttrInt64s]
+        perm: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -3820,7 +3818,7 @@ class _Trilu(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         input: _VarInfo
-        k: Optional[_VarInfo]
+        k: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -3836,7 +3834,7 @@ class _Trilu(StandardNode):
 class _Unique(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        axis: Optional[AttrInt64]
+        axis: AttrInt64 | None
         sorted: AttrInt64
 
     @dataclass
@@ -3846,9 +3844,9 @@ class _Unique(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         Y: _VarInfo
-        indices: Optional[_VarInfo]
-        inverse_indices: Optional[_VarInfo]
-        counts: Optional[_VarInfo]
+        indices: _VarInfo | None
+        inverse_indices: _VarInfo | None
+        counts: _VarInfo | None
 
     op_type = OpType("Unique", "", 11)
 
@@ -4474,8 +4472,8 @@ def average_pool(
     ceil_mode: int = 0,
     count_include_pad: int = 0,
     kernel_shape: Iterable[int],
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     AveragePool consumes an input tensor X and applies average pooling
@@ -4764,8 +4762,8 @@ def batch_normalization(
 def bernoulli(
     input: Var,
     *,
-    dtype: Optional[npt.DTypeLike] = None,
-    seed: Optional[float] = None,
+    dtype: npt.DTypeLike | None = None,
+    seed: float | None = None,
 ) -> Var:
     r"""
     Draws binary random numbers (0 or 1) from a Bernoulli distribution. The
@@ -5207,8 +5205,8 @@ def celu(
 
 def clip(
     input: Var,
-    min: Optional[Var] = None,
-    max: Optional[Var] = None,
+    min: Var | None = None,
+    max: Var | None = None,
 ) -> Var:
     r"""
     Clip operator limits the given input within an interval. The interval is
@@ -5269,7 +5267,7 @@ def compress(
     input: Var,
     condition: Var,
     *,
-    axis: Optional[int] = None,
+    axis: int | None = None,
 ) -> Var:
     r"""
     Selects slices from an input tensor along a given axis where condition
@@ -5445,13 +5443,13 @@ def concat_from_sequence(
 
 def constant(
     *,
-    value: Optional[np.ndarray] = None,
-    value_float: Optional[float] = None,
-    value_floats: Optional[Iterable[float]] = None,
-    value_int: Optional[int] = None,
-    value_ints: Optional[Iterable[int]] = None,
-    value_string: Optional[str] = None,
-    value_strings: Optional[Iterable[str]] = None,
+    value: np.ndarray | None = None,
+    value_float: float | None = None,
+    value_floats: Iterable[float] | None = None,
+    value_int: int | None = None,
+    value_ints: Iterable[int] | None = None,
+    value_string: str | None = None,
+    value_strings: Iterable[str] | None = None,
 ) -> Var:
     r"""
     This operator produces a constant tensor. Exactly one of the provided
@@ -5518,7 +5516,7 @@ def constant(
 def constant_of_shape(
     input: Var,
     *,
-    value: Optional[np.ndarray] = None,
+    value: np.ndarray | None = None,
 ) -> Var:
     r"""
     Generate a tensor with given value and shape.
@@ -5573,14 +5571,14 @@ def constant_of_shape(
 def conv(
     X: Var,
     W: Var,
-    B: Optional[Var] = None,
+    B: Var | None = None,
     *,
     auto_pad: str = "NOTSET",
-    dilations: Optional[Iterable[int]] = None,
+    dilations: Iterable[int] | None = None,
     group: int = 1,
-    kernel_shape: Optional[Iterable[int]] = None,
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    kernel_shape: Iterable[int] | None = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     The convolution operator consumes an input tensor and a filter, and
@@ -5697,15 +5695,15 @@ def conv(
 def conv_integer(
     x: Var,
     w: Var,
-    x_zero_point: Optional[Var] = None,
-    w_zero_point: Optional[Var] = None,
+    x_zero_point: Var | None = None,
+    w_zero_point: Var | None = None,
     *,
     auto_pad: str = "NOTSET",
-    dilations: Optional[Iterable[int]] = None,
+    dilations: Iterable[int] | None = None,
     group: int = 1,
-    kernel_shape: Optional[Iterable[int]] = None,
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    kernel_shape: Iterable[int] | None = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     The integer convolution operator consumes an input tensor, its
@@ -5834,16 +5832,16 @@ def conv_integer(
 def conv_transpose(
     X: Var,
     W: Var,
-    B: Optional[Var] = None,
+    B: Var | None = None,
     *,
     auto_pad: str = "NOTSET",
-    dilations: Optional[Iterable[int]] = None,
+    dilations: Iterable[int] | None = None,
     group: int = 1,
-    kernel_shape: Optional[Iterable[int]] = None,
-    output_padding: Optional[Iterable[int]] = None,
-    output_shape: Optional[Iterable[int]] = None,
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    kernel_shape: Iterable[int] | None = None,
+    output_padding: Iterable[int] | None = None,
+    output_shape: Iterable[int] | None = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     The convolution transpose operator consumes an input tensor and a
@@ -6158,7 +6156,7 @@ def cumsum(
 
 def dft(
     input: Var,
-    dft_length: Optional[Var] = None,
+    dft_length: Var | None = None,
     *,
     axis: int = 1,
     inverse: int = 0,
@@ -6335,7 +6333,7 @@ def depth_to_space(
 def dequantize_linear(
     x: Var,
     x_scale: Var,
-    x_zero_point: Optional[Var] = None,
+    x_zero_point: Var | None = None,
     *,
     axis: int = 1,
 ) -> Var:
@@ -6507,10 +6505,10 @@ def div(
 
 def dropout(
     data: Var,
-    ratio: Optional[Var] = None,
-    training_mode: Optional[Var] = None,
+    ratio: Var | None = None,
+    training_mode: Var | None = None,
     *,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> tuple[Var, Var]:
     r"""
     Dropout takes an input floating-point tensor, an optional input ratio
@@ -7013,7 +7011,7 @@ def expand(
 def eye_like(
     input: Var,
     *,
-    dtype: Optional[npt.DTypeLike] = None,
+    dtype: npt.DTypeLike | None = None,
     k: int = 0,
 ) -> Var:
     r"""
@@ -7182,16 +7180,16 @@ def gru(
     X: Var,
     W: Var,
     R: Var,
-    B: Optional[Var] = None,
-    sequence_lens: Optional[Var] = None,
-    initial_h: Optional[Var] = None,
+    B: Var | None = None,
+    sequence_lens: Var | None = None,
+    initial_h: Var | None = None,
     *,
-    activation_alpha: Optional[Iterable[float]] = None,
-    activation_beta: Optional[Iterable[float]] = None,
-    activations: Optional[Iterable[str]] = None,
-    clip: Optional[float] = None,
+    activation_alpha: Iterable[float] | None = None,
+    activation_beta: Iterable[float] | None = None,
+    activations: Iterable[str] | None = None,
+    clip: float | None = None,
     direction: str = "forward",
-    hidden_size: Optional[int] = None,
+    hidden_size: int | None = None,
     layout: int = 0,
     linear_before_reset: int = 0,
 ) -> tuple[Var, Var]:
@@ -7792,7 +7790,7 @@ def gather_nd(
 def gemm(
     A: Var,
     B: Var,
-    C: Optional[Var] = None,
+    C: Var | None = None,
     *,
     alpha: float = 1.0,
     beta: float = 1.0,
@@ -8899,18 +8897,18 @@ def lstm(
     X: Var,
     W: Var,
     R: Var,
-    B: Optional[Var] = None,
-    sequence_lens: Optional[Var] = None,
-    initial_h: Optional[Var] = None,
-    initial_c: Optional[Var] = None,
-    P: Optional[Var] = None,
+    B: Var | None = None,
+    sequence_lens: Var | None = None,
+    initial_h: Var | None = None,
+    initial_c: Var | None = None,
+    P: Var | None = None,
     *,
-    activation_alpha: Optional[Iterable[float]] = None,
-    activation_beta: Optional[Iterable[float]] = None,
-    activations: Optional[Iterable[str]] = None,
-    clip: Optional[float] = None,
+    activation_alpha: Iterable[float] | None = None,
+    activation_beta: Iterable[float] | None = None,
+    activations: Iterable[str] | None = None,
+    clip: float | None = None,
     direction: str = "forward",
-    hidden_size: Optional[int] = None,
+    hidden_size: int | None = None,
     input_forget: int = 0,
     layout: int = 0,
 ) -> tuple[Var, Var, Var]:
@@ -9135,7 +9133,7 @@ def lstm(
 def layer_normalization(
     X: Var,
     Scale: Var,
-    B: Optional[Var] = None,
+    B: Var | None = None,
     *,
     axis: int = -1,
     epsilon: float = 9.999999747378752e-06,
@@ -9496,8 +9494,8 @@ def log_softmax(
 
 
 def loop(
-    M: Optional[Var] = None,
-    cond: Optional[Var] = None,
+    M: Var | None = None,
+    cond: Var | None = None,
     v_initial: Sequence[Var] = (),
     *,
     body: Callable[..., Iterable[Var]],
@@ -9758,8 +9756,8 @@ def lp_pool(
     auto_pad: str = "NOTSET",
     kernel_shape: Iterable[int],
     p: int = 2,
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     LpPool consumes an input tensor X and applies Lp pooling across the
@@ -9896,8 +9894,8 @@ def matmul(
 def matmul_integer(
     A: Var,
     B: Var,
-    a_zero_point: Optional[Var] = None,
-    b_zero_point: Optional[Var] = None,
+    a_zero_point: Var | None = None,
+    b_zero_point: Var | None = None,
 ) -> Var:
     r"""
     Matrix product that behaves like
@@ -10017,11 +10015,11 @@ def max_pool(
     *,
     auto_pad: str = "NOTSET",
     ceil_mode: int = 0,
-    dilations: Optional[Iterable[int]] = None,
+    dilations: Iterable[int] | None = None,
     kernel_shape: Iterable[int],
-    pads: Optional[Iterable[int]] = None,
+    pads: Iterable[int] | None = None,
     storage_order: int = 0,
-    strides: Optional[Iterable[int]] = None,
+    strides: Iterable[int] | None = None,
 ) -> tuple[Var, Var]:
     r"""
     MaxPool consumes an input tensor X and applies max pooling across the
@@ -10241,11 +10239,11 @@ def max_roi_pool(
 def max_unpool(
     X: Var,
     I: Var,
-    output_shape: Optional[Var] = None,
+    output_shape: Var | None = None,
     *,
     kernel_shape: Iterable[int],
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     MaxUnpool essentially computes the partial inverse of the MaxPool op.
@@ -10744,7 +10742,7 @@ def multinomial(
     *,
     dtype: npt.DTypeLike = np.int32,
     sample_size: int = 1,
-    seed: Optional[float] = None,
+    seed: float | None = None,
 ) -> Var:
     r"""
     Generate a tensor of samples from a multinomial distribution according
@@ -10852,9 +10850,9 @@ def neg(
 def negative_log_likelihood_loss(
     input: Var,
     target: Var,
-    weight: Optional[Var] = None,
+    weight: Var | None = None,
     *,
-    ignore_index: Optional[int] = None,
+    ignore_index: int | None = None,
     reduction: str = "mean",
 ) -> Var:
     r"""
@@ -11032,9 +11030,9 @@ def negative_log_likelihood_loss(
 def non_max_suppression(
     boxes: Var,
     scores: Var,
-    max_output_boxes_per_class: Optional[Var] = None,
-    iou_threshold: Optional[Var] = None,
-    score_threshold: Optional[Var] = None,
+    max_output_boxes_per_class: Var | None = None,
+    iou_threshold: Var | None = None,
+    score_threshold: Var | None = None,
     *,
     center_point_box: int = 0,
 ) -> Var:
@@ -11311,9 +11309,9 @@ def one_hot(
 
 
 def optional(
-    input: Optional[Var] = None,
+    input: Var | None = None,
     *,
-    type: Optional[Type] = None,
+    type: Type | None = None,
 ) -> Var:
     r"""
     Constructs an optional-type value containing either an empty optional of
@@ -11560,7 +11558,7 @@ def prelu(
 def pad(
     data: Var,
     pads: Var,
-    constant_value: Optional[Var] = None,
+    constant_value: Var | None = None,
     *,
     mode: str = "constant",
 ) -> Var:
@@ -11735,14 +11733,14 @@ def qlinear_conv(
     w_zero_point: Var,
     y_scale: Var,
     y_zero_point: Var,
-    B: Optional[Var] = None,
+    B: Var | None = None,
     *,
     auto_pad: str = "NOTSET",
-    dilations: Optional[Iterable[int]] = None,
+    dilations: Iterable[int] | None = None,
     group: int = 1,
-    kernel_shape: Optional[Iterable[int]] = None,
-    pads: Optional[Iterable[int]] = None,
-    strides: Optional[Iterable[int]] = None,
+    kernel_shape: Iterable[int] | None = None,
+    pads: Iterable[int] | None = None,
+    strides: Iterable[int] | None = None,
 ) -> Var:
     r"""
     The convolution operator consumes a quantized input tensor, its scale
@@ -12010,7 +12008,7 @@ def qlinear_matmul(
 def quantize_linear(
     x: Var,
     y_scale: Var,
-    y_zero_point: Optional[Var] = None,
+    y_zero_point: Var | None = None,
     *,
     axis: int = 1,
 ) -> Var:
@@ -12087,16 +12085,16 @@ def rnn(
     X: Var,
     W: Var,
     R: Var,
-    B: Optional[Var] = None,
-    sequence_lens: Optional[Var] = None,
-    initial_h: Optional[Var] = None,
+    B: Var | None = None,
+    sequence_lens: Var | None = None,
+    initial_h: Var | None = None,
     *,
-    activation_alpha: Optional[Iterable[float]] = None,
-    activation_beta: Optional[Iterable[float]] = None,
+    activation_alpha: Iterable[float] | None = None,
+    activation_beta: Iterable[float] | None = None,
     activations: Iterable[str] = ("Tanh", "Tanh"),
-    clip: Optional[float] = None,
+    clip: float | None = None,
     direction: str = "forward",
-    hidden_size: Optional[int] = None,
+    hidden_size: int | None = None,
     layout: int = 0,
 ) -> tuple[Var, Var]:
     r"""
@@ -12278,7 +12276,7 @@ def random_normal(
     dtype: npt.DTypeLike = np.float32,
     mean: float = 0.0,
     scale: float = 1.0,
-    seed: Optional[float] = None,
+    seed: float | None = None,
     shape: Iterable[int],
 ) -> Var:
     r"""
@@ -12345,10 +12343,10 @@ def random_normal(
 def random_normal_like(
     input: Var,
     *,
-    dtype: Optional[npt.DTypeLike] = None,
+    dtype: npt.DTypeLike | None = None,
     mean: float = 0.0,
     scale: float = 1.0,
-    seed: Optional[float] = None,
+    seed: float | None = None,
 ) -> Var:
     r"""
     Generate a tensor with random values drawn from a normal distribution.
@@ -12421,7 +12419,7 @@ def random_uniform(
     dtype: npt.DTypeLike = np.float32,
     high: float = 1.0,
     low: float = 0.0,
-    seed: Optional[float] = None,
+    seed: float | None = None,
     shape: Iterable[int],
 ) -> Var:
     r"""
@@ -12487,10 +12485,10 @@ def random_uniform(
 def random_uniform_like(
     input: Var,
     *,
-    dtype: Optional[npt.DTypeLike] = None,
+    dtype: npt.DTypeLike | None = None,
     high: float = 1.0,
     low: float = 0.0,
-    seed: Optional[float] = None,
+    seed: float | None = None,
 ) -> Var:
     r"""
     Generate a tensor with random values drawn from a uniform distribution.
@@ -12688,7 +12686,7 @@ def reciprocal(
 def reduce_l1(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -12751,7 +12749,7 @@ def reduce_l1(
 def reduce_l2(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -12814,7 +12812,7 @@ def reduce_l2(
 def reduce_log_sum(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -12878,7 +12876,7 @@ def reduce_log_sum(
 def reduce_log_sum_exp(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -12942,7 +12940,7 @@ def reduce_log_sum_exp(
 def reduce_max(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -13007,7 +13005,7 @@ def reduce_max(
 def reduce_mean(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -13070,7 +13068,7 @@ def reduce_mean(
 def reduce_min(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -13134,7 +13132,7 @@ def reduce_min(
 def reduce_prod(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -13196,7 +13194,7 @@ def reduce_prod(
 
 def reduce_sum(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
     *,
     keepdims: int = 1,
     noop_with_empty_axes: int = 0,
@@ -13279,7 +13277,7 @@ def reduce_sum(
 def reduce_sum_square(
     data: Var,
     *,
-    axes: Optional[Iterable[int]] = None,
+    axes: Iterable[int] | None = None,
     keepdims: int = 1,
 ) -> Var:
     r"""
@@ -13455,9 +13453,9 @@ def reshape(
 
 def resize(
     X: Var,
-    roi: Optional[Var] = None,
-    scales: Optional[Var] = None,
-    sizes: Optional[Var] = None,
+    roi: Var | None = None,
+    scales: Var | None = None,
+    sizes: Var | None = None,
     *,
     coordinate_transformation_mode: str = "half_pixel",
     cubic_coeff_a: float = -0.75,
@@ -13864,8 +13862,8 @@ def round(
 def stft(
     signal: Var,
     frame_step: Var,
-    window: Optional[Var] = None,
-    frame_length: Optional[Var] = None,
+    window: Var | None = None,
+    frame_length: Var | None = None,
     *,
     onesided: int = 1,
 ) -> Var:
@@ -13951,10 +13949,10 @@ def scan(
     *,
     body: Callable[..., Iterable[Var]],
     num_scan_inputs: int,
-    scan_input_axes: Optional[Iterable[int]] = None,
-    scan_input_directions: Optional[Iterable[int]] = None,
-    scan_output_axes: Optional[Iterable[int]] = None,
-    scan_output_directions: Optional[Iterable[int]] = None,
+    scan_input_axes: Iterable[int] | None = None,
+    scan_input_directions: Iterable[int] | None = None,
+    scan_output_axes: Iterable[int] | None = None,
+    scan_output_directions: Iterable[int] | None = None,
 ) -> Sequence[Var]:
     r"""
     Scan can be used to iterate over one or more scan_input tensors,
@@ -14634,7 +14632,7 @@ def sequence_construct(
 
 def sequence_empty(
     *,
-    dtype: Optional[npt.DTypeLike] = None,
+    dtype: npt.DTypeLike | None = None,
 ) -> Var:
     r"""
     Construct an empty tensor sequence, with given data type.
@@ -14675,7 +14673,7 @@ def sequence_empty(
 
 def sequence_erase(
     input_sequence: Var,
-    position: Optional[Var] = None,
+    position: Var | None = None,
 ) -> Var:
     r"""
     Outputs a tensor sequence that removes the tensor at 'position' from
@@ -14732,7 +14730,7 @@ def sequence_erase(
 def sequence_insert(
     input_sequence: Var,
     tensor: Var,
-    position: Optional[Var] = None,
+    position: Var | None = None,
 ) -> Var:
     r"""
     Outputs a tensor sequence that inserts 'tensor' into 'input_sequence' at
@@ -14921,7 +14919,7 @@ def sequence_map(
 def shape(
     data: Var,
     *,
-    end: Optional[int] = None,
+    end: int | None = None,
     start: int = 0,
 ) -> Var:
     r"""
@@ -15285,8 +15283,8 @@ def slice(
     data: Var,
     starts: Var,
     ends: Var,
-    axes: Optional[Var] = None,
-    steps: Optional[Var] = None,
+    axes: Var | None = None,
+    steps: Var | None = None,
 ) -> Var:
     r"""
     Produces a slice of the input tensor along multiple axes. Similar to
@@ -15479,9 +15477,9 @@ def softmax(
 def softmax_cross_entropy_loss(
     scores: Var,
     labels: Var,
-    weights: Optional[Var] = None,
+    weights: Var | None = None,
     *,
-    ignore_index: Optional[int] = None,
+    ignore_index: int | None = None,
     reduction: str = "mean",
 ) -> tuple[Var, Var]:
     r"""
@@ -15748,7 +15746,7 @@ def space_to_depth(
 
 def split(
     input: Var,
-    split: Optional[Var] = None,
+    split: Var | None = None,
     *,
     outputs_count: int,
     axis: int = 0,
@@ -15811,7 +15809,7 @@ def split(
 
 def split_to_sequence(
     input: Var,
-    split: Optional[Var] = None,
+    split: Var | None = None,
     *,
     axis: int = 0,
     keepdims: int = 1,
@@ -15930,7 +15928,7 @@ def sqrt(
 
 def squeeze(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
 ) -> Var:
     r"""
     Remove single-dimensional entries from the shape of a tensor. Takes an
@@ -15986,8 +15984,8 @@ def string_normalizer(
     *,
     case_change_action: str = "NONE",
     is_case_sensitive: int = 0,
-    locale: Optional[str] = None,
-    stopwords: Optional[Iterable[str]] = None,
+    locale: str | None = None,
+    stopwords: Iterable[str] | None = None,
 ) -> Var:
     r"""
     StringNormalization performs string operations for basic cleaning. This
@@ -16250,9 +16248,9 @@ def tf_idf_vectorizer(
     mode: str,
     ngram_counts: Iterable[int],
     ngram_indexes: Iterable[int],
-    pool_int64s: Optional[Iterable[int]] = None,
-    pool_strings: Optional[Iterable[str]] = None,
-    weights: Optional[Iterable[float]] = None,
+    pool_int64s: Iterable[int] | None = None,
+    pool_strings: Iterable[str] | None = None,
+    weights: Iterable[float] | None = None,
 ) -> Var:
     r"""
     This transform extracts n-grams from the input sequence and save them as
@@ -16598,7 +16596,7 @@ def top_k(
 def transpose(
     data: Var,
     *,
-    perm: Optional[Iterable[int]] = None,
+    perm: Iterable[int] | None = None,
 ) -> Var:
     r"""
     Returns a transpose of the input tensor. (Similar to
@@ -16654,7 +16652,7 @@ def transpose(
 
 def trilu(
     input: Var,
-    k: Optional[Var] = None,
+    k: Var | None = None,
     *,
     upper: int = 1,
 ) -> Var:
@@ -16728,7 +16726,7 @@ def trilu(
 def unique(
     X: Var,
     *,
-    axis: Optional[int] = None,
+    axis: int | None = None,
     sorted: int = 1,
 ) -> tuple[Var, Var, Var, Var]:
     r"""

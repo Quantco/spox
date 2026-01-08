@@ -1,13 +1,11 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 # ruff: noqa: E741 -- Allow ambiguous variable name
-from collections.abc import Iterable, Sequence
+from __future__ import annotations
+
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
-from typing import (
-    Callable,
-    Optional,
-)
 from typing import cast as typing_cast
 
 import numpy as np
@@ -31,7 +29,12 @@ from spox._standard import StandardNode
 from spox._type_inference_utils import loop_erase_shape_info
 from spox._type_system import Tensor, Type
 from spox._value_prop import PropDict, PropValueType
-from spox._var import Var, _VarInfo, create_prop_dict, unwrap_vars
+from spox._var import (
+    Var,
+    _VarInfo,
+    create_prop_dict,
+    unwrap_vars,
+)
 from spox.opset.ai.onnx.v20 import (
     _DFT,
     _GRU,
@@ -423,13 +426,13 @@ class _CastLike(StandardNode):
 class _Constant(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        value: Optional[AttrTensor]
-        value_float: Optional[AttrFloat32]
-        value_floats: Optional[AttrFloat32s]
-        value_int: Optional[AttrInt64]
-        value_ints: Optional[AttrInt64s]
-        value_string: Optional[AttrString]
-        value_strings: Optional[AttrStrings]
+        value: AttrTensor | None
+        value_float: AttrFloat32 | None
+        value_floats: AttrFloat32s | None
+        value_int: AttrInt64 | None
+        value_ints: AttrInt64s | None
+        value_string: AttrString | None
+        value_strings: AttrStrings | None
 
     Inputs = BaseInputs
 
@@ -473,7 +476,7 @@ class _Constant(StandardNode):
 class _ConstantOfShape(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        value: Optional[AttrTensor]
+        value: AttrTensor | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -500,7 +503,7 @@ class _DequantizeLinear(StandardNode):
     class Inputs(BaseInputs):
         x: _VarInfo
         x_scale: _VarInfo
-        x_zero_point: Optional[_VarInfo]
+        x_zero_point: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -605,8 +608,8 @@ class _Loop(StandardNode):
 
     @dataclass
     class Inputs(BaseInputs):
-        M: Optional[_VarInfo]
-        cond: Optional[_VarInfo]
+        M: _VarInfo | None
+        cond: _VarInfo | None
         v_initial: Sequence[_VarInfo]
 
     @dataclass
@@ -653,8 +656,8 @@ class _Pad(StandardNode):
     class Inputs(BaseInputs):
         data: _VarInfo
         pads: _VarInfo
-        constant_value: Optional[_VarInfo]
-        axes: Optional[_VarInfo]
+        constant_value: _VarInfo | None
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -706,7 +709,7 @@ class _QuantizeLinear(StandardNode):
     class Inputs(BaseInputs):
         x: _VarInfo
         y_scale: _VarInfo
-        y_zero_point: Optional[_VarInfo]
+        y_zero_point: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -745,10 +748,10 @@ class _Scan(StandardNode):
     class Attributes(BaseAttributes):
         body: AttrGraph
         num_scan_inputs: AttrInt64
-        scan_input_axes: Optional[AttrInt64s]
-        scan_input_directions: Optional[AttrInt64s]
-        scan_output_axes: Optional[AttrInt64s]
-        scan_output_directions: Optional[AttrInt64s]
+        scan_input_axes: AttrInt64s | None
+        scan_input_directions: AttrInt64s | None
+        scan_output_axes: AttrInt64s | None
+        scan_output_directions: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -768,7 +771,7 @@ class _Scan(StandardNode):
 class _Shape(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        end: Optional[AttrInt64]
+        end: AttrInt64 | None
         start: AttrInt64
 
     @dataclass
@@ -814,7 +817,7 @@ class _Squeeze(StandardNode):
     @dataclass
     class Inputs(BaseInputs):
         data: _VarInfo
-        axes: Optional[_VarInfo]
+        axes: _VarInfo | None
 
     @dataclass
     class Outputs(BaseOutputs):
@@ -830,7 +833,7 @@ class _Squeeze(StandardNode):
 class _Transpose(StandardNode):
     @dataclass
     class Attributes(BaseAttributes):
-        perm: Optional[AttrInt64s]
+        perm: AttrInt64s | None
 
     @dataclass
     class Inputs(BaseInputs):
@@ -1076,13 +1079,13 @@ def cast_like(
 
 def constant(
     *,
-    value: Optional[np.ndarray] = None,
-    value_float: Optional[float] = None,
-    value_floats: Optional[Iterable[float]] = None,
-    value_int: Optional[int] = None,
-    value_ints: Optional[Iterable[int]] = None,
-    value_string: Optional[str] = None,
-    value_strings: Optional[Iterable[str]] = None,
+    value: np.ndarray | None = None,
+    value_float: float | None = None,
+    value_floats: Iterable[float] | None = None,
+    value_int: int | None = None,
+    value_ints: Iterable[int] | None = None,
+    value_string: str | None = None,
+    value_strings: Iterable[str] | None = None,
 ) -> Var:
     r"""
     This operator produces a constant tensor. Exactly one of the provided
@@ -1149,7 +1152,7 @@ def constant(
 def constant_of_shape(
     input: Var,
     *,
-    value: Optional[np.ndarray] = None,
+    value: np.ndarray | None = None,
 ) -> Var:
     r"""
     Generate a tensor with given value and shape.
@@ -1204,7 +1207,7 @@ def constant_of_shape(
 def dequantize_linear(
     x: Var,
     x_scale: Var,
-    x_zero_point: Optional[Var] = None,
+    x_zero_point: Var | None = None,
     *,
     axis: int = 1,
     block_size: int = 0,
@@ -1566,8 +1569,8 @@ def if_(
 
 
 def loop(
-    M: Optional[Var] = None,
-    cond: Optional[Var] = None,
+    M: Var | None = None,
+    cond: Var | None = None,
     v_initial: Sequence[Var] = (),
     *,
     body: Callable[..., Iterable[Var]],
@@ -1772,8 +1775,8 @@ def loop(
 def pad(
     data: Var,
     pads: Var,
-    constant_value: Optional[Var] = None,
-    axes: Optional[Var] = None,
+    constant_value: Var | None = None,
+    axes: Var | None = None,
     *,
     mode: str = "constant",
 ) -> Var:
@@ -2059,7 +2062,7 @@ def qlinear_matmul(
 def quantize_linear(
     x: Var,
     y_scale: Var,
-    y_zero_point: Optional[Var] = None,
+    y_zero_point: Var | None = None,
     *,
     axis: int = 1,
     block_size: int = 0,
@@ -2258,10 +2261,10 @@ def scan(
     *,
     body: Callable[..., Iterable[Var]],
     num_scan_inputs: int,
-    scan_input_axes: Optional[Iterable[int]] = None,
-    scan_input_directions: Optional[Iterable[int]] = None,
-    scan_output_axes: Optional[Iterable[int]] = None,
-    scan_output_directions: Optional[Iterable[int]] = None,
+    scan_input_axes: Iterable[int] | None = None,
+    scan_input_directions: Iterable[int] | None = None,
+    scan_output_axes: Iterable[int] | None = None,
+    scan_output_directions: Iterable[int] | None = None,
 ) -> Sequence[Var]:
     r"""
     Scan can be used to iterate over one or more scan_input tensors,
@@ -2511,7 +2514,7 @@ def scan(
 def shape(
     data: Var,
     *,
-    end: Optional[int] = None,
+    end: int | None = None,
     start: int = 0,
 ) -> Var:
     r"""
@@ -2649,7 +2652,7 @@ def size(
 
 def squeeze(
     data: Var,
-    axes: Optional[Var] = None,
+    axes: Var | None = None,
 ) -> Var:
     r"""
     Remove single-dimensional entries from the shape of a tensor. Takes an
@@ -2703,7 +2706,7 @@ def squeeze(
 def transpose(
     data: Var,
     *,
-    perm: Optional[Iterable[int]] = None,
+    perm: Iterable[int] | None = None,
 ) -> Var:
     r"""
     Returns a transpose of the input tensor. (Similar to
