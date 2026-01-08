@@ -5,7 +5,6 @@ from __future__ import annotations
 import itertools
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any
 
 import onnx
 
@@ -99,8 +98,26 @@ class _Inline(_InternalNode):
     inputs: Inputs
     outputs: Outputs
 
-    def pre_init(self, **kwargs: Any) -> None:
-        self.model = kwargs["model"]
+    def __init__(
+        self,
+        attrs: BaseAttributes | None = None,
+        inputs: BaseInputs | None = None,
+        outputs: BaseOutputs | None = None,
+        *,
+        out_variadic: int | None = None,
+        infer_types: bool = True,
+        validate: bool = True,
+        model: onnx.ModelProto,
+    ) -> None:
+        self.model = model
+        super().__init__(
+            attrs,
+            inputs,
+            outputs,
+            out_variadic=out_variadic,
+            infer_types=infer_types,
+            validate=validate,
+        )
 
     @property
     def graph(self) -> onnx.GraphProto:
