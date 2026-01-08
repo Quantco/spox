@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """
@@ -19,6 +19,7 @@ from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._graph import arguments, results
 from spox._node import Node, OpType
 from spox._type_system import Tensor, Type
+from spox._value_prop import PropDict, PropValue
 from spox._var import _VarInfo
 
 
@@ -55,14 +56,13 @@ class Inverse(Node):
             )
         return {"Y": t}
 
-    def propagate_values(self, initializers) -> dict[str, np.ndarray]:
+    def propagate_values(self, initializers: PropDict) -> PropDict:
         # This is optional and implements value propagation ('partial data propagation' in ONNX).
         # In essence constant folding carried through for purposes of type inference.
-        return (
-            {"Y": np.linalg.inv(initializers["X"].value)}
-            if initializers["X"] is not None
-            else {}
-        )
+        if initializers.get("X") is None:
+            return {}
+        arr = np.linalg.inv(initializers["X"].value)
+        return {"Y": PropValue(Tensor(arr.dtype, arr.shape), arr)}
 
 
 # Define the operator constructor which is actually used

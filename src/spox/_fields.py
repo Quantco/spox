@@ -5,14 +5,12 @@ from __future__ import annotations
 
 import dataclasses
 import enum
-import warnings
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import Field, dataclass
 from typing import get_type_hints
 
 from . import _type_system
 from ._attributes import Attr
-from ._exceptions import InferenceWarning
 from ._value_prop import PropDict, PropValue
 from ._var import Var, _VarInfo
 
@@ -166,17 +164,7 @@ class BaseVarInfos(BaseFields):
             ):
                 return ret
 
-            prop = PropValue(var_info.type, prop_values[key])
-            if prop.check():
-                ret._value = prop
-            else:
-                warnings.warn(
-                    InferenceWarning(
-                        f"Propagated value {prop} does not type-check, dropping. "
-                        f"Hint: this indicates a bug with the current value prop backend or type inference."
-                    )
-                )
-
+            ret._value = PropValue(var_info.type, prop_values[key].value)
             return ret
 
         ret_dict: dict[str, Var | None | Sequence[Var]] = {}

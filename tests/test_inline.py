@@ -9,8 +9,10 @@ from onnx.numpy_helper import from_array
 
 import spox.opset.ai.onnx.v22 as op
 from spox import Tensor, Var, argument, build, inline
+from spox._future import value_prop_backend
 from spox._graph import arguments, results
 from spox._inline import rename_in_graph
+from spox._value_prop import ValuePropBackend
 
 
 @pytest.fixture
@@ -128,6 +130,12 @@ def test_minimal(onnx_helper, min_graph):
         ),
         [3, 6, 9, 12, 15],
     )
+
+
+def test_inline_call_without_value_prop_backend():
+    const_graph = build({}, {"a": op.const(1)})
+    with value_prop_backend(ValuePropBackend.NONE):
+        inline(const_graph)()
 
 
 @pytest.fixture

@@ -149,22 +149,18 @@ class _Inline(_InternalNode):
 
     def propagate_values(
         self, input_prop_values: _value_prop.PropDict
-    ) -> dict[str, _value_prop.PropValueType]:
+    ) -> _value_prop.PropDict:
         if any(
             var_info.type is None or input_prop_values.get(var_info.name) is None
             for var_info in self.model.graph.input
         ):
             return {}
-        wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
-        input_feed = {
-            i.name: wrap_feed(input_prop_values.get(i.name))
-            for i in self.model.graph.input
-        }
-        output_feed = run(self.model, input_feed)
+
+        res = _value_prop.infer(self.model, input_prop_values)
         return {
-            f"outputs_{k}": unwrap_feed(var.unwrap_type(), output_feed[o.name]).value
-            for k, (o, var) in enumerate(zip(self.graph.output, self.outputs.outputs))
-            if o.name in output_feed
+            f"outputs_{i}": res[info.name]
+            for i, info in enumerate(self.model.graph.output)
+            if info.name in res
         }
 
     def to_onnx(

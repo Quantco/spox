@@ -151,7 +151,9 @@ class Var:
     ):
         """The initializer of ``Var`` is protected. Use operator constructors to construct them instead."""
         if value is not None and not isinstance(value, _value_prop.PropValue):
-            raise TypeError("The propagated value field of a Var must be a PropValue.")
+            raise TypeError(
+                f"propagated value field of 'Var' must be a PropValue, got `{type(value)}`"
+            )
         if value is not None and value.type != var_info.type:
             raise ValueError(
                 f"The propagated value type ({value.type}) and actual Var type ({var_info.type}) must be the same."
@@ -373,5 +375,8 @@ def create_prop_dict(
     from ._fields import BaseVars
 
     flattened_vars = BaseVars(kwargs).flatten_vars()
-
-    return {key: var._value for key, var in flattened_vars.items() if var is not None}
+    return {
+        key: var._value
+        for key, var in flattened_vars.items()
+        if var is not None and var._value is not None
+    }
