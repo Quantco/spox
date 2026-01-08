@@ -10,6 +10,10 @@ Change log
 0.17.0 (unreleased)
 -------------------
 
+**Bug fix**
+
+- Using :func:`spox.inline` with disable value propagation (from ``spox._future``) no longer raises an exception.
+
 **New features**
 
 - Added support for version 23 and 24 of opset ``ai.onnx``.

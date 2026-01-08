@@ -22,7 +22,7 @@ from ._node import Node, OpType
 from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Tensor, Type
-from ._value_prop import PropDict, PropValueType
+from ._value_prop import PropDict, PropValue
 from ._var import Var, _VarInfo, unwrap_vars
 
 if TYPE_CHECKING:
@@ -160,8 +160,9 @@ class _Initializer(_InternalNode):
         arr = self.attrs.value.value
         return {"arg": Tensor(arr.dtype, arr.shape)}
 
-    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
-        return {"arg": self.attrs.value.value}
+    def propagate_values(self, input_prop_values: PropDict) -> PropDict:
+        arr = self.attrs.value.value
+        return {"arg": PropValue(Tensor(arr.dtype, shape=arr.shape), arr)}
 
     def update_metadata(
         self,

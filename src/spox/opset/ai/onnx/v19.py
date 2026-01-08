@@ -28,7 +28,7 @@ from spox._node import OpType
 from spox._standard import StandardNode
 from spox._type_inference_utils import loop_erase_shape_info
 from spox._type_system import Tensor, Type
-from spox._value_prop import PropDict, PropValueType
+from spox._value_prop import PropDict
 from spox._var import (
     Var,
     _VarInfo,
@@ -457,32 +457,6 @@ class _Constant(StandardNode):
     @dataclass
     class Outputs(BaseOutputs):
         output: _VarInfo
-
-    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
-        ((key, raw),) = (
-            (k, v.value) for k, v in self.attrs.get_fields().items() if v is not None
-        )
-        if key == "value":
-            value = raw
-        elif key == "value_float":
-            value = np.array(raw, dtype=np.float32)
-        elif key == "value_int":
-            value = np.array(raw, dtype=np.int64)
-        elif key == "value_string":
-            value = np.array(raw, dtype=np.str_)
-        elif key == "value_floats":
-            value = np.array(list(raw), dtype=np.float32).reshape(-1)
-        elif key == "value_ints":
-            value = np.array(list(raw), dtype=np.int64).reshape(-1)
-        elif key == "value_strings":
-            value = np.array(list(raw), dtype=np.str_).reshape(-1)
-        elif key == "sparse_value":
-            return {}
-        else:
-            raise RuntimeError(
-                f"Could not extract the set Constant value attribute, got: {key}"
-            )
-        return {"output": value}
 
     op_type = OpType("Constant", "", 19)
 
