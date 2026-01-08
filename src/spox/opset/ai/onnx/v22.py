@@ -3844,8 +3844,8 @@ def max_pool(
     Signature: ``ai.onnx@22::MaxPool``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int8)`, `tensor(uint8)`
      - I: `tensor(int64)`
+     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int8)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         X=X,

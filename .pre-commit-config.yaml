@@ -20,6 +20,7 @@ repos:
           --license-base64 Q29weXJpZ2h0IChjKSBRdWFudENvIDIwMjMtMjAyNApTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogQlNELTMtQ2xhdXNlCg==
           --dynamic-years
           --comment-style "#"
+          --use-current-year
         language: system
         types: [python]
       # ruff
