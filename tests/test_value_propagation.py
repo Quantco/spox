@@ -1,5 +1,6 @@
 # Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
+from __future__ import annotations
 
 import ml_dtypes
 import numpy as np
@@ -10,11 +11,11 @@ import spox
 import spox._future
 import spox.opset.ai.onnx.ml.v3 as ml
 import spox.opset.ai.onnx.v22 as op
-from spox import Optional, Sequence, Tensor, Var, argument
+from spox import Optional, Sequence, Tensor, Type, Var, argument
 from spox._graph import arguments, results
 from spox._shape import Shape
 from spox._utils import make_model
-from spox._value_prop import ORTValue, PropValue
+from spox._value_prop import ORTValue, PropValue, RefValue
 from spox._var import _VarInfo
 
 
@@ -30,12 +31,13 @@ def backend(request):
         yield request.param
 
 
-def dummy_var(typ=None, value=None):
+def dummy_var(typ: Type, value: ORTValue):
     """Function for creating a ``var`` without an operator but with a type and value."""
-    return Var(_VarInfo(None, typ), value)  # type: ignore
+    var_info = _VarInfo(None, typ)  # type: ignore
+    return Var(var_info, PropValue.from_ort_value(typ, value))
 
 
-def assert_equal_value(var: Var, expected: ORTValue):
+def assert_equal_value(var: Var, expected: ORTValue | RefValue):
     """
     Convenience function for comparing a ``var``'s propagated value and an expected one.
     Expected Types vs value types:
@@ -69,9 +71,7 @@ def assert_equal_value(var: Var, expected: ORTValue):
         assert len(value) == len(expected), "sequence length must match"
         for a, b in zip(value, expected):
             assert_equal_value(
-                dummy_var(
-                    var.type.elem_type, PropValue.from_ort_value(var.type.elem_type, a)
-                ),
+                dummy_var(var.type.elem_type, a),
                 b,
             )
     else:
@@ -84,17 +84,17 @@ def test_sanity_no_prop():
 
 
 def test_sanity_const():
-    assert_equal_value(op.const(2), np.int64(2))
+    assert_equal_value(op.const(2), np.asarray(2, np.int64))
 
 
 def test_add():
-    assert_equal_value(op.add(op.const(2), op.const(2)), np.int64(4))
+    assert_equal_value(op.add(op.const(2), op.const(2)), np.asarray(4, np.int64))
 
 
 def test_div():
     assert_equal_value(
         op.div(op.const(np.float32(5.0)), op.const(np.float32(2.0))),
-        np.float32(2.5),
+        np.asarray(2.5, np.float32),
     )
 
 
@@ -117,12 +117,15 @@ def test_dtypes(dtype, backend):
 
 def test_reshape():
     assert_equal_value(
-        op.reshape(op.const([1, 2, 3, 4]), op.const([2, 2])), [[1, 2], [3, 4]]
+        op.reshape(op.const([1, 2, 3, 4]), op.const([2, 2])),
+        np.asarray([[1, 2], [3, 4]], np.int64),
     )
 
 
 def test_optional():
-    assert_equal_value(op.optional(op.const(np.float32(2.0))), np.float32(2.0))
+    assert_equal_value(
+        op.optional(op.const(np.float32(2.0))), np.asarray(2.0, np.float32)
+    )
 
 
 def test_empty_optional():

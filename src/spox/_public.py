@@ -1,4 +1,4 @@
-# Copyright (c) QuantCo 2023-2024
+# Copyright (c) QuantCo 2023-2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 """Module implementing the main public interface functions in Spox."""
@@ -20,7 +20,6 @@ from ._graph import Argument, initializer, results
 from ._inline import _Inline
 from ._standard import _strip_dim_symbol
 from ._type_system import Type
-from ._value_prop import PropDict
 from ._var import Var
 
 
@@ -310,12 +309,7 @@ def inline(model: onnx.ModelProto) -> _InlineCall:
             out_variadic=len(model.graph.output),
             model=model,
         )
-
-        prop_values: PropDict = {
-            name: kwargs[name]._value
-            for name in in_names
-            if kwargs[name]._value is not None
-        }
+        prop_values = {k: v._value for k, v in kwargs.items() if v._value is not None}
 
         return dict(
             zip(

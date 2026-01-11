@@ -4,19 +4,14 @@ from __future__ import annotations
 
 import enum
 import logging
-import warnings
-from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Union
+from typing import TypeAlias
 
 import numpy as np
-import numpy.typing as npt
 import onnx
 import onnx.reference
 
-from ._exceptions import InferenceWarning
-from ._shape import Shape
-from ._type_system import Optional, Sequence, Tensor, Type
+from ._type_system import Optional, Sequence, Type
 
 """
 The internal representation for runtime values.
@@ -26,10 +21,13 @@ The internal representation for runtime values.
 - PropValue -> Optional, Some (has value)
 - None -> Optional, Nothing (no value)
 """
-PropValueType = Union[np.ndarray, list["PropValue"], "PropValue", None]
-PropDict = dict[str, PropValueType]
-ORTValue = np.ndarray | list | None
-RefValue = np.ndarray | list | float | None
+PropDict: TypeAlias = "dict[str, PropValue]"
+
+# ORT and reference currently return the same types, but we might move
+# to using onnxruntime.ORTValue objects internally for ORT in the future (for
+# better support for non-numpy types)
+ORTValue: TypeAlias = "np.ndarray | list[ORTValue] | None"
+RefValue: TypeAlias = "np.ndarray | list[RefValue] | None"
 
 VALUE_PROP_STRICT_CHECK: bool = False
 
@@ -56,109 +54,77 @@ class PropValue:
     """
 
     type: Type
-    value: PropValueType
-
-    def __post_init__(self) -> None:
-        # The underlying numpy array might have been constructed with a
-        # platform-dependent dtype - such as ulonglong.
-        # Though very similar, it does not compare equal to the usual sized dtype.
-        # (for example ulonglong is not uint64)
-        if isinstance(self.value, np.ndarray) and np.issubdtype(
-            self.value.dtype, np.number
-        ):
-            # We normalize by reconstructing the dtype through its name
-            object.__setattr__(
-                self, "value", self.value.astype(np.dtype(self.value.dtype.name))
-            )
-
-        if VALUE_PROP_STRICT_CHECK and not self.check():
-            raise ValueError(
-                f"Attempt to construct PropValue of {self.value}, "
-                f"which does not match the expected type {self.type}."
-            )
+    value: ORTValue | RefValue
 
     def __str__(self) -> str:
         return f"<Propagated {self.value}: {self.type}>"
 
-    def check(self) -> bool:
-        if isinstance(self.type, Tensor):
-            if not (
-                isinstance(self.value, np.ndarray)
-                and Shape.from_simple(self.value.shape) <= self.type._shape
-            ):
-                return False
-            # Strings need some special handling
-            if self.value.dtype == object and self.type.dtype == str:
-                return True
-            return self.value.dtype.type is self.type.dtype.type
-        elif isinstance(self.type, Sequence):
-            return isinstance(self.value, list) and all(
-                elem.type._subtype(self.type.elem_type) for elem in self.value
-            )
-        elif isinstance(self.type, Optional):
-            return self.value is None or isinstance(self.value, PropValue)
-        warnings.warn(
-            InferenceWarning(
-                f"Unknown or unspecified type for propagated value: {self.type!r}"
-            )
-        )
-        return True
-
     @classmethod
-    def from_ref_value(cls, typ: Type, value: RefValue) -> PropValue:
+    def _from_value(
+        cls, typ: Type, value: ORTValue | RefValue, producer: ValuePropBackend
+    ) -> PropValue:
         # Sometimes non-Sequence values are wrapped in a list.
         if (
-            not isinstance(typ, Sequence)
+            producer == ValuePropBackend.REFERENCE
+            and not isinstance(typ, Sequence)
             and isinstance(value, list)
             and len(value) == 1
         ):
             (value,) = value
-        if value is None:  # Optional, Nothing
-            return cls(typ, None)
-        elif isinstance(typ, Optional):  # Optional, Some
-            return cls(typ, cls.from_ref_value(typ.elem_type, value))
-        elif isinstance(value, list):  # Sequence
+        if isinstance(typ, Optional):
+            if value is None:
+                return cls(typ, None)
+            return cls(typ, cls.from_ref_value(typ.elem_type, value).value)
+        if isinstance(typ, Sequence):
+            if not isinstance(value, list):
+                raise TypeError(f"expected 'list', got `{type(value)}`")
             elem_type = typ.unwrap_sequence().elem_type
-            return cls(typ, [cls.from_ref_value(elem_type, elem) for elem in value])
-        else:  # otherwise must have Tensor (sometimes this is just a scalar)
-            return cls(typ, np.array(value))
-        # No fail branch because representations of Tensor are inconsistent
+            return cls(
+                typ, [cls.from_ref_value(elem_type, elem).value for elem in value]
+            )
+        tensor = typ.unwrap_tensor()
+
+        if not isinstance(value, np.ndarray):
+            raise TypeError(f"expected 'numpy.ndarray' got, `{type(value)}`")
+
+        # Normalise the dtype in case we got an alias (like longlong)
+        if value.dtype == np.dtype(object):
+            value = value.astype(str)
+        # The underlying numpy array might have been constructed with a
+        # platform-dependent dtype - such as ulonglong.
+        # Though very similar, it does not compare equal to the usual sized dtype.
+        # (for example ulonglong is not uint64)
+        if np.issubdtype(value.dtype, np.number):
+            # We normalize by reconstructing the dtype through its name
+            value = value.astype(np.dtype(value.dtype.name))
+
+        if tensor.dtype.kind != "U" and value.dtype != tensor.dtype:
+            # Skip dtype check for string arrays
+            raise TypeError(
+                f"expected propagated value of dtype `{tensor.dtype}`, got `{value.dtype}`"
+            )
+        if tensor.shape is not None:
+            expected_rank = len(tensor.shape)
+            if expected_rank != value.ndim:
+                raise ValueError(
+                    f"expected propagated value of rank `{expected_rank}`, got `{value.ndim}`"
+                )
+
+        return cls(typ, value)
+
+    @classmethod
+    def from_ref_value(cls, typ: Type, value: RefValue) -> PropValue:
+        return cls._from_value(typ, value, ValuePropBackend.REFERENCE)
 
     @classmethod
     def from_ort_value(cls, typ: Type, value: ORTValue) -> PropValue:
-        if value is None:  # Optional, Nothing
-            return cls(typ, None)
-        elif isinstance(typ, Optional):  # Optional, Some
-            return cls(typ, cls.from_ort_value(typ.elem_type, value))
-        elif isinstance(value, list):  # Sequence
-            elem_type = typ.unwrap_sequence().elem_type
-            return cls(typ, [cls.from_ort_value(elem_type, elem) for elem in value])
-        elif isinstance(value, np.ndarray):  # Tensor
-            # Normalise the dtype in case we got an alias (like longlong)
-            if value.dtype == np.dtype(object):
-                value = value.astype(str)
-            return cls(typ, value)
-        raise TypeError(f"No handler for ORT value: {value}")
+        return cls._from_value(typ, value, ValuePropBackend.ONNXRUNTIME)
 
     def to_ref_value(self) -> RefValue:
-        if self.value is None:  # Optional, Nothing
-            return None  # Optionals are wrapped in a singleton list
-        elif isinstance(self.value, PropValue):  # Optional, Some
-            return [self.value.to_ref_value()]
-        elif isinstance(self.value, list):  # Sequence
-            return [elem.to_ref_value() for elem in self.value]
-        else:  # Tensor
-            return self.value
+        return self.value
 
     def to_ort_value(self) -> ORTValue:
-        if self.value is None:  # Optional, Nothing
-            return None
-        elif isinstance(self.value, PropValue):  # Optional, Some
-            return self.value.to_ref_value()  # type: ignore
-        elif isinstance(self.value, list):  # Sequence
-            return [elem.to_ref_value() for elem in self.value]
-        else:  # Tensor
-            return self.value
+        return self.value
 
 
 def _run_reference_implementation(
@@ -170,7 +136,7 @@ def _run_reference_implementation(
     except Exception as e:
         # Give up on value propagation if an implementation is missing.
         logging.debug(
-            f"Value propagation in {model} on the ONNX reference implementation failed with - "
+            "value propagation on the ONNX reference implementation failed with - "
             f"{type(e).__name__}: {e}"
         )
         return {}
@@ -191,33 +157,32 @@ def _run_onnxruntime(
         output_feed = dict(zip(output_names, session.run(None, input_feed)))
     except Exception as e:
         logging.debug(
-            f"Value propagation in {model} on the onnxruntime failed with - "
+            "value propagation on the onnxruntime failed with - "
             f"{type(e).__name__}: {e}"
         )
         return {}
     return output_feed
 
 
-def get_backend_calls() -> tuple[
-    Callable[..., RefValue],
-    Callable[..., dict[str, npt.ArrayLike]],
-    Callable[..., PropValue],
-]:
-    # TODO: The typing around and in this function is not entirely
-    # sound!
-    wrap_feed: Callable[..., RefValue]
-    run: Callable[..., dict[str, Any]]
-    unwrap_feed: Callable[..., PropValue]
-    if _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
-        wrap_feed = PropValue.to_ref_value
-        run = _run_reference_implementation
-        unwrap_feed = PropValue.from_ref_value
-    elif _VALUE_PROP_BACKEND == ValuePropBackend.ONNXRUNTIME:
-        wrap_feed = PropValue.to_ort_value
+def infer(model: onnx.ModelProto, input_feed: PropDict) -> PropDict:
+    if _VALUE_PROP_BACKEND == ValuePropBackend.NONE:
+        return {}
+
+    if _VALUE_PROP_BACKEND == ValuePropBackend.ONNXRUNTIME:
         run = _run_onnxruntime
-        unwrap_feed = PropValue.from_ort_value
+        make_prop_value = PropValue.from_ort_value
+    elif _VALUE_PROP_BACKEND == ValuePropBackend.REFERENCE:
+        run = _run_reference_implementation
+        make_prop_value = PropValue.from_ref_value
     else:
-        raise RuntimeError(
-            f"Not a valid value propagation backend: {_VALUE_PROP_BACKEND}."
+        raise ValueError(f"Unexpected backend: `{_VALUE_PROP_BACKEND}`")
+    out_types = {info.name: Type._from_onnx(info.type) for info in model.graph.output}
+    res = run(model, {k: v.value for k, v in input_feed.items()})
+
+    try:
+        return {k: make_prop_value(out_types[k], v) for k, v in res.items()}
+    except Exception as e:
+        logging.debug(
+            f"propagated values had unexpected type - {type(e).__name__}: {e}"
         )
-    return wrap_feed, run, unwrap_feed  # type: ignore
+        return {}

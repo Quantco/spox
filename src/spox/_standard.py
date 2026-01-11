@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -23,7 +23,7 @@ from ._scope import Scope
 from ._shape import SimpleShape
 from ._type_system import Optional, Sequence, Tensor, Type
 from ._utils import make_model
-from ._value_prop import PropDict, PropValue, PropValueType
+from ._value_prop import PropDict, PropValue
 
 if TYPE_CHECKING:
     from ._graph import Graph
@@ -124,10 +124,10 @@ class StandardNode(Node):
             elif not isinstance(prop, PropValue) or prop.value is None:
                 continue
             elif isinstance(prop.type, Sequence):
-                assert isinstance(prop.value, Iterable)
+                assert isinstance(prop.value, list)
                 initializers.extend(
                     [
-                        from_array(elem.value, f"{name}_{i}")
+                        from_array(elem, f"{name}_{i}")  # type: ignore
                         for i, elem in enumerate(prop.value)
                         if elem is not None
                     ]
@@ -185,9 +185,7 @@ class StandardNode(Node):
             for key, type_ in results.items()
         }
 
-    def propagate_values_onnx(
-        self, input_prop_values: PropDict
-    ) -> dict[str, PropValueType]:
+    def propagate_values_onnx(self, input_prop_values: PropDict) -> PropDict:
         """Perform value propagation by evaluating singleton model.
 
         The backend used for the propagation can be configured with the `spox._standard.ValuePropBackend` variable.
@@ -201,30 +199,18 @@ class StandardNode(Node):
         if next(iter(self.subgraphs), None) is not None:
             # Cannot do propagation with subgraphs implicitly for performance - should be reimplemented
             return {}
-        model, scope = self.to_singleton_onnx_model(
-            with_dummy_subgraphs=False, input_prop_values=input_prop_values
+        model, _scope = self.to_singleton_onnx_model(
+            with_dummy_subgraphs=False,
+            input_prop_values=input_prop_values,
+            dummy_outputs=False,  # Write the output type information that we currently have into the output types
         )
-        wrap_feed, run, unwrap_feed = _value_prop.get_backend_calls()
-        input_feed = {
-            scope.var[var_info]: wrap_feed(input_prop_values[name])
-            for name, var_info in self.inputs.get_var_infos().items()
-            if input_prop_values[name]
-        }
 
-        output_feed = run(model, input_feed)
-
-        results = {
-            scope.var[str(name)]._which_output: unwrap_feed(
-                scope.var[str(name)].unwrap_type(), result
-            ).value
-            for name, result in output_feed.items()
-        }
-        return {k: v for k, v in results.items() if k is not None}
+        return _value_prop.infer(model, input_prop_values)
 
     def infer_output_types(self, input_prop_values: PropDict) -> dict[str, Type]:
         return self.infer_output_types_onnx(input_prop_values)
 
-    def propagate_values(self, input_prop_values: PropDict) -> dict[str, PropValueType]:
+    def propagate_values(self, input_prop_values: PropDict) -> PropDict:
         if _value_prop._VALUE_PROP_BACKEND != _value_prop.ValuePropBackend.NONE:
             return self.propagate_values_onnx(input_prop_values)
         return {}
