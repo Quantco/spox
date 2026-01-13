@@ -7,12 +7,12 @@
 Change log
 ==========
 
-0.17.0 (unreleased)
+0.17.0 (2026-01-13)
 -------------------
 
 **Bug fix**
 
-- Using :func:`spox.inline` with disable value propagation (from ``spox._future``) no longer raises an exception.
+- Using :func:`spox.inline` with disabled value propagation (from ``spox._future``) no longer raises an exception.
 
 **New features**
 
