@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-import dataclasses
 import enum
 from collections.abc import Iterable, Iterator, Sequence
-from dataclasses import Field, dataclass
+from dataclasses import dataclass
 from typing import get_type_hints
 
 from . import _type_system
@@ -78,44 +77,23 @@ class BaseVars:
 
 @dataclass
 class BaseVarInfos(BaseFields):
-    def __post_init__(self) -> None:
-        # Check if passed fields are of the appropriate types based on field kinds
-        for field in dataclasses.fields(self):
-            value = getattr(self, field.name)
-            field_type = self._get_field_type(field)
-            if field_type == VarFieldKind.SINGLE:
-                if not isinstance(value, _VarInfo):
-                    raise TypeError(f"Field expected VarInfo, got: {type(value)}.")
-            elif field_type == VarFieldKind.OPTIONAL:
-                if value is not None and not isinstance(value, _VarInfo):
-                    raise TypeError(
-                        f"Optional must be VarInfo or None, got: {type(value)}."
-                    )
-            elif field_type == VarFieldKind.VARIADIC:
-                if not isinstance(value, Iterable):
-                    raise TypeError(
-                        f"Variadic field must be iterable, got '{type(value)}'."
-                    )
-                # Cast to tuple to avoid accidental mutation
-                setattr(self, field.name, tuple(value))
-                if bad := {type(var) for var in value} - {_VarInfo}:
-                    raise TypeError(
-                        f"Variadic field must only consist of VarInfos, got: {bad}."
-                    )
-
     @classmethod
-    def _get_field_type(cls, field: Field) -> VarFieldKind:
-        """Access the kind of the field (single, optional, variadic) based on its type annotation."""
+    def _get_field_types(cls) -> dict[str, VarFieldKind]:
+        """Get resolved type annotations of the fields."""
         # The field.type may be unannotated as per
         # from __future__ import annotations
-        field_type = get_type_hints(cls)[field.name]
-        if field_type == _VarInfo:
-            return VarFieldKind.SINGLE
-        elif field_type == _VarInfo | None:
-            return VarFieldKind.OPTIONAL
-        elif field_type == Sequence[_VarInfo]:
-            return VarFieldKind.VARIADIC
-        raise ValueError(f"Bad field type: '{field.type}'.")
+        out = {}
+        for name, field_type in get_type_hints(cls).items():
+            if field_type == _VarInfo:
+                out[name] = VarFieldKind.SINGLE
+            elif field_type == _VarInfo | None:
+                out[name] = VarFieldKind.OPTIONAL
+            elif field_type == Sequence[_VarInfo]:
+                out[name] = VarFieldKind.VARIADIC
+            else:
+                raise ValueError(f"Bad field type: '{field_type}'.")
+
+        return out
 
     def _flatten(self) -> Iterable[tuple[str, _VarInfo | None]]:
         """Iterate over the pairs of names and values of fields in this object."""

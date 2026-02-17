@@ -165,8 +165,8 @@ class Builder:
     graphs: set[Graph]
     graph_topo: list[Graph]
     # Arguments, results
-    arguments_of: dict[Graph, list[_VarInfo]]
-    results_of: dict[Graph, list[_VarInfo]]
+    arguments_of: dict[Graph, tuple[_VarInfo, ...]]
+    results_of: dict[Graph, tuple[_VarInfo, ...]]
     source_of: dict[Graph, Node]
     # Arguments found by traversal
     all_arguments_in: dict[Graph, set[_VarInfo]]
@@ -287,7 +287,7 @@ class Builder:
         # Now we resolve which arguments we should get.
         if graph.requested_arguments is None:
             # If there's no request, we take all arguments found anywhere in this graph
-            self.arguments_of[graph] = list(all_arguments - claimed_arguments)
+            self.arguments_of[graph] = tuple(all_arguments - claimed_arguments)
         else:
             # If there is a request, we may not have found it by traversal if an argument was unused.
             all_arguments |= set(unwrap_vars(graph.requested_arguments))
