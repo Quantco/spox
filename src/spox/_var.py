@@ -333,11 +333,11 @@ def unwrap_vars(var: Var | None) -> _VarInfo | None: ...
 
 
 @overload
-def unwrap_vars(var: dict[T, Var]) -> dict[T, _VarInfo]: ...  # type: ignore[overload-overlap]
+def unwrap_vars(var: dict[str, Var]) -> dict[str, _VarInfo]: ...
 
 
 @overload
-def unwrap_vars(var: Iterable[Var]) -> list[_VarInfo]: ...
+def unwrap_vars(var: Iterable[Var]) -> tuple[_VarInfo, ...]: ...
 
 
 def unwrap_vars(var):  # type: ignore
@@ -348,7 +348,7 @@ def unwrap_vars(var):  # type: ignore
     elif isinstance(var, dict):
         return {k: unwrap_vars(v) for k, v in var.items()}
     elif isinstance(var, Iterable):
-        return [unwrap_vars(v) for v in var]
+        return tuple(unwrap_vars(v) for v in var)
     else:
         raise ValueError("Unsupported type for unwrap_vars")
 

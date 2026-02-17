@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.17.1 (2026-02-17)
+-------------------
+
+**Performance**
+
+- Removed unnecessary and costly calls to ``typing.get_type_hints``.
+
+
 0.17.0 (2026-01-13)
 -------------------
 
