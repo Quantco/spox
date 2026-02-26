@@ -61,7 +61,7 @@ jobs:
       CI: True
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -76,7 +76,7 @@ jobs:
       - name: Run pytest
         run: pixi run -e onnx-weekly test
       - name: Issue on failure
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         if: ${{ failure() && github.ref == 'refs/heads/main' }}
         with:
           script: |
