@@ -304,23 +304,27 @@ class Node(ABC):
         Their type is bound in the create method.
         Note: called in ``__init__`` while the state may be partially initialized.
         """
-        variadics = {
-            field.name
-            for field in dataclasses.fields(self.Outputs)
-            if self.Outputs._get_field_type(field) == VarFieldKind.VARIADIC
-        }
-        if variadics:
-            (variadic,) = variadics
+        if self.out_variadic is not None:
+            # Find name of variadic output from the type hints
+            types = self.Outputs._get_field_types()
+            (variadic,) = {
+                field.name
+                for field in dataclasses.fields(self.Outputs)
+                if types[field.name] == VarFieldKind.VARIADIC
+            }
+            variadics = {
+                variadic: tuple(_VarInfo(self, None) for _ in range(self.out_variadic))
+            }
         else:
             variadic = None
+            variadics = {}
         outputs: dict[str, _VarInfo | Sequence[_VarInfo]] = {
             field.name: _VarInfo(self, None)
             for field in dataclasses.fields(self.Outputs)
             if field.name != variadic
         }
-        if variadic is not None:
-            assert self.out_variadic is not None
-            outputs[variadic] = [_VarInfo(self, None) for _ in range(self.out_variadic)]
+        if variadics:
+            outputs |= variadics
         return self.Outputs(**outputs)
 
     @property
