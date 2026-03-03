@@ -1,11 +1,11 @@
 name: Build and upload to PyPI
-
 on:
+  pull_request:
   push:
-    branches:
-      - "*"
-    tags:
-      - "*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
