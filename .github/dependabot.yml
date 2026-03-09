@@ -6,3 +6,5 @@ updates:
       interval: "weekly"
     reviewers:
       - "quantco/ci"
+    cooldown:
+      default-days: 7
