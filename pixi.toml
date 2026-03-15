@@ -5,7 +5,7 @@ platforms = ["osx-arm64", "osx-64", "linux-64", "linux-aarch64", "win-64"]
 
 [tasks]
 postinstall = "pip install --no-build-isolation --no-deps --disable-pip-version-check -e ."
-postinstall-onnx-rc = "pip install -i https://test.pypi.org/simple/ --pre onnx"
+postinstall-onnx-rc = "pip install -i https://pypi.org/simple/ --pre onnx --force --no-deps"
 
 [dependencies]
 # we don't specify onnx here since we want to create test environments where we install it from pypi
