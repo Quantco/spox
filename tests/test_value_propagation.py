@@ -9,7 +9,7 @@ import pytest
 
 import spox
 import spox._future
-import spox.opset.ai.onnx.ml.v3 as ml
+import spox.opset.ai.onnx.ml.v4 as ml
 import spox.opset.ai.onnx.v22 as op
 from spox import Optional, Sequence, Tensor, Type, Var, argument
 from spox._graph import arguments, results
@@ -259,3 +259,17 @@ def test_strings():
 
     x, y = op.const(["foo"]), op.const(["bar"])
     np.testing.assert_equal(op.string_concat(x, y)._value.value, np.array(["foobar"]))  # type: ignore
+
+
+def test_value_prop_ort_cse_bug_mitigation():
+    """Test mitigation against ort CSE crash."""
+    # A constant string input so value propagation actually runs.
+    x = op.const(np.array(["a"], dtype=np.str_))
+
+    y = ml.label_encoder(
+        x,
+        keys_tensor=np.array(["a"], dtype=np.str_),
+        values_tensor=np.array(["b"], dtype=np.str_),
+        default_tensor=np.array(["MISSING"], dtype=np.str_),
+    )
+    assert y._value is not None

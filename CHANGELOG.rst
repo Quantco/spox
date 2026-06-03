@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.17.2 (2026-06-04)
+-------------------
+
+**Other change**
+
+- Disable onnxruntime optimization passes in value propagation as a mitigation for https://github.com/microsoft/onnxruntime/issues/28413 and to speed-up session creation.
+
+
 0.17.1 (2026-02-17)
 -------------------
 
