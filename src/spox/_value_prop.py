@@ -146,13 +146,14 @@ def _run_reference_implementation(
 def _run_onnxruntime(
     model: onnx.ModelProto, input_feed: dict[str, ORTValue]
 ) -> dict[str, ORTValue]:
-    import onnxruntime
+    import onnxruntime as ort
 
     # Silence possible warnings during execution (especially constant folding)
-    options = onnxruntime.SessionOptions()
+    options = ort.SessionOptions()
     options.log_severity_level = 3
+    options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_DISABLE_ALL
     try:
-        session = onnxruntime.InferenceSession(model.SerializeToString(), options)
+        session = ort.InferenceSession(model.SerializeToString(), options)
         output_names = [output.name for output in session.get_outputs()]
         output_feed = dict(zip(output_names, session.run(None, input_feed)))
     except Exception as e:
