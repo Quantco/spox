@@ -2,16 +2,18 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from __future__ import annotations
 
+import ctypes
 import enum
 import logging
 from dataclasses import dataclass
-from typing import TypeAlias
+from typing import Any, TypeAlias
 
 import numpy as np
 import onnx
 import onnx.reference
 
 from ._type_system import Optional, Sequence, Type
+from ._utils import dtype_to_tensor_type, tensor_type_to_dtype
 
 """
 The internal representation for runtime values.
@@ -143,6 +145,61 @@ def _run_reference_implementation(
     return output_feed
 
 
+def _graph_is_iobinding_compatible(graph: onnx.GraphProto) -> bool:
+    """Whether the graph's signature can be evaluated via ONNX Runtime's ``IOBinding``.
+
+    ``IOBinding`` only supports plain, non-string tensors. Signatures with
+    sequences, optionals, maps, or string tensors use the plain ``run``
+    interface instead.
+    """
+    for info in list(graph.input) + list(graph.output):
+        if not info.type.HasField("tensor_type"):
+            return False
+        if info.type.tensor_type.elem_type == onnx.TensorProto.STRING:
+            return False
+    return True
+
+
+def _run_via_iobinding(
+    session: Any, input_feed: dict[str, np.ndarray]
+) -> dict[str, ORTValue]:
+    """Run a tensor-only model through ONNX Runtime's ``IOBinding`` interface.
+
+    This accepts and returns ``ml_dtypes`` arrays (such as ``bfloat16`` or the
+    ``float8`` variants), which ONNX Runtime's numpy bridge cannot map. Inputs
+    are built from the raw buffer paired with an explicit ONNX tensor type, and
+    outputs are reconstructed from their raw buffer.
+    """
+    import onnxruntime as ort
+
+    io = session.io_binding()
+    for name, arr in input_feed.items():
+        ort_value = ort.OrtValue.ortvalue_from_numpy_with_onnx_type(
+            arr, dtype_to_tensor_type(arr.dtype)
+        )
+        io.bind_ortvalue_input(name, ort_value)
+    for output in session.get_outputs():
+        io.bind_output(output.name)
+
+    session.run_with_iobinding(io)
+
+    output_feed: dict[str, ORTValue] = {}
+    for output, ort_value in zip(session.get_outputs(), io.get_outputs()):
+        dtype = tensor_type_to_dtype(ort_value.element_type())
+        shape = ort_value.shape()
+        # ONNX Runtime allocated the (possibly dynamically-shaped) output, so
+        # the raw pointer is the only handle to it that works for ml_dtypes:
+        # ``OrtValue.numpy()`` and the dlpack bridge both reject those element
+        # types. Copy the buffer into an array we own before it is freed.
+        buffer = (ctypes.c_char * ort_value.tensor_size_in_bytes()).from_address(
+            ort_value.data_ptr()
+        )
+        output_feed[output.name] = (
+            np.frombuffer(memoryview(buffer), dtype=dtype).reshape(shape).copy()
+        )
+    return output_feed
+
+
 def _run_onnxruntime(
     model: onnx.ModelProto, input_feed: dict[str, ORTValue]
 ) -> dict[str, ORTValue]:
@@ -152,10 +209,16 @@ def _run_onnxruntime(
     options = ort.SessionOptions()
     options.log_severity_level = 3
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_DISABLE_ALL
+    output_feed: dict[str, ORTValue]
     try:
         session = ort.InferenceSession(model.SerializeToString(), options)
-        output_names = [output.name for output in session.get_outputs()]
-        output_feed = dict(zip(output_names, session.run(None, input_feed)))
+        if _graph_is_iobinding_compatible(model.graph):
+            # The IOBinding path handles ``ml_dtypes`` tensors (bfloat16,
+            # float8, ...) which ONNX Runtime's numpy ``run`` interface rejects.
+            output_feed = _run_via_iobinding(session, input_feed)  # type: ignore[arg-type]
+        else:
+            output_names = [output.name for output in session.get_outputs()]
+            output_feed = dict(zip(output_names, session.run(None, input_feed)))
     except Exception as e:
         logging.debug(
             "value propagation on the onnxruntime failed with - "

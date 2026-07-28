@@ -101,18 +101,47 @@ def test_div():
 def test_dtypes(dtype, backend):
     # Test value propagation on all supported data types across
     # non-trivial operations.
-    # There is an upstream issue for the odd-looking special casing
-    # for float8_e5m2: https://github.com/jax-ml/ml_dtypes/issues/216
-    if backend == spox._future.ValuePropBackend.ONNXRUNTIME and (
-        dtype.kind == "V" or dtype == ml_dtypes.float8_e5m2
+    # bfloat16 and the float8 variants are propagated through onnxruntime's
+    # IOBinding interface (see spox._value_prop._run_via_iobinding).
+    if backend == spox._future.ValuePropBackend.ONNXRUNTIME and dtype in (
+        ml_dtypes.int4,
+        ml_dtypes.uint4,
     ):
-        # onnxruntime does not properly support ml_dtypes in the models' signature
-        pytest.xfail(reason="onnxruntime does not support ml_dtypes in model signature")
+        # onnxruntime has no kernel for these sub-byte types (e.g. Reshape),
+        # so value propagation cannot evaluate the singleton model.
+        pytest.xfail(reason="onnxruntime has no kernel for int4/uint4 tensors")
 
     arr = np.asarray([1], dtype=dtype)
     # Reshape is defined for all data types
     var = op.reshape(op.const(arr), op.const(np.asarray([1, 1], np.int64)))
     assert_equal_value(var, arr.reshape((1, 1)))
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        ml_dtypes.bfloat16,
+        ml_dtypes.float8_e4m3fn,
+        ml_dtypes.float8_e4m3fnuz,
+        ml_dtypes.float8_e5m2,
+        ml_dtypes.float8_e5m2fnuz,
+    ],
+)
+def test_ml_dtypes_propagate_via_onnxruntime(dtype):
+    # onnxruntime's plain ``run`` interface can neither ingest nor return these
+    # ``ml_dtypes`` tensors; value propagation routes them through IOBinding
+    # instead, which carries the raw element type end to end (no float32
+    # detour and no reliance on onnxruntime's numpy bridge).
+    arr = np.asarray([1, 2, 3, 4], dtype=dtype)
+    with spox._future.value_prop_backend(spox._future.ValuePropBackend.ONNXRUNTIME):
+        var = op.reshape(op.const(arr), op.const(np.asarray([2, 2], np.int64)))
+    assert var._value is not None, "value must propagate through onnxruntime"
+    assert var.type.unwrap_tensor().dtype == dtype
+    result = var._value.to_ort_value()
+    assert result.dtype == dtype
+    np.testing.assert_array_equal(
+        result.view(np.uint8), arr.reshape(2, 2).view(np.uint8)
+    )
 
 
 def test_reshape():

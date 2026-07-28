@@ -7,6 +7,14 @@
 Change log
 ==========
 
+Unreleased
+----------
+
+**New feature**
+
+- The ``onnxruntime`` value propagation backend now supports ``ml_dtypes`` tensor types such as ``bfloat16`` and the ``float8`` variants.
+
+
 0.17.2 (2026-06-04)
 -------------------
 
