@@ -1014,9 +1014,9 @@ def attention(
              |          |          |
              ---MatMul---          |
                    |               |
-        at_mask---Add              |
-                   |               |
          softcap (if provided)     |
+                   |               |
+        at_mask---Add              |
                    |               |
                 Softmax            |
                    |               |
@@ -1089,10 +1089,11 @@ def attention(
     qk_matmul_output_mode
         Attribute.
         If set to ``0``, qk_matmul_output is the output of qk matmul. If set to
-        ``1``, qk_matmul_output includes the addition of the attention mask to
-        the output of qk matmul. If set to ``2``, qk_matmul_output is the output
-        after the softcap operation. If set to ``3``, qk_matmul_output is the
-        output after the softmax operation. Default value is 0.
+        ``1``, qk_matmul_output is the output after the softcap operation
+        (before mask addition). If set to ``2``, qk_matmul_output includes the
+        attention mask and softcap (if provided) applied to the output of qk
+        matmul. If set to ``3``, qk_matmul_output is the output after the
+        softmax operation. Default value is 0.
     scale
         Attribute.
         Scaling factor applied to :math:`Q*K^T`. Default value is
@@ -1940,7 +1941,7 @@ def loop(
     1) Values from the enclosing scope (i.e. variable "a" here) are in scope
        and can be referenced in the inputs of the loop.
     2) Any values computed in the loop body that needs to be used in a
-       subsequent iteration or after the loop are modelled using a pair of
+       subsequent iteration or after the loop are modeled using a pair of
        variables in the loop-body, consisting of an input variable (eg.,
        b_in) and an output variable (eg., b_out). These are referred to as
        loop-carried dependences. The loop operation node supplies the input
@@ -2047,7 +2048,7 @@ def pad(
     (optionally) a ``mode``, and (optionally) ``constant_value``, a padded
     tensor (``output``) is generated.
 
-    The three supported ``modes`` are (similar to corresponding modes
+    The four supported ``modes`` are (similar to corresponding modes
     supported by ``numpy.pad``):
 
     1) ``constant``\ (default) - pads with a given constant value as

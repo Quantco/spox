@@ -39,7 +39,7 @@ repos:
       # mypy
       - id: mypy
         name: mypy
-        entry: pixi run -e default mypy
+        entry: pixi run -e lint mypy
         language: system
         types: [python]
         require_serial: true

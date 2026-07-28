@@ -1705,7 +1705,7 @@ def loop(
     1) Values from the enclosing scope (i.e. variable "a" here) are in scope
        and can be referenced in the inputs of the loop.
     2) Any values computed in the loop body that needs to be used in a
-       subsequent iteration or after the loop are modelled using a pair of
+       subsequent iteration or after the loop are modeled using a pair of
        variables in the loop-body, consisting of an input variable (eg.,
        b_in) and an output variable (eg., b_out). These are referred to as
        loop-carried dependences. The loop operation node supplies the input
@@ -1812,7 +1812,7 @@ def pad(
     (optionally) a ``mode``, and (optionally) ``constant_value``, a padded
     tensor (``output``) is generated.
 
-    The three supported ``modes`` are (similar to corresponding modes
+    The four supported ``modes`` are (similar to corresponding modes
     supported by ``numpy.pad``):
 
     1) ``constant``\ (default) - pads with a given constant value as

@@ -6155,7 +6155,10 @@ def dft(
         The length of the signal as a scalar. If greater than the axis
         dimension, the signal will be zero-padded up to dft_length. If less than
         the axis dimension, only the first dft_length values will be used as the
-        signal. It's an optional value.
+        signal. If not provided, the default dft_length = signal_dim_axis,
+        except for the IRFFT case (onesided=1, inverse=1), in which case the
+        default dft_length is 2 \* (signal_dim_axis - 1). It's an optional
+        value.
     axis
         Attribute.
         The axis on which to perform the DFT. By default this value is set to 1,
@@ -6171,27 +6174,28 @@ def dft(
     onesided
         Attribute.
         If onesided is 1, only values for w in [0, 1, 2, ..., floor(n_fft/2) +
-        1] are returned because the real-to-complex Fourier transform satisfies
-        the conjugate symmetry, i.e., X[m, w] = X[m, n_fft-w]\*. Note if the
-        input or window tensors are complex, then onesided output is not
-        possible. Enabling onesided with real inputs performs a Real-valued fast
-        Fourier transform (RFFT). When invoked with real or complex valued
+        1] are used or returned because the real-to-complex Fourier transform
+        satisfies the conjugate symmetry, i.e., X[m, w] = X[m, n_fft-w]\*. When
+        onesided=1 and inverse=0 (forward DFT), only real input is supported and
+        a one-sided complex spectrum is returned (RFFT). When onesided=1 and
+        inverse=1 (inverse DFT), only complex input is supported and a full real
+        signal is returned (IRFFT). When invoked with real or complex valued
         input, the default value is 0. Values can be 0 or 1.
 
     Returns
     =======
     output : Var
         Type T1.
-        The Fourier Transform of the input vector. If onesided is 0, the
-        following shape is expected:
-        [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][2]. If axis=1 and
-        onesided is 1, the following shape is expected:
-        [batch_idx][floor(signal_dim1/2)+1][signal_dim2]...[signal_dimN][2]. If
-        axis=2 and onesided is 1, the following shape is expected:
-        [batch_idx][signal_dim1][floor(signal_dim2/2)+1]...[signal_dimN][2]. If
-        axis=N and onesided is 1, the following shape is expected:
-        [batch_idx][signal_dim1][signal_dim2]...[floor(signal_dimN/2)+1][2]. The
-        signal_dim at the specified axis is equal to the dft_length.
+        The Fourier Transform of the input vector. For standard DFT
+        (onesided=0), the output shape is:
+        [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][2] (complex), with
+        signal_dim_axis = dft_length. For RFFT (onesided=1, inverse=0), the
+        output shape is:
+        [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][2] (one-sided
+        complex), with signal_dim_axis = floor(dft_length/2) + 1. For IRFFT
+        (onesided=1, inverse=1), the output shape is:
+        [batch_idx][signal_dim1][signal_dim2]...[signal_dimN][1] (real), where
+        signal_dim_axis = dft_length.
 
     Notes
     =====
@@ -6434,8 +6438,9 @@ def div(
     broadcasting**; for more details please check `the
     doc <https://github.com/onnx/onnx/blob/main/docs/Broadcasting.md>`__.
 
-    (Opset 14 change): Extend supported types to include uint8, int8,
-    uint16, and int16.
+    For integer inputs, the result is computed using truncating division
+    (rounding toward zero). (Opset 14 change): Extend supported types to
+    include uint8, int8, uint16, and int16.
 
     Parameters
     ==========
@@ -9578,7 +9583,7 @@ def loop(
     1) Values from the enclosing scope (i.e. variable "a" here) are in scope
        and can be referenced in the inputs of the loop.
     2) Any values computed in the loop body that needs to be used in a
-       subsequent iteration or after the loop are modelled using a pair of
+       subsequent iteration or after the loop are modeled using a pair of
        variables in the loop-body, consisting of an input variable (eg.,
        b_in) and an output variable (eg., b_out). These are referred to as
        loop-carried dependences. The loop operation node supplies the input
@@ -9678,7 +9683,10 @@ def lp_normalization(
     p: int = 2,
 ) -> Var:
     r"""
-    Given a matrix, apply Lp-normalization along the provided axis.
+    Given a matrix, apply Lp-normalization along the provided axis. The
+    output is computed as: ``output = input / Lp_norm(input, axis)``. When
+    the Lp norm is zero (i.e., all elements along the axis are zero), the
+    output is defined to be zero to avoid division by zero.
 
     Parameters
     ==========
@@ -11014,15 +11022,17 @@ def non_max_suppression(
     Filter out boxes that have high intersection-over-union (IOU) overlap
     with previously selected boxes. Bounding boxes with score less than
     score_threshold are removed. Bounding box format is indicated by
-    attribute center_point_box. Note that this algorithm is agnostic to
-    where the origin is in the coordinate system and more generally is
-    invariant to orthogonal transformations and translations of the
-    coordinate system; thus translating or reflections of the coordinate
-    system result in the same boxes being selected by the algorithm. The
-    selected_indices output is a set of integers indexing into the input
-    collection of bounding boxes representing the selected boxes. The
-    bounding box coordinates corresponding to the selected indices can then
-    be obtained using the Gather or GatherND operation.
+    attribute center_point_box. Boxes are suppressed if their IOU with a
+    previously selected box is strictly greater than iou_threshold (i.e.,
+    boxes with IOU exactly equal to the threshold are kept). Note that this
+    algorithm is agnostic to where the origin is in the coordinate system
+    and more generally is invariant to orthogonal transformations and
+    translations of the coordinate system; thus translating or reflections
+    of the coordinate system result in the same boxes being selected by the
+    algorithm. The selected_indices output is a set of integers indexing
+    into the input collection of bounding boxes representing the selected
+    boxes. The bounding box coordinates corresponding to the selected
+    indices can then be obtained using the Gather or GatherND operation.
 
     Parameters
     ==========
@@ -11040,7 +11050,8 @@ def non_max_suppression(
     iou_threshold
         Type tensor(float).
         Float representing the threshold for deciding whether boxes overlap too
-        much with respect to IOU. It is scalar. Value range [0, 1]. Default to
+        much with respect to IOU. Boxes with IoU strictly greater than this
+        threshold are suppressed. It is scalar. Value range [0, 1]. Default to
         0.
     score_threshold
         Type tensor(float).
@@ -12554,14 +12565,14 @@ def range(
          output[i] =  start + (i * delta);
        }
 
-    Example 1
+    Example 1:
 
     ::
 
        Inputs: start = 3, limit = 9, delta = 3
        Output: [3, 6]
 
-    Example 2
+    Example 2:
 
     ::
 
