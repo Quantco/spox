@@ -68,7 +68,7 @@ IF16_OUT_VARIADIC_SOLUTION = "len(_else_branch_subgraph.requested_results)"
 LOOP16_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results) - 1"
 SCAN16_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results)"
 SEQUENCEMAP17_OUT_VARIADIC_SOLUTION = "len(_body_subgraph.requested_results)"
-SPLIT18_OUT_VARIADIC_SOLUTION = "num_outputs"
+SPLIT18_OUT_VARIADIC_SOLUTION = "split_num_outputs(split, num_outputs)"
 
 IF16_SUBGRAPH_SOLUTION = {"else_branch": "()", "then_branch": "()"}
 LOOP16_SUBGRAPH_SOLUTION = {
