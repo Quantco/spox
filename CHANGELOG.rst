@@ -7,6 +7,15 @@
 Change log
 ==========
 
+0.18.0 (2026-07-28)
+-------------------
+
+**New features**
+
+- Add `"ai.onnx"` operator definitions of version 25, 26, and 27.
+- Existing opset definitions in ``spox.opsets`` have been rerendered using onnx 1.22.0.
+
+
 0.17.2 (2026-06-04)
 -------------------
 
