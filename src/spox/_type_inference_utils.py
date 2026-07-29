@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import numpy as np
-
 from spox._standard import InferenceError
 from spox._type_system import Optional, Sequence, Tensor, Type
 
@@ -19,7 +17,7 @@ def split_num_outputs(split: Var | None, num_outputs: int | None) -> int:
 
     Split accepts *either* the ``split`` input or the ``num_outputs`` attribute,
     but not both. The number of outputs is ``num_outputs`` if given, otherwise
-    the (static) length of the ``split`` input.
+    the static length of the ``split`` input.
 
     Raises
     ------
@@ -45,13 +43,8 @@ def split_num_outputs(split: Var | None, num_outputs: int | None) -> int:
     shape = split.type.shape if isinstance(split.type, Tensor) else None
     if shape is not None and len(shape) == 1 and isinstance(shape[0], int):
         return shape[0]
-    value = split._value.value if split._value is not None else None
-    if isinstance(value, np.ndarray):
-        return len(value)
     raise InferenceError(
-        "Could not determine the number of Split outputs: the 'split' input has "
-        "neither a static length nor a constant value. Provide the 'num_outputs' "
-        "attribute instead."
+        "failed to determine number of 'Split' outputs. 'split' input must be a 1D tensor with static length. "
     )
 
 
