@@ -22,7 +22,7 @@ pre-commit = "*"
 insert-license-header = "*"
 mypy = "*"
 prettier = "*"
-ruff = "*"
+ruff = "<0.16"
 
 [feature.lint.tasks]
 pre-commit-install = "pre-commit install"

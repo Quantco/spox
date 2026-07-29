@@ -35,7 +35,7 @@ from spox._var import (
     create_prop_dict,
     unwrap_vars,
 )
-from spox.opset.ai.onnx.v23 import (
+from spox.opset.ai.onnx.v24 import (
     _DFT,
     _GRU,
     _LRN,
@@ -54,6 +54,7 @@ from spox.opset.ai.onnx.v23 import (
     _Asinh,
     _Atan,
     _Atanh,
+    _Attention,
     _AveragePool,
     _BatchNormalization,
     _Bernoulli,
@@ -194,17 +195,21 @@ from spox.opset.ai.onnx.v23 import (
     _Softsign,
     _SpaceToDepth,
     _Split,
+    _SplitToSequence,
     _Sqrt,
     _StringConcat,
     _StringNormalizer,
     _StringSplit,
     _Sub,
     _Sum,
+    _Swish,
     _Tan,
     _Tanh,
+    _TensorScatter,
     _TfIdfVectorizer,
     _ThresholdedRelu,
     _Tile,
+    _TopK,
     _Trilu,
     _Unique,
     _Where,
@@ -221,6 +226,7 @@ from spox.opset.ai.onnx.v23 import (
     asinh,
     atan,
     atanh,
+    attention,
     average_pool,
     batch_normalization,
     bernoulli,
@@ -366,6 +372,7 @@ from spox.opset.ai.onnx.v23 import (
     softsign,
     space_to_depth,
     split,
+    split_to_sequence,
     sqrt,
     stft,
     string_concat,
@@ -373,51 +380,19 @@ from spox.opset.ai.onnx.v23 import (
     string_split,
     sub,
     sum,
+    swish,
     tan,
     tanh,
+    tensor_scatter,
     tf_idf_vectorizer,
     thresholded_relu,
     tile,
+    top_k,
     trilu,
     unique,
     where,
     xor,
 )
-
-
-class _Attention(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        is_causal: AttrInt64
-        kv_num_heads: AttrInt64 | None
-        q_num_heads: AttrInt64 | None
-        qk_matmul_output_mode: AttrInt64
-        scale: AttrFloat32 | None
-        softcap: AttrFloat32
-        softmax_precision: AttrInt64 | None
-
-    @dataclass
-    class Inputs(BaseInputs):
-        Q: _VarInfo
-        K: _VarInfo
-        V: _VarInfo
-        attn_mask: _VarInfo | None
-        past_key: _VarInfo | None
-        past_value: _VarInfo | None
-        nonpad_kv_seqlen: _VarInfo | None
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        Y: _VarInfo
-        present_key: _VarInfo | None
-        present_value: _VarInfo | None
-        qk_matmul_output: _VarInfo | None
-
-    op_type = OpType("Attention", "", 24)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
 
 
 class _Cast(StandardNode):
@@ -435,7 +410,7 @@ class _Cast(StandardNode):
     class Outputs(BaseOutputs):
         output: _VarInfo
 
-    op_type = OpType("Cast", "", 24)
+    op_type = OpType("Cast", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -457,7 +432,7 @@ class _CastLike(StandardNode):
     class Outputs(BaseOutputs):
         output: _VarInfo
 
-    op_type = OpType("CastLike", "", 24)
+    op_type = OpType("CastLike", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -481,7 +456,7 @@ class _Constant(StandardNode):
     class Outputs(BaseOutputs):
         output: _VarInfo
 
-    op_type = OpType("Constant", "", 24)
+    op_type = OpType("Constant", "", 25)
 
     attrs: Attributes
     inputs: BaseInputs
@@ -501,7 +476,7 @@ class _ConstantOfShape(StandardNode):
     class Outputs(BaseOutputs):
         output: _VarInfo
 
-    op_type = OpType("ConstantOfShape", "", 24)
+    op_type = OpType("ConstantOfShape", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -525,7 +500,7 @@ class _DequantizeLinear(StandardNode):
     class Outputs(BaseOutputs):
         y: _VarInfo
 
-    op_type = OpType("DequantizeLinear", "", 24)
+    op_type = OpType("DequantizeLinear", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -545,7 +520,7 @@ class _Flatten(StandardNode):
     class Outputs(BaseOutputs):
         output: _VarInfo
 
-    op_type = OpType("Flatten", "", 24)
+    op_type = OpType("Flatten", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -565,7 +540,7 @@ class _Identity(StandardNode):
     class Outputs(BaseOutputs):
         output: _VarInfo
 
-    op_type = OpType("Identity", "", 24)
+    op_type = OpType("Identity", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -586,7 +561,7 @@ class _If(StandardNode):
     class Outputs(BaseOutputs):
         outputs: Sequence[_VarInfo]
 
-    op_type = OpType("If", "", 24)
+    op_type = OpType("If", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -632,7 +607,7 @@ class _Loop(StandardNode):
 
         return output_types
 
-    op_type = OpType("Loop", "", 24)
+    op_type = OpType("Loop", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -655,7 +630,7 @@ class _Pad(StandardNode):
     class Outputs(BaseOutputs):
         output: _VarInfo
 
-    op_type = OpType("Pad", "", 24)
+    op_type = OpType("Pad", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -681,7 +656,7 @@ class _QuantizeLinear(StandardNode):
     class Outputs(BaseOutputs):
         y: _VarInfo
 
-    op_type = OpType("QuantizeLinear", "", 24)
+    op_type = OpType("QuantizeLinear", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -702,7 +677,7 @@ class _Reshape(StandardNode):
     class Outputs(BaseOutputs):
         reshaped: _VarInfo
 
-    op_type = OpType("Reshape", "", 24)
+    op_type = OpType("Reshape", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -727,7 +702,7 @@ class _Scan(StandardNode):
     class Outputs(BaseOutputs):
         final_state_and_scan_outputs: Sequence[_VarInfo]
 
-    op_type = OpType("Scan", "", 24)
+    op_type = OpType("Scan", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -748,7 +723,7 @@ class _Shape(StandardNode):
     class Outputs(BaseOutputs):
         shape: _VarInfo
 
-    op_type = OpType("Shape", "", 24)
+    op_type = OpType("Shape", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -768,29 +743,7 @@ class _Size(StandardNode):
     class Outputs(BaseOutputs):
         size: _VarInfo
 
-    op_type = OpType("Size", "", 24)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-
-class _SplitToSequence(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        axis: AttrInt64
-        keepdims: AttrInt64
-
-    @dataclass
-    class Inputs(BaseInputs):
-        input: _VarInfo
-        split: _VarInfo | None
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        output_sequence: _VarInfo
-
-    op_type = OpType("SplitToSequence", "", 24)
+    op_type = OpType("Size", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -811,74 +764,7 @@ class _Squeeze(StandardNode):
     class Outputs(BaseOutputs):
         squeezed: _VarInfo
 
-    op_type = OpType("Squeeze", "", 24)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-
-class _Swish(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        alpha: AttrFloat32
-
-    @dataclass
-    class Inputs(BaseInputs):
-        X: _VarInfo
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        Y: _VarInfo
-
-    op_type = OpType("Swish", "", 24)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-
-class _TensorScatter(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        axis: AttrInt64
-        mode: AttrString
-
-    @dataclass
-    class Inputs(BaseInputs):
-        past_cache: _VarInfo
-        update: _VarInfo
-        write_indices: _VarInfo | None
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        present_cache: _VarInfo
-
-    op_type = OpType("TensorScatter", "", 24)
-
-    attrs: Attributes
-    inputs: Inputs
-    outputs: Outputs
-
-
-class _TopK(StandardNode):
-    @dataclass
-    class Attributes(BaseAttributes):
-        axis: AttrInt64
-        largest: AttrInt64
-        sorted: AttrInt64
-
-    @dataclass
-    class Inputs(BaseInputs):
-        X: _VarInfo
-        K: _VarInfo
-
-    @dataclass
-    class Outputs(BaseOutputs):
-        Values: _VarInfo
-        Indices: _VarInfo
-
-    op_type = OpType("TopK", "", 24)
+    op_type = OpType("Squeeze", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -898,7 +784,7 @@ class _Transpose(StandardNode):
     class Outputs(BaseOutputs):
         transposed: _VarInfo
 
-    op_type = OpType("Transpose", "", 24)
+    op_type = OpType("Transpose", "", 25)
 
     attrs: Attributes
     inputs: Inputs
@@ -919,269 +805,11 @@ class _Unsqueeze(StandardNode):
     class Outputs(BaseOutputs):
         expanded: _VarInfo
 
-    op_type = OpType("Unsqueeze", "", 24)
+    op_type = OpType("Unsqueeze", "", 25)
 
     attrs: Attributes
     inputs: Inputs
     outputs: Outputs
-
-
-def attention(
-    Q: Var,
-    K: Var,
-    V: Var,
-    attn_mask: Var | None = None,
-    past_key: Var | None = None,
-    past_value: Var | None = None,
-    nonpad_kv_seqlen: Var | None = None,
-    *,
-    is_causal: int = 0,
-    kv_num_heads: int | None = None,
-    q_num_heads: int | None = None,
-    qk_matmul_output_mode: int = 0,
-    scale: float | None = None,
-    softcap: float = 0.0,
-    softmax_precision: int | None = None,
-) -> tuple[Var, Var, Var, Var]:
-    r"""
-    Computes scaled dot product attention on query, key and value tensors,
-    using an optional attention mask if passed.
-
-    This operator covers self and cross variants of the attention operation
-    based on sequence lengths of K, Q and V.
-
-    For self attention, ``kv_sequence_length`` equals to
-    ``q_sequence_length``.
-
-    For cross attention, query and key might have different lengths.
-
-    This operator also covers the 3 following variants based on the number
-    of heads:
-
-    1) Multi-headed Attention (MHA): Described in the paper
-       https://arxiv.org/pdf/1706.03762, ``q_num_heads = kv_num_heads``.
-    2) Group-query Attention (GQA): Described in the paper
-       https://arxiv.org/pdf/2305.13245, ``q_num_heads > kv_num_heads``,
-       ``q_num_heads % kv_num_heads == 0``.
-    3) Multi-query Attention (MQA): Described in the paper
-       https://arxiv.org/pdf/1911.02150, ``q_num_heads > kv_num_heads``,
-       ``kv_num_heads=1``.
-
-    Attention bias to be added is calculated based on ``attn_mask`` input
-    and ``is_causal`` attribute:
-
-    1) ``attn_mask``: A boolean mask where a value of ``True`` indicates
-       that the element should take part in attention or a float mask of the
-       same type as query, key, value that is added to the attention score.
-    2) If ``is_causal`` is set to ``1``, attention scores above the diagonal
-       are masked out, regardless of the ``attn_mask`` input.
-
-    With respect to KV cache update, this operator allows the following two
-    use cases:
-
-    1) Cache update happens inside the Attention operator. In this case, the
-       ``K`` and ``V`` inputs contain only the incoming tokens for the
-       current autoregressive step, and the four optional inputs/outputs
-       past and present key and value are all needed. The Attention op
-       performs a Concat operation on the past and incoming key and value to
-       form the present key and value, respectively. Note that this only
-       works correctly for the special case where the past key and value do
-       not contain padded tokens.
-    2) Cache update happens outside the Attention operator (for example,
-       through the ``TensorScatter`` operator). In this case, the ``K`` and
-       ``V`` inputs correspond to the entire cache tensor, so the four
-       optional inputs/outputs past and present key and value should not be
-       used. An additional input ``nonpad_kv_seqlen`` of shape (batch_size,)
-       may be provided to indicate the number of non-padding tokens in each
-       sample of the batch to save unnecessary computation. Here, the
-       kv_sequence dimension of ``attn_mask`` can be shorter than ``K`` and
-       ``V``, but still needs to be at least as long as the maximum value of
-       ``nonpad_kv_seqlen``.
-
-    Both past and present state key/values are optional. They shall be used
-    together, and not allowed to use only one of them. The following pattern
-    is applied to the Q, K and V inputs after appropriate reshaping of K and
-    V inputs based on sequence lengths and num heads provided:
-
-    ::
-
-         The following pattern is applied by this operator:
-             Q          K          V
-             |          |          |
-       Q*sqrt(scale) K*sqrt(scale) |
-             |          |          |
-             |       Transpose     |
-             |          |          |
-             ---MatMul---          |
-                   |               |
-         softcap (if provided)     |
-                   |               |
-        at_mask---Add              |
-                   |               |
-                Softmax            |
-                   |               |
-                   -----MatMul------
-                          |
-                          Y
-
-    Parameters
-    ==========
-    Q
-        Type T1.
-        Query tensor. 4D tensor with shape
-        ``(batch_size, q_num_heads, q_sequence_length, head_size)`` or 3D tensor
-        with shape ``(batch_size, q_sequence_length, q_hidden_size)``. For cases
-        with a 3D input tensor, ``q_hidden_size = q_num_heads * head_size``
-    K
-        Type T1.
-        Key tensor. 4D tensor with shape
-        ``(batch_size, kv_num_heads, kv_sequence_length, head_size)`` or 3D
-        tensor with shape ``(batch_size, kv_sequence_length, k_hidden_size)``.
-        For cases with a 3D input tensor,
-        ``k_hidden_size = kv_num_heads * head_size``
-    V
-        Type T2.
-        Value tensor. 4D tensor with shape
-        ``(batch_size, kv_num_heads, kv_sequence_length, v_head_size)`` or 3D
-        tensor with shape ``(batch_size, kv_sequence_length, v_hidden_size)``.
-        For cases with a 3D input tensor,
-        ``v_hidden_size = kv_num_heads * v_head_size``
-    attn_mask
-        Type U.
-        Attention mask. Shape must be broadcastable to
-        ``(batch_size, q_num_heads, q_sequence_length, total_sequence_length)``
-        where
-        ``total_sequence_length = past_sequence_length + kv_sequence_length.``
-        The last dimension can also be shorter than ``total_sequence_length``
-        and will be padded to ``total_sequence_length`` with negative infinity.
-        Two types of masks are supported: a boolean mask where a value of
-        ``True`` indicates that the element should take part in attention, or a
-        float mask of the same type as query, key, value that is added to the
-        attention score.
-    past_key
-        Type T1.
-        past state cache for key with shape
-        ``(batch_size, kv_num_heads, past_sequence_length, head_size)``
-    past_value
-        Type T2.
-        past state cache for value with shape
-        ``(batch_size, kv_num_heads, past_sequence_length, v_head_size)``
-    nonpad_kv_seqlen
-        Type tensor(int64).
-        A vector of integers of shape ``(batch_size,)`` that indicates the
-        number of valid (ie, non-padding) tokens in each sample. A padding mask
-        can be derived from this. This should not be used together with
-        ``past_key`` and ``past_value`` inputs or ``present_key`` and
-        ``present_value`` outputs (See the KV cache use cases in the operator
-        description).
-    is_causal
-        Attribute.
-        If set to ``1``, the attention masking is a lower triangular matrix when
-        the mask is a square matrix. The attention masking has the form of the
-        upper left causal bias due to the alignment.
-    kv_num_heads
-        Attribute.
-        Number of heads of key and value. Must be used with 3D inputs of Q, K
-        and V.
-    q_num_heads
-        Attribute.
-        Number of heads of query. Must be used with 3D inputs of Q, K and V.
-    qk_matmul_output_mode
-        Attribute.
-        If set to ``0``, qk_matmul_output is the output of qk matmul. If set to
-        ``1``, qk_matmul_output is the output after the softcap operation
-        (before mask addition). If set to ``2``, qk_matmul_output includes the
-        attention mask and softcap (if provided) applied to the output of qk
-        matmul. If set to ``3``, qk_matmul_output is the output after the
-        softmax operation. Default value is 0.
-    scale
-        Attribute.
-        Scaling factor applied to :math:`Q*K^T`. Default value is
-        ``1/sqrt(head_size)``. To prevent `numerical
-        overflow <https://tinyurl.com/sudb9s96>`__, scale ``Q``, ``K`` by
-        ``sqrt(scale)`` before matmul.
-    softcap
-        Attribute.
-        Softcap value for attention weights. Default value is 0.
-    softmax_precision
-        Attribute.
-        The floating-point precision used in softmax computation. If softmax
-        precision is not provided, the same precision as the input of softmax (Q
-        and K) is used.
-
-    Returns
-    =======
-    Y : Var
-        Type T1.
-        The output tensor . 4D tensor with shape
-        ``(batch_size, q_num_heads, q_sequence_length, v_head_size)`` or 3D
-        tensor with shape ``(batch_size, q_sequence_length, hidden_size)``. For
-        cases with a 3D input tensor,
-        ``hidden_size = q_num_heads * v_head_size``
-    present_key : Var
-        Type T1.
-        Updated key cache with shape
-        ``(batch_size, kv_num_heads, total_sequence_length, head_size)`` where
-        ``total_sequence_length = past_sequence_length + kv_sequence_length``.
-    present_value : Var
-        Type T2.
-        Updated value cache with shape
-        ``(batch_size, kv_num_heads, total_sequence_length, v_head_size)`` where
-        ``total_sequence_length = past_sequence_length + kv_sequence_length``.
-    qk_matmul_output : Var
-        Type T1.
-        The output of QK matmul. 4D tensor with shape
-        ``(batch_size, q_num_heads, q_sequence_length, total_sequence_length)``
-        where
-        ``total_sequence_length = past_sequence_length + kv_sequence_length``.
-
-    Notes
-    =====
-    Signature: ``ai.onnx@24::Attention``.
-
-    Type constraints:
-     - T1: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
-     - T2: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
-     - U: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
-    """
-    input_prop_values = create_prop_dict(
-        Q=Q,
-        K=K,
-        V=V,
-        attn_mask=attn_mask,
-        past_key=past_key,
-        past_value=past_value,
-        nonpad_kv_seqlen=nonpad_kv_seqlen,
-    )
-    output_vars = (
-        _Attention(
-            _Attention.Attributes(
-                is_causal=AttrInt64(is_causal, name="is_causal"),
-                kv_num_heads=AttrInt64.maybe(kv_num_heads, name="kv_num_heads"),
-                q_num_heads=AttrInt64.maybe(q_num_heads, name="q_num_heads"),
-                qk_matmul_output_mode=AttrInt64(
-                    qk_matmul_output_mode, name="qk_matmul_output_mode"
-                ),
-                scale=AttrFloat32.maybe(scale, name="scale"),
-                softcap=AttrFloat32(softcap, name="softcap"),
-                softmax_precision=AttrInt64.maybe(
-                    softmax_precision, name="softmax_precision"
-                ),
-            ),
-            _Attention.Inputs(
-                Q=unwrap_vars(Q),
-                K=unwrap_vars(K),
-                V=unwrap_vars(V),
-                attn_mask=unwrap_vars(attn_mask),
-                past_key=unwrap_vars(past_key),
-                past_value=unwrap_vars(past_value),
-                nonpad_kv_seqlen=unwrap_vars(nonpad_kv_seqlen),
-            ),
-        )
-        .get_output_vars(input_prop_values=input_prop_values)
-        ._unpack_to_any()
-    )
-    return output_vars  # type: ignore
 
 
 def cast(
@@ -1331,11 +959,11 @@ def cast(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Cast``.
+    Signature: ``ai.onnx@25::Cast``.
 
     Type constraints:
-     - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
-     - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -1402,11 +1030,11 @@ def cast_like(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::CastLike``.
+    Signature: ``ai.onnx@25::CastLike``.
 
     Type constraints:
-     - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
-     - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T1: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -1476,10 +1104,10 @@ def constant(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Constant``.
+    Signature: ``ai.onnx@25::Constant``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict()
     output_vars = (
@@ -1532,11 +1160,11 @@ def constant_of_shape(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::ConstantOfShape``.
+    Signature: ``ai.onnx@25::ConstantOfShape``.
 
     Type constraints:
      - T1: `tensor(int64)`
-     - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T2: `tensor(bfloat16)`, `tensor(bool)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -1627,10 +1255,10 @@ def dequantize_linear(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::DequantizeLinear``.
+    Signature: ``ai.onnx@25::DequantizeLinear``.
 
     Type constraints:
-     - T1: `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint4)`, `tensor(uint8)`
+     - T1: `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint4)`, `tensor(uint8)`
      - T2: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e8m0)`
      - T3: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`
     """
@@ -1692,10 +1320,10 @@ def flatten(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Flatten``.
+    Signature: ``ai.onnx@25::Flatten``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -1735,10 +1363,10 @@ def identity(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Identity``.
+    Signature: ``ai.onnx@25::Identity``.
 
     Type constraints:
-     - V: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - V: `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         input=input,
@@ -1802,11 +1430,11 @@ def if_(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::If``.
+    Signature: ``ai.onnx@25::If``.
 
     Type constraints:
      - B: `tensor(bool)`
-     - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(float4e2m1))`, `optional(tensor(float8e4m3fn))`, `optional(tensor(float8e4m3fnuz))`, `optional(tensor(float8e5m2))`, `optional(tensor(float8e5m2fnuz))`, `optional(tensor(float8e8m0))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int4))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint4))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(float4e2m1))`, `seq(tensor(float8e4m3fn))`, `seq(tensor(float8e4m3fnuz))`, `seq(tensor(float8e5m2))`, `seq(tensor(float8e5m2fnuz))`, `seq(tensor(float8e8m0))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int4))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint4))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(float4e2m1))`, `optional(tensor(float8e4m3fn))`, `optional(tensor(float8e4m3fnuz))`, `optional(tensor(float8e5m2))`, `optional(tensor(float8e5m2fnuz))`, `optional(tensor(float8e8m0))`, `optional(tensor(int16))`, `optional(tensor(int2))`, `optional(tensor(int32))`, `optional(tensor(int4))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint2))`, `optional(tensor(uint32))`, `optional(tensor(uint4))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(float4e2m1))`, `seq(tensor(float8e4m3fn))`, `seq(tensor(float8e4m3fnuz))`, `seq(tensor(float8e5m2))`, `seq(tensor(float8e5m2fnuz))`, `seq(tensor(float8e8m0))`, `seq(tensor(int16))`, `seq(tensor(int2))`, `seq(tensor(int32))`, `seq(tensor(int4))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint2))`, `seq(tensor(uint32))`, `seq(tensor(uint4))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _else_branch_subgraph: Graph = subgraph((), else_branch)
     _then_branch_subgraph: Graph = subgraph((), then_branch)
@@ -1999,12 +1627,12 @@ def loop(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Loop``.
+    Signature: ``ai.onnx@25::Loop``.
 
     Type constraints:
      - B: `tensor(bool)`
      - I: `tensor(int64)`
-     - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(float4e2m1))`, `optional(tensor(float8e4m3fn))`, `optional(tensor(float8e4m3fnuz))`, `optional(tensor(float8e5m2))`, `optional(tensor(float8e5m2fnuz))`, `optional(tensor(float8e8m0))`, `optional(tensor(int16))`, `optional(tensor(int32))`, `optional(tensor(int4))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint32))`, `optional(tensor(uint4))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(float4e2m1))`, `seq(tensor(float8e4m3fn))`, `seq(tensor(float8e4m3fnuz))`, `seq(tensor(float8e5m2))`, `seq(tensor(float8e5m2fnuz))`, `seq(tensor(float8e8m0))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int4))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint4))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - V: `optional(seq(tensor(bfloat16)))`, `optional(seq(tensor(bool)))`, `optional(seq(tensor(complex128)))`, `optional(seq(tensor(complex64)))`, `optional(seq(tensor(double)))`, `optional(seq(tensor(float)))`, `optional(seq(tensor(float16)))`, `optional(seq(tensor(int16)))`, `optional(seq(tensor(int32)))`, `optional(seq(tensor(int64)))`, `optional(seq(tensor(int8)))`, `optional(seq(tensor(string)))`, `optional(seq(tensor(uint16)))`, `optional(seq(tensor(uint32)))`, `optional(seq(tensor(uint64)))`, `optional(seq(tensor(uint8)))`, `optional(tensor(bfloat16))`, `optional(tensor(bool))`, `optional(tensor(complex128))`, `optional(tensor(complex64))`, `optional(tensor(double))`, `optional(tensor(float))`, `optional(tensor(float16))`, `optional(tensor(float4e2m1))`, `optional(tensor(float8e4m3fn))`, `optional(tensor(float8e4m3fnuz))`, `optional(tensor(float8e5m2))`, `optional(tensor(float8e5m2fnuz))`, `optional(tensor(float8e8m0))`, `optional(tensor(int16))`, `optional(tensor(int2))`, `optional(tensor(int32))`, `optional(tensor(int4))`, `optional(tensor(int64))`, `optional(tensor(int8))`, `optional(tensor(string))`, `optional(tensor(uint16))`, `optional(tensor(uint2))`, `optional(tensor(uint32))`, `optional(tensor(uint4))`, `optional(tensor(uint64))`, `optional(tensor(uint8))`, `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(float4e2m1))`, `seq(tensor(float8e4m3fn))`, `seq(tensor(float8e4m3fnuz))`, `seq(tensor(float8e5m2))`, `seq(tensor(float8e5m2fnuz))`, `seq(tensor(float8e8m0))`, `seq(tensor(int16))`, `seq(tensor(int2))`, `seq(tensor(int32))`, `seq(tensor(int4))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint2))`, `seq(tensor(uint32))`, `seq(tensor(uint4))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`, `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _body_subgraph: Graph = subgraph(
         typing_cast(list[Type], [Tensor(np.int64, (1,)), Tensor(np.bool_, (1,))])
@@ -2188,10 +1816,10 @@ def pad(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Pad``.
+    Signature: ``ai.onnx@25::Pad``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - Tind: `tensor(int32)`, `tensor(int64)`
     """
     input_prop_values = create_prop_dict(
@@ -2244,6 +1872,8 @@ def quantize_linear(
     - int8: [-128, 127]
     - uint4: [0, 15]
     - int4: [-8, 7]
+    - uint2: [0, 3]
+    - int2: [-2, 1]
 
     For ``(x / y_scale)``, it rounds to the nearest even. Refer to
     https://en.wikipedia.org/wiki/Rounding for details.
@@ -2329,12 +1959,12 @@ def quantize_linear(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::QuantizeLinear``.
+    Signature: ``ai.onnx@25::QuantizeLinear``.
 
     Type constraints:
      - T1: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`, `tensor(int32)`
      - T2: `tensor(bfloat16)`, `tensor(float)`, `tensor(float16)`, `tensor(float8e8m0)`, `tensor(int32)`
-     - T3: `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int4)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint4)`, `tensor(uint8)`
+     - T3: `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(int16)`, `tensor(int2)`, `tensor(int4)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint4)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         x=x,
@@ -2408,10 +2038,10 @@ def reshape(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Reshape``.
+    Signature: ``ai.onnx@25::Reshape``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         data=data,
@@ -2635,10 +2265,10 @@ def scan(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Scan``.
+    Signature: ``ai.onnx@25::Scan``.
 
     Type constraints:
-     - V: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - V: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     _body_subgraph: Graph = subgraph(
         [
@@ -2759,10 +2389,10 @@ def shape(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Shape``.
+    Signature: ``ai.onnx@25::Shape``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
     input_prop_values = create_prop_dict(
@@ -2805,10 +2435,10 @@ def size(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Size``.
+    Signature: ``ai.onnx@25::Size``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
      - T1: `tensor(int64)`
     """
     input_prop_values = create_prop_dict(
@@ -2823,82 +2453,6 @@ def size(
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .size
-    )
-    return output_vars  # type: ignore
-
-
-def split_to_sequence(
-    input: Var,
-    split: Var | None = None,
-    *,
-    axis: int = 0,
-    keepdims: int = 1,
-) -> Var:
-    r"""
-    Split a tensor into a sequence of tensors, along the specified 'axis'.
-    Lengths of the parts can be specified using the optional argument
-    'split'. If the argument
-    ``split' is not specified, a default scalar value of 1 is used as the value of``\ split'.
-    'split' must contain only positive numbers. 'split' is either a scalar
-    (tensor of empty shape), or a 1-D tensor. If 'split' is a scalar, then
-    'input' will be split into chunks all of size 'split' if possible. The
-    last chunk alone may be smaller than 'split' if the 'input' size along
-    the given axis 'axis' is not divisible by 'split'. If 'split' is a
-    1-dimensional tensor, the input tensor is split into 'size(split)'
-    chunks, with lengths of the parts on 'axis' specified in 'split'. In
-    this scenario, the sum of entries in 'split' must be equal to the
-    dimension size of input tensor on 'axis'.
-
-    Parameters
-    ==========
-    input
-        Type T.
-        The tensor to split
-    split
-        Type I.
-        Length of each output. It can be either a scalar(tensor of empty shape),
-        or a 1-D tensor. All values must be >= 0.
-    axis
-        Attribute.
-        Which axis to split on. A negative value means counting dimensions from
-        the back. Accepted range is [-rank, rank-1].
-    keepdims
-        Attribute.
-        Keep the split dimension or not. Default 1, which means we keep split
-        dimension. If input 'split' is specified, this attribute is ignored.
-
-    Returns
-    =======
-    output_sequence : Var
-        Type S.
-        One or more outputs forming a sequence of tensors after splitting
-
-    Notes
-    =====
-    Signature: ``ai.onnx@24::SplitToSequence``.
-
-    Type constraints:
-     - I: `tensor(int32)`, `tensor(int64)`
-     - S: `seq(tensor(bfloat16))`, `seq(tensor(bool))`, `seq(tensor(complex128))`, `seq(tensor(complex64))`, `seq(tensor(double))`, `seq(tensor(float))`, `seq(tensor(float16))`, `seq(tensor(int16))`, `seq(tensor(int32))`, `seq(tensor(int64))`, `seq(tensor(int8))`, `seq(tensor(string))`, `seq(tensor(uint16))`, `seq(tensor(uint32))`, `seq(tensor(uint64))`, `seq(tensor(uint8))`
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
-    """
-    input_prop_values = create_prop_dict(
-        input=input,
-        split=split,
-    )
-    output_vars = (
-        _SplitToSequence(
-            _SplitToSequence.Attributes(
-                axis=AttrInt64(axis, name="axis"),
-                keepdims=AttrInt64(keepdims, name="keepdims"),
-            ),
-            _SplitToSequence.Inputs(
-                input=unwrap_vars(input),
-                split=unwrap_vars(split),
-            ),
-        )
-        .get_output_vars(input_prop_values=input_prop_values)
-        .output_sequence
     )
     return output_vars  # type: ignore
 
@@ -2933,10 +2487,10 @@ def squeeze(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Squeeze``.
+    Signature: ``ai.onnx@25::Squeeze``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         data=data,
@@ -2952,259 +2506,6 @@ def squeeze(
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .squeezed
-    )
-    return output_vars  # type: ignore
-
-
-def swish(
-    X: Var,
-    *,
-    alpha: float = 1.0,
-) -> Var:
-    r"""
-    Swish function takes one input data (Tensor<T>) and produces one output
-    data (Tensor<T>) of the same shape, where
-    :math:`Swish(x) = x * sigmoid(alpha * x)`.
-
-    Parameters
-    ==========
-    X
-        Type T.
-        Input tensor
-    alpha
-        Attribute.
-        Coefficient to multiply with input before sigmoid.
-
-    Returns
-    =======
-    Y : Var
-        Type T.
-        Output tensor
-
-    Notes
-    =====
-    Signature: ``ai.onnx@24::Swish``.
-
-    Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`
-    """
-    input_prop_values = create_prop_dict(
-        X=X,
-    )
-    output_vars = (
-        _Swish(
-            _Swish.Attributes(
-                alpha=AttrFloat32(alpha, name="alpha"),
-            ),
-            _Swish.Inputs(
-                X=unwrap_vars(X),
-            ),
-        )
-        .get_output_vars(input_prop_values=input_prop_values)
-        .Y
-    )
-    return output_vars  # type: ignore
-
-
-def tensor_scatter(
-    past_cache: Var,
-    update: Var,
-    write_indices: Var | None = None,
-    *,
-    axis: int = -2,
-    mode: str = "linear",
-) -> Var:
-    r"""
-    TensorScatter is a generic tensor update operation, motivated by the
-    requirements for KV cache updates for Attention ops commonly found in
-    LLMs. It is a functional operation that models an in-place update to a
-    KV cache buffer.
-
-    The past and present cache tensors have the same shape (batch_size, D1,
-    D2, ..., max_sequence_length, ..., Dn), with the sequence dimension
-    (indicated by the ``axis`` attribute) being max_sequence_length, so the
-    sizes of these tensors do not need to grow between iterations. The
-    ``update`` tensor's shape only differs from the cache tensors in the
-    sequence dimension: (batch_size, D1, D2, ..., sequence_length, ..., Dn),
-    where sequence_length <= max_sequence_length.
-
-    The optional ``write_indices`` input indicates the write index for each
-    sample in the batch, assumed to be zero if not provided. When the
-    ``mode`` attribute is set to "circular", the write index is modulo
-    max_sequence_length. The operation can be described using the following
-    pseudocode:
-
-    ::
-
-       for prefix_idx in np.ndindex(past_cache.shape[:axis]):
-           batch_idx = prefix_idx[0]
-           for sequence_idx in range(sequence_length):
-               cache_idx = (*prefix_idx, write_indices[batch_idx] + sequence_idx)
-               if mode == "circular":
-                   cache_idx = tuple(np.mod(np.asarray(cache_idx), max_sequence_length))
-               update_idx = (*prefix_idx, sequence_idx)
-               present_cache[cache_idx] = update[update_idx]
-
-    During the prefill phase of attention, only the first two inputs are
-    needed. During the decode phase, ``write_indices`` is also needed so
-    that the incoming key or value update can be appended after the last
-    valid token for each sample in the batch.
-
-    Parameters
-    ==========
-    past_cache
-        Type T.
-        Past state cache for key or value with shape
-        ``(batch_size, D1, D2, ..., max_sequence_length, ..., Dn)``.
-    update
-        Type T.
-        New update tensor with shape
-        ``(batch_size, D1, D2, ..., sequence_length, ..., Dn)``.
-    write_indices
-        Type tensor(int64).
-        Write indices for the incoming update tensor in the cache. Shape is
-        ``(batch_size,)``. Assumed to be all zeros if not provided.
-    axis
-        Attribute.
-        Sequence dimension of the ``past_cache`` and ``update`` tensors. It
-        cannot be 0 (the batch dimension). Default is -2.
-    mode
-        Attribute.
-        Write mode of cache update. Supported modes include ``linear`` and
-        ``circular``. ``linear`` mode requires
-        write_indices+sequence_length<=max_sequence_length. For ``circular``
-        mode, the updates happen in wrap-around fashion, ie, the update index is
-        modulo ``max_sequence_length``
-
-    Returns
-    =======
-    present_cache : Var
-        Type T.
-        Updated cache. Same shape as ``past_cache``.
-
-    Notes
-    =====
-    Signature: ``ai.onnx@24::TensorScatter``.
-
-    Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
-    """
-    input_prop_values = create_prop_dict(
-        past_cache=past_cache,
-        update=update,
-        write_indices=write_indices,
-    )
-    output_vars = (
-        _TensorScatter(
-            _TensorScatter.Attributes(
-                axis=AttrInt64(axis, name="axis"),
-                mode=AttrString(mode, name="mode"),
-            ),
-            _TensorScatter.Inputs(
-                past_cache=unwrap_vars(past_cache),
-                update=unwrap_vars(update),
-                write_indices=unwrap_vars(write_indices),
-            ),
-        )
-        .get_output_vars(input_prop_values=input_prop_values)
-        .present_cache
-    )
-    return output_vars  # type: ignore
-
-
-def top_k(
-    X: Var,
-    K: Var,
-    *,
-    axis: int = -1,
-    largest: int = 1,
-    sorted: int = 1,
-) -> tuple[Var, Var]:
-    r"""
-    Retrieve the top-K largest or smallest elements along a specified axis.
-    Given an input tensor of shape [a_0, a_1, ..., a\_{n-1}] and integer
-    argument k, return two outputs:
-
-    - Value tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-      a\_{n-1}] which contains the values of the top k elements along the
-      specified axis
-
-    - Index tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-      a\_{n-1}] which contains the indices of the top k elements (original
-      indices from the input tensor).
-
-    - If "largest" is 1 (the default value) then the k largest elements are
-      returned.
-
-    - If "sorted" is 1 (the default value) then the resulting k elements
-      will be sorted.
-
-    - If "sorted" is 0, order of returned 'Values' and 'Indices' are
-      undefined.
-
-    Given two equivalent values, this operator uses the indices along the
-    axis as a tiebreaker. That is, the element with the lower index will
-    appear first.
-
-    Parameters
-    ==========
-    X
-        Type T.
-        Tensor of shape [a_0, a_1, ..., a\_{n-1}]
-    K
-        Type tensor(int64).
-        A 1-D tensor containing a single positive value corresponding to the
-        number of top elements to retrieve
-    axis
-        Attribute.
-        Dimension on which to do the sort. Negative value means counting
-        dimensions from the back. Accepted range is [-r, r-1] where r =
-        rank(input).
-    largest
-        Attribute.
-        Whether to return the top-K largest or smallest elements.
-    sorted
-        Attribute.
-        Whether to return the elements in sorted order.
-
-    Returns
-    =======
-    Values : Var
-        Type T.
-        Tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-        a\_{n-1}] containing top K values from the input tensor
-    Indices : Var
-        Type I.
-        Tensor of shape [a_0, a_1, ..., a\_{axis-1}, k, a\_{axis+1}, ...
-        a\_{n-1}] containing the corresponding input tensor indices for the top
-        K values.
-
-    Notes
-    =====
-    Signature: ``ai.onnx@24::TopK``.
-
-    Type constraints:
-     - I: `tensor(int64)`
-     - T: `tensor(bfloat16)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(int16)`, `tensor(int32)`, `tensor(int64)`, `tensor(int8)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint64)`, `tensor(uint8)`
-    """
-    input_prop_values = create_prop_dict(
-        X=X,
-        K=K,
-    )
-    output_vars = (
-        _TopK(
-            _TopK.Attributes(
-                axis=AttrInt64(axis, name="axis"),
-                largest=AttrInt64(largest, name="largest"),
-                sorted=AttrInt64(sorted, name="sorted"),
-            ),
-            _TopK.Inputs(
-                X=unwrap_vars(X),
-                K=unwrap_vars(K),
-            ),
-        )
-        .get_output_vars(input_prop_values=input_prop_values)
-        ._unpack_to_any()
     )
     return output_vars  # type: ignore
 
@@ -3244,10 +2545,10 @@ def transpose(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Transpose``.
+    Signature: ``ai.onnx@25::Transpose``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         data=data,
@@ -3307,10 +2608,10 @@ def unsqueeze(
 
     Notes
     =====
-    Signature: ``ai.onnx@24::Unsqueeze``.
+    Signature: ``ai.onnx@25::Unsqueeze``.
 
     Type constraints:
-     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
+     - T: `tensor(bfloat16)`, `tensor(bool)`, `tensor(complex128)`, `tensor(complex64)`, `tensor(double)`, `tensor(float)`, `tensor(float16)`, `tensor(float4e2m1)`, `tensor(float8e4m3fn)`, `tensor(float8e4m3fnuz)`, `tensor(float8e5m2)`, `tensor(float8e5m2fnuz)`, `tensor(float8e8m0)`, `tensor(int16)`, `tensor(int2)`, `tensor(int32)`, `tensor(int4)`, `tensor(int64)`, `tensor(int8)`, `tensor(string)`, `tensor(uint16)`, `tensor(uint2)`, `tensor(uint32)`, `tensor(uint4)`, `tensor(uint64)`, `tensor(uint8)`
     """
     input_prop_values = create_prop_dict(
         data=data,

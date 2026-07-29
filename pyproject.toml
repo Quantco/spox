@@ -61,6 +61,10 @@ extend-select = ["I", "UP", "FA100"]
 [tool.ruff.lint.isort]
 known-first-party = ["spox"]
 
+[tool.ruff.lint.per-file-ignores]
+# Generated opset code uses upstream ONNX names verbatim (e.g. `I` for MaxUnpool indices).
+"src/spox/opset/**" = ["E741"]
+
 [tool.mypy]
 python_version = "3.10"
 ignore_missing_imports = true

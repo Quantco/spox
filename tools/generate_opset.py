@@ -765,6 +765,39 @@ if __name__ == "__main__":
         gen_docstrings=gen_all_docstrings,
         inherited_schemas={s: ai_onnx_v23_module for s in ai_onnx_v23_schemas},
     )
+    ai_onnx_v25_schemas, ai_onnx_v25_module = main(
+        "ai.onnx",
+        25,
+        extras=["const"],
+        type_inference={"Loop": "loop16-fix"},
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v24_module for s in ai_onnx_v24_schemas},
+    )
+    ai_onnx_v26_schemas, ai_onnx_v26_module = main(
+        "ai.onnx",
+        26,
+        extras=["const"],
+        type_inference={"Loop": "loop16-fix"},
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v25_module for s in ai_onnx_v25_schemas},
+    )
+    ai_onnx_v27_schemas, ai_onnx_v27_module = main(
+        "ai.onnx",
+        27,
+        extras=["const"],
+        type_inference={"Loop": "loop16-fix"},
+        out_variadic_solutions=V18_OUT_VARIADIC_SOLUTIONS,
+        subgraphs_solutions=V16_SUBGRAPH_SOLUTIONS,
+        attr_type_overrides=DEFAULT_ATTR_TYPE_OVERRIDES,
+        gen_docstrings=gen_all_docstrings,
+        inherited_schemas={s: ai_onnx_v26_module for s in ai_onnx_v26_schemas},
+    )
     ai_onnx_ml_v3_schemas, ai_onnx_ml_v3_module = main(
         "ai.onnx.ml",
         3,
