@@ -19,6 +19,7 @@ from spox._attributes import (
 from spox._fields import BaseAttributes, BaseInputs, BaseOutputs
 from spox._node import OpType
 from spox._standard import StandardNode
+from spox._type_inference_utils import split_num_outputs
 from spox._var import (
     Var,
     _VarInfo,
@@ -2994,7 +2995,7 @@ def split(
                 input=unwrap_vars(input),
                 split=unwrap_vars(split),
             ),
-            out_variadic=num_outputs,
+            out_variadic=split_num_outputs(split, num_outputs),
         )
         .get_output_vars(input_prop_values=input_prop_values)
         .outputs

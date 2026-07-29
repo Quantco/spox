@@ -7,13 +7,17 @@
 Change log
 ==========
 
-0.18.0 (2026-07-28)
+0.18.0 (2026-07-29)
 -------------------
 
 **New features**
 
 - Add `"ai.onnx"` operator definitions of version 25, 26, and 27.
-- Existing opset definitions in ``spox.opsets`` have been rerendered using onnx 1.22.0.
+- Existing opset definitions in ``spox.opset`` have been rerendered using onnx 1.22.0.
+
+**Bug fix**
+
+- The ``split`` input of ``spox.opset.v18.split`` (opset 18 and later) is now usable.
 
 
 0.17.2 (2026-06-04)

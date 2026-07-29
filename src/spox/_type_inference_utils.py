@@ -1,8 +1,51 @@
-# Copyright (c) QuantCo 2023-2025
+# Copyright (c) QuantCo 2023-2026
 # SPDX-License-Identifier: BSD-3-Clause
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from spox._standard import InferenceError
 from spox._type_system import Optional, Sequence, Tensor, Type
+
+if TYPE_CHECKING:
+    from spox._var import Var
+
+
+def split_num_outputs(split: Var | None, num_outputs: int | None) -> int:
+    """Number of variadic outputs of a ``Split`` node.
+
+    Split accepts *either* the ``split`` input or the ``num_outputs`` attribute,
+    but not both. The number of outputs is ``num_outputs`` if given, otherwise
+    the static length of the ``split`` input.
+
+    Raises
+    ------
+    InferenceError
+        If both or neither of ``split`` and ``num_outputs`` are given, or if the
+        number of outputs cannot be determined from a ``split`` input with an
+        unknown static length.
+    """
+    if num_outputs is not None:
+        if split is not None:
+            raise InferenceError(
+                "Only one of the 'split' input or the 'num_outputs' attribute "
+                "may be given to Split, not both."
+            )
+        return num_outputs
+    if split is None:
+        raise InferenceError(
+            "Either the 'split' input or the 'num_outputs' attribute must be "
+            "given to Split."
+        )
+    # ``split`` is a 1-D tensor whose length equals the number of outputs.
+    # Prefer the static shape and fall back to a propagated constant value.
+    shape = split.type.shape if isinstance(split.type, Tensor) else None
+    if shape is not None and len(shape) == 1 and isinstance(shape[0], int):
+        return shape[0]
+    raise InferenceError(
+        "failed to determine number of 'Split' outputs. 'split' input must be a 1D tensor with static length. "
+    )
 
 
 def loop_erase_shape_info(typ: Type) -> Type:
