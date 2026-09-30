@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.18.1 (2026-09-30)
+-------------------
+
+**Bug fix**
+
+- Spox's type inference no longer raises an exception on ``onnx>=1.23.0`` if the upstream type inference encounters an integer overflow.
+
+
 0.18.0 (2026-07-29)
 -------------------
 
