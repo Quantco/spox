@@ -164,10 +164,26 @@ class StandardNode(Node):
         model, _ = self.to_singleton_onnx_model(input_prop_values=input_prop_values)
 
         # Attempt to do shape inference - if an error is caught, we extend the traceback a bit
+        # "data propagation" in this context refers to a upstream data
+        # propagation done during type/shape inference. It propagates
+        # values in tensors through operators such as Add and Mul with
+        # the goal of propagating shape information across some
+        # reshape and broadcasting operations.
+        # Unfortunately, it those operations may raise when
+        # encountering overflows, but overflows are perfectly allowed
+        # operations. They are common in temporal operations (e.g. in ndonnx).
+        #
+        # When encountering an error, we try the type inference a
+        # second type with the data propagation disabled.
         try:
-            typed_model = onnx.shape_inference.infer_shapes(
-                model, check_type=True, strict_mode=True, data_prop=True
-            )
+            try:
+                typed_model = onnx.shape_inference.infer_shapes(
+                    model, check_type=True, strict_mode=True, data_prop=True
+                )
+            except InferenceError:
+                typed_model = onnx.shape_inference.infer_shapes(
+                    model, check_type=True, strict_mode=True, data_prop=False
+                )
         except InferenceError as e:
             raise type(e)(
                 f"{str(e)} -- for {self.schema.name}: {self.signature}"
