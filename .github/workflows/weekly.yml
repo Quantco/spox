@@ -25,7 +25,7 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e
+        uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
         with:
           environments: opset-generation
       - name: Install repository
@@ -66,7 +66,7 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e
+        uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
         with:
           environments: opset-generation
       - name: Install latest RC
