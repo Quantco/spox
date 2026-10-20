@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.18.2 (2026-10-20)
+-------------------
+
+**Bug fix**
+
+- Models are now built using IR version 10 which was released with onnx 1.16.0 and covers all data types supported by Spox.
+
+
 0.18.1 (2026-09-30)
 -------------------
 
