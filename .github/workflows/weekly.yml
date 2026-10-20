@@ -27,7 +27,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
         with:
-          environments: opset-generation
+          environments: onnx-weekly
       - name: Install repository
         run: pixi run -e onnx-weekly postinstall
       - name: Run pytest
@@ -68,13 +68,13 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
         with:
-          environments: opset-generation
+          environments: default
       - name: Install latest RC
-        run: pixi run -e onnx-weekly postinstall-onnx-rc
+        run: pixi run postinstall-onnx-rc
       - name: Install repository
-        run: pixi run -e onnx-weekly postinstall
+        run: pixi run postinstall
       - name: Run pytest
-        run: pixi run -e onnx-weekly test
+        run: pixi run test
       - name: Issue on failure
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         if: ${{ failure() && github.ref == 'refs/heads/main' }}
