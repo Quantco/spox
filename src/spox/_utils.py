@@ -52,7 +52,7 @@ def make_model(
     functions: list[onnx.FunctionProto] | None = None,
 ) -> onnx.ModelProto:
     """Like ``onnx.helper.make_model`` but with a consistent and conservative IR version that works on older runtimes."""
-    ir_version = 8
+    ir_version = 10
 
     kwargs: dict[str, Any] = {}
     if opset_imports is not None:
