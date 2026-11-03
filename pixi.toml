@@ -74,7 +74,7 @@ python = "3.10.*"
 [feature.onnx-weekly.pypi-dependencies]
 onnx-weekly = "*"
 [feature.min-onnxruntime.dependencies]
-onnxruntime = "==1.20.1"
+onnxruntime = "==1.21.1"
 
 [environments]
 default = ["test", "lint", "onnx-conda"]
