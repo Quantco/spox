@@ -39,7 +39,7 @@ def linear():
         class Outputs(BaseOutputs):
             Y: _VarInfo
 
-        op_type = OpType("LinearFunction", "spox.test", 0)
+        op_type = OpType("LinearFunction", "spox.test", 1)
 
         attrs: Attributes
         inputs: Inputs
@@ -92,7 +92,7 @@ def linear2(linear):
         class Outputs(BaseOutputs):
             Y: _VarInfo
 
-        op_type = OpType("LinearFunction2", "spox.test", 0)
+        op_type = OpType("LinearFunction2", "spox.test", 1)
 
         attrs: Attributes
         inputs: Inputs
@@ -141,7 +141,7 @@ def cubic(linear):
         class Outputs(BaseOutputs):
             Y: _VarInfo
 
-        op_type = OpType("CubicFunction", "spox.test.extra", 0)
+        op_type = OpType("CubicFunction", "spox.test.extra", 1)
 
         attrs: Attributes
         inputs: Inputs

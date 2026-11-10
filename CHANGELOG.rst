@@ -7,6 +7,14 @@
 Change log
 ==========
 
+0.18.3 (unreleased)
+-------------------
+
+**Bug fix**
+
+- Functions created with ``to_function`` now default to domain version 1 instead of 0. ONNX Runtime 1.31 rejects function opset imports with version 0.
+
+
 0.18.2 (2026-10-20)
 -------------------
 

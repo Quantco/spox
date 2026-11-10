@@ -176,7 +176,7 @@ def _make_function_cls(
 
 
 def to_function(
-    name: str, domain: str = "spox.function", *, _version: int = 0
+    name: str, domain: str = "spox.function", *, _version: int = 1
 ) -> Callable:
     """
     Decorate a given function to make the operation performed by it add a Spox function to the graph.
